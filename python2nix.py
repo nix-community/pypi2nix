@@ -68,13 +68,14 @@ let plone42Packages = python.modules // rec {
 TMPL = """
   %(nixname)s = buildPythonPackage rec {
     name = "%(name)s";
+
     src = fetchurl {
       url = "%(url)s";
       %(hashname)s = "%(hashval)s";
     };
-    doCheck = false;%(requirements)s
+    %(requirements)s
     meta = {
-        maintainers = [ stdenv.lib.maintainers.garbas ];
+        maintainers = [ stdenv.lib.maintainers.goibhniu ];
     };
   };
 """
@@ -127,7 +128,9 @@ if __name__ == '__main__':
             print TMPL % {
                 'nixname': nixname,
                 'name': name,
-                'url': egg_dist['url'],
+                'url': egg_dist['url'].replace(
+                    "http://a.pypi", "http://pypi").replace(
+                    name, "${name}"),
                 'hashname': egg_dist['hashname'],
                 'hashval': egg_dist['hashval'],
                 'requirements': requirements,
