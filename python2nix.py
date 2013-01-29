@@ -73,9 +73,13 @@ TMPL = """
       url = "%(url)s";
       %(hashname)s = "%(hashval)s";
     };
-    %(requirements)s
+%(install_command)s%(build_inputs)s%(propagated_build_inputs)s
     meta = {
-        maintainers = [ stdenv.lib.maintainers.goibhniu ];
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
     };
   };
 """
@@ -91,7 +95,10 @@ overwrite['pytz'] = {
     'url': 'http://pypi.python.org/packages/source/p/pytz/pytz-2012c.tar.gz',
     'hashname': 'md5',
     'hashval': '1aa85f072e3d34ae310665967a0ce053',
-    'requirements': '',
+    'install_command': '',
+    'build_inputs': '',
+    'propagated_build_inputs': '',
+
     }
 overwrite['elementtree'] = {
     'nixname': 'elementtree',
@@ -99,11 +106,14 @@ overwrite['elementtree'] = {
     'url': 'http://effbot.org/media/downloads/elementtree-1.2.7-20070827-preview.zip',
     'hashname': 'md5',
     'hashval': '30e2fe5edd143f347e03a8baf5d60f8a',
-    'requirements': '',
+    'install_command': '',
+    'build_inputs': '',
+    'propagated_build_inputs': '',
     }
 
 if __name__ == '__main__':
     eggs = to_dict(sys.stdin.read())
+    #eggs = to_dict(open("depdump", "r").read())
     pypi = Crawler()
     bad_eggs = []
 
@@ -119,21 +129,39 @@ if __name__ == '__main__':
         if egg['name'] not in overwrite:
             egg_release = pypi.get_release(egg['name'] + '==' + version)
             egg_dist = egg_release.dists['sdist'].url
-            requirements = ''
+            url = egg_dist['url']
+            url = url.replace("http://a.pypi", "http://pypi")
+            url = url.replace(name, "${name}")
+            build_inputs = ''
+            if url.endswith(".zip"):
+                build_inputs = "\n    buildInputs = [ pkgs.unzip ];\n"
+            propagated_build_inputs = ''
             if egg['requirements']:
                 if '(setuptools)' in egg['requirements']:
                     egg['requirements'].pop(egg['requirements'].index('(setuptools)'))
                     egg['requirements'] = ['pkgs.setuptools'] + egg['requirements']
-                requirements = '\n    propagatedBuildInputs = [ %s ];' % ' '.join(egg['requirements'])
+                propagated_build_inputs = (
+                    '\n    propagatedBuildInputs = [ %s ];\n' 
+                    % ' '.join(egg['requirements'])
+                )
+            install_command = ''
+            for req in egg['requirements']:
+                for reqreq in eggs[req]['requirements']:
+                    if nixname in reqreq:
+                        propagated_build_inputs = ''
+                        install_command = """
+    # circular dependencies
+    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+"""
             print TMPL % {
                 'nixname': nixname,
                 'name': name,
-                'url': egg_dist['url'].replace(
-                    "http://a.pypi", "http://pypi").replace(
-                    name, "${name}"),
+                'url': url,
                 'hashname': egg_dist['hashname'],
                 'hashval': egg_dist['hashval'],
-                'requirements': requirements,
+                'build_inputs': build_inputs,
+                'propagated_build_inputs': propagated_build_inputs,
+                'install_command': install_command,
                 }
         else:
             print TMPL % overwrite[egg['name']]
