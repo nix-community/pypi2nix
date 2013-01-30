@@ -74,6 +74,8 @@ TMPL = """
       %(hashname)s = "%(hashval)s";
     };
 %(install_command)s%(build_inputs)s%(propagated_build_inputs)s
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -137,8 +139,8 @@ if __name__ == '__main__':
                 build_inputs = "\n    buildInputs = [ pkgs.unzip ];\n"
             propagated_build_inputs = ''
             if egg['requirements']:
-                if '(setuptools)' in egg['requirements']:
-                    egg['requirements'].pop(egg['requirements'].index('(setuptools)'))
+                if 'setuptools' in egg['requirements']:
+                    egg['requirements'].pop(egg['requirements'].index('setuptools'))
                     egg['requirements'] = ['pkgs.setuptools'] + egg['requirements']
                 propagated_build_inputs = (
                     '\n    propagatedBuildInputs = [ %s ];\n' 
@@ -146,12 +148,15 @@ if __name__ == '__main__':
                 )
             install_command = ''
             for req in egg['requirements']:
+                if "setuptools" in req: continue
                 for reqreq in eggs[req]['requirements']:
                     if nixname in reqreq:
                         propagated_build_inputs = ''
                         install_command = """
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 """
             print TMPL % {
                 'nixname': nixname,

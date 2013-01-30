@@ -19,6 +19,8 @@ let plone42Packages = python.modules // rec {
 
     propagatedBuildInputs = [ acquisition datetime extensionclass persistence record restrictedpython transaction zexceptions zodb3 zope_component zope_configuration zope_deferredimport zope_interface zope_publisher zope_schema zope_security zope_testing ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -41,6 +43,8 @@ let plone42Packages = python.modules // rec {
 
     propagatedBuildInputs = [ extensionclass zope_interface ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -61,7 +65,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_uuid setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_uuid ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -83,7 +89,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_app_jquerytools plone_app_querystring setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_app_jquerytools plone_app_querystring ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -105,7 +113,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_app_form plone_app_jquerytools setuptools zope_component zope_formlib zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_app_form plone_app_jquerytools zope_component zope_formlib zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -127,7 +137,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_uuid setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_uuid ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -149,7 +161,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition plone_memoize products_cmfcore products_genericsetup products_plonepas products_pluggableauthservice setuptools zope_annotation zope_component zope_deferredimport zope_interface zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition plone_memoize products_cmfcore products_genericsetup products_plonepas products_pluggableauthservice zope_annotation zope_component zope_deferredimport zope_interface zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -171,7 +185,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -193,7 +209,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools z3c_form zope_deprecation zope_i18n ];
+    propagatedBuildInputs = [ pkgs.setuptools z3c_form zope_deprecation zope_i18n ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -217,6 +235,8 @@ let plone42Packages = python.modules // rec {
 
     propagatedBuildInputs = [ pytz zope_interface ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -237,7 +257,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ experimental_cssselect lxml setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools experimental_cssselect lxml ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -261,6 +283,8 @@ let plone42Packages = python.modules // rec {
 
     propagatedBuildInputs = [ accesscontrol acquisition extensionclass restrictedpython zexceptions zope_sequencesort zope_structuredtext ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -279,6 +303,8 @@ let plone42Packages = python.modules // rec {
       md5 = "b0d5cd5298fedf9c62f5fd364a274d56";
     };
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -296,6 +322,8 @@ let plone42Packages = python.modules // rec {
       url = "http://effbot.org/media/downloads/elementtree-1.2.7-20070827-preview.zip";
       md5 = "30e2fe5edd143f347e03a8baf5d60f8a";
     };
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -317,7 +345,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ lxml setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools lxml ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -339,6 +369,8 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -356,6 +388,8 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/f/feedparser/${name}.tar.bz2";
       md5 = "702835de74bd4a578524f311e62c2877";
     };
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -377,7 +411,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition plone_portlets setuptools transaction zope_app_pagetemplate zope_component zope_componentvocabulary zope_dottedname zope_interface zope_lifecycleevent zope_pagetemplate zope_publisher zope_schema zope_site zope_testing zope_traversing zope_viewlet zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition plone_portlets transaction zope_app_pagetemplate zope_component zope_componentvocabulary zope_dottedname zope_interface zope_lifecycleevent zope_pagetemplate zope_publisher zope_schema zope_site zope_testing zope_traversing zope_viewlet zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -399,7 +435,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ extensionclass setuptools transaction zope_app_form zope_browser zope_component zope_event zope_formlib zope_i18nmessageid zope_interface zope_lifecycleevent zope_location zope_publisher zope_schema zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools extensionclass transaction zope_app_form zope_browser zope_component zope_event zope_formlib zope_i18nmessageid zope_interface zope_lifecycleevent zope_location zope_publisher zope_schema zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -419,7 +457,9 @@ let plone42Packages = python.modules // rec {
       md5 = "87f8996bd21d4aa156aa26e7d21b8744";
     };
 
-    propagatedBuildInputs = [ setuptools zope_globalrequest zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_globalrequest zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -441,7 +481,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition setuptools zodb3 zope_component zope_event zope_interface zope_lifecycleevent zope_location zope_site zope_testing zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition zodb3 zope_component zope_event zope_interface zope_lifecycleevent zope_location zope_site zope_testing zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -463,6 +505,8 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -483,7 +527,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_browserpage zope_browserresource zope_component zope_configuration zope_contenttype zope_datetime zope_event zope_interface zope_lifecycleevent zope_location zope_pagetemplate zope_publisher zope_schema zope_security zope_site zope_testing zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_browserpage zope_browserresource zope_component zope_configuration zope_contenttype zope_datetime zope_event zope_interface zope_lifecycleevent zope_location zope_pagetemplate zope_publisher zope_schema zope_security zope_site zope_testing zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -503,6 +549,8 @@ let plone42Packages = python.modules // rec {
       md5 = "38b15b0dd5e9292cf98be800e84a3ce4";
     };
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -517,9 +565,13 @@ let plone42Packages = python.modules // rec {
     name = "markdown-2.0.3";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/M/Markdown/Markdown-2.0.3.tar.gz";
-      md5 = "751e8055be2433dfd1a82e0fb1b12f13";
+      url = "http://pypi.python.org/packages/source/M/Markdown/Markdown-2.0.3.zip";
+      md5 = "122418893e21e91109edbf6e082f830d";
     };
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -538,6 +590,8 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/m/mechanize/${name}.tar.gz";
       md5 = "32657f139fc2fb75bcf193b63b8c60b2";
     };
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -561,6 +615,8 @@ let plone42Packages = python.modules // rec {
 
     propagatedBuildInputs = [ extensionclass ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -582,6 +638,8 @@ let plone42Packages = python.modules // rec {
     buildInputs = [ pkgs.unzip ];
 
     propagatedBuildInputs = [ extensionclass ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -605,6 +663,8 @@ let plone42Packages = python.modules // rec {
 
     propagatedBuildInputs = [ extensionclass zodb3 ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -624,9 +684,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -648,7 +712,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ archetypes_schemaextender plone_app_imaging plone_scale setuptools zodb3 zope_proxy ];
+    propagatedBuildInputs = [ pkgs.setuptools archetypes_schemaextender plone_app_imaging plone_scale zodb3 zope_proxy ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -670,7 +736,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition plone_app_registry plone_app_z3cform plone_cachepurging plone_caching plone_memoize plone_protect plone_registry products_cmfcore products_cmfdynamicviewfti products_genericsetup products_statusmessages python_dateutil setuptools z3c_form z3c_zcmlhook zope_browserresource zope_component zope_interface zope_pagetemplate zope_publisher zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition plone_app_registry plone_app_z3cform plone_cachepurging plone_caching plone_memoize plone_protect plone_registry products_cmfcore products_cmfdynamicviewfti products_genericsetup products_statusmessages python_dateutil z3c_form z3c_zcmlhook zope_browserresource zope_component zope_interface zope_pagetemplate zope_publisher zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -691,9 +759,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -714,9 +786,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -738,7 +814,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_uuid setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_uuid ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -759,9 +837,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -782,9 +864,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -805,9 +891,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -829,7 +919,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition five_customerize plone_browserlayer plone_portlets products_cmfcore setuptools zope_component zope_interface zope_publisher zope_viewlet zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition five_customerize plone_browserlayer plone_portlets products_cmfcore zope_component zope_interface zope_publisher zope_viewlet zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -850,9 +942,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -873,9 +969,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -897,7 +997,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition datetime five_formlib plone_app_vocabularies plone_locking products_cmfcore products_cmfdefault setuptools zope_browser zope_component zope_event zope_formlib zope_i18n zope_i18nmessageid zope_interface zope_lifecycleevent zope_schema zope_site zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime five_formlib plone_app_vocabularies plone_locking products_cmfcore products_cmfdefault zope_browser zope_component zope_event zope_formlib zope_i18n zope_i18nmessageid zope_interface zope_lifecycleevent zope_schema zope_site zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -919,7 +1021,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -941,7 +1045,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_scale setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_scale ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -963,7 +1069,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition datetime plone_locking plone_memoize products_archetypes products_cmfcore products_cmfeditions products_cmfplacefulworkflow products_dcworkflow products_statusmessages setuptools zodb3 zope_annotation zope_component zope_event zope_i18nmessageid zope_interface zope_lifecycleevent zope_schema zope_viewlet zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime plone_locking plone_memoize products_archetypes products_cmfcore products_cmfeditions products_cmfplacefulworkflow products_dcworkflow products_statusmessages zodb3 zope_annotation zope_component zope_event zope_i18nmessageid zope_interface zope_lifecycleevent zope_schema zope_viewlet zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -985,7 +1093,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ products_cmfcore products_genericsetup setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1007,7 +1117,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ products_cmfcore products_genericsetup setuptools zope_component zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup zope_component zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1028,9 +1140,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1051,9 +1167,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1075,7 +1195,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1097,7 +1219,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1117,7 +1241,9 @@ let plone42Packages = python.modules // rec {
       md5 = "ae0748f91cab0612a498926d405d8edd";
     };
 
-    propagatedBuildInputs = [ plone_app_portlets plone_openid plone_portlets products_cmfcore products_plonepas products_pluggableauthservice setuptools zope_component zope_i18nmessageid zope_interface zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_app_portlets plone_openid plone_portlets products_cmfcore products_plonepas products_pluggableauthservice zope_component zope_i18nmessageid zope_interface zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1138,9 +1264,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1162,7 +1292,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ datetime plone_app_contentlisting plone_app_layout plone_app_registry plone_app_vocabularies plone_registry products_cmfcore products_cmfplone setuptools zope_component zope_dottedname zope_globalrequest zope_i18n zope_i18nmessageid zope_interface zope_publisher zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools datetime plone_app_contentlisting plone_app_layout plone_app_registry plone_app_vocabularies plone_registry products_cmfcore products_cmfplone zope_component zope_dottedname zope_globalrequest zope_i18n zope_i18nmessageid zope_interface zope_publisher zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1184,7 +1316,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_memoize setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_memoize ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1205,9 +1339,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1229,7 +1367,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_app_contentlisting setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_app_contentlisting ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1251,7 +1391,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ diazo five_globalrequest lxml plone_app_registry plone_resource plone_subrequest plone_transformchain products_cmfplone repoze_xmliter setuptools zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools diazo five_globalrequest lxml plone_app_registry plone_resource plone_subrequest plone_transformchain products_cmfplone repoze_xmliter zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1272,9 +1414,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1295,9 +1441,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1319,7 +1469,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_indexer plone_uuid setuptools zope_interface zope_publisher ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_indexer plone_uuid zope_interface zope_publisher ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1341,7 +1493,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition plone_app_vocabularies products_genericsetup setuptools zodb3 zope_component zope_contentprovider zope_interface zope_site zope_viewlet zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition plone_app_vocabularies products_genericsetup zodb3 zope_component zope_contentprovider zope_interface zope_site zope_viewlet zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1363,7 +1517,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition products_cmfcore setuptools zope_browser zope_component zope_formlib zope_i18n zope_i18nmessageid zope_interface zope_schema zope_site zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition products_cmfcore zope_browser zope_component zope_formlib zope_i18n zope_i18nmessageid zope_interface zope_schema zope_site zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1384,9 +1540,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1408,7 +1568,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ collective_z3cform_datetimewidget kss_core plone_app_kss plone_z3cform setuptools z3c_formwidget_query zope_browserpage zope_component zope_interface zope_traversing zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools collective_z3cform_datetimewidget kss_core plone_app_kss plone_z3cform z3c_formwidget_query zope_browserpage zope_component zope_interface zope_traversing zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1430,7 +1592,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_supermodel plone_z3cform setuptools z3c_form zope_dottedname zope_interface zope_schema zope_security ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_supermodel plone_z3cform z3c_form zope_dottedname zope_interface zope_schema zope_security ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1452,7 +1616,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ products_cmfcore products_genericsetup setuptools zope_component zope_interface zope_traversing zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup zope_component zope_interface zope_traversing zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1474,7 +1640,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ five_globalrequest plone_registry setuptools zope_annotation zope_component zope_event zope_i18nmessageid zope_interface zope_lifecycleevent zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools five_globalrequest plone_registry zope_annotation zope_component zope_event zope_i18nmessageid zope_interface zope_lifecycleevent zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1496,7 +1664,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ five_globalrequest plone_registry plone_transformchain setuptools z3c_caching zope_component zope_i18nmessageid zope_interface zope_schema zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools five_globalrequest plone_registry plone_transformchain z3c_caching zope_component zope_i18nmessageid zope_interface zope_schema zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1518,7 +1688,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zodb3 zope_annotation zope_component zope_componentvocabulary zope_configuration zope_container zope_i18nmessageid zope_interface zope_lifecycleevent zope_schema zope_testing ];
+    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_annotation zope_component zope_componentvocabulary zope_configuration zope_container zope_i18nmessageid zope_interface zope_lifecycleevent zope_schema zope_testing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1540,7 +1712,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ five_formlib setuptools zope_component zope_formlib zope_interface zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools five_formlib zope_component zope_formlib zope_interface zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1562,7 +1736,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_memoize setuptools zope_annotation zope_component zope_container zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_memoize zope_annotation zope_component zope_container zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1584,7 +1760,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools unidecode zope_component zope_i18n zope_interface zope_publisher ];
+    propagatedBuildInputs = [ pkgs.setuptools unidecode zope_component zope_i18n zope_interface zope_publisher ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1606,7 +1784,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ products_cmfcore setuptools zope_component zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore zope_component zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1628,7 +1808,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1650,7 +1832,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zodb3 zope_container zope_interface zope_location ];
+    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_container zope_interface zope_location ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1672,7 +1856,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition datetime products_cmfcore setuptools zodb3 zope_annotation zope_component zope_i18nmessageid zope_interface zope_schema zope_viewlet zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime products_cmfcore zodb3 zope_annotation zope_component zope_i18nmessageid zope_interface zope_schema zope_viewlet zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1694,7 +1880,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_annotation zope_component zope_interface zope_ramcache ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_annotation zope_component zope_interface zope_ramcache ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1716,7 +1904,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition products_pluggableauthservice python_openid setuptools transaction zodb3 zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition products_pluggableauthservice python_openid transaction zodb3 zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1738,7 +1928,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ products_cmfcore products_genericsetup products_mimetypesregistry products_portaltransforms setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup products_mimetypesregistry products_portaltransforms ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1760,7 +1952,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_app_form plone_app_portlets plone_app_vocabularies plone_memoize plone_portlets setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_app_form plone_app_portlets plone_app_vocabularies plone_memoize plone_portlets ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1782,7 +1976,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_app_form plone_app_portlets plone_i18n plone_portlets setuptools zope_component zope_formlib zope_i18nmessageid zope_interface zope_schema zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_app_form plone_app_portlets plone_i18n plone_portlets zope_component zope_formlib zope_i18nmessageid zope_interface zope_schema zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1804,7 +2000,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_memoize setuptools zodb3 zope_annotation zope_component zope_container zope_contentprovider zope_interface zope_publisher zope_schema zope_site ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_memoize zodb3 zope_annotation zope_component zope_container zope_contentprovider zope_interface zope_publisher zope_schema zope_site ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1826,7 +2024,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_keyring setuptools zope_component zope_interface zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_keyring zope_component zope_interface zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1848,7 +2048,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zodb3 zope_component zope_dottedname zope_event zope_interface zope_schema zope_testing ];
+    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_component zope_dottedname zope_event zope_interface zope_schema zope_testing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1870,7 +2072,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_caching python_dateutil setuptools z3c_caching zope_component zope_configuration zope_filerepresentation zope_interface zope_publisher zope_schema zope_traversing zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_caching python_dateutil z3c_caching zope_component zope_configuration zope_filerepresentation zope_interface zope_publisher zope_schema zope_traversing zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1892,7 +2096,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools persistence zope_annotation zope_component zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools persistence zope_annotation zope_component zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1914,7 +2120,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_keyring plone_protect products_pluggableauthservice setuptools zope_component zope_interface zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_keyring plone_protect products_pluggableauthservice zope_component zope_interface zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1936,7 +2144,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ products_cmfcore setuptools zope_i18n ];
+    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore zope_i18n ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1958,7 +2168,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ five_globalrequest setuptools zope_globalrequest ];
+    propagatedBuildInputs = [ pkgs.setuptools five_globalrequest zope_globalrequest ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -1980,7 +2192,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ elementtree setuptools z3c_zcmlhook zope_component zope_deferredimport zope_dottedname zope_interface zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools elementtree z3c_zcmlhook zope_component zope_deferredimport zope_dottedname zope_interface zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2002,7 +2216,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ products_cmfcore products_cmfdefault setuptools zope_component zope_interface zope_publisher zope_traversing zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_cmfdefault zope_component zope_interface zope_publisher zope_traversing zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2024,7 +2240,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_component zope_interface zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_interface zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2046,7 +2264,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_browserpage zope_interface zope_lifecycleevent zope_publisher ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_browserpage zope_interface zope_lifecycleevent zope_publisher ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2068,7 +2288,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ collective_monkeypatcher setuptools z3c_batching z3c_form zope_component zope_i18n ];
+    propagatedBuildInputs = [ pkgs.setuptools collective_monkeypatcher z3c_batching z3c_form zope_component zope_i18n ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2090,7 +2312,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2112,7 +2336,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2133,9 +2359,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2156,9 +2386,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2180,7 +2414,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ archetypes_referencebrowserwidget setuptools zope_deprecation ];
+    propagatedBuildInputs = [ pkgs.setuptools archetypes_referencebrowserwidget zope_deprecation ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2201,7 +2437,11 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2221,7 +2461,9 @@ let plone42Packages = python.modules // rec {
       md5 = "ab1dc62404ed11aea84dc0d782b2235e";
     };
 
-    propagatedBuildInputs = [ products_cmfcore products_genericsetup setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2241,7 +2483,9 @@ let plone42Packages = python.modules // rec {
       md5 = "49458e68dc3b6826ea9a3576ac014419";
     };
 
-    propagatedBuildInputs = [ products_cmfcore products_cmfdefault products_genericsetup setuptools zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_cmfdefault products_genericsetup zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2261,7 +2505,9 @@ let plone42Packages = python.modules // rec {
       md5 = "9320a4023b8575097feacfd4a400e930";
     };
 
-    propagatedBuildInputs = [ five_localsitemanager products_genericsetup products_zsqlmethods setuptools zope_app_publication zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools five_localsitemanager products_genericsetup products_zsqlmethods zope_app_publication zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2281,7 +2527,9 @@ let plone42Packages = python.modules // rec {
       md5 = "fe7d2d3906ee0e3b484e4a02401576ab";
     };
 
-    propagatedBuildInputs = [ five_formlib products_cmfcore products_genericsetup setuptools zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools five_formlib products_cmfcore products_genericsetup zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2303,7 +2551,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition products_cmfcore products_genericsetup setuptools zope_interface zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition products_cmfcore products_genericsetup zope_interface zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2325,7 +2575,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition extensionclass products_cmfcore products_genericsetup setuptools zope_browsermenu zope_component zope_interface zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition extensionclass products_cmfcore products_genericsetup zope_browsermenu zope_component zope_interface zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2347,7 +2599,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition datetime plone_app_blob products_cmfcore products_cmfdifftool products_cmfuid products_genericsetup products_zopeversioncontrol setuptools transaction zodb3 zope_copy zope_dottedname zope_i18nmessageid zope_interface zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime plone_app_blob products_cmfcore products_cmfdifftool products_cmfuid products_genericsetup products_zopeversioncontrol transaction zodb3 zope_copy zope_dottedname zope_i18nmessageid zope_interface zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2369,7 +2623,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition products_cmfcore products_genericsetup setuptools transaction zope_interface zope_structuredtext zope_tales zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition products_cmfcore products_genericsetup transaction zope_interface zope_structuredtext zope_tales zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2391,7 +2647,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ products_cmfcore products_cmfplone products_genericsetup products_plonetestcase setuptools zope_component zope_i18nmessageid zope_interface zope_testing ];
+    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_cmfplone products_genericsetup products_plonetestcase zope_component zope_i18nmessageid zope_interface zope_testing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2412,9 +2670,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2434,7 +2696,9 @@ let plone42Packages = python.modules // rec {
       md5 = "af34adb87ddf2b6da48eff8b70ca2989";
     };
 
-    propagatedBuildInputs = [ acquisition datetime products_cmfcore products_genericsetup setuptools zope_annotation zope_component zope_i18nmessageid zope_interface zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime products_cmfcore products_genericsetup zope_annotation zope_component zope_i18nmessageid zope_interface zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2454,7 +2718,9 @@ let plone42Packages = python.modules // rec {
       md5 = "e20727959351dffbf0bac80613eee110";
     };
 
-    propagatedBuildInputs = [ products_cmfcore products_genericsetup setuptools zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2476,7 +2742,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2496,7 +2764,9 @@ let plone42Packages = python.modules // rec {
       md5 = "c90a16c4f3611015592ba8173a5f1863";
     };
 
-    propagatedBuildInputs = [ products_cmfcore products_genericsetup setuptools zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2518,7 +2788,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ accesscontrol setuptools transaction zodb3 zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools accesscontrol transaction zodb3 zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2540,7 +2812,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2561,9 +2835,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2583,7 +2861,9 @@ let plone42Packages = python.modules // rec {
       md5 = "c48967c81c880ed33ee16a14caab3b11";
     };
 
-    propagatedBuildInputs = [ five_localsitemanager setuptools zope_formlib zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools five_localsitemanager zope_formlib zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2605,7 +2885,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_outputfilters products_archetypes products_cmfcore products_cmfplone products_genericsetup products_mimetypesregistry products_portaltransforms setuptools zope_app_component zope_i18n zope_i18nmessageid zope_interface zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_outputfilters products_archetypes products_cmfcore products_cmfplone products_genericsetup products_mimetypesregistry products_portaltransforms zope_app_component zope_i18n zope_i18nmessageid zope_interface zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2626,9 +2908,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2649,9 +2935,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2673,7 +2963,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ documenttemplate setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools documenttemplate ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2695,7 +2987,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition products_cmfcore setuptools zodb3 zope_contenttype zope_interface zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition products_cmfcore zodb3 zope_contenttype zope_interface zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2716,9 +3010,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2739,9 +3037,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2763,7 +3065,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition datetime extensionclass python_gettext setuptools zodb3 zope_annotation zope_component zope_deferredimport zope_deprecation zope_i18n zope_interface zope_publisher zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime extensionclass python_gettext zodb3 zope_annotation zope_component zope_deferredimport zope_deprecation zope_i18n zope_interface zope_publisher zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2785,7 +3089,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2807,7 +3113,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ plone_i18n plone_memoize plone_session products_cmfcore products_genericsetup products_pluggableauthservice setuptools zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools plone_i18n plone_memoize plone_session products_cmfcore products_genericsetup products_pluggableauthservice zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2829,7 +3137,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition products_atcontenttypes products_cmfcore products_cmfplone products_genericsetup setuptools zodb3 zope_component zope_interface zope_site zope_testing zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition products_atcontenttypes products_cmfcore products_cmfplone products_genericsetup zodb3 zope_component zope_interface zope_site zope_testing zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2849,7 +3159,9 @@ let plone42Packages = python.modules // rec {
       md5 = "f78f16e46d016c2848bc84254fa66596";
     };
 
-    propagatedBuildInputs = [ products_genericsetup products_pluginregistry setuptools zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools products_genericsetup products_pluginregistry zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2869,7 +3181,9 @@ let plone42Packages = python.modules // rec {
       md5 = "5b166193ca1eb84dfb402051f779ebab";
     };
 
-    propagatedBuildInputs = [ products_genericsetup setuptools zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools products_genericsetup zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2891,7 +3205,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition markdown plone_intelligenttext products_cmfcore products_cmfdefault products_mimetypesregistry setuptools zodb3 zope_interface zope_structuredtext zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition markdown plone_intelligenttext products_cmfcore products_cmfdefault products_mimetypesregistry zodb3 zope_interface zope_structuredtext zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2912,9 +3228,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2936,7 +3256,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition datetime plone_app_registry products_cmfcore products_genericsetup setuptools zodb3 zope_component zope_interface zope_viewlet zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime plone_app_registry products_cmfcore products_genericsetup zodb3 zope_component zope_interface zope_viewlet zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2958,7 +3280,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -2979,9 +3303,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3003,7 +3331,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_annotation zope_i18n zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_annotation zope_i18n zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3025,7 +3355,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ elementtree plone_app_imaging plone_outputfilters setuptools zope_app_component zope_app_content ];
+    propagatedBuildInputs = [ pkgs.setuptools elementtree plone_app_imaging plone_outputfilters zope_app_component zope_app_content ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3047,7 +3379,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition datetime setuptools zope_i18n zope_i18nmessageid zope_interface zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime zope_i18n zope_i18nmessageid zope_interface zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3068,9 +3402,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3091,9 +3429,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3115,7 +3457,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition datetime setuptools transaction zodb3 zope_interface zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime transaction zodb3 zope_interface zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3137,7 +3481,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ acquisition datetime extensionclass missing persistence record setuptools transaction zodb3 zope_interface zope2 ];
+    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime extensionclass missing persistence record transaction zodb3 zope_interface zope2 ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3156,6 +3502,8 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/p/python-dateutil/${name}.tar.gz";
       md5 = "0dcb1de5e5cad69490a3b6ab63f0cfa5";
     };
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3179,6 +3527,8 @@ let plone42Packages = python.modules // rec {
 
     propagatedBuildInputs = [ unittest2 ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -3199,6 +3549,8 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -3216,6 +3568,8 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/p/pytz/pytz-2012c.tar.gz";
       md5 = "1aa85f072e3d34ae310665967a0ce053";
     };
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3239,6 +3593,8 @@ let plone42Packages = python.modules // rec {
 
     propagatedBuildInputs = [ extensionclass ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -3259,7 +3615,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ lxml setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools lxml ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3281,7 +3639,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3300,6 +3660,8 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/s/setuptools/${name}.tar.gz";
       md5 = "7df2a529a074f613b509fb44feefe74e";
     };
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3321,7 +3683,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zodb3 zope_testing ];
+    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_testing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3343,6 +3707,8 @@ let plone42Packages = python.modules // rec {
 
     propagatedBuildInputs = [ zope_interface ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -3361,6 +3727,8 @@ let plone42Packages = python.modules // rec {
       md5 = "351dc98f4512bdd2e93f7a6c498730eb";
     };
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -3378,6 +3746,8 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/u/unittest2/${name}.tar.gz";
       md5 = "a0af5cac92bbbfa0c3b0e99571390e0f";
     };
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3399,7 +3769,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_container zope_lifecycleevent zope_schema zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_container zope_lifecycleevent zope_schema zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3421,7 +3793,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zc_buildout zope_configuration zope_dottedname zope_interface zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools zc_buildout zope_configuration zope_dottedname zope_interface zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3441,7 +3815,9 @@ let plone42Packages = python.modules // rec {
       md5 = "d1dc834781d228127ca6d15301757863";
     };
 
-    propagatedBuildInputs = [ setuptools zope_interface zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_interface zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3461,7 +3837,9 @@ let plone42Packages = python.modules // rec {
       md5 = "17f250b5084c2324a7d15c6810ee628e";
     };
 
-    propagatedBuildInputs = [ setuptools zope_browser zope_component zope_event zope_interface zope_lifecycleevent zope_configuration ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_browser zope_component zope_event zope_interface zope_lifecycleevent zope_configuration ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3481,7 +3859,9 @@ let plone42Packages = python.modules // rec {
       md5 = "f029f83dd226f695f55049ed1ecee95e";
     };
 
-    propagatedBuildInputs = [ setuptools zope_browser zope_component zope_configuration zope_contentprovider zope_event zope_i18n zope_i18nmessageid zope_interface zope_lifecycleevent zope_location zope_pagetemplate zope_publisher zope_schema zope_security zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_browser zope_component zope_configuration zope_contentprovider zope_event zope_i18n zope_i18nmessageid zope_interface zope_lifecycleevent zope_location zope_pagetemplate zope_publisher zope_schema zope_security zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3503,7 +3883,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools z3c_form zope_component zope_i18nmessageid zope_interface zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools z3c_form zope_component zope_i18nmessageid zope_interface zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3523,7 +3905,9 @@ let plone42Packages = python.modules // rec {
       md5 = "7b6c80146f5930409eb0b355ddf3daeb";
     };
 
-    propagatedBuildInputs = [ setuptools zope_component zope_configuration zope_interface zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_configuration zope_interface zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3543,7 +3927,9 @@ let plone42Packages = python.modules // rec {
       md5 = "4e3b521600e475c56a0a66459a5fc7bb";
     };
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3563,7 +3949,9 @@ let plone42Packages = python.modules // rec {
       md5 = "6cf83766ef9935c33e240b0904c7a45e";
     };
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3585,6 +3973,8 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -3604,6 +3994,8 @@ let plone42Packages = python.modules // rec {
     };
 
     propagatedBuildInputs = [ zconfig ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3625,7 +4017,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_interface zope_publisher zope_security ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_interface zope_publisher zope_security ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3647,6 +4041,8 @@ let plone42Packages = python.modules // rec {
 
     propagatedBuildInputs = [ zconfig ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -3667,6 +4063,8 @@ let plone42Packages = python.modules // rec {
 
     propagatedBuildInputs = [ transaction zc_lockfile zconfig zdaemon zope_event zope_interface ];
 
+    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.chaoflow
@@ -3686,9 +4084,13 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3708,7 +4110,9 @@ let plone42Packages = python.modules // rec {
       md5 = "4238153279d3f30ab5613438c8e76380";
     };
 
-    propagatedBuildInputs = [ setuptools zodb3 zope_component zope_interface zope_location zope_proxy ];
+    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_component zope_interface zope_location zope_proxy ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3730,7 +4134,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zodb3 zope_annotation zope_app_form zope_app_pagetemplate zope_component zope_componentvocabulary zope_interface zope_proxy zope_publisher zope_ramcache zope_schema zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_annotation zope_app_form zope_app_pagetemplate zope_component zope_componentvocabulary zope_interface zope_proxy zope_publisher zope_ramcache zope_schema zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3750,7 +4156,9 @@ let plone42Packages = python.modules // rec {
       md5 = "bc2dce245d2afe462529c350956711e0";
     };
 
-    propagatedBuildInputs = [ setuptools zope_app_container zope_app_pagetemplate zope_component zope_componentvocabulary zope_deprecation zope_exceptions zope_formlib zope_i18nmessageid zope_interface zope_publisher zope_schema zope_security zope_site zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_app_container zope_app_pagetemplate zope_component zope_componentvocabulary zope_deprecation zope_exceptions zope_formlib zope_i18nmessageid zope_interface zope_publisher zope_schema zope_security zope_site zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3770,7 +4178,9 @@ let plone42Packages = python.modules // rec {
       md5 = "1e286c59f0166e517d67ddd723641c84";
     };
 
-    propagatedBuildInputs = [ setuptools zope_browser zope_browsermenu zope_browserpage zope_component zope_container zope_copypastemove zope_dublincore zope_event zope_exceptions zope_i18n zope_i18nmessageid zope_interface zope_lifecycleevent zope_location zope_publisher zope_security zope_size zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_browser zope_browsermenu zope_browserpage zope_component zope_container zope_copypastemove zope_dublincore zope_event zope_exceptions zope_i18n zope_i18nmessageid zope_interface zope_lifecycleevent zope_location zope_publisher zope_security zope_size zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3790,7 +4200,9 @@ let plone42Packages = python.modules // rec {
       md5 = "0ac6a6fcb5dd6f845759f998d8e8cbb3";
     };
 
-    propagatedBuildInputs = [ setuptools zope_componentvocabulary zope_interface zope_schema zope_security ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_componentvocabulary zope_interface zope_schema zope_security ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3810,7 +4222,9 @@ let plone42Packages = python.modules // rec {
       md5 = "3d2b164d9d37a71490a024aaeb412e91";
     };
 
-    propagatedBuildInputs = [ setuptools transaction zope_browser zope_browsermenu zope_browserpage zope_component zope_configuration zope_datetime zope_exceptions zope_formlib zope_i18n zope_interface zope_proxy zope_publisher zope_schema zope_security ];
+    propagatedBuildInputs = [ pkgs.setuptools transaction zope_browser zope_browsermenu zope_browserpage zope_component zope_configuration zope_datetime zope_exceptions zope_formlib zope_i18n zope_interface zope_proxy zope_publisher zope_schema zope_security ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3830,7 +4244,9 @@ let plone42Packages = python.modules // rec {
       md5 = "bd2b4c6040e768f33004b1210d3207fa";
     };
 
-    propagatedBuildInputs = [ setuptools zope_i18nmessageid zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_i18nmessageid zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3850,7 +4266,9 @@ let plone42Packages = python.modules // rec {
       md5 = "2d304729c0d6a9ab67dd5ea852f19476";
     };
 
-    propagatedBuildInputs = [ setuptools zope_browserpage zope_component zope_configuration zope_dublincore zope_i18nmessageid zope_interface zope_pagetemplate zope_schema zope_security zope_size zope_tales zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_browserpage zope_component zope_configuration zope_dublincore zope_i18nmessageid zope_interface zope_pagetemplate zope_schema zope_security zope_size zope_tales zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3872,7 +4290,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zodb3 zope_authentication zope_browser zope_component zope_error zope_interface zope_location zope_publisher zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_authentication zope_browser zope_component zope_error zope_interface zope_location zope_publisher zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3894,7 +4314,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_browsermenu zope_browserpage zope_browserresource zope_component zope_componentvocabulary zope_configuration zope_datetime zope_interface zope_location zope_ptresource zope_publisher zope_schema zope_security ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_browsermenu zope_browserpage zope_browserresource zope_component zope_componentvocabulary zope_configuration zope_datetime zope_interface zope_location zope_ptresource zope_publisher zope_schema zope_security ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3916,7 +4338,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_browser zope_component zope_i18nmessageid zope_interface zope_schema zope_security ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_browser zope_component zope_i18nmessageid zope_interface zope_schema zope_security ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3938,7 +4362,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3960,7 +4386,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -3982,7 +4410,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_browser zope_component zope_configuration zope_i18nmessageid zope_interface zope_pagetemplate zope_publisher zope_schema zope_security zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_browser zope_component zope_configuration zope_i18nmessageid zope_interface zope_pagetemplate zope_publisher zope_schema zope_security zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4002,7 +4432,9 @@ let plone42Packages = python.modules // rec {
       md5 = "a543ef3cb1b42f7233b3fca23dc9ea60";
     };
 
-    propagatedBuildInputs = [ setuptools zope_component zope_configuration zope_interface zope_pagetemplate zope_publisher zope_schema zope_security zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_configuration zope_interface zope_pagetemplate zope_publisher zope_schema zope_security zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4024,7 +4456,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_component zope_configuration zope_contenttype zope_i18n zope_interface zope_location zope_publisher zope_schema zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_configuration zope_contenttype zope_i18n zope_interface zope_location zope_publisher zope_schema zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4046,7 +4480,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4066,7 +4502,9 @@ let plone42Packages = python.modules // rec {
       md5 = "22780b445b1b479701c05978055d1c82";
     };
 
-    propagatedBuildInputs = [ setuptools zope_event zope_interface zope_hookable zope_configuration zope_i18nmessageid ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_event zope_interface zope_hookable zope_configuration zope_i18nmessageid ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4086,7 +4524,9 @@ let plone42Packages = python.modules // rec {
       md5 = "1c8fa82ca1ab1f4b0bd2455a31fde22b";
     };
 
-    propagatedBuildInputs = [ setuptools zope_component zope_i18nmessageid zope_interface zope_schema zope_security ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_i18nmessageid zope_interface zope_schema zope_security ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4108,7 +4548,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_i18nmessageid zope_interface zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_i18nmessageid zope_interface zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4128,7 +4570,9 @@ let plone42Packages = python.modules // rec {
       md5 = "fc66d85a17b8ffb701091c9328983dcc";
     };
 
-    propagatedBuildInputs = [ setuptools zodb3 zope_broken zope_component zope_dottedname zope_event zope_filerepresentation zope_i18nmessageid zope_interface zope_lifecycleevent zope_location zope_publisher zope_schema zope_security zope_size zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_broken zope_component zope_dottedname zope_event zope_filerepresentation zope_i18nmessageid zope_interface zope_lifecycleevent zope_location zope_publisher zope_schema zope_security zope_size zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4148,7 +4592,9 @@ let plone42Packages = python.modules // rec {
       md5 = "1bb2132551175c0123f17939a793f812";
     };
 
-    propagatedBuildInputs = [ setuptools zope_component zope_event zope_interface zope_location zope_publisher zope_schema zope_tales ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_event zope_interface zope_location zope_publisher zope_schema zope_tales ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4170,7 +4616,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4190,7 +4638,9 @@ let plone42Packages = python.modules // rec {
       md5 = "a9836a5d36cd548be45210eb00407337";
     };
 
-    propagatedBuildInputs = [ setuptools zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4210,7 +4660,9 @@ let plone42Packages = python.modules // rec {
       md5 = "f335940686d15cfc5520c42f2494a924";
     };
 
-    propagatedBuildInputs = [ setuptools zope_annotation zope_component zope_container zope_copy zope_event zope_exceptions zope_interface zope_lifecycleevent zope_location ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_annotation zope_component zope_container zope_copy zope_event zope_exceptions zope_interface zope_lifecycleevent zope_location ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4230,7 +4682,9 @@ let plone42Packages = python.modules // rec {
       md5 = "4dde22d34f41a0a4f0c5a345e6d11ee9";
     };
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4250,7 +4704,9 @@ let plone42Packages = python.modules // rec {
       md5 = "68fce3bf4f011d4a840902fd763884ee";
     };
 
-    propagatedBuildInputs = [ setuptools zope_proxy ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_proxy ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4270,7 +4726,9 @@ let plone42Packages = python.modules // rec {
       md5 = "8a47b0f8e1fa4e833007e5b8351bb1d4";
     };
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4290,7 +4748,9 @@ let plone42Packages = python.modules // rec {
       md5 = "62d639f75b31d2d864fe5982cb23959c";
     };
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4310,7 +4770,9 @@ let plone42Packages = python.modules // rec {
       md5 = "2e34e42e454d896feb101ac74af62ded";
     };
 
-    propagatedBuildInputs = [ pytz setuptools zope_component zope_datetime zope_interface zope_lifecycleevent zope_location zope_schema zope_security ];
+    propagatedBuildInputs = [ pkgs.setuptools pytz zope_component zope_datetime zope_interface zope_lifecycleevent zope_location zope_schema zope_security ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4330,7 +4792,9 @@ let plone42Packages = python.modules // rec {
       md5 = "281445a906458ff5f18f56923699a127";
     };
 
-    propagatedBuildInputs = [ setuptools zodb3 zope_exceptions zope_interface zope_location ];
+    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_exceptions zope_interface zope_location ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4350,7 +4814,9 @@ let plone42Packages = python.modules // rec {
       md5 = "6e8af2a16157a74885d4f0d88137cefb";
     };
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4370,7 +4836,9 @@ let plone42Packages = python.modules // rec {
       md5 = "d7234d99d728abe3d9275346e8d24fd9";
     };
 
-    propagatedBuildInputs = [ setuptools zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4390,7 +4858,9 @@ let plone42Packages = python.modules // rec {
       md5 = "4a7a434094f4bfa99a7f22e75966c359";
     };
 
-    propagatedBuildInputs = [ setuptools zope_interface zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_interface zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4412,7 +4882,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ pytz setuptools zope_browser zope_browserpage zope_component zope_datetime zope_event zope_i18n zope_i18nmessageid zope_interface zope_lifecycleevent zope_publisher zope_schema zope_security zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools pytz zope_browser zope_browserpage zope_component zope_datetime zope_event zope_i18n zope_i18nmessageid zope_interface zope_lifecycleevent zope_publisher zope_schema zope_security zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4434,7 +4906,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4453,6 +4927,8 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/z/zope.hookable/${name}.tar.gz";
       md5 = "fe6713aef5b6c0f4963fb984bf326da0";
     };
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4473,7 +4949,11 @@ let plone42Packages = python.modules // rec {
     };
 
     # circular dependencies
-    installCommand = 'easy_install --always-unzip --no-deps --prefix="$out" .'
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4493,7 +4973,9 @@ let plone42Packages = python.modules // rec {
       md5 = "cb84bf61c2b7353e3b7578057fbaa264";
     };
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4515,7 +4997,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4535,7 +5019,9 @@ let plone42Packages = python.modules // rec {
       md5 = "3ba978f3ba7c0805c81c2c79ea3edb33";
     };
 
-    propagatedBuildInputs = [ setuptools zope_component zope_event zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_event zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4555,7 +5041,9 @@ let plone42Packages = python.modules // rec {
       md5 = "1684a8f986099d15296f670c58e713d8";
     };
 
-    propagatedBuildInputs = [ setuptools zope_component zope_interface zope_proxy zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_interface zope_proxy zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4577,7 +5065,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_component zope_i18n zope_i18nmessageid zope_interface zope_security zope_tal zope_tales zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_i18n zope_i18nmessageid zope_interface zope_security zope_tal zope_tales zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4597,7 +5087,9 @@ let plone42Packages = python.modules // rec {
       md5 = "69604bfd668a01ebebdd616a8f26ccfe";
     };
 
-    propagatedBuildInputs = [ setuptools zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4619,7 +5111,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4639,7 +5133,9 @@ let plone42Packages = python.modules // rec {
       md5 = "f4645e51c15289d3fdfb4139039e18e9";
     };
 
-    propagatedBuildInputs = [ setuptools zope_browserresource zope_interface zope_pagetemplate zope_publisher zope_security ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_browserresource zope_interface zope_pagetemplate zope_publisher zope_security ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4659,7 +5155,9 @@ let plone42Packages = python.modules // rec {
       md5 = "495131970cc7cb14de8e517fb3857ade";
     };
 
-    propagatedBuildInputs = [ setuptools zope_browser zope_component zope_configuration zope_contenttype zope_event zope_exceptions zope_i18n zope_interface zope_location zope_proxy zope_security ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_browser zope_component zope_configuration zope_contenttype zope_event zope_exceptions zope_i18n zope_interface zope_location zope_proxy zope_security ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4681,7 +5179,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zodb3 zope_interface zope_location zope_testing ];
+    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_interface zope_location zope_testing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4703,7 +5203,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_event zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_event zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4723,7 +5225,9 @@ let plone42Packages = python.modules // rec {
       md5 = "072ab8d11adc083eace11262da08630c";
     };
 
-    propagatedBuildInputs = [ setuptools zope_component zope_configuration zope_i18nmessageid zope_interface zope_location zope_proxy zope_schema restrictedpython ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_configuration zope_i18nmessageid zope_interface zope_location zope_proxy zope_schema restrictedpython ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4743,7 +5247,9 @@ let plone42Packages = python.modules // rec {
       md5 = "8a513ecf2b41cad849f6607bf16d6818";
     };
 
-    propagatedBuildInputs = [ setuptools transaction zope_component zope_configuration zope_i18nmessageid zope_interface zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools transaction zope_component zope_configuration zope_i18nmessageid zope_interface zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4763,7 +5269,9 @@ let plone42Packages = python.modules // rec {
       md5 = "cfc35fc426a47f5c0ee43c416224b864";
     };
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4783,7 +5291,9 @@ let plone42Packages = python.modules // rec {
       md5 = "36a0b8dfbd713ed452ce6973ab0a3ddb";
     };
 
-    propagatedBuildInputs = [ setuptools zope_annotation zope_component zope_container zope_event zope_interface zope_lifecycleevent zope_location zope_security ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_annotation zope_component zope_container zope_event zope_interface zope_lifecycleevent zope_location zope_security ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4803,7 +5313,9 @@ let plone42Packages = python.modules // rec {
       md5 = "55d9084dfd9dcbdb5ad2191ceb5ed03d";
     };
 
-    propagatedBuildInputs = [ setuptools zope_i18nmessageid zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_i18nmessageid zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4823,7 +5335,9 @@ let plone42Packages = python.modules // rec {
       md5 = "eabbfb983485d0879322bc878d2478a0";
     };
 
-    propagatedBuildInputs = [ setuptools ];
+    propagatedBuildInputs = [ pkgs.setuptools ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4845,7 +5359,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_i18nmessageid zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_i18nmessageid zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4865,7 +5381,9 @@ let plone42Packages = python.modules // rec {
       md5 = "1c5060bd766a0a18632b7879fc9e4e1e";
     };
 
-    propagatedBuildInputs = [ setuptools zope_interface zope_tal ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_interface zope_tal ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4885,7 +5403,9 @@ let plone42Packages = python.modules // rec {
       md5 = "64abbee892121e7f1a91aed12cfc155a";
     };
 
-    propagatedBuildInputs = [ mechanize pytz setuptools zope_interface zope_schema ];
+    propagatedBuildInputs = [ pkgs.setuptools mechanize pytz zope_interface zope_schema ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4905,7 +5425,9 @@ let plone42Packages = python.modules // rec {
       md5 = "8999f3d143d416dc3c8b2a5bd6f33e28";
     };
 
-    propagatedBuildInputs = [ setuptools zope_exceptions zope_interface ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_exceptions zope_interface ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4927,7 +5449,9 @@ let plone42Packages = python.modules // rec {
 
     buildInputs = [ pkgs.unzip ];
 
-    propagatedBuildInputs = [ setuptools zope_component zope_i18n zope_i18nmessageid zope_interface zope_location zope_proxy zope_publisher zope_security ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_i18n zope_i18nmessageid zope_interface zope_location zope_proxy zope_publisher zope_security ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4947,7 +5471,9 @@ let plone42Packages = python.modules // rec {
       md5 = "367e03096df57e2f9b74fff43f7901f9";
     };
 
-    propagatedBuildInputs = [ setuptools zope_browserpage zope_component zope_configuration zope_contentprovider zope_event zope_i18nmessageid zope_interface zope_location zope_publisher zope_schema zope_security zope_traversing ];
+    propagatedBuildInputs = [ pkgs.setuptools zope_browserpage zope_component zope_configuration zope_contentprovider zope_event zope_i18nmessageid zope_interface zope_location zope_publisher zope_schema zope_security zope_traversing ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
@@ -4968,6 +5494,8 @@ let plone42Packages = python.modules // rec {
     };
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
 
     meta = {
       maintainers = [
