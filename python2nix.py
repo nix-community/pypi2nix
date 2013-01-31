@@ -73,7 +73,7 @@ TMPL = """
       url = "%(url)s";
       %(hashname)s = "%(hashval)s";
     };
-%(install_command)s%(build_inputs)s%(propagated_build_inputs)s
+%(install_command)s%(build_inputs)s
     doCheck = false;
 
     meta = {
@@ -113,6 +113,15 @@ overwrite['elementtree'] = {
     'propagated_build_inputs': '',
     }
 
+# extra_deps = {
+#     "zope_publisher" : ["pytz",],
+#     "products_zsqlmethods": [ "products_standardcachemanagers", "products_pythonscripts", "products_mimetools", "products_mailhost", "products_externalmethod", "products_btreefolder2", "zope_viewlet", "zope_testbrowser", "zope_sendmail", "zope_ptresource", "zope_size", "zope_processlifetime", "zope_site"],
+#     "five_localsitemanager": ["products_standardcachemanagers", "products_pythonscripts", "products_mimetools", "products_mailhost", "products_externalmethod", "products_btreefolder2", "zope_viewlet", "zope_testbrowser", "zope_sendmail", "zope_ptresource", "zope_size", "zope_processlifetime", "zope_site"],
+# #tested one by one: # five_customerize products_standardcachemanagers products_pythonscripts products_mimetools products_mailhost products_externalmethod products_btreefolder2 zope_testbrowser zope_sendmail zope_ptresource zope_processlifetime zope_browsermenu zlog tempstorage initgroups docutils zopeundo products_zctextindex products_zcatalog products_ofsp multimapping missing 
+# # broken: plone_browserlayer
+#     "products_statusmessages" = [ "pytz", ],
+# }
+
 if __name__ == '__main__':
     eggs = to_dict(sys.stdin.read())
     #eggs = to_dict(open("depdump", "r").read())
@@ -146,13 +155,13 @@ if __name__ == '__main__':
                     '\n    propagatedBuildInputs = [ %s ];\n' 
                     % ' '.join(egg['requirements'])
                 )
-            install_command = ''
-            for req in egg['requirements']:
-                if "setuptools" in req: continue
-                for reqreq in eggs[req]['requirements']:
-                    if nixname in reqreq:
-                        propagated_build_inputs = ''
-                        install_command = """
+            # install_command = ''
+            # for req in egg['requirements']:
+            #     if "setuptools" in req: continue
+            #     for reqreq in eggs[req]['requirements']:
+            #         if nixname in reqreq:
+            #             propagated_build_inputs = ''
+            install_command = """
     # circular dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
