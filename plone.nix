@@ -15,9 +15,12 @@ let plone42Packages = python.modules // rec {
       md5 = "7e622d99fb17914b4708d26f245cb696";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ acquisition datetime extensionclass persistence record restrictedpython transaction zexceptions zodb3 zope_component zope_configuration zope_deferredimport zope_interface zope_publisher zope_schema zope_security zope_testing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -39,9 +42,12 @@ let plone42Packages = python.modules // rec {
       md5 = "8c33160c157b50649e2b2b3224622579";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ extensionclass zope_interface ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -63,9 +69,12 @@ let plone42Packages = python.modules // rec {
       md5 = "a8502140123b74f1b7ed4f36d3e56ff3";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_uuid ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -87,9 +96,12 @@ let plone42Packages = python.modules // rec {
       md5 = "cbe134f2806191fd35066bbb7c85bfcc";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_app_jquerytools plone_app_querystring ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -111,9 +123,12 @@ let plone42Packages = python.modules // rec {
       md5 = "7dd3b0d4e188828701a291449c7495f4";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_app_form plone_app_jquerytools zope_component zope_formlib zope_interface ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -135,9 +150,12 @@ let plone42Packages = python.modules // rec {
       md5 = "865aa5b4b6b26e3bb650d89ddfe77c87";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_uuid ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -159,9 +177,12 @@ let plone42Packages = python.modules // rec {
       md5 = "04082694dfda9ae5cda62747b8ac7ccf";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition plone_memoize products_cmfcore products_genericsetup products_plonepas products_pluggableauthservice zope_annotation zope_component zope_deferredimport zope_interface zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -183,9 +204,12 @@ let plone42Packages = python.modules // rec {
       md5 = "4d4f20f9b8bb84b24afadc4f56f6dc2c";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -207,9 +231,12 @@ let plone42Packages = python.modules // rec {
       md5 = "89daf27c7f0f235f9c001f0ee50d76e5";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools z3c_form zope_deprecation zope_i18n ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -231,9 +258,12 @@ let plone42Packages = python.modules // rec {
       md5 = "72a8bcf80b52211ae7fdfe36c693d70c";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pytz zope_interface ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -255,9 +285,12 @@ let plone42Packages = python.modules // rec {
       md5 = "d3c2b017af521db4c86fb360c86e0bc8";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools experimental_cssselect lxml ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -279,9 +312,12 @@ let plone42Packages = python.modules // rec {
       md5 = "07bb086c77c1dfe94125ad2efbba94b7";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ accesscontrol acquisition extensionclass restrictedpython zexceptions zope_sequencesort zope_structuredtext ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -303,6 +339,11 @@ let plone42Packages = python.modules // rec {
       md5 = "b0d5cd5298fedf9c62f5fd364a274d56";
     };
 
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
     doCheck = false;
 
     meta = {
@@ -322,6 +363,8 @@ let plone42Packages = python.modules // rec {
       url = "http://effbot.org/media/downloads/elementtree-1.2.7-20070827-preview.zip";
       md5 = "30e2fe5edd143f347e03a8baf5d60f8a";
     };
+
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -343,9 +386,12 @@ let plone42Packages = python.modules // rec {
       md5 = "3fecdcf1fbc3ea6025e115a56a262957";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools lxml ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -366,6 +412,11 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/E/ExtensionClass/ExtensionClass-2.13.2.zip";
       md5 = "0236e6d7da9e8b87b9ba45f1b8f930b8";
     };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
 
@@ -389,6 +440,11 @@ let plone42Packages = python.modules // rec {
       md5 = "702835de74bd4a578524f311e62c2877";
     };
 
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
     doCheck = false;
 
     meta = {
@@ -409,9 +465,12 @@ let plone42Packages = python.modules // rec {
       md5 = "32f597c2fa961f7dcc84b23e655d928e";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition plone_portlets transaction zope_app_pagetemplate zope_component zope_componentvocabulary zope_dottedname zope_interface zope_lifecycleevent zope_pagetemplate zope_publisher zope_schema zope_site zope_testing zope_traversing zope_viewlet zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -433,9 +492,12 @@ let plone42Packages = python.modules // rec {
       md5 = "09fcecbb7e0ed4a31a4f19787c1a78b4";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools extensionclass transaction zope_app_form zope_browser zope_component zope_event zope_formlib zope_i18nmessageid zope_interface zope_lifecycleevent zope_location zope_publisher zope_schema zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -457,7 +519,10 @@ let plone42Packages = python.modules // rec {
       md5 = "87f8996bd21d4aa156aa26e7d21b8744";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_globalrequest zope2 ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -479,9 +544,12 @@ let plone42Packages = python.modules // rec {
       md5 = "5e3a658e6068832bd802018ebc83f2d4";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition zodb3 zope_component zope_event zope_interface zope_lifecycleevent zope_location zope_site zope_testing zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -502,6 +570,11 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/i/initgroups/${name}.zip";
       md5 = "38e842dcab8445f65e701fec75213acd";
     };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
 
@@ -525,29 +598,12 @@ let plone42Packages = python.modules // rec {
       md5 = "87e66e78c3bbd7af3ecce5b2fef935ae";
     };
 
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
     buildInputs = [ pkgs.unzip ];
-
-    propagatedBuildInputs = [ pkgs.setuptools zope_browserpage zope_browserresource zope_component zope_configuration zope_contenttype zope_datetime zope_event zope_interface zope_lifecycleevent zope_location zope_pagetemplate zope_publisher zope_schema zope_security zope_site zope_testing zope_traversing ];
-
-    doCheck = false;
-
-    meta = {
-      maintainers = [
-        stdenv.lib.maintainers.chaoflow
-        stdenv.lib.maintainers.garbas
-        stdenv.lib.maintainers.goibhniu
-     ];
-    };
-  };
-
-
-  lxml = buildPythonPackage rec {
-    name = "lxml-3.0.2";
-
-    src = fetchurl {
-      url = "http://pypi.python.org/packages/source/l/lxml/${name}.tar.gz";
-      md5 = "38b15b0dd5e9292cf98be800e84a3ce4";
-    };
 
     doCheck = false;
 
@@ -568,6 +624,11 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/M/Markdown/Markdown-2.0.3.zip";
       md5 = "122418893e21e91109edbf6e082f830d";
     };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
 
@@ -591,6 +652,11 @@ let plone42Packages = python.modules // rec {
       md5 = "32657f139fc2fb75bcf193b63b8c60b2";
     };
 
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
     doCheck = false;
 
     meta = {
@@ -611,9 +677,12 @@ let plone42Packages = python.modules // rec {
       md5 = "9823cff54444cbbcaef8fc45d8e42572";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ extensionclass ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -635,9 +704,12 @@ let plone42Packages = python.modules // rec {
       md5 = "d69c5904c105b9f2f085d4103e0f0586";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ extensionclass ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -659,9 +731,12 @@ let plone42Packages = python.modules // rec {
       md5 = "92693648ccdc59c8fc71f7f06b1d228c";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ extensionclass zodb3 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -683,7 +758,7 @@ let plone42Packages = python.modules // rec {
       md5 = "688438bd541e7cb2ab650c8c59282b85";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -710,9 +785,12 @@ let plone42Packages = python.modules // rec {
       md5 = "8d6ba6f360b6bfd40f87914132339660";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools archetypes_schemaextender plone_app_imaging plone_scale zodb3 zope_proxy ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -734,9 +812,12 @@ let plone42Packages = python.modules // rec {
       md5 = "83a52efeb7604d4c5b4afbc6c1365c6f";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition plone_app_registry plone_app_z3cform plone_cachepurging plone_caching plone_memoize plone_protect plone_registry products_cmfcore products_cmfdynamicviewfti products_genericsetup products_statusmessages python_dateutil z3c_form z3c_zcmlhook zope_browserresource zope_component zope_interface zope_pagetemplate zope_publisher zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -758,7 +839,7 @@ let plone42Packages = python.modules // rec {
       md5 = "40c9035472e386fc9d0ec1b9a9a3d4f6";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -785,7 +866,7 @@ let plone42Packages = python.modules // rec {
       md5 = "2f14a85fb66d73e0b699b839caaaad26";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -812,9 +893,12 @@ let plone42Packages = python.modules // rec {
       md5 = "fa6eb45c4ffd0eb3817ad4813ca24916";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_uuid ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -836,7 +920,7 @@ let plone42Packages = python.modules // rec {
       md5 = "b1c7e5a37c659ba30b3a077e149b1752";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -863,7 +947,7 @@ let plone42Packages = python.modules // rec {
       md5 = "74d2fed9095a7c5f890b6f27de78dafc";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -890,7 +974,7 @@ let plone42Packages = python.modules // rec {
       md5 = "401c8880865f398c281953f5837108b9";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -917,9 +1001,12 @@ let plone42Packages = python.modules // rec {
       md5 = "6a3802c4e8fbd955597adc6a8298febf";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition five_customerize plone_browserlayer plone_portlets products_cmfcore zope_component zope_interface zope_publisher zope_viewlet zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -941,7 +1028,7 @@ let plone42Packages = python.modules // rec {
       md5 = "b0cb1fbdf8a7a238cf5a58fb10c24731";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -968,7 +1055,7 @@ let plone42Packages = python.modules // rec {
       md5 = "8ea860daddb4c93c0b7f2b5f7106fef0";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -995,9 +1082,12 @@ let plone42Packages = python.modules // rec {
       md5 = "8017f8f782d992825ed71d16b126c4e7";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime five_formlib plone_app_vocabularies plone_locking products_cmfcore products_cmfdefault zope_browser zope_component zope_event zope_formlib zope_i18n zope_i18nmessageid zope_interface zope_lifecycleevent zope_schema zope_site zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1019,9 +1109,12 @@ let plone42Packages = python.modules // rec {
       md5 = "a10026573463dfc1899bf4062cebdbf2";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1043,9 +1136,12 @@ let plone42Packages = python.modules // rec {
       md5 = "8d494cd69b3f6be7fcb9e21c20277765";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_scale ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1067,9 +1163,12 @@ let plone42Packages = python.modules // rec {
       md5 = "db598cfc0986737145ddc7e6b70a1794";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime plone_locking plone_memoize products_archetypes products_cmfcore products_cmfeditions products_cmfplacefulworkflow products_dcworkflow products_statusmessages zodb3 zope_annotation zope_component zope_event zope_i18nmessageid zope_interface zope_lifecycleevent zope_schema zope_viewlet zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1091,9 +1190,12 @@ let plone42Packages = python.modules // rec {
       md5 = "a12d56f3dfd2ba6840bf21a6bd860b90";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1115,9 +1217,12 @@ let plone42Packages = python.modules // rec {
       md5 = "326470a34e07aa98c40d75ec22484572";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup zope_component zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1139,7 +1244,7 @@ let plone42Packages = python.modules // rec {
       md5 = "97a35086fecfe25e55b65042eb35e796";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -1166,7 +1271,7 @@ let plone42Packages = python.modules // rec {
       md5 = "90ea408f5e01aeb01517d55eb6b6063a";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -1193,9 +1298,12 @@ let plone42Packages = python.modules // rec {
       md5 = "41810cc85ca05921a329aac5bc4cf403";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1217,9 +1325,12 @@ let plone42Packages = python.modules // rec {
       md5 = "baf48a0a5278a18fa1c2848d3470464f";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1241,7 +1352,10 @@ let plone42Packages = python.modules // rec {
       md5 = "ae0748f91cab0612a498926d405d8edd";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_app_portlets plone_openid plone_portlets products_cmfcore products_plonepas products_pluggableauthservice zope_component zope_i18nmessageid zope_interface zope2 ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -1263,7 +1377,7 @@ let plone42Packages = python.modules // rec {
       md5 = "534be67a7a17a71ca1e76f6f149ff2ac";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -1290,9 +1404,12 @@ let plone42Packages = python.modules // rec {
       md5 = "b501910b23def9b58e8309d1e469eb6f";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools datetime plone_app_contentlisting plone_app_layout plone_app_registry plone_app_vocabularies plone_registry products_cmfcore products_cmfplone zope_component zope_dottedname zope_globalrequest zope_i18n zope_i18nmessageid zope_interface zope_publisher zope_schema ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1314,9 +1431,12 @@ let plone42Packages = python.modules // rec {
       md5 = "7d441340a83b8ed72a03bc16148a5f21";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_memoize ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1338,7 +1458,7 @@ let plone42Packages = python.modules // rec {
       md5 = "0fdbb01e9ff71108f1be262c39b41b81";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -1365,9 +1485,12 @@ let plone42Packages = python.modules // rec {
       md5 = "bd5a1f4b5016a6d0a8697e7a9cc04833";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_app_contentlisting ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1389,9 +1512,12 @@ let plone42Packages = python.modules // rec {
       md5 = "2da6d810e0d5f295dd0daa2b60731a1b";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools diazo five_globalrequest lxml plone_app_registry plone_resource plone_subrequest plone_transformchain products_cmfplone repoze_xmliter zope_traversing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1413,7 +1539,7 @@ let plone42Packages = python.modules // rec {
       md5 = "2798dd50863d8c25624400b988a0acdd";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -1440,7 +1566,7 @@ let plone42Packages = python.modules // rec {
       md5 = "97895d8dbdf885784be1afbf5b8b364c";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -1467,9 +1593,12 @@ let plone42Packages = python.modules // rec {
       md5 = "9ca8dcfb09a8a0d6bbee0f28073c3d3f";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_indexer plone_uuid zope_interface zope_publisher ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1491,9 +1620,12 @@ let plone42Packages = python.modules // rec {
       md5 = "1dbc51c7664ce3e6ca4dcca1b7b86082";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition plone_app_vocabularies products_genericsetup zodb3 zope_component zope_contentprovider zope_interface zope_site zope_viewlet zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1515,9 +1647,12 @@ let plone42Packages = python.modules // rec {
       md5 = "34d4eb9c95879811fec0875aa3235ed3";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition products_cmfcore zope_browser zope_component zope_formlib zope_i18n zope_i18nmessageid zope_interface zope_schema zope_site zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1539,7 +1674,7 @@ let plone42Packages = python.modules // rec {
       md5 = "350ea680ccf7eb9b1598927cafad4f38";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -1566,9 +1701,12 @@ let plone42Packages = python.modules // rec {
       md5 = "2e77f5e03d48a6fb2eb9994edb871917";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools collective_z3cform_datetimewidget kss_core plone_app_kss plone_z3cform z3c_formwidget_query zope_browserpage zope_component zope_interface zope_traversing zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1590,9 +1728,12 @@ let plone42Packages = python.modules // rec {
       md5 = "4cb2935ba9cda3eb3ee801ad8cda7c60";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_supermodel plone_z3cform z3c_form zope_dottedname zope_interface zope_schema zope_security ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1614,9 +1755,12 @@ let plone42Packages = python.modules // rec {
       md5 = "bce02f4907a4f29314090c525e5fc28e";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup zope_component zope_interface zope_traversing zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1638,9 +1782,12 @@ let plone42Packages = python.modules // rec {
       md5 = "886814ac4deef0f1ed99a2eb60864264";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools five_globalrequest plone_registry zope_annotation zope_component zope_event zope_i18nmessageid zope_interface zope_lifecycleevent zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1662,9 +1809,12 @@ let plone42Packages = python.modules // rec {
       md5 = "2c2e3b27d13b9101c92dfed222fde36c";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools five_globalrequest plone_registry plone_transformchain z3c_caching zope_component zope_i18nmessageid zope_interface zope_schema zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1686,9 +1836,12 @@ let plone42Packages = python.modules // rec {
       md5 = "a32370656c4fd58652fcd8a234db69c5";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_annotation zope_component zope_componentvocabulary zope_configuration zope_container zope_i18nmessageid zope_interface zope_lifecycleevent zope_schema zope_testing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1710,9 +1863,12 @@ let plone42Packages = python.modules // rec {
       md5 = "4158c8a1f784fcb5cecbd63deda7222f";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools five_formlib zope_component zope_formlib zope_interface zope_schema ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1734,9 +1890,12 @@ let plone42Packages = python.modules // rec {
       md5 = "1674ff18b7a9452d0c2063cf11c679b7";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_memoize zope_annotation zope_component zope_container zope_interface ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1758,9 +1917,12 @@ let plone42Packages = python.modules // rec {
       md5 = "ef36aa9a294d507abb37787f9f7700bd";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools unidecode zope_component zope_i18n zope_interface zope_publisher ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1782,9 +1944,12 @@ let plone42Packages = python.modules // rec {
       md5 = "538aeee1f9db78bc8c85ae1bcb0153ed";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore zope_component zope_interface ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1806,9 +1971,12 @@ let plone42Packages = python.modules // rec {
       md5 = "51688fa0815b49e00334e3ef948328ba";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1830,9 +1998,12 @@ let plone42Packages = python.modules // rec {
       md5 = "f3970e9bddb2cc65e461a2c62879233f";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_container zope_interface zope_location ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1854,9 +2025,12 @@ let plone42Packages = python.modules // rec {
       md5 = "a7f8b8db78f57272d351d7fe0d067eb2";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime products_cmfcore zodb3 zope_annotation zope_component zope_i18nmessageid zope_interface zope_schema zope_viewlet zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1878,9 +2052,12 @@ let plone42Packages = python.modules // rec {
       md5 = "d07cd14b976160e1f26a859e3370147e";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_annotation zope_component zope_interface zope_ramcache ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1902,9 +2079,12 @@ let plone42Packages = python.modules // rec {
       md5 = "d4c36926a6dbefed035ed92c29329ce1";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition products_pluggableauthservice python_openid transaction zodb3 zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1926,9 +2106,12 @@ let plone42Packages = python.modules // rec {
       md5 = "a5ef28580f7fa7f2dc1768893995b0f7";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup products_mimetypesregistry products_portaltransforms ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1950,9 +2133,12 @@ let plone42Packages = python.modules // rec {
       md5 = "5f0006dbb3e0b56870383dfdedc49228";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_app_form plone_app_portlets plone_app_vocabularies plone_memoize plone_portlets ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1974,9 +2160,12 @@ let plone42Packages = python.modules // rec {
       md5 = "ec0dc691b4191a41ff97779b117f9985";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_app_form plone_app_portlets plone_i18n plone_portlets zope_component zope_formlib zope_i18nmessageid zope_interface zope_schema zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -1998,9 +2187,12 @@ let plone42Packages = python.modules // rec {
       md5 = "12b9a33f787756a48617c2d2dd63c538";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_memoize zodb3 zope_annotation zope_component zope_container zope_contentprovider zope_interface zope_publisher zope_schema zope_site ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2022,9 +2214,12 @@ let plone42Packages = python.modules // rec {
       md5 = "74925ffb08782e72f9b1e850fa78fffa";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_keyring zope_component zope_interface zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2046,9 +2241,12 @@ let plone42Packages = python.modules // rec {
       md5 = "6be3d2ec7e2d170e29b8c0bc65049aff";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_component zope_dottedname zope_event zope_interface zope_schema zope_testing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2070,9 +2268,12 @@ let plone42Packages = python.modules // rec {
       md5 = "594d41e3acd913ae92f2e9ef96503b9f";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_caching python_dateutil z3c_caching zope_component zope_configuration zope_filerepresentation zope_interface zope_publisher zope_schema zope_traversing zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2094,9 +2295,12 @@ let plone42Packages = python.modules // rec {
       md5 = "7c59522b4806ee24f5e0a5fa69c523a5";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools persistence zope_annotation zope_component zope_interface ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2118,9 +2322,12 @@ let plone42Packages = python.modules // rec {
       md5 = "2f9d3b88e813a47135af56a4da8bbde1";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_keyring plone_protect products_pluggableauthservice zope_component zope_interface zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2142,9 +2349,12 @@ let plone42Packages = python.modules // rec {
       md5 = "81909716210c6ac3fd0ee87f45ea523d";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore zope_i18n ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2166,9 +2376,12 @@ let plone42Packages = python.modules // rec {
       md5 = "cc12f68a22565415b10dbeef0020baa4";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools five_globalrequest zope_globalrequest ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2190,9 +2403,12 @@ let plone42Packages = python.modules // rec {
       md5 = "00b3d723bb1a48116fe3bf8754f17085";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools elementtree z3c_zcmlhook zope_component zope_deferredimport zope_dottedname zope_interface zope_schema ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2214,9 +2430,12 @@ let plone42Packages = python.modules // rec {
       md5 = "c592d0d095e9fc76cc81597cdf6d0c37";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_cmfdefault zope_component zope_interface zope_publisher zope_traversing zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2238,9 +2457,12 @@ let plone42Packages = python.modules // rec {
       md5 = "f5fb7ca894249e3e666501c4fae52a6c";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_interface zope_schema ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2262,9 +2484,12 @@ let plone42Packages = python.modules // rec {
       md5 = "183fe2911a7d6c9f6b3103855e98ad8a";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_browserpage zope_interface zope_lifecycleevent zope_publisher ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2286,9 +2511,12 @@ let plone42Packages = python.modules // rec {
       md5 = "da891365156a5d5824d4e504465886a2";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools collective_monkeypatcher z3c_batching z3c_form zope_component zope_i18n ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2310,9 +2538,12 @@ let plone42Packages = python.modules // rec {
       md5 = "9dc15871937f9cdf94cdfdb9be77a221";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2334,9 +2565,12 @@ let plone42Packages = python.modules // rec {
       md5 = "be02660c869e04ac8cf6ade3559f2516";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2358,7 +2592,7 @@ let plone42Packages = python.modules // rec {
       md5 = "74be68879b27228c084a9be869132a98";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -2385,7 +2619,7 @@ let plone42Packages = python.modules // rec {
       md5 = "abfb5209ffa11dc2c1a15c488e75d89c";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -2412,9 +2646,12 @@ let plone42Packages = python.modules // rec {
       md5 = "157bdd32155c8353450c17c649aad042";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools archetypes_referencebrowserwidget zope_deprecation ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2436,7 +2673,7 @@ let plone42Packages = python.modules // rec {
       md5 = "f57c85673036af7ccd34c3fa251f6bb2";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -2461,8 +2698,12 @@ let plone42Packages = python.modules // rec {
       md5 = "ab1dc62404ed11aea84dc0d782b2235e";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
+    propagatedBuildInputs = [ eggtestinfo ];
     doCheck = false;
 
     meta = {
@@ -2483,8 +2724,12 @@ let plone42Packages = python.modules // rec {
       md5 = "49458e68dc3b6826ea9a3576ac014419";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_cmfdefault products_genericsetup zope2 ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
+    propagatedBuildInputs = [ eggtestinfo ];
     doCheck = false;
 
     meta = {
@@ -2505,7 +2750,10 @@ let plone42Packages = python.modules // rec {
       md5 = "9320a4023b8575097feacfd4a400e930";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools five_localsitemanager products_genericsetup products_zsqlmethods zope_app_publication zope2 ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -2527,8 +2775,12 @@ let plone42Packages = python.modules // rec {
       md5 = "fe7d2d3906ee0e3b484e4a02401576ab";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools five_formlib products_cmfcore products_genericsetup zope2 ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
+    propagatedBuildInputs = [ eggtestinfo ];
     doCheck = false;
 
     meta = {
@@ -2549,9 +2801,12 @@ let plone42Packages = python.modules // rec {
       md5 = "7b7ed9b8f7b4f438e92e299823f92c86";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition products_cmfcore products_genericsetup zope_interface zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2573,9 +2828,12 @@ let plone42Packages = python.modules // rec {
       md5 = "7d39d416b41b2d93954bc73d9d0e077f";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition extensionclass products_cmfcore products_genericsetup zope_browsermenu zope_component zope_interface zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2597,9 +2855,12 @@ let plone42Packages = python.modules // rec {
       md5 = "7dc744b3b896c1b212d9ba37b1752b65";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime plone_app_blob products_cmfcore products_cmfdifftool products_cmfuid products_genericsetup products_zopeversioncontrol transaction zodb3 zope_copy zope_dottedname zope_i18nmessageid zope_interface zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2621,9 +2882,12 @@ let plone42Packages = python.modules // rec {
       md5 = "6573df7dcb39e3b63ba22abe2acd639e";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition products_cmfcore products_genericsetup transaction zope_interface zope_structuredtext zope_tales zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2645,9 +2909,12 @@ let plone42Packages = python.modules // rec {
       md5 = "9041e1f52eab5b348c0dfa85be438722";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_cmfplone products_genericsetup products_plonetestcase zope_component zope_i18nmessageid zope_interface zope_testing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2669,7 +2936,7 @@ let plone42Packages = python.modules // rec {
       md5 = "9c9663cb2b68c07e3d9a2fceaa97eaa1";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -2696,7 +2963,10 @@ let plone42Packages = python.modules // rec {
       md5 = "af34adb87ddf2b6da48eff8b70ca2989";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime products_cmfcore products_genericsetup zope_annotation zope_component zope_i18nmessageid zope_interface zope2 ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -2718,8 +2988,12 @@ let plone42Packages = python.modules // rec {
       md5 = "e20727959351dffbf0bac80613eee110";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup zope2 ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
+    propagatedBuildInputs = [ eggtestinfo ];
     doCheck = false;
 
     meta = {
@@ -2740,9 +3014,12 @@ let plone42Packages = python.modules // rec {
       md5 = "1cef33faec03e655b7c52c317db50ed2";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2764,8 +3041,12 @@ let plone42Packages = python.modules // rec {
       md5 = "c90a16c4f3611015592ba8173a5f1863";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools products_cmfcore products_genericsetup zope2 ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
+    propagatedBuildInputs = [ eggtestinfo ];
     doCheck = false;
 
     meta = {
@@ -2786,9 +3067,12 @@ let plone42Packages = python.modules // rec {
       md5 = "00c048a4b103200bdcbda61fa22c66df";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools accesscontrol transaction zodb3 zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2810,9 +3094,12 @@ let plone42Packages = python.modules // rec {
       md5 = "475fea6e0b958c0c51cfdbfef2f4e623";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2834,7 +3121,7 @@ let plone42Packages = python.modules // rec {
       md5 = "15ba953ef6cb632eb571977651252ea6";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -2861,7 +3148,10 @@ let plone42Packages = python.modules // rec {
       md5 = "c48967c81c880ed33ee16a14caab3b11";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools five_localsitemanager zope_formlib zope2 ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -2883,9 +3173,12 @@ let plone42Packages = python.modules // rec {
       md5 = "b884fcc7f510426974d8d3c4333da4f4";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_outputfilters products_archetypes products_cmfcore products_cmfplone products_genericsetup products_mimetypesregistry products_portaltransforms zope_app_component zope_i18n zope_i18nmessageid zope_interface zope_schema ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2907,7 +3200,7 @@ let plone42Packages = python.modules // rec {
       md5 = "1102e523435d8bf78a15b9ddb57478e1";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -2934,7 +3227,7 @@ let plone42Packages = python.modules // rec {
       md5 = "bde4d7f75195c1ded8371554b04d2541";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -2961,9 +3254,12 @@ let plone42Packages = python.modules // rec {
       md5 = "ad5372fc1190599a19493db0864448ec";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools documenttemplate ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -2985,9 +3281,12 @@ let plone42Packages = python.modules // rec {
       md5 = "898166bb2aaececc8238ad4ee4826793";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition products_cmfcore zodb3 zope_contenttype zope_interface zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3009,7 +3308,7 @@ let plone42Packages = python.modules // rec {
       md5 = "c76d40928753c2ee56db873304e65bd5";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -3036,7 +3335,7 @@ let plone42Packages = python.modules // rec {
       md5 = "8dfd65f06c3f4a4b0742d1b44b65f014";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -3063,9 +3362,12 @@ let plone42Packages = python.modules // rec {
       md5 = "a94635eb712563c5a002520713f5d6dc";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime extensionclass python_gettext zodb3 zope_annotation zope_component zope_deferredimport zope_deprecation zope_i18n zope_interface zope_publisher zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3087,9 +3389,12 @@ let plone42Packages = python.modules // rec {
       md5 = "bd9eb6278bf76e8cbce99437ca362164";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3111,9 +3416,12 @@ let plone42Packages = python.modules // rec {
       md5 = "c19241b558c994ff280a2e1f50aa1f19";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools plone_i18n plone_memoize plone_session products_cmfcore products_genericsetup products_pluggableauthservice zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3135,9 +3443,12 @@ let plone42Packages = python.modules // rec {
       md5 = "ddd5810937919ab5233ebd64893c8bae";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition products_atcontenttypes products_cmfcore products_cmfplone products_genericsetup zodb3 zope_component zope_interface zope_site zope_testing zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3159,7 +3470,10 @@ let plone42Packages = python.modules // rec {
       md5 = "f78f16e46d016c2848bc84254fa66596";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools products_genericsetup products_pluginregistry zope2 ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -3181,7 +3495,10 @@ let plone42Packages = python.modules // rec {
       md5 = "5b166193ca1eb84dfb402051f779ebab";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools products_genericsetup zope2 ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -3203,9 +3520,12 @@ let plone42Packages = python.modules // rec {
       md5 = "9f429f3c3b9e0019d0f6c9b7a8a9376e";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition markdown plone_intelligenttext products_cmfcore products_cmfdefault products_mimetypesregistry zodb3 zope_interface zope_structuredtext zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3227,7 +3547,7 @@ let plone42Packages = python.modules // rec {
       md5 = "04c86f2c45a29a162297a80dac61d14f";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -3254,9 +3574,12 @@ let plone42Packages = python.modules // rec {
       md5 = "9cf6efbcf2a6510033c06e1d3af94080";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime plone_app_registry products_cmfcore products_genericsetup zodb3 zope_component zope_interface zope_viewlet zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3278,9 +3601,12 @@ let plone42Packages = python.modules // rec {
       md5 = "7db0f1fa867bd0df972082f502a7a707";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3302,7 +3628,7 @@ let plone42Packages = python.modules // rec {
       md5 = "c5088b2b62bd26d63d9579a04369cb73";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -3329,9 +3655,12 @@ let plone42Packages = python.modules // rec {
       md5 = "265324b0a58a032dd0ed038103ed0473";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_annotation zope_i18n zope_interface ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3353,9 +3682,12 @@ let plone42Packages = python.modules // rec {
       md5 = "108b919bfcff711d2116e41eccbede58";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools elementtree plone_app_imaging plone_outputfilters zope_app_component zope_app_content ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3377,9 +3709,12 @@ let plone42Packages = python.modules // rec {
       md5 = "afa217e2306637d1dccbebf337caa8bf";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime zope_i18n zope_i18nmessageid zope_interface zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3401,7 +3736,7 @@ let plone42Packages = python.modules // rec {
       md5 = "d425171516dfc70e543a4e2b852301cb";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -3428,7 +3763,7 @@ let plone42Packages = python.modules // rec {
       md5 = "8bbfa5fcd3609246990a9314d6f826b4";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -3455,9 +3790,12 @@ let plone42Packages = python.modules // rec {
       md5 = "238239102f3ac798ee4f4c53343a561f";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime transaction zodb3 zope_interface zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3479,9 +3817,12 @@ let plone42Packages = python.modules // rec {
       md5 = "bd1ad8fd4a9d4f8b4681401dd5b71dc1";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools acquisition datetime extensionclass missing persistence record transaction zodb3 zope_interface zope2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3503,6 +3844,11 @@ let plone42Packages = python.modules // rec {
       md5 = "0dcb1de5e5cad69490a3b6ab63f0cfa5";
     };
 
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
     doCheck = false;
 
     meta = {
@@ -3523,9 +3869,12 @@ let plone42Packages = python.modules // rec {
       md5 = "cd4201d440126d1296d1d2bc2b4795f3";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ unittest2 ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3546,6 +3895,11 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/p/python-openid/${name}.zip";
       md5 = "f89d9d4f4dccfd33b5ce34eb4725f751";
     };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
 
@@ -3589,9 +3943,12 @@ let plone42Packages = python.modules // rec {
       md5 = "cfed6a89d4fb2c9cb995e9084c3071b7";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ extensionclass ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3613,9 +3970,12 @@ let plone42Packages = python.modules // rec {
       md5 = "99da76bcbad6fbaced4a273bde29b10e";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools lxml ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3637,29 +3997,12 @@ let plone42Packages = python.modules // rec {
       md5 = "aa75a7dcc7fbc966357837cc66cacec6";
     };
 
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
     buildInputs = [ pkgs.unzip ];
-
-    propagatedBuildInputs = [ pkgs.setuptools ];
-
-    doCheck = false;
-
-    meta = {
-      maintainers = [
-        stdenv.lib.maintainers.chaoflow
-        stdenv.lib.maintainers.garbas
-        stdenv.lib.maintainers.goibhniu
-     ];
-    };
-  };
-
-
-  setuptools = buildPythonPackage rec {
-    name = "setuptools-0.6c11";
-
-    src = fetchurl {
-      url = "http://pypi.python.org/packages/source/s/setuptools/${name}.tar.gz";
-      md5 = "7df2a529a074f613b509fb44feefe74e";
-    };
 
     doCheck = false;
 
@@ -3681,9 +4024,12 @@ let plone42Packages = python.modules // rec {
       md5 = "7a2b76b39839e229249b1bb175604480";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_testing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3705,7 +4051,10 @@ let plone42Packages = python.modules // rec {
       md5 = "30b062baa34fe1521ad979fb088c8c55";
     };
 
-    propagatedBuildInputs = [ zope_interface ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -3727,6 +4076,11 @@ let plone42Packages = python.modules // rec {
       md5 = "351dc98f4512bdd2e93f7a6c498730eb";
     };
 
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
     doCheck = false;
 
     meta = {
@@ -3746,6 +4100,11 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/u/unittest2/${name}.tar.gz";
       md5 = "a0af5cac92bbbfa0c3b0e99571390e0f";
     };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -3767,9 +4126,12 @@ let plone42Packages = python.modules // rec {
       md5 = "f65611f11d547d7dc8e623bf87d3929d";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_container zope_lifecycleevent zope_schema zope_traversing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3791,9 +4153,12 @@ let plone42Packages = python.modules // rec {
       md5 = "6a615ae18c12b459bceb3ae28e8e7709";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zc_buildout zope_configuration zope_dottedname zope_interface zope_schema ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3815,7 +4180,10 @@ let plone42Packages = python.modules // rec {
       md5 = "d1dc834781d228127ca6d15301757863";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_interface zope_schema ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -3837,7 +4205,10 @@ let plone42Packages = python.modules // rec {
       md5 = "17f250b5084c2324a7d15c6810ee628e";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_browser zope_component zope_event zope_interface zope_lifecycleevent zope_configuration ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -3859,7 +4230,10 @@ let plone42Packages = python.modules // rec {
       md5 = "f029f83dd226f695f55049ed1ecee95e";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_browser zope_component zope_configuration zope_contentprovider zope_event zope_i18n zope_i18nmessageid zope_interface zope_lifecycleevent zope_location zope_pagetemplate zope_publisher zope_schema zope_security zope_traversing ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -3881,9 +4255,12 @@ let plone42Packages = python.modules // rec {
       md5 = "d9f7960b1a5a81d8ba5241530f496522";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools z3c_form zope_component zope_i18nmessageid zope_interface zope_schema ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3905,7 +4282,10 @@ let plone42Packages = python.modules // rec {
       md5 = "7b6c80146f5930409eb0b355ddf3daeb";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_configuration zope_interface zope_schema ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -3927,7 +4307,10 @@ let plone42Packages = python.modules // rec {
       md5 = "4e3b521600e475c56a0a66459a5fc7bb";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -3949,7 +4332,10 @@ let plone42Packages = python.modules // rec {
       md5 = "6cf83766ef9935c33e240b0904c7a45e";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -3970,6 +4356,11 @@ let plone42Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/Z/ZConfig/ZConfig-2.9.0.zip";
       md5 = "5c932690a70c8907efd240cdd76a7bc4";
     };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     buildInputs = [ pkgs.unzip ];
 
@@ -3993,7 +4384,10 @@ let plone42Packages = python.modules // rec {
       md5 = "291a875f82e812110557eb6704af8afe";
     };
 
-    propagatedBuildInputs = [ zconfig ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4015,9 +4409,12 @@ let plone42Packages = python.modules // rec {
       md5 = "4c679696c959040d8e656ef85ae40136";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_interface zope_publisher zope_security ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4039,7 +4436,10 @@ let plone42Packages = python.modules // rec {
       md5 = "68073679aaa79ac5a7b6a5c025467147";
     };
 
-    propagatedBuildInputs = [ zconfig ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4061,7 +4461,10 @@ let plone42Packages = python.modules // rec {
       md5 = "6f180c6897a1820948fee2a6290503cd";
     };
 
-    propagatedBuildInputs = [ transaction zc_lockfile zconfig zdaemon zope_event zope_interface ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4083,7 +4486,7 @@ let plone42Packages = python.modules // rec {
       md5 = "26fee311aace7c12e406543ea91eb42a";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -4110,7 +4513,10 @@ let plone42Packages = python.modules // rec {
       md5 = "4238153279d3f30ab5613438c8e76380";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_component zope_interface zope_location zope_proxy ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4132,9 +4538,12 @@ let plone42Packages = python.modules // rec {
       md5 = "8dd74574e869ce236ced0de7e349bb5c";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_annotation zope_app_form zope_app_pagetemplate zope_component zope_componentvocabulary zope_interface zope_proxy zope_publisher zope_ramcache zope_schema zope_traversing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4156,7 +4565,10 @@ let plone42Packages = python.modules // rec {
       md5 = "bc2dce245d2afe462529c350956711e0";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_app_container zope_app_pagetemplate zope_component zope_componentvocabulary zope_deprecation zope_exceptions zope_formlib zope_i18nmessageid zope_interface zope_publisher zope_schema zope_security zope_site zope_traversing ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4178,7 +4590,10 @@ let plone42Packages = python.modules // rec {
       md5 = "1e286c59f0166e517d67ddd723641c84";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_browser zope_browsermenu zope_browserpage zope_component zope_container zope_copypastemove zope_dublincore zope_event zope_exceptions zope_i18n zope_i18nmessageid zope_interface zope_lifecycleevent zope_location zope_publisher zope_security zope_size zope_traversing ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4200,7 +4615,10 @@ let plone42Packages = python.modules // rec {
       md5 = "0ac6a6fcb5dd6f845759f998d8e8cbb3";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_componentvocabulary zope_interface zope_schema zope_security ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4222,7 +4640,10 @@ let plone42Packages = python.modules // rec {
       md5 = "3d2b164d9d37a71490a024aaeb412e91";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools transaction zope_browser zope_browsermenu zope_browserpage zope_component zope_configuration zope_datetime zope_exceptions zope_formlib zope_i18n zope_interface zope_proxy zope_publisher zope_schema zope_security ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4244,7 +4665,10 @@ let plone42Packages = python.modules // rec {
       md5 = "bd2b4c6040e768f33004b1210d3207fa";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_i18nmessageid zope_interface ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4266,7 +4690,10 @@ let plone42Packages = python.modules // rec {
       md5 = "2d304729c0d6a9ab67dd5ea852f19476";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_browserpage zope_component zope_configuration zope_dublincore zope_i18nmessageid zope_interface zope_pagetemplate zope_schema zope_security zope_size zope_tales zope_traversing ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4288,9 +4715,12 @@ let plone42Packages = python.modules // rec {
       md5 = "d8c521287f52fb9f40fa9b8c2acb4675";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_authentication zope_browser zope_component zope_error zope_interface zope_location zope_publisher zope_traversing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4312,9 +4742,12 @@ let plone42Packages = python.modules // rec {
       md5 = "66e9110e2967d8d204a65a98e2227404";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_browsermenu zope_browserpage zope_browserresource zope_component zope_componentvocabulary zope_configuration zope_datetime zope_interface zope_location zope_ptresource zope_publisher zope_schema zope_security ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4336,9 +4769,12 @@ let plone42Packages = python.modules // rec {
       md5 = "7d6bb340610518f2fc71213cfeccda68";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_browser zope_component zope_i18nmessageid zope_interface zope_schema zope_security ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4360,9 +4796,12 @@ let plone42Packages = python.modules // rec {
       md5 = "eff24d7918099a3e899ee63a9c31bee6";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_interface ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4384,9 +4823,12 @@ let plone42Packages = python.modules // rec {
       md5 = "4ff0ddbf64c45bfcc3189e35f4214ded";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_interface ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4408,9 +4850,12 @@ let plone42Packages = python.modules // rec {
       md5 = "a47c7b1e786661c912a1150bf8d1f83f";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_browser zope_component zope_configuration zope_i18nmessageid zope_interface zope_pagetemplate zope_publisher zope_schema zope_security zope_traversing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4432,7 +4877,10 @@ let plone42Packages = python.modules // rec {
       md5 = "a543ef3cb1b42f7233b3fca23dc9ea60";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_configuration zope_interface zope_pagetemplate zope_publisher zope_schema zope_security zope_traversing ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4454,9 +4902,12 @@ let plone42Packages = python.modules // rec {
       md5 = "dbfde30e82dbfa1a74c5da0cb5a4772d";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_configuration zope_contenttype zope_i18n zope_interface zope_location zope_publisher zope_schema zope_traversing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4478,9 +4929,12 @@ let plone42Packages = python.modules // rec {
       md5 = "263459a95238fd61d17e815d97ca49ce";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4502,7 +4956,10 @@ let plone42Packages = python.modules // rec {
       md5 = "22780b445b1b479701c05978055d1c82";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_event zope_interface zope_hookable zope_configuration zope_i18nmessageid ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4524,7 +4981,10 @@ let plone42Packages = python.modules // rec {
       md5 = "1c8fa82ca1ab1f4b0bd2455a31fde22b";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_i18nmessageid zope_interface zope_schema zope_security ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4546,9 +5006,12 @@ let plone42Packages = python.modules // rec {
       md5 = "5b0271908ef26c05059eda76928896ea";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_i18nmessageid zope_interface zope_schema ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4570,7 +5033,10 @@ let plone42Packages = python.modules // rec {
       md5 = "fc66d85a17b8ffb701091c9328983dcc";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_broken zope_component zope_dottedname zope_event zope_filerepresentation zope_i18nmessageid zope_interface zope_lifecycleevent zope_location zope_publisher zope_schema zope_security zope_size zope_traversing ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4592,7 +5058,10 @@ let plone42Packages = python.modules // rec {
       md5 = "1bb2132551175c0123f17939a793f812";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_event zope_interface zope_location zope_publisher zope_schema zope_tales ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4614,9 +5083,12 @@ let plone42Packages = python.modules // rec {
       md5 = "c6ac80e6887de4108a383f349fbdf332";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4638,7 +5110,10 @@ let plone42Packages = python.modules // rec {
       md5 = "a9836a5d36cd548be45210eb00407337";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_interface ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4660,7 +5135,10 @@ let plone42Packages = python.modules // rec {
       md5 = "f335940686d15cfc5520c42f2494a924";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_annotation zope_component zope_container zope_copy zope_event zope_exceptions zope_interface zope_lifecycleevent zope_location ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4682,7 +5160,10 @@ let plone42Packages = python.modules // rec {
       md5 = "4dde22d34f41a0a4f0c5a345e6d11ee9";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4704,7 +5185,10 @@ let plone42Packages = python.modules // rec {
       md5 = "68fce3bf4f011d4a840902fd763884ee";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_proxy ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4726,7 +5210,10 @@ let plone42Packages = python.modules // rec {
       md5 = "8a47b0f8e1fa4e833007e5b8351bb1d4";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4748,7 +5235,10 @@ let plone42Packages = python.modules // rec {
       md5 = "62d639f75b31d2d864fe5982cb23959c";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4770,7 +5260,10 @@ let plone42Packages = python.modules // rec {
       md5 = "2e34e42e454d896feb101ac74af62ded";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools pytz zope_component zope_datetime zope_interface zope_lifecycleevent zope_location zope_schema zope_security ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4792,7 +5285,10 @@ let plone42Packages = python.modules // rec {
       md5 = "281445a906458ff5f18f56923699a127";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_exceptions zope_interface zope_location ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4814,7 +5310,10 @@ let plone42Packages = python.modules // rec {
       md5 = "6e8af2a16157a74885d4f0d88137cefb";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4836,7 +5335,10 @@ let plone42Packages = python.modules // rec {
       md5 = "d7234d99d728abe3d9275346e8d24fd9";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_interface ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4858,7 +5360,10 @@ let plone42Packages = python.modules // rec {
       md5 = "4a7a434094f4bfa99a7f22e75966c359";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_interface zope_schema ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4880,9 +5385,12 @@ let plone42Packages = python.modules // rec {
       md5 = "eed9c94382d11a4dececd0a48ac1d3f2";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools pytz zope_browser zope_browserpage zope_component zope_datetime zope_event zope_i18n zope_i18nmessageid zope_interface zope_lifecycleevent zope_publisher zope_schema zope_security zope_traversing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4904,9 +5412,12 @@ let plone42Packages = python.modules // rec {
       md5 = "ae6ff02db5ba89c1fb96ed7a73ca1cfa";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -4928,6 +5439,11 @@ let plone42Packages = python.modules // rec {
       md5 = "fe6713aef5b6c0f4963fb984bf326da0";
     };
 
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
     doCheck = false;
 
     meta = {
@@ -4948,7 +5464,7 @@ let plone42Packages = python.modules // rec {
       md5 = "a6fe9d9ad53dd7e94e87cd58fb67d3b7";
     };
 
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
@@ -4973,7 +5489,10 @@ let plone42Packages = python.modules // rec {
       md5 = "cb84bf61c2b7353e3b7578057fbaa264";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4995,9 +5514,12 @@ let plone42Packages = python.modules // rec {
       md5 = "9df962180fbbb54eb1875cff9fe436e5";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -5019,7 +5541,10 @@ let plone42Packages = python.modules // rec {
       md5 = "3ba978f3ba7c0805c81c2c79ea3edb33";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_event zope_interface ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5041,7 +5566,10 @@ let plone42Packages = python.modules // rec {
       md5 = "1684a8f986099d15296f670c58e713d8";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_interface zope_proxy zope_schema ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5063,9 +5591,12 @@ let plone42Packages = python.modules // rec {
       md5 = "834a4bf702c05fba1e669677b4dc871f";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_i18n zope_i18nmessageid zope_interface zope_security zope_tal zope_tales zope_traversing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -5087,7 +5618,10 @@ let plone42Packages = python.modules // rec {
       md5 = "69604bfd668a01ebebdd616a8f26ccfe";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_interface ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5109,9 +5643,12 @@ let plone42Packages = python.modules // rec {
       md5 = "a400b0a26624b17fa889dbcaa989d440";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_interface ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -5133,7 +5670,10 @@ let plone42Packages = python.modules // rec {
       md5 = "f4645e51c15289d3fdfb4139039e18e9";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_browserresource zope_interface zope_pagetemplate zope_publisher zope_security ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5155,7 +5695,10 @@ let plone42Packages = python.modules // rec {
       md5 = "495131970cc7cb14de8e517fb3857ade";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_browser zope_component zope_configuration zope_contenttype zope_event zope_exceptions zope_i18n zope_interface zope_location zope_proxy zope_security ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5177,9 +5720,12 @@ let plone42Packages = python.modules // rec {
       md5 = "87289e15f0e51f50704adda1557c02a7";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zodb3 zope_interface zope_location zope_testing ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -5201,9 +5747,12 @@ let plone42Packages = python.modules // rec {
       md5 = "bfa0460b68df0dbbf7a5dc793b0eecc6";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_event zope_interface ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -5225,7 +5774,10 @@ let plone42Packages = python.modules // rec {
       md5 = "072ab8d11adc083eace11262da08630c";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_configuration zope_i18nmessageid zope_interface zope_location zope_proxy zope_schema restrictedpython ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5247,7 +5799,10 @@ let plone42Packages = python.modules // rec {
       md5 = "8a513ecf2b41cad849f6607bf16d6818";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools transaction zope_component zope_configuration zope_i18nmessageid zope_interface zope_schema ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5269,7 +5824,10 @@ let plone42Packages = python.modules // rec {
       md5 = "cfc35fc426a47f5c0ee43c416224b864";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5291,7 +5849,10 @@ let plone42Packages = python.modules // rec {
       md5 = "36a0b8dfbd713ed452ce6973ab0a3ddb";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_annotation zope_component zope_container zope_event zope_interface zope_lifecycleevent zope_location zope_security ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5313,7 +5874,10 @@ let plone42Packages = python.modules // rec {
       md5 = "55d9084dfd9dcbdb5ad2191ceb5ed03d";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_i18nmessageid zope_interface ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5335,7 +5899,10 @@ let plone42Packages = python.modules // rec {
       md5 = "eabbfb983485d0879322bc878d2478a0";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5357,9 +5924,12 @@ let plone42Packages = python.modules // rec {
       md5 = "13869f292ba36b294736b7330b1396fd";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_i18nmessageid zope_interface ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -5381,7 +5951,10 @@ let plone42Packages = python.modules // rec {
       md5 = "1c5060bd766a0a18632b7879fc9e4e1e";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_interface zope_tal ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5403,7 +5976,10 @@ let plone42Packages = python.modules // rec {
       md5 = "64abbee892121e7f1a91aed12cfc155a";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools mechanize pytz zope_interface zope_schema ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5425,7 +6001,10 @@ let plone42Packages = python.modules // rec {
       md5 = "8999f3d143d416dc3c8b2a5bd6f33e28";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_exceptions zope_interface ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5447,9 +6026,12 @@ let plone42Packages = python.modules // rec {
       md5 = "eaad8fc7bbef126f9f8616b074ec00aa";
     };
 
-    buildInputs = [ pkgs.unzip ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_component zope_i18n zope_i18nmessageid zope_interface zope_location zope_proxy zope_publisher zope_security ];
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -5471,7 +6053,10 @@ let plone42Packages = python.modules // rec {
       md5 = "367e03096df57e2f9b74fff43f7901f9";
     };
 
-    propagatedBuildInputs = [ pkgs.setuptools zope_browserpage zope_component zope_configuration zope_contentprovider zope_event zope_i18nmessageid zope_interface zope_location zope_publisher zope_schema zope_security zope_traversing ];
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5493,6 +6078,11 @@ let plone42Packages = python.modules // rec {
       md5 = "2b8da09d1b98d5558f62e12f6e52c401";
     };
 
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
     buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
@@ -5506,6 +6096,30 @@ let plone42Packages = python.modules // rec {
     };
   };
 
+
+  eggtestinfo = buildPythonPackage rec {
+    name = "eggtestinfo-0.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/e/eggtestinfo/${name}.tar.gz";
+      md5 = "6f0507aee05f00c640c0d64b5073f840";
+    };
+
+    # circular dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
 
 }; in plone42Packages
 

@@ -73,7 +73,7 @@ TMPL = """
       url = "%(url)s";
       %(hashname)s = "%(hashval)s";
     };
-%(install_command)s%(build_inputs)s
+%(install_command)s%(build_inputs)s%(propagated_build_inputs)s
     doCheck = false;
 
     meta = {
@@ -87,6 +87,30 @@ TMPL = """
 """
 
 POST_TMPL = """
+  eggtestinfo = buildPythonPackage rec {
+    name = "eggtestinfo-0.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/e/eggtestinfo/${name}.tar.gz";
+      md5 = "6f0507aee05f00c640c0d64b5073f840";
+    };
+
+    # circular dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
 }; in plone42Packages
 """
 
@@ -109,18 +133,22 @@ overwrite['elementtree'] = {
     'hashname': 'md5',
     'hashval': '30e2fe5edd143f347e03a8baf5d60f8a',
     'install_command': '',
-    'build_inputs': '',
+    'build_inputs': '\n    buildInputs = [ pkgs.unzip ];\n',
     'propagated_build_inputs': '',
     }
 
-# extra_deps = {
-#     "zope_publisher" : ["pytz",],
-#     "products_zsqlmethods": [ "products_standardcachemanagers", "products_pythonscripts", "products_mimetools", "products_mailhost", "products_externalmethod", "products_btreefolder2", "zope_viewlet", "zope_testbrowser", "zope_sendmail", "zope_ptresource", "zope_size", "zope_processlifetime", "zope_site"],
-#     "five_localsitemanager": ["products_standardcachemanagers", "products_pythonscripts", "products_mimetools", "products_mailhost", "products_externalmethod", "products_btreefolder2", "zope_viewlet", "zope_testbrowser", "zope_sendmail", "zope_ptresource", "zope_size", "zope_processlifetime", "zope_site"],
-# #tested one by one: # five_customerize products_standardcachemanagers products_pythonscripts products_mimetools products_mailhost products_externalmethod products_btreefolder2 zope_testbrowser zope_sendmail zope_ptresource zope_processlifetime zope_browsermenu zlog tempstorage initgroups docutils zopeundo products_zctextindex products_zcatalog products_ofsp multimapping missing 
-# # broken: plone_browserlayer
-#     "products_statusmessages" = [ "pytz", ],
-# }
+requires_eggtestinfo = [
+    "products_cmfactionicons",
+    "products_cmfcalendar",
+    "products_cmfdefault",
+    "products_cmfuid",
+    "products_dcworkflow",
+]
+
+system_packages = [
+    "lxml",
+    "setuptools"
+]
 
 if __name__ == '__main__':
     eggs = to_dict(sys.stdin.read())
@@ -130,7 +158,7 @@ if __name__ == '__main__':
 
     print PRE_TMPL
     for nixname in sorted(eggs.keys()):
-        if nixname == '(setuptools)': continue
+        if nixname in system_packages: continue
         egg = eggs[nixname]
         version = suggest_normalized_version(egg['version'])
         name = egg['name']
@@ -147,22 +175,10 @@ if __name__ == '__main__':
             if url.endswith(".zip"):
                 build_inputs = "\n    buildInputs = [ pkgs.unzip ];\n"
             propagated_build_inputs = ''
-            if egg['requirements']:
-                if 'setuptools' in egg['requirements']:
-                    egg['requirements'].pop(egg['requirements'].index('setuptools'))
-                    egg['requirements'] = ['pkgs.setuptools'] + egg['requirements']
-                propagated_build_inputs = (
-                    '\n    propagatedBuildInputs = [ %s ];\n' 
-                    % ' '.join(egg['requirements'])
-                )
-            # install_command = ''
-            # for req in egg['requirements']:
-            #     if "setuptools" in req: continue
-            #     for reqreq in eggs[req]['requirements']:
-            #         if nixname in reqreq:
-            #             propagated_build_inputs = ''
+            if nixname in requires_eggtestinfo:
+                propagated_build_inputs = "\n    propagatedBuildInputs = [ eggtestinfo ];"
             install_command = """
-    # circular dependencies
+    # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
