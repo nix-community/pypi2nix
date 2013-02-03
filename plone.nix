@@ -8,10 +8,10 @@ let plone42Packages = python.modules // rec {
 
 
   accesscontrol = buildPythonPackage rec {
-    name = "accesscontrol-2.13.11";
+    name = "AccessControl-2.13.11";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/A/AccessControl/AccessControl-2.13.11.zip";
+      url = "http://pypi.python.org/packages/source/A/AccessControl/${name}.zip";
       md5 = "7e622d99fb17914b4708d26f245cb696";
     };
 
@@ -35,10 +35,10 @@ let plone42Packages = python.modules // rec {
 
 
   acquisition = buildPythonPackage rec {
-    name = "acquisition-2.13.8";
+    name = "Acquisition-2.13.8";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/A/Acquisition/Acquisition-2.13.8.zip";
+      url = "http://pypi.python.org/packages/source/A/Acquisition/${name}.zip";
       md5 = "8c33160c157b50649e2b2b3224622579";
     };
 
@@ -169,12 +169,91 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  argparse = buildPythonPackage rec {
+    name = "argparse-1.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/a/argparse/${name}.zip";
+      md5 = "087399b73047fa5a6482037411ddc968";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   borg_localrole = buildPythonPackage rec {
     name = "borg.localrole-3.0.2";
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/b/borg.localrole/${name}.zip";
       md5 = "04082694dfda9ae5cda62747b8ac7ccf";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  buildout_dumppickedversions = buildPythonPackage rec {
+    name = "buildout.dumppickedversions-0.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/b/buildout.dumppickedversions/${name}.tar.gz";
+      md5 = "e81cffff329aaaaf8dd0d1c6bd63c8b0";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  clientform = buildPythonPackage rec {
+    name = "ClientForm-0.2.10";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/C/ClientForm/${name}.zip";
+      md5 = "33826886848f89c67a5c8a30b931bd97";
     };
 
     # ignore dependencies
@@ -223,6 +302,139 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  collective_recipe_omelette = buildPythonPackage rec {
+    name = "collective.recipe.omelette-0.15";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/c/collective.recipe.omelette/${name}.zip";
+      md5 = "088bcf60754bead215573ce114207939";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  collective_testcaselayer = buildPythonPackage rec {
+    name = "collective.testcaselayer-1.6";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/c/collective.testcaselayer/${name}.zip";
+      md5 = "fd8387d6b6ebd8645ec92f5f1e512450";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  collective_xmltestreport = buildPythonPackage rec {
+    name = "collective.xmltestreport-1.2.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/c/collective.xmltestreport/${name}.tar.gz";
+      md5 = "f247d47a019b44694660d785f70c05b3";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  collective_z3cform_datagridfield = buildPythonPackage rec {
+    name = "collective.z3cform.datagridfield-0.11";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/c/collective.z3cform.datagridfield/${name}.zip";
+      md5 = "c9210337b91305314864da42c12d04c2";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  collective_z3cform_datagridfield_demo = buildPythonPackage rec {
+    name = "collective.z3cform.datagridfield-demo-0.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/c/collective.z3cform.datagridfield/collective.z3cform.datagridfield-0.11.zip";
+      md5 = "c9210337b91305314864da42c12d04c2";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   collective_z3cform_datetimewidget = buildPythonPackage rec {
     name = "collective.z3cform.datetimewidget-1.2.2";
 
@@ -250,11 +462,36 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  datetime = buildPythonPackage rec {
-    name = "datetime-2.12.7";
+  coverage = buildPythonPackage rec {
+    name = "coverage-3.5.2";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/D/DateTime/DateTime-2.12.7.zip";
+      url = "http://pypi.python.org/packages/source/c/coverage/${name}.tar.gz";
+      md5 = "28c43d41b13f8987ea14d7b1d4a4e3ec";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  datetime = buildPythonPackage rec {
+    name = "DateTime-2.12.7";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/D/DateTime/${name}.zip";
       md5 = "72a8bcf80b52211ae7fdfe36c693d70c";
     };
 
@@ -305,10 +542,10 @@ let plone42Packages = python.modules // rec {
 
 
   documenttemplate = buildPythonPackage rec {
-    name = "documenttemplate-2.13.2";
+    name = "DocumentTemplate-2.13.2";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/D/DocumentTemplate/DocumentTemplate-2.13.2.zip";
+      url = "http://pypi.python.org/packages/source/D/DocumentTemplate/${name}.zip";
       md5 = "07bb086c77c1dfe94125ad2efbba94b7";
     };
 
@@ -406,10 +643,10 @@ let plone42Packages = python.modules // rec {
 
 
   extensionclass = buildPythonPackage rec {
-    name = "extensionclass-2.13.2";
+    name = "ExtensionClass-2.13.2";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/E/ExtensionClass/ExtensionClass-2.13.2.zip";
+      url = "http://pypi.python.org/packages/source/E/ExtensionClass/${name}.zip";
       md5 = "0236e6d7da9e8b87b9ba45f1b8f930b8";
     };
 
@@ -536,6 +773,60 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  five_grok = buildPythonPackage rec {
+    name = "five.grok-1.2.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/f/five.grok/${name}.zip";
+      md5 = "b99c3017f3a487dc2a8b7b0b310ee8cf";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  five_intid = buildPythonPackage rec {
+    name = "five.intid-1.0.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/f/five.intid/${name}.zip";
+      md5 = "60c6726c07a1c1bf557aeec0ddcee369";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   five_localsitemanager = buildPythonPackage rec {
     name = "five.localsitemanager-2.0.5";
 
@@ -550,6 +841,181 @@ let plone42Packages = python.modules // rec {
     '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  grokcore_annotation = buildPythonPackage rec {
+    name = "grokcore.annotation-1.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/g/grokcore.annotation/${name}.tar.gz";
+      md5 = "a28ccb4b7c86198923d9cce40953314f";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  grokcore_component = buildPythonPackage rec {
+    name = "grokcore.component-1.9";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/g/grokcore.component/${name}.tar.gz";
+      md5 = "24b05b6b132787dbca18acd244c23ffb";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  grokcore_formlib = buildPythonPackage rec {
+    name = "grokcore.formlib-1.4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/g/grokcore.formlib/${name}.tar.gz";
+      md5 = "dced4aba77053ed78a358a1f5e85d9c4";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  grokcore_security = buildPythonPackage rec {
+    name = "grokcore.security-1.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/g/grokcore.security/${name}.tar.gz";
+      md5 = "1e668b7e423814fa069c69f2a4014876";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  grokcore_site = buildPythonPackage rec {
+    name = "grokcore.site-1.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/g/grokcore.site/${name}.tar.gz";
+      md5 = "bd16753e6d4f1c0ff38266d2ae79633d";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  grokcore_view = buildPythonPackage rec {
+    name = "grokcore.view-1.13.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/g/grokcore.view/${name}.tar.gz";
+      md5 = "304363398aa752d5e1479bab39b93e4e";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  grokcore_viewlet = buildPythonPackage rec {
+    name = "grokcore.viewlet-1.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/g/grokcore.viewlet/${name}.tar.gz";
+      md5 = "5e53b3c77941f9ad0ff2aeb7c1b6dd7d";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -590,6 +1056,31 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  jinja2 = buildPythonPackage rec {
+    name = "Jinja2-2.5.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/J/Jinja2/${name}.tar.gz";
+      md5 = "83b20c1eeb31f49d8e6392efae91b7d5";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   kss_core = buildPythonPackage rec {
     name = "kss.core-1.6.5";
 
@@ -617,11 +1108,61 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  markdown = buildPythonPackage rec {
-    name = "markdown-2.0.3";
+  mailinglogger = buildPythonPackage rec {
+    name = "mailinglogger-3.7.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/M/Markdown/Markdown-2.0.3.zip";
+      url = "http://pypi.python.org/packages/source/m/mailinglogger/${name}.tar.gz";
+      md5 = "f865f0df6059ce23062b7457d01dbac5";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  manuel = buildPythonPackage rec {
+    name = "manuel-1.1.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/m/manuel/${name}.tar.gz";
+      md5 = "8cd560cf6e8720ecb129c4e5be605fbb";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  markdown = buildPythonPackage rec {
+    name = "Markdown-2.0.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/M/Markdown/${name}.zip";
       md5 = "122418893e21e91109edbf6e082f830d";
     };
 
@@ -631,6 +1172,31 @@ let plone42Packages = python.modules // rec {
     '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  martian = buildPythonPackage rec {
+    name = "martian-0.11.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/m/martian/${name}.tar.gz";
+      md5 = "865646fcd9dd31613204d5f4c2db943b";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -670,10 +1236,10 @@ let plone42Packages = python.modules // rec {
 
 
   missing = buildPythonPackage rec {
-    name = "missing-2.13.1";
+    name = "Missing-2.13.1";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/M/Missing/Missing-2.13.1.zip";
+      url = "http://pypi.python.org/packages/source/M/Missing/${name}.zip";
       md5 = "9823cff54444cbbcaef8fc45d8e42572";
     };
 
@@ -696,11 +1262,63 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  multimapping = buildPythonPackage rec {
-    name = "multimapping-2.13.0";
+  mocker = buildPythonPackage rec {
+    name = "mocker-1.1.1";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/M/MultiMapping/MultiMapping-2.13.0.zip";
+      url = "http://pypi.python.org/packages/source/m/mocker/${name}.tar.bz2";
+      md5 = "0bd9f83268e16aef2130fa89e2a4839f";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  mr_developer = buildPythonPackage rec {
+    name = "mr.developer-1.21";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/m/mr.developer/${name}.zip";
+      md5 = "5f832f1709714b09cd7490603afd2365";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  multimapping = buildPythonPackage rec {
+    name = "MultiMapping-2.13.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/M/MultiMapping/${name}.zip";
       md5 = "d69c5904c105b9f2f085d4103e0f0586";
     };
 
@@ -723,8 +1341,187 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  nose = buildPythonPackage rec {
+    name = "nose-1.1.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/n/nose/${name}.tar.gz";
+      md5 = "144f237b615e23f21f6a50b2183aa817";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  nt_svcutils = buildPythonPackage rec {
+    name = "nt-svcutils-2.13.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/n/nose/nose-1.1.2.tar.gz";
+      md5 = "144f237b615e23f21f6a50b2183aa817";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  ordereddict = buildPythonPackage rec {
+    name = "ordereddict-1.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/o/ordereddict/${name}.tar.gz";
+      md5 = "a0ed854ee442051b249bfad0f638bbec";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  paste = buildPythonPackage rec {
+    name = "Paste-1.7.5.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/P/Paste/${name}.tar.gz";
+      md5 = "7ea5fabed7dca48eb46dc613c4b6c4ed";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  pastedeploy = buildPythonPackage rec {
+    name = "PasteDeploy-1.3.4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/P/PasteDeploy/${name}.tar.gz";
+      md5 = "eb4b3e2543d54401249c2cbd9f2d014f";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  pastescript = buildPythonPackage rec {
+    name = "PasteScript-1.7.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/P/PasteScript/${name}.tar.gz";
+      md5 = "4c72d78dcb6bb993f30536842c16af4d";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    propagatedBuildInputs = [ paste pastedeploy ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   persistence = buildPythonPackage rec {
-    name = "persistence-2.13.2";
+    name = "Persistence-2.13.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/P/Persistence/${name}.zip";
+      md5 = "92693648ccdc59c8fc71f7f06b1d228c";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  pil = buildPythonPackage rec {
+    name = "PIL-1.1.6";
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/P/Persistence/Persistence-2.13.2.zip";
@@ -751,11 +1548,38 @@ let plone42Packages = python.modules // rec {
 
 
   plone = buildPythonPackage rec {
-    name = "plone-4.2.4";
+    name = "Plone-4.2.4";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Plone/Plone-4.2.4.zip";
+      url = "http://pypi.python.org/packages/source/P/Plone/${name}.zip";
       md5 = "688438bd541e7cb2ab650c8c59282b85";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_alterego = buildPythonPackage rec {
+    name = "plone.alterego-1.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.alterego/${name}.zip";
+      md5 = "b7b6dbcbba00505d98d5aba83e016408";
     };
 
     # ignore dependencies
@@ -1020,6 +1844,33 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  plone_app_dexterity = buildPythonPackage rec {
+    name = "plone.app.dexterity-1.2.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.app.dexterity/${name}.zip";
+      md5 = "25ccd382f9e08cfdfe4a9b7e455030bc";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   plone_app_discussion = buildPythonPackage rec {
     name = "plone.app.discussion-2.1.8";
 
@@ -1142,6 +1993,31 @@ let plone42Packages = python.modules // rec {
     '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_app_intid = buildPythonPackage rec {
+    name = "plone.app.intid-1.0.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.app.intid/${name}.tar.gz";
+      md5 = "863077002bd272ff11c47de0f7f9db1a";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -1344,6 +2220,31 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  plone_app_lockingbehavior = buildPythonPackage rec {
+    name = "plone.app.lockingbehavior-1.0.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.app.lockingbehavior/${name}.tar.gz";
+      md5 = "a25745f1f40c6298da1b228ccd95ee27";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   plone_app_openid = buildPythonPackage rec {
     name = "plone.app.openid-2.0.2";
 
@@ -1450,6 +2351,33 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  plone_app_referenceablebehavior = buildPythonPackage rec {
+    name = "plone.app.referenceablebehavior-0.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.app.referenceablebehavior/${name}.zip";
+      md5 = "2359140966f753204d5091bb49fce85c";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   plone_app_registry = buildPythonPackage rec {
     name = "plone.app.registry-1.1";
 
@@ -1477,12 +2405,120 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  plone_app_relationfield = buildPythonPackage rec {
+    name = "plone.app.relationfield-1.2.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.app.relationfield/${name}.zip";
+      md5 = "d19888741677cd457ac7f22dde97ded0";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   plone_app_search = buildPythonPackage rec {
     name = "plone.app.search-1.0.7";
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/p/plone.app.search/${name}.zip";
       md5 = "bd5a1f4b5016a6d0a8697e7a9cc04833";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_app_stagingbehavior = buildPythonPackage rec {
+    name = "plone.app.stagingbehavior-0.1b4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.app.stagingbehavior/${name}.zip";
+      md5 = "0f9589ec056c303ea0c81a804dd411eb";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_app_testing = buildPythonPackage rec {
+    name = "plone.app.testing-4.2.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.app.testing/${name}.zip";
+      md5 = "1a40df72c8beda9520b83dc449a97a3c";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_app_textfield = buildPythonPackage rec {
+    name = "plone.app.textfield-1.2.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.app.textfield/${name}.zip";
+      md5 = "f832887a40826d6f68c48b48f071fb9c";
     };
 
     # ignore dependencies
@@ -1591,6 +2627,33 @@ let plone42Packages = python.modules // rec {
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/p/plone.app.uuid/${name}.zip";
       md5 = "9ca8dcfb09a8a0d6bbee0f28073c3d3f";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_app_versioningbehavior = buildPythonPackage rec {
+    name = "plone.app.versioningbehavior-1.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.app.versioningbehavior/${name}.zip";
+      md5 = "6c153e3fa10b9ffea9742d0dad7b3b85";
     };
 
     # ignore dependencies
@@ -1747,6 +2810,33 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  plone_behavior = buildPythonPackage rec {
+    name = "plone.behavior-1.0.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.behavior/${name}.zip";
+      md5 = "a18feb9ec744b2a64028c366a8835d59";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   plone_browserlayer = buildPythonPackage rec {
     name = "plone.browserlayer-2.1.2";
 
@@ -1855,6 +2945,87 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  plone_dexterity = buildPythonPackage rec {
+    name = "plone.dexterity-1.1.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.dexterity/${name}.zip";
+      md5 = "c8f495e368ada3a4566d99995d09e64c";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_directives_dexterity = buildPythonPackage rec {
+    name = "plone.directives.dexterity-1.0.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.directives.dexterity/${name}.zip";
+      md5 = "713b87644e3591b60b4a8ebd52987477";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_directives_form = buildPythonPackage rec {
+    name = "plone.directives.form-1.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.directives.form/${name}.zip";
+      md5 = "e40a4b3fdde3768a137a450374934565";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   plone_fieldsets = buildPythonPackage rec {
     name = "plone.fieldsets-2.0.2";
 
@@ -1888,6 +3059,87 @@ let plone42Packages = python.modules // rec {
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/p/plone.folder/${name}.zip";
       md5 = "1674ff18b7a9452d0c2063cf11c679b7";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_formwidget_autocomplete = buildPythonPackage rec {
+    name = "plone.formwidget.autocomplete-1.2.4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.formwidget.autocomplete/${name}.zip";
+      md5 = "06b3bfed9ea51fe2e93827f539fc7f07";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_formwidget_contenttree = buildPythonPackage rec {
+    name = "plone.formwidget.contenttree-1.0.6";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.formwidget.contenttree/${name}.zip";
+      md5 = "2ea222d53ca856de7c6df831707f4ac1";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_formwidget_namedfile = buildPythonPackage rec {
+    name = "plone.formwidget.namedfile-1.0.4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.formwidget.namedfile/${name}.zip";
+      md5 = "9274db2f5d7b4d07748fabfd125e49d0";
     };
 
     # ignore dependencies
@@ -2071,6 +3323,58 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  plone_mocktestcase = buildPythonPackage rec {
+    name = "plone.mocktestcase-1.0b3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.mocktestcase/${name}.tar.gz";
+      md5 = "6de66da6d610537d1f5c31e2ab0f36ee";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_namedfile = buildPythonPackage rec {
+    name = "plone.namedfile-1.0.6";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.namedfile/${name}.zip";
+      md5 = "06f5bfa7079f889307ac5760e4cb4a7b";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   plone_openid = buildPythonPackage rec {
     name = "plone.openid-2.0.1";
 
@@ -2233,12 +3537,120 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  plone_recipe_alltests = buildPythonPackage rec {
+    name = "plone.recipe.alltests-1.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.recipe.alltests/${name}.zip";
+      md5 = "c4ba0f67a2fdd259bd0e7d946bd35674";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_recipe_zeoserver = buildPythonPackage rec {
+    name = "plone.recipe.zeoserver-1.2.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.recipe.zeoserver/${name}.zip";
+      md5 = "cd58899a7d534fe2d0ef42990a07c499";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_recipe_zope2instance = buildPythonPackage rec {
+    name = "plone.recipe.zope2instance-4.2.8";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.recipe.zope2instance/${name}.zip";
+      md5 = "4e6d109f6b2b59736e5bae947c5d59ae";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   plone_registry = buildPythonPackage rec {
     name = "plone.registry-1.0.1";
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/p/plone.registry/${name}.zip";
       md5 = "6be3d2ec7e2d170e29b8c0bc65049aff";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_reload = buildPythonPackage rec {
+    name = "plone.reload-2.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.reload/${name}.zip";
+      md5 = "49eab593c81b78a9b80d54786aa4ad72";
     };
 
     # ignore dependencies
@@ -2287,12 +3699,66 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  plone_scale = buildPythonPackage rec {
-    name = "plone.scalestorage-1.2.2";
+  plone_rfc822 = buildPythonPackage rec {
+    name = "plone.rfc822-1.0.1";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/p/plone.scale/plone.scale-1.2.2.zip";
+      url = "http://pypi.python.org/packages/source/p/plone.rfc822/${name}.zip";
+      md5 = "b5b79bb5a9181da624a7e88940a45424";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_scale = buildPythonPackage rec {
+    name = "plone.scale-1.2.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.scale/${name}.zip";
       md5 = "7c59522b4806ee24f5e0a5fa69c523a5";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_schemaeditor = buildPythonPackage rec {
+    name = "plone.schemaeditor-1.2.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.schemaeditor/${name}.zip";
+      md5 = "0b0fb4b20d9463b3fef82c2079a897d7";
     };
 
     # ignore dependencies
@@ -2401,6 +3867,60 @@ let plone42Packages = python.modules // rec {
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/p/plone.supermodel/${name}.zip";
       md5 = "00b3d723bb1a48116fe3bf8754f17085";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_synchronize = buildPythonPackage rec {
+    name = "plone.synchronize-1.0.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.synchronize/${name}.zip";
+      md5 = "d25e86ace8daa0816861296c3288c4fb";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  plone_testing = buildPythonPackage rec {
+    name = "plone.testing-4.0.7";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/plone.testing/${name}.zip";
+      md5 = "fa40f6d3e3e254409c486c1c2c3e8804";
     };
 
     # ignore dependencies
@@ -2585,10 +4105,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_archetypes = buildPythonPackage rec {
-    name = "products.archetypes-1.8.6";
+    name = "Products.Archetypes-1.8.6";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.Archetypes/Products.Archetypes-1.8.6.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.Archetypes/${name}.zip";
       md5 = "74be68879b27228c084a9be869132a98";
     };
 
@@ -2612,10 +4132,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_atcontenttypes = buildPythonPackage rec {
-    name = "products.atcontenttypes-2.1.11";
+    name = "Products.ATContentTypes-2.1.11";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.ATContentTypes/Products.ATContentTypes-2.1.11.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.ATContentTypes/${name}.zip";
       md5 = "abfb5209ffa11dc2c1a15c488e75d89c";
     };
 
@@ -2639,10 +4159,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_atreferencebrowserwidget = buildPythonPackage rec {
-    name = "products.atreferencebrowserwidget-3.0";
+    name = "Products.ATReferenceBrowserWidget-3.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.ATReferenceBrowserWidget/Products.ATReferenceBrowserWidget-3.0.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.ATReferenceBrowserWidget/${name}.zip";
       md5 = "157bdd32155c8353450c17c649aad042";
     };
 
@@ -2666,10 +4186,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_btreefolder2 = buildPythonPackage rec {
-    name = "products.btreefolder2-2.13.3";
+    name = "Products.BTreeFolder2-2.13.3";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.BTreeFolder2/Products.BTreeFolder2-2.13.3.tar.gz";
+      url = "http://pypi.python.org/packages/source/P/Products.BTreeFolder2/${name}.tar.gz";
       md5 = "f57c85673036af7ccd34c3fa251f6bb2";
     };
 
@@ -2691,10 +4211,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_cmfactionicons = buildPythonPackage rec {
-    name = "products.cmfactionicons-2.1.3";
+    name = "Products.CMFActionIcons-2.1.3";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.CMFActionIcons/Products.CMFActionIcons-2.1.3.tar.gz";
+      url = "http://pypi.python.org/packages/source/P/Products.CMFActionIcons/${name}.tar.gz";
       md5 = "ab1dc62404ed11aea84dc0d782b2235e";
     };
 
@@ -2704,6 +4224,7 @@ let plone42Packages = python.modules // rec {
     '';
 
     propagatedBuildInputs = [ eggtestinfo ];
+
     doCheck = false;
 
     meta = {
@@ -2717,10 +4238,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_cmfcalendar = buildPythonPackage rec {
-    name = "products.cmfcalendar-2.2.2";
+    name = "Products.CMFCalendar-2.2.2";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.CMFCalendar/Products.CMFCalendar-2.2.2.tar.gz";
+      url = "http://pypi.python.org/packages/source/P/Products.CMFCalendar/${name}.tar.gz";
       md5 = "49458e68dc3b6826ea9a3576ac014419";
     };
 
@@ -2730,6 +4251,7 @@ let plone42Packages = python.modules // rec {
     '';
 
     propagatedBuildInputs = [ eggtestinfo ];
+
     doCheck = false;
 
     meta = {
@@ -2743,10 +4265,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_cmfcore = buildPythonPackage rec {
-    name = "products.cmfcore-2.2.7";
+    name = "Products.CMFCore-2.2.7";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.CMFCore/Products.CMFCore-2.2.7.tar.gz";
+      url = "http://pypi.python.org/packages/source/P/Products.CMFCore/${name}.tar.gz";
       md5 = "9320a4023b8575097feacfd4a400e930";
     };
 
@@ -2768,10 +4290,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_cmfdefault = buildPythonPackage rec {
-    name = "products.cmfdefault-2.2.3";
+    name = "Products.CMFDefault-2.2.3";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.CMFDefault/Products.CMFDefault-2.2.3.tar.gz";
+      url = "http://pypi.python.org/packages/source/P/Products.CMFDefault/${name}.tar.gz";
       md5 = "fe7d2d3906ee0e3b484e4a02401576ab";
     };
 
@@ -2781,6 +4303,7 @@ let plone42Packages = python.modules // rec {
     '';
 
     propagatedBuildInputs = [ eggtestinfo ];
+
     doCheck = false;
 
     meta = {
@@ -2794,10 +4317,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_cmfdifftool = buildPythonPackage rec {
-    name = "products.cmfdifftool-2.0.1";
+    name = "Products.CMFDiffTool-2.0.1";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.CMFDiffTool/Products.CMFDiffTool-2.0.1.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.CMFDiffTool/${name}.zip";
       md5 = "7b7ed9b8f7b4f438e92e299823f92c86";
     };
 
@@ -2821,10 +4344,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_cmfdynamicviewfti = buildPythonPackage rec {
-    name = "products.cmfdynamicviewfti-4.0.3";
+    name = "Products.CMFDynamicViewFTI-4.0.3";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.CMFDynamicViewFTI/Products.CMFDynamicViewFTI-4.0.3.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.CMFDynamicViewFTI/${name}.zip";
       md5 = "7d39d416b41b2d93954bc73d9d0e077f";
     };
 
@@ -2848,10 +4371,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_cmfeditions = buildPythonPackage rec {
-    name = "products.cmfeditions-2.2.7";
+    name = "Products.CMFEditions-2.2.7";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.CMFEditions/Products.CMFEditions-2.2.7.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.CMFEditions/${name}.zip";
       md5 = "7dc744b3b896c1b212d9ba37b1752b65";
     };
 
@@ -2875,10 +4398,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_cmfformcontroller = buildPythonPackage rec {
-    name = "products.cmfformcontroller-3.0.3";
+    name = "Products.CMFFormController-3.0.3";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.CMFFormController/Products.CMFFormController-3.0.3.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.CMFFormController/${name}.zip";
       md5 = "6573df7dcb39e3b63ba22abe2acd639e";
     };
 
@@ -2902,10 +4425,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_cmfplacefulworkflow = buildPythonPackage rec {
-    name = "products.cmfplacefulworkflow-1.5.9";
+    name = "Products.CMFPlacefulWorkflow-1.5.9";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.CMFPlacefulWorkflow/Products.CMFPlacefulWorkflow-1.5.9.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.CMFPlacefulWorkflow/${name}.zip";
       md5 = "9041e1f52eab5b348c0dfa85be438722";
     };
 
@@ -2929,10 +4452,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_cmfplone = buildPythonPackage rec {
-    name = "products.cmfplone-4.2.4";
+    name = "Products.CMFPlone-4.2.4";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.CMFPlone/Products.CMFPlone-4.2.4.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.CMFPlone/${name}.zip";
       md5 = "9c9663cb2b68c07e3d9a2fceaa97eaa1";
     };
 
@@ -2956,10 +4479,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_cmfquickinstallertool = buildPythonPackage rec {
-    name = "products.cmfquickinstallertool-3.0.6";
+    name = "Products.CMFQuickInstallerTool-3.0.6";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.CMFQuickInstallerTool/Products.CMFQuickInstallerTool-3.0.6.tar.gz";
+      url = "http://pypi.python.org/packages/source/P/Products.CMFQuickInstallerTool/${name}.tar.gz";
       md5 = "af34adb87ddf2b6da48eff8b70ca2989";
     };
 
@@ -2980,11 +4503,65 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  products_cmfuid = buildPythonPackage rec {
-    name = "products.cmfuid-2.2.1";
+  products_cmftestcase = buildPythonPackage rec {
+    name = "Products.CMFTestCase-0.9.12";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.CMFUid/Products.CMFUid-2.2.1.tar.gz";
+      url = "http://pypi.python.org/packages/source/P/Products.CMFTestCase/${name}.zip";
+      md5 = "fbfdfe7bdb2158419d9899b4ab8c43eb";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  products_cmftopic = buildPythonPackage rec {
+    name = "Products.CMFTopic-2.2.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/P/Products.CMFTopic/${name}.tar.gz";
+      md5 = "4abeeaafe6b6b1d2f2936bf5431cccba";
+    };
+
+    propagatedBuildInputs = [ eggtestinfo ];
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  products_cmfuid = buildPythonPackage rec {
+    name = "Products.CMFUid-2.2.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/P/Products.CMFUid/${name}.tar.gz";
       md5 = "e20727959351dffbf0bac80613eee110";
     };
 
@@ -2994,6 +4571,7 @@ let plone42Packages = python.modules // rec {
     '';
 
     propagatedBuildInputs = [ eggtestinfo ];
+
     doCheck = false;
 
     meta = {
@@ -3007,10 +4585,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_contentmigration = buildPythonPackage rec {
-    name = "products.contentmigration-2.1.2";
+    name = "Products.contentmigration-2.1.2";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.contentmigration/Products.contentmigration-2.1.2.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.contentmigration/${name}.zip";
       md5 = "1cef33faec03e655b7c52c317db50ed2";
     };
 
@@ -3034,10 +4612,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_dcworkflow = buildPythonPackage rec {
-    name = "products.dcworkflow-2.2.4";
+    name = "Products.DCWorkflow-2.2.4";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.DCWorkflow/Products.DCWorkflow-2.2.4.tar.gz";
+      url = "http://pypi.python.org/packages/source/P/Products.DCWorkflow/${name}.tar.gz";
       md5 = "c90a16c4f3611015592ba8173a5f1863";
     };
 
@@ -3047,6 +4625,7 @@ let plone42Packages = python.modules // rec {
     '';
 
     propagatedBuildInputs = [ eggtestinfo ];
+
     doCheck = false;
 
     meta = {
@@ -3060,10 +4639,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_extendedpathindex = buildPythonPackage rec {
-    name = "products.extendedpathindex-3.1";
+    name = "Products.ExtendedPathIndex-3.1";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.ExtendedPathIndex/Products.ExtendedPathIndex-3.1.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.ExtendedPathIndex/${name}.zip";
       md5 = "00c048a4b103200bdcbda61fa22c66df";
     };
 
@@ -3087,10 +4666,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_externaleditor = buildPythonPackage rec {
-    name = "products.externaleditor-1.1.0";
+    name = "Products.ExternalEditor-1.1.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.ExternalEditor/Products.ExternalEditor-1.1.0.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.ExternalEditor/${name}.zip";
       md5 = "475fea6e0b958c0c51cfdbfef2f4e623";
     };
 
@@ -3114,10 +4693,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_externalmethod = buildPythonPackage rec {
-    name = "products.externalmethod-2.13.0";
+    name = "Products.ExternalMethod-2.13.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.ExternalMethod/Products.ExternalMethod-2.13.0.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.ExternalMethod/${name}.zip";
       md5 = "15ba953ef6cb632eb571977651252ea6";
     };
 
@@ -3141,10 +4720,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_genericsetup = buildPythonPackage rec {
-    name = "products.genericsetup-1.7.3";
+    name = "Products.GenericSetup-1.7.3";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.GenericSetup/Products.GenericSetup-1.7.3.tar.gz";
+      url = "http://pypi.python.org/packages/source/P/Products.GenericSetup/${name}.tar.gz";
       md5 = "c48967c81c880ed33ee16a14caab3b11";
     };
 
@@ -3165,11 +4744,38 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  products_kupu = buildPythonPackage rec {
-    name = "products.kupu-1.5.1";
+  products_i18ntestcase = buildPythonPackage rec {
+    name = "Products.i18ntestcase-1.3";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.kupu/Products.kupu-1.5.1.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.i18ntestcase/${name}.zip";
+      md5 = "f72f72e573975f15adfabfeef34fd721";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  products_kupu = buildPythonPackage rec {
+    name = "Products.kupu-1.5.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/P/Products.kupu/${name}.zip";
       md5 = "b884fcc7f510426974d8d3c4333da4f4";
     };
 
@@ -3193,10 +4799,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_mailhost = buildPythonPackage rec {
-    name = "products.mailhost-2.13.1";
+    name = "Products.MailHost-2.13.1";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.MailHost/Products.MailHost-2.13.1.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.MailHost/${name}.zip";
       md5 = "1102e523435d8bf78a15b9ddb57478e1";
     };
 
@@ -3220,10 +4826,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_marshall = buildPythonPackage rec {
-    name = "products.marshall-2.1.2";
+    name = "Products.Marshall-2.1.2";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.Marshall/Products.Marshall-2.1.2.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.Marshall/${name}.zip";
       md5 = "bde4d7f75195c1ded8371554b04d2541";
     };
 
@@ -3247,10 +4853,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_mimetools = buildPythonPackage rec {
-    name = "products.mimetools-2.13.0";
+    name = "Products.MIMETools-2.13.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.MIMETools/Products.MIMETools-2.13.0.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.MIMETools/${name}.zip";
       md5 = "ad5372fc1190599a19493db0864448ec";
     };
 
@@ -3274,10 +4880,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_mimetypesregistry = buildPythonPackage rec {
-    name = "products.mimetypesregistry-2.0.4";
+    name = "Products.MimetypesRegistry-2.0.4";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.MimetypesRegistry/Products.MimetypesRegistry-2.0.4.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.MimetypesRegistry/${name}.zip";
       md5 = "898166bb2aaececc8238ad4ee4826793";
     };
 
@@ -3301,10 +4907,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_ofsp = buildPythonPackage rec {
-    name = "products.ofsp-2.13.2";
+    name = "Products.OFSP-2.13.2";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.OFSP/Products.OFSP-2.13.2.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.OFSP/${name}.zip";
       md5 = "c76d40928753c2ee56db873304e65bd5";
     };
 
@@ -3328,10 +4934,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_passwordresettool = buildPythonPackage rec {
-    name = "products.passwordresettool-2.0.11";
+    name = "Products.PasswordResetTool-2.0.11";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.PasswordResetTool/Products.PasswordResetTool-2.0.11.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.PasswordResetTool/${name}.zip";
       md5 = "8dfd65f06c3f4a4b0742d1b44b65f014";
     };
 
@@ -3355,10 +4961,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_placelesstranslationservice = buildPythonPackage rec {
-    name = "products.placelesstranslationservice-2.0.3";
+    name = "Products.PlacelessTranslationService-2.0.3";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.PlacelessTranslationService/Products.PlacelessTranslationService-2.0.3.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.PlacelessTranslationService/${name}.zip";
       md5 = "a94635eb712563c5a002520713f5d6dc";
     };
 
@@ -3382,10 +4988,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_plonelanguagetool = buildPythonPackage rec {
-    name = "products.plonelanguagetool-3.2.7";
+    name = "Products.PloneLanguageTool-3.2.7";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.PloneLanguageTool/Products.PloneLanguageTool-3.2.7.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.PloneLanguageTool/${name}.zip";
       md5 = "bd9eb6278bf76e8cbce99437ca362164";
     };
 
@@ -3409,10 +5015,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_plonepas = buildPythonPackage rec {
-    name = "products.plonepas-4.0.15";
+    name = "Products.PlonePAS-4.0.15";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.PlonePAS/Products.PlonePAS-4.0.15.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.PlonePAS/${name}.zip";
       md5 = "c19241b558c994ff280a2e1f50aa1f19";
     };
 
@@ -3436,10 +5042,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_plonetestcase = buildPythonPackage rec {
-    name = "products.plonetestcase-0.9.15";
+    name = "Products.PloneTestCase-0.9.15";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.PloneTestCase/Products.PloneTestCase-0.9.15.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.PloneTestCase/${name}.zip";
       md5 = "ddd5810937919ab5233ebd64893c8bae";
     };
 
@@ -3463,10 +5069,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_pluggableauthservice = buildPythonPackage rec {
-    name = "products.pluggableauthservice-1.9.0";
+    name = "Products.PluggableAuthService-1.9.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.PluggableAuthService/Products.PluggableAuthService-1.9.0.tar.gz";
+      url = "http://pypi.python.org/packages/source/P/Products.PluggableAuthService/${name}.tar.gz";
       md5 = "f78f16e46d016c2848bc84254fa66596";
     };
 
@@ -3488,10 +5094,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_pluginregistry = buildPythonPackage rec {
-    name = "products.pluginregistry-1.3";
+    name = "Products.PluginRegistry-1.3";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.PluginRegistry/Products.PluginRegistry-1.3.tar.gz";
+      url = "http://pypi.python.org/packages/source/P/Products.PluginRegistry/${name}.tar.gz";
       md5 = "5b166193ca1eb84dfb402051f779ebab";
     };
 
@@ -3513,10 +5119,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_portaltransforms = buildPythonPackage rec {
-    name = "products.portaltransforms-2.1.2";
+    name = "Products.PortalTransforms-2.1.2";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.PortalTransforms/Products.PortalTransforms-2.1.2.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.PortalTransforms/${name}.zip";
       md5 = "9f429f3c3b9e0019d0f6c9b7a8a9376e";
     };
 
@@ -3540,10 +5146,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_pythonscripts = buildPythonPackage rec {
-    name = "products.pythonscripts-2.13.2";
+    name = "Products.PythonScripts-2.13.2";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.PythonScripts/Products.PythonScripts-2.13.2.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.PythonScripts/${name}.zip";
       md5 = "04c86f2c45a29a162297a80dac61d14f";
     };
 
@@ -3567,10 +5173,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_resourceregistries = buildPythonPackage rec {
-    name = "products.resourceregistries-2.2.6";
+    name = "Products.ResourceRegistries-2.2.6";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.ResourceRegistries/Products.ResourceRegistries-2.2.6.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.ResourceRegistries/${name}.zip";
       md5 = "9cf6efbcf2a6510033c06e1d3af94080";
     };
 
@@ -3594,10 +5200,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_securemailhost = buildPythonPackage rec {
-    name = "products.securemailhost-1.1.2";
+    name = "Products.SecureMailHost-1.1.2";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.SecureMailHost/Products.SecureMailHost-1.1.2.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.SecureMailHost/${name}.zip";
       md5 = "7db0f1fa867bd0df972082f502a7a707";
     };
 
@@ -3621,10 +5227,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_standardcachemanagers = buildPythonPackage rec {
-    name = "products.standardcachemanagers-2.13.0";
+    name = "Products.StandardCacheManagers-2.13.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.StandardCacheManagers/Products.StandardCacheManagers-2.13.0.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.StandardCacheManagers/${name}.zip";
       md5 = "c5088b2b62bd26d63d9579a04369cb73";
     };
 
@@ -3648,10 +5254,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_statusmessages = buildPythonPackage rec {
-    name = "products.statusmessages-4.0";
+    name = "Products.statusmessages-4.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.statusmessages/Products.statusmessages-4.0.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.statusmessages/${name}.zip";
       md5 = "265324b0a58a032dd0ed038103ed0473";
     };
 
@@ -3675,10 +5281,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_tinymce = buildPythonPackage rec {
-    name = "products.tinymce-1.2.15";
+    name = "Products.TinyMCE-1.2.15";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.TinyMCE/Products.TinyMCE-1.2.15.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.TinyMCE/${name}.zip";
       md5 = "108b919bfcff711d2116e41eccbede58";
     };
 
@@ -3702,10 +5308,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_validation = buildPythonPackage rec {
-    name = "products.validation-2.0";
+    name = "Products.validation-2.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.validation/Products.validation-2.0.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.validation/${name}.zip";
       md5 = "afa217e2306637d1dccbebf337caa8bf";
     };
 
@@ -3729,10 +5335,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_zcatalog = buildPythonPackage rec {
-    name = "products.zcatalog-2.13.23";
+    name = "Products.ZCatalog-2.13.23";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.ZCatalog/Products.ZCatalog-2.13.23.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.ZCatalog/${name}.zip";
       md5 = "d425171516dfc70e543a4e2b852301cb";
     };
 
@@ -3756,10 +5362,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_zctextindex = buildPythonPackage rec {
-    name = "products.zctextindex-2.13.4";
+    name = "Products.ZCTextIndex-2.13.4";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.ZCTextIndex/Products.ZCTextIndex-2.13.4.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.ZCTextIndex/${name}.zip";
       md5 = "8bbfa5fcd3609246990a9314d6f826b4";
     };
 
@@ -3783,10 +5389,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_zopeversioncontrol = buildPythonPackage rec {
-    name = "products.zopeversioncontrol-1.1.3";
+    name = "Products.ZopeVersionControl-1.1.3";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.ZopeVersionControl/Products.ZopeVersionControl-1.1.3.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.ZopeVersionControl/${name}.zip";
       md5 = "238239102f3ac798ee4f4c53343a561f";
     };
 
@@ -3810,10 +5416,10 @@ let plone42Packages = python.modules // rec {
 
 
   products_zsqlmethods = buildPythonPackage rec {
-    name = "products.zsqlmethods-2.13.4";
+    name = "Products.ZSQLMethods-2.13.4";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/P/Products.ZSQLMethods/Products.ZSQLMethods-2.13.4.zip";
+      url = "http://pypi.python.org/packages/source/P/Products.ZSQLMethods/${name}.zip";
       md5 = "bd1ad8fd4a9d4f8b4681401dd5b71dc1";
     };
 
@@ -3823,6 +5429,56 @@ let plone42Packages = python.modules // rec {
     '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  py = buildPythonPackage rec {
+    name = "py-1.3.4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/p/py/${name}.tar.gz";
+      md5 = "b64d73a04121c1c4e27c7ec335ef87c8";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  pygments = buildPythonPackage rec {
+    name = "Pygments-1.3.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/P/Pygments/${name}.tar.gz";
+      md5 = "54be67c04834f13d7e255e1797d629a5";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -3936,10 +5592,10 @@ let plone42Packages = python.modules // rec {
 
 
   record = buildPythonPackage rec {
-    name = "record-2.13.0";
+    name = "Record-2.13.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/R/Record/Record-2.13.0.zip";
+      url = "http://pypi.python.org/packages/source/R/Record/${name}.zip";
       md5 = "cfed6a89d4fb2c9cb995e9084c3071b7";
     };
 
@@ -3949,6 +5605,81 @@ let plone42Packages = python.modules // rec {
     '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  repoze_retry = buildPythonPackage rec {
+    name = "repoze.retry-1.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/r/repoze.retry/${name}.tar.gz";
+      md5 = "55f9dbde5d7f939d93c352fef0f2ce8b";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  repoze_tm2 = buildPythonPackage rec {
+    name = "repoze.tm2-1.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/r/repoze.tm2/${name}.tar.gz";
+      md5 = "c645a878874c8876c9c6b3467246afbc";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  repoze_who = buildPythonPackage rec {
+    name = "repoze.who-2.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/r/repoze.who/${name}.tar.gz";
+      md5 = "eab01991b6a2979678ce6015815262e2";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -3990,10 +5721,10 @@ let plone42Packages = python.modules // rec {
 
 
   restrictedpython = buildPythonPackage rec {
-    name = "restrictedpython-3.6.0";
+    name = "RestrictedPython-3.6.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/R/RestrictedPython/RestrictedPython-3.6.0.zip";
+      url = "http://pypi.python.org/packages/source/R/RestrictedPython/${name}.zip";
       md5 = "aa75a7dcc7fbc966357837cc66cacec6";
     };
 
@@ -4003,6 +5734,106 @@ let plone42Packages = python.modules // rec {
     '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  roman = buildPythonPackage rec {
+    name = "roman-1.4.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/r/roman/${name}.tar.gz";
+      md5 = "4f8832ed4108174b159c2afb4bd1d1dd";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  rwproperty = buildPythonPackage rec {
+    name = "rwproperty-1.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/r/rwproperty/${name}.tar.gz";
+      md5 = "050bdf066492b3cd82a3399f8efea6b1";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  simplejson = buildPythonPackage rec {
+    name = "simplejson-2.5.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/s/simplejson/${name}.tar.gz";
+      md5 = "d7a7acf0bd7681bd116b5c981d2f7959";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  sphinx = buildPythonPackage rec {
+    name = "Sphinx-1.1.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/S/Sphinx/${name}.tar.gz";
+      md5 = "8f55a6d4f87fc6d528120c5d1f983e98";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4043,6 +5874,31 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  tl_eggdeps = buildPythonPackage rec {
+    name = "tl.eggdeps-0.4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/t/tl.eggdeps/${name}.tar.gz";
+      md5 = "2472204a2abd0d8cd4d11ff0fbf36ae7";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   transaction = buildPythonPackage rec {
     name = "transaction-1.1.1";
 
@@ -4069,10 +5925,10 @@ let plone42Packages = python.modules // rec {
 
 
   unidecode = buildPythonPackage rec {
-    name = "unidecode-0.04.1";
+    name = "Unidecode-0.04.1";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/U/Unidecode/Unidecode-0.04.12.tar.gz";
+      url = "http://pypi.python.org/packages/source/U/Unidecode/${name}2.tar.gz";
       md5 = "351dc98f4512bdd2e93f7a6c498730eb";
     };
 
@@ -4118,11 +5974,65 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  webob = buildPythonPackage rec {
+    name = "WebOb-1.0.8";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/W/WebOb/${name}.zip";
+      md5 = "9809f9fb64fca8690a7da533fa29a272";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   wicked = buildPythonPackage rec {
     name = "wicked-1.1.10";
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/w/wicked/${name}.zip";
+      md5 = "f65611f11d547d7dc8e623bf87d3929d";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  wsgi_intercept = buildPythonPackage rec {
+    name = "wsgi-intercept-0.4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/w/wicked/wicked-1.1.10.zip";
       md5 = "f65611f11d547d7dc8e623bf87d3929d";
     };
 
@@ -4197,12 +6107,89 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  z3c_caching = buildPythonPackage rec {
-    name = "z3c.cachingzcml-2.0a1";
+  z3c_blobfile = buildPythonPackage rec {
+    name = "z3c.blobfile-0.1.5";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/z/z3c.caching/z3c.caching-2.0a1.tar.gz";
+      url = "http://pypi.python.org/packages/source/z/z3c.blobfile/${name}.zip";
+      md5 = "2e806640aa2f3b51e4578f35c44f567a";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  z3c_caching = buildPythonPackage rec {
+    name = "z3c.caching-2.0a1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/z3c.caching/${name}.tar.gz";
       md5 = "17f250b5084c2324a7d15c6810ee628e";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  z3c_checkversions = buildPythonPackage rec {
+    name = "z3c.checkversions-0.4.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/z3c.checkversions/${name}.tar.gz";
+      md5 = "907f3a28aac04ad98fb3c4c5879a1eaf";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  z3c_coverage = buildPythonPackage rec {
+    name = "z3c.coverage-1.2.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/z3c.coverage/${name}.tar.gz";
+      md5 = "d7f323a6c89f848fab38209f2162294d";
     };
 
     # ignore dependencies
@@ -4274,6 +6261,185 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  z3c_objpath = buildPythonPackage rec {
+    name = "z3c.objpath-1.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/z3c.objpath/${name}.tar.gz";
+      md5 = "63641934441b255ebeeaeabc618f01ed";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  z3c_ptcompat = buildPythonPackage rec {
+    name = "z3c.ptcompat-1.0.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/z3c.ptcompat/${name}.tar.gz";
+      md5 = "bfe1ba6f9a38679705bd3eb5a5a2d7c4";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  z3c_recipe_compattest = buildPythonPackage rec {
+    name = "z3c.recipe.compattest-0.12.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/z3c.recipe.compattest/${name}.tar.gz";
+      md5 = "ed5a1bde7ce384154721913846c736c7";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  z3c_recipe_depgraph = buildPythonPackage rec {
+    name = "z3c.recipe.depgraph-0.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/z3c.recipe.depgraph/${name}.zip";
+      md5 = "eb734419815146eb5b7080b5e17346dc";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  z3c_recipe_sphinxdoc = buildPythonPackage rec {
+    name = "z3c.recipe.sphinxdoc-0.0.8";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/z3c.recipe.sphinxdoc/${name}.tar.gz";
+      md5 = "86e6965c919b43fa1de07588580f8790";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  z3c_relationfield = buildPythonPackage rec {
+    name = "z3c.relationfield-0.6.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/z3c.relationfield/${name}.zip";
+      md5 = "e34a6230cdfbd4a0bc1c90a77600e0e7";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  z3c_template = buildPythonPackage rec {
+    name = "z3c.template-1.4.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/z3c.template/${name}.tar.gz";
+      md5 = "330e2dba8cd064d5790392afd9f460dd";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   z3c_zcmlhook = buildPythonPackage rec {
     name = "z3c.zcmlhook-1.0b1";
 
@@ -4300,11 +6466,11 @@ let plone42Packages = python.modules // rec {
 
 
   zc_buildout = buildPythonPackage rec {
-    name = "zc.buildout-1.7.0";
+    name = "zc.buildout-1.6.3";
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/z/zc.buildout/${name}.tar.gz";
-      md5 = "4e3b521600e475c56a0a66459a5fc7bb";
+      md5 = "1523662da2cc92f10d61b48c971e8713";
     };
 
     # ignore dependencies
@@ -4349,11 +6515,136 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  zconfig = buildPythonPackage rec {
-    name = "zconfig-2.9.0";
+  zc_recipe_egg = buildPythonPackage rec {
+    name = "zc.recipe.egg-1.3.2";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/Z/ZConfig/ZConfig-2.9.0.zip";
+      url = "http://pypi.python.org/packages/source/z/zc.recipe.egg/${name}.tar.gz";
+      md5 = "1cb6af73f527490dde461d3614a36475";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zc_recipe_testrunner = buildPythonPackage rec {
+    name = "zc.recipe.testrunner-1.2.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zc.recipe.testrunner/${name}.tar.gz";
+      md5 = "1be4a1518e5b94890634468118242850";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zc_relation = buildPythonPackage rec {
+    name = "zc.relation-1.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zc.relation/${name}.tar.gz";
+      md5 = "7e479095954fc6d8f648951434695837";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zc_resourcelibrary = buildPythonPackage rec {
+    name = "zc.resourcelibrary-1.3.4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zc.resourcelibrary/${name}.tar.gz";
+      md5 = "bebe49f3e930f896a8ea75531bf3fae8";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zc_sourcefactory = buildPythonPackage rec {
+    name = "zc.sourcefactory-0.7.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zc.sourcefactory/${name}.tar.gz";
+      md5 = "532dfd0a72489023268c19e3788b105d";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zconfig = buildPythonPackage rec {
+    name = "ZConfig-2.9.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/Z/ZConfig/${name}.zip";
       md5 = "5c932690a70c8907efd240cdd76a7bc4";
     };
 
@@ -4402,10 +6693,10 @@ let plone42Packages = python.modules // rec {
 
 
   zexceptions = buildPythonPackage rec {
-    name = "zexceptions-2.13.0";
+    name = "zExceptions-2.13.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/z/zExceptions/zExceptions-2.13.0.zip";
+      url = "http://pypi.python.org/packages/source/z/zExceptions/${name}.zip";
       md5 = "4c679696c959040d8e656ef85ae40136";
     };
 
@@ -4429,10 +6720,10 @@ let plone42Packages = python.modules // rec {
 
 
   zlog = buildPythonPackage rec {
-    name = "zlog-2.11.1";
+    name = "zLOG-2.11.1";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/z/zLOG/zLOG-2.11.1.tar.gz";
+      url = "http://pypi.python.org/packages/source/z/zLOG/${name}.tar.gz";
       md5 = "68073679aaa79ac5a7b6a5c025467147";
     };
 
@@ -4454,10 +6745,10 @@ let plone42Packages = python.modules // rec {
 
 
   zodb3 = buildPythonPackage rec {
-    name = "zodb3-3.10.5";
+    name = "ZODB3-3.10.5";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/Z/ZODB3/ZODB3-3.10.5.tar.gz";
+      url = "http://pypi.python.org/packages/source/Z/ZODB3/${name}.tar.gz";
       md5 = "6f180c6897a1820948fee2a6290503cd";
     };
 
@@ -4478,11 +6769,36 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  zope2 = buildPythonPackage rec {
-    name = "zope2-2.13.19";
+  zodbcode = buildPythonPackage rec {
+    name = "zodbcode-3.4.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/Z/Zope2/Zope2-2.13.19.zip";
+      url = "http://pypi.python.org/packages/source/z/zodbcode/${name}.tar.gz";
+      md5 = "9b128f89aa2a2117fae4f74757eefeff";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope2 = buildPythonPackage rec {
+    name = "Zope2-2.13.19";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/Z/Zope2/${name}.zip";
       md5 = "26fee311aace7c12e406543ea91eb42a";
     };
 
@@ -4530,6 +6846,158 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  zope_app_apidoc = buildPythonPackage rec {
+    name = "zope.app.apidoc-3.7.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.apidoc/${name}.zip";
+      md5 = "91e969b2d1089bb0a6a303990d269f0a";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_applicationcontrol = buildPythonPackage rec {
+    name = "zope.app.applicationcontrol-3.5.10";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.applicationcontrol/${name}.tar.gz";
+      md5 = "f785c13698192c83024fda75f1f3d822";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_appsetup = buildPythonPackage rec {
+    name = "zope.app.appsetup-3.14.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.appsetup/${name}.tar.gz";
+      md5 = "2c3da1f514e6793e2bf612cb06ad9076";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_authentication = buildPythonPackage rec {
+    name = "zope.app.authentication-3.8.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.authentication/${name}.tar.gz";
+      md5 = "f8eb74fbdeebfd32c5e15c0f03aa3623";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_basicskin = buildPythonPackage rec {
+    name = "zope.app.basicskin-3.5.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.basicskin/${name}.tar.gz";
+      md5 = "75915a315f336a5b614db67df1093eb3";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_broken = buildPythonPackage rec {
+    name = "zope.app.broken-3.6.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.broken/${name}.tar.gz";
+      md5 = "e6a7efdd1ea1facfd8c5ba4b25d395cb";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   zope_app_cache = buildPythonPackage rec {
     name = "zope.app.cache-3.7.0";
 
@@ -4544,6 +7012,31 @@ let plone42Packages = python.modules // rec {
     '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_catalog = buildPythonPackage rec {
+    name = "zope.app.catalog-3.8.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.catalog/${name}.tar.gz";
+      md5 = "1ce21dee4e8256cfe254f8ee24c6ecef";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4632,12 +7125,414 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  zope_app_dav = buildPythonPackage rec {
+    name = "zope.app.dav-3.5.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.dav/${name}.tar.gz";
+      md5 = "19ec8dc5f7ad21468dea1c46e86d95dd";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_debug = buildPythonPackage rec {
+    name = "zope.app.debug-3.4.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.debug/${name}.tar.gz";
+      md5 = "1a9d349b14d91137b57da52a2b9d185f";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_debugskin = buildPythonPackage rec {
+    name = "zope.app.debugskin-3.4.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.debugskin/${name}.tar.gz";
+      md5 = "bd95d2848aa3108e53717d13b3c0924d";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_dependable = buildPythonPackage rec {
+    name = "zope.app.dependable-3.5.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.dependable/${name}.zip";
+      md5 = "5f180620a880e6ec754e3a34bd110891";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_error = buildPythonPackage rec {
+    name = "zope.app.error-3.5.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.error/${name}.tar.gz";
+      md5 = "bab82dd06233e9b5e34e9709e8993ace";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_exception = buildPythonPackage rec {
+    name = "zope.app.exception-3.6.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.exception/${name}.tar.gz";
+      md5 = "af161d3e7c17db7f56f7816a6f2d980c";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_file = buildPythonPackage rec {
+    name = "zope.app.file-3.6.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.file/${name}.tar.gz";
+      md5 = "fff140c36a2872c85b55433835ac3b98";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_folder = buildPythonPackage rec {
+    name = "zope.app.folder-3.5.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.folder/${name}.tar.gz";
+      md5 = "5ba3a2a7ec527a7eb0cc3c2eb7bb75e9";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   zope_app_form = buildPythonPackage rec {
     name = "zope.app.form-4.0.2";
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/z/zope.app.form/${name}.tar.gz";
       md5 = "3d2b164d9d37a71490a024aaeb412e91";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_ftp = buildPythonPackage rec {
+    name = "zope.app.ftp-3.5.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.ftp/${name}.tar.gz";
+      md5 = "b0769f90023156a86cb3f46040e6b5b0";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_generations = buildPythonPackage rec {
+    name = "zope.app.generations-3.6.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.generations/${name}.tar.gz";
+      md5 = "ca74e0f4a01ad8767e1bba6332c39aa2";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_http = buildPythonPackage rec {
+    name = "zope.app.http-3.9.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.http/${name}.tar.gz";
+      md5 = "26f73a3affecefc3aff960cd8b088681";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_i18n = buildPythonPackage rec {
+    name = "zope.app.i18n-3.6.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.i18n/${name}.tar.gz";
+      md5 = "c8573307ba08926214b7944a05e43632";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_interface = buildPythonPackage rec {
+    name = "zope.app.interface-3.5.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.interface/${name}.tar.gz";
+      md5 = "b15522275a435c609bd44f2f019bd13c";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_interpreter = buildPythonPackage rec {
+    name = "zope.app.interpreter-3.4.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.interpreter/${name}.tar.gz";
+      md5 = "fb8a2aa57dcfa3af2f30801dfafc78c4";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_intid = buildPythonPackage rec {
+    name = "zope.app.intid-3.7.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.intid/${name}.tar.gz";
+      md5 = "0d2c1daf5d1d6fd09351b652042a2dac";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_keyreference = buildPythonPackage rec {
+    name = "zope.app.keyreference-3.6.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.keyreference/${name}.tar.gz";
+      md5 = "78539e472016a8ca57b34b6ea0ab7d9d";
     };
 
     # ignore dependencies
@@ -4682,12 +7577,162 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  zope_app_localpermission = buildPythonPackage rec {
+    name = "zope.app.localpermission-3.7.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.localpermission/${name}.tar.gz";
+      md5 = "121509781b19ce55ebe890fa408702fc";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_locking = buildPythonPackage rec {
+    name = "zope.app.locking-3.5.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.locking/${name}.tar.gz";
+      md5 = "4edce1ba26f6c56b0eb79f703d8a80fe";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_onlinehelp = buildPythonPackage rec {
+    name = "zope.app.onlinehelp-3.5.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.onlinehelp/${name}.tar.gz";
+      md5 = "67d0be66965e34b24ef18c269da62e4c";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   zope_app_pagetemplate = buildPythonPackage rec {
     name = "zope.app.pagetemplate-3.11.2";
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/z/zope.app.pagetemplate/${name}.tar.gz";
       md5 = "2d304729c0d6a9ab67dd5ea852f19476";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_preference = buildPythonPackage rec {
+    name = "zope.app.preference-3.8.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.preference/${name}.tar.gz";
+      md5 = "ab6906261854c61ff9f0a13c7612d3e8";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_preview = buildPythonPackage rec {
+    name = "zope.app.preview-3.4.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.preview/${name}.tar.gz";
+      md5 = "e698c10b043fb944150a825af9af536e";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_principalannotation = buildPythonPackage rec {
+    name = "zope.app.principalannotation-3.7.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.principalannotation/${name}.tar.gz";
+      md5 = "29c6bf8e817330b0d29de253686a68f2";
     };
 
     # ignore dependencies
@@ -4748,6 +7793,431 @@ let plone42Packages = python.modules // rec {
     '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_renderer = buildPythonPackage rec {
+    name = "zope.app.renderer-3.5.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.renderer/${name}.tar.gz";
+      md5 = "1cc605baf5dab7db50b0a0fd218566f3";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_rotterdam = buildPythonPackage rec {
+    name = "zope.app.rotterdam-3.5.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.rotterdam/${name}.tar.gz";
+      md5 = "4cb3c53844bc7481f9b7d60f3c5e3a85";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_schema = buildPythonPackage rec {
+    name = "zope.app.schema-3.5.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.schema/${name}.tar.gz";
+      md5 = "92b7c3f4512f3433acc931ecb6ffc936";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_security = buildPythonPackage rec {
+    name = "zope.app.security-3.7.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.security/${name}.tar.gz";
+      md5 = "c7cec00f6d8379b93180faf6ffaa89ea";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_securitypolicy = buildPythonPackage rec {
+    name = "zope.app.securitypolicy-3.6.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.securitypolicy/${name}.tar.gz";
+      md5 = "e3c6ef1db3228dbbb60a452c1a2a8f27";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_server = buildPythonPackage rec {
+    name = "zope.app.server-3.6.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.server/${name}.tar.gz";
+      md5 = "d3a75eaf2a3f4759352dd3243dfb1d50";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_session = buildPythonPackage rec {
+    name = "zope.app.session-3.6.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.session/${name}.tar.gz";
+      md5 = "93467bf6854d714b53e71f36a9d770f3";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_skins = buildPythonPackage rec {
+    name = "zope.app.skins-3.4.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.skins/${name}.tar.gz";
+      md5 = "a0bc210720ee50e40adb93e9c685e884";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_testing = buildPythonPackage rec {
+    name = "zope.app.testing-3.7.8";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.testing/${name}.tar.gz";
+      md5 = "6fd3eb11e24973a3dbdf5f1ab655c0d4";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_tree = buildPythonPackage rec {
+    name = "zope.app.tree-3.6.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.tree/${name}.tar.gz";
+      md5 = "fbde3403c682bc7cf7b73d43cd2eed3a";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_twisted = buildPythonPackage rec {
+    name = "zope.app.twisted-3.5.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.twisted/${name}.tar.gz";
+      md5 = "9e98868b8be8a0c4f720036366364a67";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_undo = buildPythonPackage rec {
+    name = "zope.app.undo-3.5.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.undo/${name}.tar.gz";
+      md5 = "7a40060aa0451a635a31d6e12d17a82e";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_wsgi = buildPythonPackage rec {
+    name = "zope.app.wsgi-3.9.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.wsgi/${name}.tar.gz";
+      md5 = "9c766908b720d777e02e0b0a9ac8a8a1";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_zcmlfiles = buildPythonPackage rec {
+    name = "zope.app.zcmlfiles-3.7.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.zcmlfiles/${name}.tar.gz";
+      md5 = "0e8991d2bed71ee6b98a2c48d21e1126";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_zopeappgenerations = buildPythonPackage rec {
+    name = "zope.app.zopeappgenerations-3.5.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.zopeappgenerations/${name}.tar.gz";
+      md5 = "4c8a0bc409677f8b17dc57737d41f919";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_app_zptpage = buildPythonPackage rec {
+    name = "zope.app.zptpage-3.5.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.app.zptpage/${name}.tar.gz";
+      md5 = "aed8ec49e10911bd1e9d2c9d467fd098";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_applicationcontrol = buildPythonPackage rec {
+    name = "zope.applicationcontrol-3.5.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.applicationcontrol/${name}.tar.gz";
+      md5 = "5e4bb54afe55185e15bd9d1ba3750857";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -4948,11 +8418,36 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  zope_component = buildPythonPackage rec {
-    name = "zope.componenthook-zcml-3.9.5";
+  zope_catalog = buildPythonPackage rec {
+    name = "zope.catalog-3.8.2";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/z/zope.component/zope.component-3.9.5.tar.gz";
+      url = "http://pypi.python.org/packages/source/z/zope.catalog/${name}.tar.gz";
+      md5 = "f9baff3997e337f0a23ac158258c8842";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_component = buildPythonPackage rec {
+    name = "zope.component-3.9.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.component/${name}.tar.gz";
       md5 = "22780b445b1b479701c05978055d1c82";
     };
 
@@ -5227,6 +8722,31 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  zope_documenttemplate = buildPythonPackage rec {
+    name = "zope.documenttemplate-3.4.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.documenttemplate/${name}.tar.gz";
+      md5 = "d5c302534ee0913c39bdc227e1592cb7";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   zope_dottedname = buildPythonPackage rec {
     name = "zope.dottedname-3.4.6";
 
@@ -5352,6 +8872,31 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  zope_file = buildPythonPackage rec {
+    name = "zope.file-0.6.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.file/${name}.tar.gz";
+      md5 = "5df3b63c678f4b445be345f1dff1bc9b";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   zope_filerepresentation = buildPythonPackage rec {
     name = "zope.filerepresentation-3.6.1";
 
@@ -5456,11 +9001,36 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  zope_i18n = buildPythonPackage rec {
-    name = "zope.i18nzcml-3.7.4";
+  zope_html = buildPythonPackage rec {
+    name = "zope.html-2.1.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/z/zope.i18n/zope.i18n-3.7.4.tar.gz";
+      url = "http://pypi.python.org/packages/source/z/zope.html/${name}.tar.gz";
+      md5 = "868cb987e400b9a290355a1207d47143";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_i18n = buildPythonPackage rec {
+    name = "zope.i18n-3.7.4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.i18n/${name}.tar.gz";
       md5 = "a6fe9d9ad53dd7e94e87cd58fb67d3b7";
     };
 
@@ -5506,6 +9076,31 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  zope_index = buildPythonPackage rec {
+    name = "zope.index-3.6.4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.index/${name}.tar.gz";
+      md5 = "65c34f446f54ffd711e34ede9eb89dad";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   zope_interface = buildPythonPackage rec {
     name = "zope.interface-3.6.7";
 
@@ -5520,6 +9115,83 @@ let plone42Packages = python.modules // rec {
     '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_intid = buildPythonPackage rec {
+    name = "zope.intid-3.7.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.intid/${name}.zip";
+      md5 = "241f2fe62fb60f6319d9902b12bc333d";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_keyreference = buildPythonPackage rec {
+    name = "zope.keyreference-3.6.4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.keyreference/${name}.tar.gz";
+      md5 = "3774c90f236f880547f4c042ee0997e9";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_kgs = buildPythonPackage rec {
+    name = "zope.kgs-1.2.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.kgs/${name}.tar.gz";
+      md5 = "15ed01a270bddcf253b1c08479549692";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5583,6 +9255,133 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  zope_login = buildPythonPackage rec {
+    name = "zope.login-1.0.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.login/${name}.zip";
+      md5 = "4eceb766329125a80aee1b4b4809869a";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_mimetype = buildPythonPackage rec {
+    name = "zope.mimetype-1.3.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.mimetype/${name}.tar.gz";
+      md5 = "c865758c896707287f86ba603f06a84b";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_minmax = buildPythonPackage rec {
+    name = "zope.minmax-1.1.2";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.minmax/${name}.tar.gz";
+      md5 = "0c3fbac9623f402ed758dace80080d55";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_mkzeoinstance = buildPythonPackage rec {
+    name = "zope.mkzeoinstance-3.9.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.mkzeoinstance/${name}.tar.gz";
+      md5 = "2c2dcf7cc7de58f7d009ca3294f54377";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_modulealias = buildPythonPackage rec {
+    name = "zope.modulealias-3.4.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.modulealias/${name}.tar.gz";
+      md5 = "77f4603524b578a5c6b4b4fdde58a484";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   zope_pagetemplate = buildPythonPackage rec {
     name = "zope.pagetemplate-3.6.3";
 
@@ -5597,6 +9396,131 @@ let plone42Packages = python.modules // rec {
     '';
 
     buildInputs = [ pkgs.unzip ];
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_password = buildPythonPackage rec {
+    name = "zope.password-3.6.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.password/${name}.tar.gz";
+      md5 = "230f93a79020c8a3dc01d79832546e3c";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_pluggableauth = buildPythonPackage rec {
+    name = "zope.pluggableauth-1.0.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.pluggableauth/${name}.tar.gz";
+      md5 = "85d16cb2e5b41bf2a438828857719566";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_preference = buildPythonPackage rec {
+    name = "zope.preference-3.8.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.preference/${name}.tar.gz";
+      md5 = "bb8b1c9f65387a51be429407528cc453";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_principalannotation = buildPythonPackage rec {
+    name = "zope.principalannotation-3.6.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.principalannotation/${name}.tar.gz";
+      md5 = "652685ca13cefaad78dbc5c6507fc9ab";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_principalregistry = buildPythonPackage rec {
+    name = "zope.principalregistry-3.7.1";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.principalregistry/${name}.tar.gz";
+      md5 = "9b90adc7915d9bbed4237db432fc70c2";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
 
     doCheck = false;
 
@@ -5739,6 +9663,31 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  zope_rdb = buildPythonPackage rec {
+    name = "zope.rdb-3.5.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.rdb/${name}.tar.gz";
+      md5 = "2068b469c07c9c0b41392cd9839e3728";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   zope_schema = buildPythonPackage rec {
     name = "zope.schema-4.2.1";
 
@@ -5767,11 +9716,36 @@ let plone42Packages = python.modules // rec {
 
 
   zope_security = buildPythonPackage rec {
-    name = "zope.securityuntrustedpython-3.7.4";
+    name = "zope.security-3.7.4";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/z/zope.security/zope.security-3.7.4.tar.gz";
+      url = "http://pypi.python.org/packages/source/z/zope.security/${name}.tar.gz";
       md5 = "072ab8d11adc083eace11262da08630c";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_securitypolicy = buildPythonPackage rec {
+    name = "zope.securitypolicy-3.7.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.securitypolicy/${name}.tar.gz";
+      md5 = "fe9ba029384c0640b2ba175ba1805cd8";
     };
 
     # ignore dependencies
@@ -5822,6 +9796,56 @@ let plone42Packages = python.modules // rec {
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/z/zope.sequencesort/${name}.tar.gz";
       md5 = "cfc35fc426a47f5c0ee43c416224b864";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_server = buildPythonPackage rec {
+    name = "zope.server-3.6.3";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.server/${name}.tar.gz";
+      md5 = "2a758720fd6d9bdfb1cea8d644c27923";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zope_session = buildPythonPackage rec {
+    name = "zope.session-3.9.5";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.session/${name}.tar.gz";
+      md5 = "2934e9f2daa01555e9a7a1f9945c3493";
     };
 
     # ignore dependencies
@@ -6018,6 +10042,31 @@ let plone42Packages = python.modules // rec {
   };
 
 
+  zope_thread = buildPythonPackage rec {
+    name = "zope.thread-3.4";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/z/zope.thread/${name}.tar.gz";
+      md5 = "3567037865b746c933d4af86e5aefa35";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
   zope_traversing = buildPythonPackage rec {
     name = "zope.traversing-3.13.2";
 
@@ -6070,11 +10119,36 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  zopeundo = buildPythonPackage rec {
-    name = "zopeundo-2.12.0";
+  zope_xmlpickle = buildPythonPackage rec {
+    name = "zope.xmlpickle-3.4.0";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/Z/ZopeUndo/ZopeUndo-2.12.0.zip";
+      url = "http://pypi.python.org/packages/source/z/zope.xmlpickle/${name}.tar.gz";
+      md5 = "b579f35546b095aec2c890d3f8a46911";
+    };
+
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+
+    doCheck = false;
+
+    meta = {
+      maintainers = [
+        stdenv.lib.maintainers.chaoflow
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.goibhniu
+     ];
+    };
+  };
+
+
+  zopeundo = buildPythonPackage rec {
+    name = "ZopeUndo-2.12.0";
+
+    src = fetchurl {
+      url = "http://pypi.python.org/packages/source/Z/ZopeUndo/${name}.zip";
       md5 = "2b8da09d1b98d5558f62e12f6e52c401";
     };
 
@@ -6123,3 +10197,5 @@ let plone42Packages = python.modules // rec {
 
 }; in plone42Packages
 
+# Not Found: ['nt-svcutils', 'PIL', 'wsgi-intercept']
+# Version Error: ['collective.z3cform.datagridfield-demo']

@@ -1,20 +1,14 @@
 
 import sys
+from distutils2.errors import IrrationalVersionError
+from distutils2.pypi.errors import ProjectNotFound
 from distutils2.pypi.simple import Crawler
 from distutils2.version import suggest_normalized_version
 
 
 
-
 def to_nixname(name):
-    return name.replace('.', '_').replace('-', '_')
-    result = ''
-    for word in name.split('.'):
-        if not name.startswith(word):
-            word = word[0].upper() + word[1:]
-        result += word
-    return result
-
+    return name.replace('.', '_').replace('-', '_').lower()
 
 def to_dict(text):
     result = {}
@@ -137,25 +131,32 @@ overwrite['elementtree'] = {
     'propagated_build_inputs': '',
     }
 
-requires_eggtestinfo = [
-    "products_cmfactionicons",
-    "products_cmfcalendar",
-    "products_cmfdefault",
-    "products_cmfuid",
-    "products_dcworkflow",
-]
 
+# These cannot be installed without some requirements
+hard_requirements = {
+    'products_cmfactionicons': 'eggtestinfo',
+    'products_cmfcalendar': 'eggtestinfo',
+    'products_cmfdefault': 'eggtestinfo',
+    'products_cmfuid': 'eggtestinfo',
+    'products_dcworkflow': 'eggtestinfo',
+    'products_cmftopic': 'eggtestinfo',
+    'pastescript': 'paste pastedeploy',
+}
+
+# don't package stuff we can use from the system python packages
 system_packages = [
-    "lxml",
-    "setuptools"
+    'distribute',
+    'lxml',
+    'setuptools',
 ]
 
 if __name__ == '__main__':
-    eggs = to_dict(sys.stdin.read())
-    #eggs = to_dict(open("depdump", "r").read())
+    # eggs = to_dict(sys.stdin.read())
+    eggs = to_dict(open("plonedeps", "r").read())
     pypi = Crawler()
     bad_eggs = []
-
+    not_found = []
+    version_error = []
     print PRE_TMPL
     for nixname in sorted(eggs.keys()):
         if nixname in system_packages: continue
@@ -166,7 +167,12 @@ if __name__ == '__main__':
             name += '-'.join(egg['extras'])
         name += '-' + egg['version']
         if egg['name'] not in overwrite:
-            egg_release = pypi.get_release(egg['name'] + '==' + version)
+            try:
+                egg_release = pypi.get_release(egg['name'] + '==' + version)
+            except ProjectNotFound:
+                not_found.append(egg['name'])
+            except IrrationalVersionError:
+                version_error.append(egg['name'])
             egg_dist = egg_release.dists['sdist'].url
             url = egg_dist['url']
             url = url.replace("http://a.pypi", "http://pypi")
@@ -175,8 +181,10 @@ if __name__ == '__main__':
             if url.endswith(".zip"):
                 build_inputs = "\n    buildInputs = [ pkgs.unzip ];\n"
             propagated_build_inputs = ''
-            if nixname in requires_eggtestinfo:
-                propagated_build_inputs = "\n    propagatedBuildInputs = [ eggtestinfo ];"
+            if nixname in hard_requirements.keys():
+                propagated_build_inputs = (
+                    "\n    propagatedBuildInputs = [ {0} ];\n"
+                ).format(hard_requirements[nixname])
             install_command = """
     # ignore dependencies
     installCommand = ''
@@ -196,3 +204,5 @@ if __name__ == '__main__':
         else:
             print TMPL % overwrite[egg['name']]
     print POST_TMPL
+    print "# Not Found: {0}\n# Version Error: {1}".format(
+        not_found, version_error)

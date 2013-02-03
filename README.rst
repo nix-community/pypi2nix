@@ -1,8 +1,5 @@
 
+Create Plone nix expressions from an existing plone instance::
 
-
-Create Plone nix expressions::
-
-   $ python2.7 bootstrap.py -d -c plone.cfg
-   $ bin/buildout -N -c plone.cfg
-   $ bin/eggdeps Plone -nst | bin/python python2nix.py > plone.nix
+   $ ./bin/buildout annotate | sed '1,/\[versions\]/d' | grep = | sed 's#=##' > plonedeps
+   $ bin/python plone2nix.py > plone.nix
