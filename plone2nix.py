@@ -148,11 +148,17 @@ system_packages = [
     'distribute',
     'lxml',
     'setuptools',
+    'zc_buildout',
 ]
 
+# The permissions for the skel dirs is changed by nix, which prevents
+# the instance from being installed, let's skip it
+ignore_packages += ['plone_recipe_zope2instance',]
+
+plonedeps = open("plonedeps", "r").read()
 if __name__ == '__main__':
     # eggs = to_dict(sys.stdin.read())
-    eggs = to_dict(open("plonedeps", "r").read())
+    eggs = to_dict(plonedeps)
     pypi = Crawler()
     bad_eggs = []
     not_found = []
@@ -160,6 +166,7 @@ if __name__ == '__main__':
     print PRE_TMPL
     for nixname in sorted(eggs.keys()):
         if nixname in system_packages: continue
+        if nixname in ignore_packages: continue
         egg = eggs[nixname]
         version = suggest_normalized_version(egg['version'])
         name = egg['name']

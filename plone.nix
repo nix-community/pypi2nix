@@ -1214,14 +1214,16 @@ let plone42Packages = python.modules // rec {
     name = "mechanize-0.2.5";
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/m/mechanize/${name}.tar.gz";
-      md5 = "32657f139fc2fb75bcf193b63b8c60b2";
+      url = "http://pypi.python.org/packages/source/m/mechanize/${name}.zip";
+      md5 = "a497ad4e875f7506ffcf8ad3ada4c2fc";
     };
 
     # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
+
+    buildInputs = [ pkgs.unzip ];
 
     doCheck = false;
 
@@ -3591,33 +3593,6 @@ let plone42Packages = python.modules // rec {
   };
 
 
-  plone_recipe_zope2instance = buildPythonPackage rec {
-    name = "plone.recipe.zope2instance-4.2.8";
-
-    src = fetchurl {
-      url = "http://pypi.python.org/packages/source/p/plone.recipe.zope2instance/${name}.zip";
-      md5 = "4e6d109f6b2b59736e5bae947c5d59ae";
-    };
-
-    # ignore dependencies
-    installCommand = ''
-      easy_install --always-unzip --no-deps --prefix="$out" .
-    '';
-
-    buildInputs = [ pkgs.unzip ];
-
-    doCheck = false;
-
-    meta = {
-      maintainers = [
-        stdenv.lib.maintainers.chaoflow
-        stdenv.lib.maintainers.garbas
-        stdenv.lib.maintainers.goibhniu
-     ];
-    };
-  };
-
-
   plone_registry = buildPythonPackage rec {
     name = "plone.registry-1.0.1";
 
@@ -4538,12 +4513,12 @@ let plone42Packages = python.modules // rec {
       md5 = "4abeeaafe6b6b1d2f2936bf5431cccba";
     };
 
-    propagatedBuildInputs = [ eggtestinfo ];
-
     # ignore dependencies
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
+
+    propagatedBuildInputs = [ eggtestinfo ];
 
     doCheck = false;
 
@@ -6446,31 +6421,6 @@ let plone42Packages = python.modules // rec {
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/z/z3c.zcmlhook/${name}.tar.gz";
       md5 = "7b6c80146f5930409eb0b355ddf3daeb";
-    };
-
-    # ignore dependencies
-    installCommand = ''
-      easy_install --always-unzip --no-deps --prefix="$out" .
-    '';
-
-    doCheck = false;
-
-    meta = {
-      maintainers = [
-        stdenv.lib.maintainers.chaoflow
-        stdenv.lib.maintainers.garbas
-        stdenv.lib.maintainers.goibhniu
-     ];
-    };
-  };
-
-
-  zc_buildout = buildPythonPackage rec {
-    name = "zc.buildout-1.6.3";
-
-    src = fetchurl {
-      url = "http://pypi.python.org/packages/source/z/zc.buildout/${name}.tar.gz";
-      md5 = "1523662da2cc92f10d61b48c971e8713";
     };
 
     # ignore dependencies
