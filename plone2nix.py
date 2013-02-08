@@ -1,11 +1,37 @@
-
-import sys
 from distutils2.errors import IrrationalVersionError
+from distutils2.metadata import Metadata
 from distutils2.pypi.errors import ProjectNotFound
 from distutils2.pypi.simple import Crawler
 from distutils2.version import suggest_normalized_version
 
+import os
+import sys
 
+
+def get_metadata(egg_rel):
+    """ fetch_metadata
+
+    egg_rel.fetch_metadata() should do this, but seems to be broken"""
+    egg_rel.download()
+    tmp_path = egg_rel.unpack()
+    sub_dir = os.listdir(tmp_path)[0]
+    return Metadata(os.path.join(tmp_path, sub_dir, "PKG-INFO"))
+
+metadata_map = {
+    "Home-page": "homepage",
+    "License": "license",
+    "Summary": "description",
+}
+
+def nix_metadata(egg_rel):
+    egg_metadata = get_metadata(egg_rel)
+    res = ""
+    for key in ["Home-page", "Summary", "License"]:
+        nix_key = metadata_map[key]
+        nix_metadata = egg_metadata.get(key, None)
+        if nix_metadata != None:
+            res += '      {0} = "{1}";\n'.format(nix_key, nix_metadata)
+    return res
 
 def to_nixname(name):
     return name.replace('.', '_').replace('-', '_').lower()
@@ -71,6 +97,7 @@ TMPL = """
     doCheck = false;
 
     meta = {
+%(metadata)s
       maintainers = [
         stdenv.lib.maintainers.chaoflow
         stdenv.lib.maintainers.garbas
@@ -102,34 +129,12 @@ POST_TMPL = """
         stdenv.lib.maintainers.garbas
         stdenv.lib.maintainers.goibhniu
      ];
+
     };
   };
 
 }; in plone42Packages
 """
-
-overwrite = {}
-overwrite['pytz'] = {
-    'nixname': 'pytz',
-    'name': 'pytz-2012c',
-    'url': 'http://pypi.python.org/packages/source/p/pytz/pytz-2012c.tar.gz',
-    'hashname': 'md5',
-    'hashval': '1aa85f072e3d34ae310665967a0ce053',
-    'install_command': '',
-    'build_inputs': '',
-    'propagated_build_inputs': '',
-
-    }
-overwrite['elementtree'] = {
-    'nixname': 'elementtree',
-    'name': 'elementtree-1.2.7-20070827-preview',
-    'url': 'http://effbot.org/media/downloads/elementtree-1.2.7-20070827-preview.zip',
-    'hashname': 'md5',
-    'hashval': '30e2fe5edd143f347e03a8baf5d60f8a',
-    'install_command': '',
-    'build_inputs': '\n    buildInputs = [ pkgs.unzip ];\n',
-    'propagated_build_inputs': '',
-    }
 
 
 # These cannot be installed without some requirements
@@ -153,17 +158,27 @@ system_packages = [
 
 # The permissions for the skel dirs is changed by nix, which prevents
 # the instance from being installed, let's skip it
-ignore_packages += ['plone_recipe_zope2instance',]
+ignore_packages = ['plone_recipe_zope2instance',]
+
+install_command = """
+    # ignore dependencies
+    installCommand = ''
+      easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+"""
+
 
 plonedeps = open("plonedeps", "r").read()
 if __name__ == '__main__':
-    # eggs = to_dict(sys.stdin.read())
+    #eggs = to_dict(sys.stdin.read())
     eggs = to_dict(plonedeps)
     pypi = Crawler()
+
     bad_eggs = []
     not_found = []
     version_error = []
     print PRE_TMPL
+
     for nixname in sorted(eggs.keys()):
         if nixname in system_packages: continue
         if nixname in ignore_packages: continue
@@ -173,43 +188,35 @@ if __name__ == '__main__':
         if egg['extras']:
             name += '-'.join(egg['extras'])
         name += '-' + egg['version']
-        if egg['name'] not in overwrite:
-            try:
-                egg_release = pypi.get_release(egg['name'] + '==' + version)
-            except ProjectNotFound:
-                not_found.append(egg['name'])
-            except IrrationalVersionError:
-                version_error.append(egg['name'])
-            egg_dist = egg_release.dists['sdist'].url
-            url = egg_dist['url']
-            url = url.replace("http://a.pypi", "http://pypi")
-            url = url.replace(name, "${name}")
-            build_inputs = ''
-            if url.endswith(".zip"):
-                build_inputs = "\n    buildInputs = [ pkgs.unzip ];\n"
-            propagated_build_inputs = ''
-            if nixname in hard_requirements.keys():
-                propagated_build_inputs = (
-                    "\n    propagatedBuildInputs = [ {0} ];\n"
-                ).format(hard_requirements[nixname])
-            install_command = """
-    # ignore dependencies
-    installCommand = ''
-      easy_install --always-unzip --no-deps --prefix="$out" .
-    '';
-"""
-            print TMPL % {
-                'nixname': nixname,
-                'name': name,
-                'url': url,
-                'hashname': egg_dist['hashname'],
-                'hashval': egg_dist['hashval'],
-                'build_inputs': build_inputs,
-                'propagated_build_inputs': propagated_build_inputs,
-                'install_command': install_command,
-                }
-        else:
-            print TMPL % overwrite[egg['name']]
+        try:
+            egg_release = pypi.get_release(egg['name'] + '==' + version)
+        except ProjectNotFound:
+            not_found.append(egg['name'])
+        except IrrationalVersionError:
+            version_error.append(egg['name'])
+        egg_dist = egg_release.dists['sdist'].url
+        url = egg_dist['url']
+        url = url.replace("http://a.pypi", "http://pypi")
+        metadata = nix_metadata(egg_release)
+        url = url.replace(name, "${name}")
+        build_inputs = ''
+        if url.endswith(".zip"):
+            build_inputs = "\n    buildInputs = [ pkgs.unzip ];\n"
+        propagated_build_inputs = ''
+        if nixname in hard_requirements.keys():
+            propagated_build_inputs = (
+                "\n    propagatedBuildInputs = [ {0} ];\n"
+        ).format(hard_requirements[nixname])
+        print TMPL % {'nixname': nixname,
+                      'name': name,
+                      'url': url,
+                      'hashname': egg_dist['hashname'],
+                      'hashval': egg_dist['hashval'],
+                      'build_inputs': build_inputs,
+                      'propagated_build_inputs': propagated_build_inputs,
+                      'install_command': install_command,
+                      'metadata': metadata,
+        }
     print POST_TMPL
-    print "# Not Found: {0}\n# Version Error: {1}".format(
-        not_found, version_error)
+    # print "# Not Found: {0}\n# Version Error: {1}".format(
+    #     not_found, version_error)
