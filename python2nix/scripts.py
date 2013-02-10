@@ -13,10 +13,46 @@ from python2nix.config import TMPL
 from python2nix.utils import nix_metadata
 from python2nix.utils import to_dict
 
+import argparse
+import sys
+
 
 def buildout2nix():
-    #eggs = to_dict(sys.stdin.read())
-    eggs = to_dict(PLONEDEPS)
+    parser = argparse.ArgumentParser(
+        description='Create a Nix package attribute set from a python buildout'
+    )
+    parser.add_argument(
+        '-b',
+        '--buildout-path',
+        help='path to a buildout executable (not implemented)',
+    )
+    parser.add_argument(
+        '-i',
+        '--input',
+        nargs='?',
+        type=argparse.FileType('r'),
+        default=sys.stdin,
+        help=(
+            'path to a file which contains one package name followed by a '
+            'version number per line'
+        )
+    )    
+    parser.add_argument(
+        '-o',
+        '--output',
+        nargs='?',
+        type=argparse.FileType('wb', 0),
+        default=sys.stdout,
+        help='path to output file (not implemented)',
+    )
+
+    args = parser.parse_args()
+
+    if args.buildout_path is not None:
+        raise Exception("Not implemented")
+    else:
+        eggs = to_dict(args.input.read())
+
     pypi = Crawler()
 
     bad_eggs = []
