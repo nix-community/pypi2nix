@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-
-from setuptools import find_packages
 from setuptools import setup
-
-import os
 
 
 setup(
@@ -21,12 +17,10 @@ setup(
         'License :: OSI Approved :: GNU General Public License (GPL)',
     ],
 
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
     install_requires=[
         'distutils2',
     ],
     entry_points = {
-        'console_scripts': ['buildout2nix = python2nix:buildout2nix',],
+        'console_scripts': ['buildout2nix = python2nix.scripts:buildout2nix',],
     }
 )
