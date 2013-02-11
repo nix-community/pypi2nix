@@ -17,6 +17,46 @@ import argparse
 import sys
 
 
+def to_nix_dict(egg, nixname):
+    """Return a dict of the package attributes relevant to a nix
+    expression
+    """
+    pypi = Crawler()
+
+    name = egg['name']
+    if egg['extras']:
+        name += '-'.join(egg['extras'])
+    name += '-' + egg['version']
+    version = suggest_normalized_version(egg['version'])
+    egg_release = pypi.get_release(egg['name'] + '==' + version)
+    egg_dist = egg_release.dists['sdist'].url
+    url = egg_dist['url']
+    url = url.replace("http://a.pypi", "http://pypi")
+    url = url.replace(name, "${name}")
+
+    build_inputs = ''
+    if url.endswith(".zip"):
+        build_inputs = "\n    buildInputs = [ pkgs.unzip ];\n"
+
+    propagated_build_inputs = ''
+    if nixname in HARD_REQUIREMENTS.keys():
+        propagated_build_inputs = (
+            "\n    propagatedBuildInputs = [ {0} ];\n"
+        ).format(HARD_REQUIREMENTS[nixname])
+
+    return {
+        'nixname': nixname,
+        'name': name,
+        'url': url,
+        'hashname': egg_dist['hashname'],
+        'hashval': egg_dist['hashval'],
+        'build_inputs': build_inputs,
+        'propagated_build_inputs': propagated_build_inputs,
+        'install_command': INSTALL_COMMAND,
+        'metadata': nix_metadata(egg_release),
+    }
+    
+
 def buildout2nix():
     parser = argparse.ArgumentParser(
         description='Create a Nix package attribute set from a python buildout'
@@ -43,7 +83,7 @@ def buildout2nix():
         nargs='?',
         type=argparse.FileType('wb', 0),
         default=sys.stdout,
-        help='path to output file (not implemented)',
+        help='path to output nix file',
     )
 
     args = parser.parse_args()
@@ -52,53 +92,26 @@ def buildout2nix():
         raise Exception("Not implemented")
     else:
         eggs = to_dict(args.input.read())
+    nix_write = args.output.write
 
-    pypi = Crawler()
+    nix_write(PRE_TMPL)
 
-    bad_eggs = []
     not_found = []
     version_error = []
-    print PRE_TMPL
-
     for nixname in sorted(eggs.keys()):
         if nixname in SYSTEM_PACKAGES: continue
         if nixname in IGNORE_PACKAGES: continue
         egg = eggs[nixname]
-        version = suggest_normalized_version(egg['version'])
-        name = egg['name']
-        if egg['extras']:
-            name += '-'.join(egg['extras'])
-        name += '-' + egg['version']
         try:
-            egg_release = pypi.get_release(egg['name'] + '==' + version)
+            args.output.write(TMPL % to_nix_dict(egg, nixname))
         except ProjectNotFound:
             not_found.append(egg['name'])
         except IrrationalVersionError:
             version_error.append(egg['name'])
-        egg_dist = egg_release.dists['sdist'].url
-        url = egg_dist['url']
-        url = url.replace("http://a.pypi", "http://pypi")
-        metadata = nix_metadata(egg_release)
-        url = url.replace(name, "${name}")
-        build_inputs = ''
-        if url.endswith(".zip"):
-            build_inputs = "\n    buildInputs = [ pkgs.unzip ];\n"
-        propagated_build_inputs = ''
-        if nixname in HARD_REQUIREMENTS.keys():
-            propagated_build_inputs = (
-                "\n    propagatedBuildInputs = [ {0} ];\n"
-        ).format(HARD_REQUIREMENTS[nixname])
-        print TMPL % {'nixname': nixname,
-                      'name': name,
-                      'url': url,
-                      'hashname': egg_dist['hashname'],
-                      'hashval': egg_dist['hashval'],
-                      'build_inputs': build_inputs,
-                      'propagated_build_inputs': propagated_build_inputs,
-                      'install_command': INSTALL_COMMAND,
-                      'metadata': metadata,
-        }
-    print POST_TMPL
-    # print "# Not Found: {0}\n# Version Error: {1}".format(
-    #     not_found, version_error)
+
+    nix_write(POST_TMPL)
+    nix_write(
+        "# Not Found: {0}\n# Version Error: {1}".format(
+            not_found, version_error)
+    )
 
