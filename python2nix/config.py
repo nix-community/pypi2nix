@@ -101,6 +101,4 @@ INSTALL_COMMAND = """
     '';
 """
 
-PLONEDEPS = open("plonedeps", "r").read()
-
 
