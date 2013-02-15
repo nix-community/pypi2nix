@@ -21,6 +21,9 @@ setup(
         'distutils2',
     ],
     entry_points = {
-        'console_scripts': ['buildout2nix = python2nix.scripts:python2nix',],
+        'console_scripts': [
+            'python2nix = python2nix.scripts:python2nix',
+            'nix-list-python-packages = python2nix.scripts:nix_list_python_packages',
+        ],
     }
 )

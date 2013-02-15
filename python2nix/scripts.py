@@ -9,6 +9,7 @@ from python2nix.utils import to_dict
 from python2nix.utils import to_nix_dict
 
 import argparse
+import subprocess
 import sys
 
 
@@ -79,4 +80,59 @@ def python2nix():
             not_found, version_error)
     )
 
+def nix_list_python_packages():
+    """Output a list of python packages already available in nixpkgs,
+    one line per package and with the version following the name,
+    separated by a space.
 
+    Currently it just searches for packages whose name begins with
+    "python-".
+    """
+
+    parser = argparse.ArgumentParser(
+        description='List python packages already available in nixpkgs'
+    )
+    parser.add_argument(
+        '-f',
+        '--file',
+        nargs='?',
+        type=str,
+        help=(
+            'Specifies the Nix expression used to obtain derivations. The '
+            'default is ~/.nix-defexpr, but the path to a local copy of '
+            'nixpkgs can also be used e.g. '
+            'my-git-repo/nixpkgs/pkgs/top-level/all-packages.nix'
+        )
+    )    
+    parser.add_argument(
+        '-o',
+        '--output',
+        nargs='?',
+        type=argparse.FileType('wb', 0),
+        default=sys.stdout,
+        help='path to the file to write the list of python packages to',
+    )
+
+    args = parser.parse_args()
+
+    py_write = args.output.write
+
+    command = 'nix-env -qa *'.split(" ")
+    if args.file:
+        command.append(['-f', args.file])
+
+    def split_name_version(name):
+        split_name = name.split("-")
+        for i, segment in enumerate(split_name):
+            if segment[0].isdigit():
+                return '-'.join(split_name[:i]), '-'.join(split_name[i:])
+
+    nix_pkgs = subprocess.check_output(command)
+    for pkg in nix_pkgs.split('\n'):
+        if pkg.startswith('python-'):
+            name_version = split_name_version(pkg)
+            if name_version:
+                name, version = name_version
+                if name != "python":
+                    name = name[7:]
+                    py_write('{0} {1}\n'.format(name, version))
