@@ -1,6 +1,5 @@
 from distutils2.errors import IrrationalVersionError
 from distutils2.pypi.errors import ProjectNotFound
-from distutils2.pypi.simple import Crawler
 from python2nix.config import IGNORE_PACKAGES
 from python2nix.config import POST_TMPL
 from python2nix.config import PRE_TMPL
@@ -13,7 +12,16 @@ import argparse
 import sys
 
 
-def buildout2nix():
+def python2nix():
+    """Takes a list of packages and versions as input, and outputs a
+    nix expression for them
+
+    TODO: 
+
+    * (re-)add support for tl.eggdeps to add package requirements as
+    propagatedBuildInputs
+    * add a --no-deps option instead of having it as the default
+    """
     parser = argparse.ArgumentParser(
         description='Create a Nix package attribute set from a python buildout'
     )
@@ -70,4 +78,5 @@ def buildout2nix():
         "# Not Found: {0}\n# Version Error: {1}".format(
             not_found, version_error)
     )
+
 
