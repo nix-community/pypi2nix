@@ -1,4 +1,5 @@
 *.py?
+*.nix
 
 /.installed.cfg
 /bin/
@@ -7,4 +8,5 @@
 /parts/
 /include/
 /lib/
+/src/
 /python2nix.egg-info/

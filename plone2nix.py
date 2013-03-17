@@ -158,7 +158,8 @@ system_packages = [
 
 # The permissions for the skel dirs is changed by nix, which prevents
 # the instance from being installed, let's skip it
-ignore_packages = ['plone_recipe_zope2instance',]
+#ignore_packages = ['plone_recipe_zope2instance',]
+ignore_packages = []
 
 install_command = """
     # ignore dependencies
@@ -188,8 +189,10 @@ if __name__ == '__main__':
         if egg['extras']:
             name += '-'.join(egg['extras'])
         name += '-' + egg['version']
+        if version is None:
+            version = ''
         try:
-            egg_release = pypi.get_release(egg['name'] + '==' + version)
+            egg_release = pypi.get_release(egg['name'] + '==' + egg['version'])
         except ProjectNotFound:
             not_found.append(egg['name'])
         except IrrationalVersionError:
@@ -197,7 +200,8 @@ if __name__ == '__main__':
         egg_dist = egg_release.dists['sdist'].url
         url = egg_dist['url']
         url = url.replace("http://a.pypi", "http://pypi")
-        metadata = nix_metadata(egg_release)
+        #metadata = nix_metadata(egg_release)
+        metadata = ''
         url = url.replace(name, "${name}")
         build_inputs = ''
         if url.endswith(".zip"):
