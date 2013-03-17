@@ -38,8 +38,6 @@ let %(distname)s = python.modules // rec {
 
 
 class Pypi2Nix(object):
-    """
-    """
 
     def __init__(self, dists, ignores, extends):
         self.ignores = ignores
@@ -67,7 +65,9 @@ class Pypi2Nix(object):
         for dep_name in dist.requires:
             print dep_name
             dep_dist = distlib.locators.locate(dep_name, True)
-            deps.append(self.process(dep_dist))
+            dep_nixname = self.process(dep_dist)
+            if dep_dist.name not in self.ignores:
+                deps.append(dep_nixname)
 
         buildtime_deps = []
         if dist.download_url.endswith('.zip'):
@@ -82,6 +82,7 @@ class Pypi2Nix(object):
             'deps': ' '.join(deps),
             'buildtime_deps': ' '.join(buildtime_deps),
         }
+
         return nixname
 
     def to_string(self):
