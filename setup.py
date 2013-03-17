@@ -4,7 +4,7 @@ from setuptools import find_packages
 
 
 setup(
-    name="python2nix",
+    name="pypi2nix",
     version="0.0.1",
     author=u"Rok Garbas, Cillian de Róiste",
     description=(
@@ -12,7 +12,7 @@ setup(
         "python projects"
     ),
     license="GPL",
-    keywords="NixOS Nix Packaging",
+    keywords="nixos nix packaging",
     url="http://nixos.org",
     classifiers=[
         'Intended Audience :: Developers',
@@ -24,7 +24,7 @@ setup(
     ],
     entry_points = {
         'console_scripts': [
-            'pypi2nix= python2nix.cli:pypi',
+            'pypi2nix= pypi2nix.cli:main',
         ],
     },
     packages = find_packages(),
