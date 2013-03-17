@@ -14,8 +14,8 @@ def pypi2nix(dists, ignores, extends, output):
         return expressions.to_string().split('\n')
 
 
-def pypi():
+def main():
     argh.dispatch_command(pypi2nix)
 
 if __name__ == '__main__':
-    pypi()
+    main()
