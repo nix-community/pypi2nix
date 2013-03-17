@@ -1,15 +1,3 @@
-#from distutils2.errors import IrrationalVersionError
-#from distutils2.pypi.errors import ProjectNotFound
-#from python2nix.config import IGNORE_PACKAGES
-#from python2nix.config import POST_TMPL
-#from python2nix.config import PRE_TMPL
-#from python2nix.config import SYSTEM_PACKAGES
-#from python2nix.config import TMPL
-#from python2nix.utils import to_dict
-#from python2nix.utils import to_nix_dict
-#
-#import sys
-
 import argh
 import python2nix
 
