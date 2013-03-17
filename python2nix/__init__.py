@@ -41,8 +41,7 @@ class Pypi2Nix(object):
     """
     """
 
-    def __init__(self, dist, ignores, extends):
-        self.dist = distlib.locators.locate(dist, True)
+    def __init__(self, dists, ignores, extends):
         self.ignores = ignores
         self.extends = extends
 
@@ -51,17 +50,25 @@ class Pypi2Nix(object):
             self.extends = json.load(fd)
             fd.close()
 
+        self.dist = None
         self.dists = {}
-        self.process(self.dist)
+        for dist_name in dists:
+            dist = distlib.locators.locate(dist_name, True)
+            if self.dist is None:
+                self.dist = dist
+            self.process(dist)
 
     def process(self, dist):
+        nixname = dist.name.replace('.', '_').replace('-', '_').lower()
+        if nixname in self.dists:
+            return nixname
+
         deps = []
         for dep_name in dist.requires:
             print dep_name
             dep_dist = distlib.locators.locate(dep_name, True)
             deps.append(self.process(dep_dist))
 
-        nixname = dist.name.replace('.', '_').replace('-', '_').lower()
         buildtime_deps = []
         if dist.download_url.endswith('.zip'):
             buildtime_deps.append('pkgs.unzip')
