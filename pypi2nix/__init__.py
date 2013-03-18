@@ -37,9 +37,14 @@ let %(distname)s = python.modules // rec {
 
 class Pypi2Nix(object):
 
-    def __init__(self, dists, ignores, extends):
+    def __init__(self, dists, ignores=[], extends=None, pins=None):
         self.ignores = ignores
+        if extends:
+            extends = json.load(extends)
         self.extends = extends
+        if pins:
+            pins = self.get_pins(pins)
+        self.pins = pins
 
         self.dist = None
         self.dists = {}
@@ -48,6 +53,17 @@ class Pypi2Nix(object):
             if self.dist is None:
                 self.dist = dist
             self.process(dist)
+
+    def get_pins(self, pins):
+        dist_pins = {}
+        for line in pins:
+            if '==' not in line:
+                continue
+            line = line.split('==')
+            if len(line) != 2:
+                continue
+            dist_pins[line[0]] = line[1].strip()
+        return dist_pins
 
     def get_nixname(self, dist):
         name = dist.name.split(' ')[0]
@@ -73,7 +89,14 @@ class Pypi2Nix(object):
         }
 
         deps = []
-        for dep_name in dist.requires:
+        for dep_name_full in dist.get_requirements('install'):
+
+            dep_name = dep_name_full.split(' ')[0]
+            if self.pins and dep_name in self.pins:
+                dep_name = "%s (== %s)" % (dep_name, self.pins[dep_name])
+            else:
+                dep_name = dep_name_full
+
             dep_dist = distlib.locators.locate(dep_name)
             dep_nixname = self.get_nixname(dep_dist)
             if dep_nixname in self.dists:
