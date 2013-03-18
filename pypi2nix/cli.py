@@ -1,21 +1,28 @@
+import json
 import argh
-import python2nix
+import argparse
+import pypi2nix
 
 
 @argh.arg('--dists', '-d', type=str, action='append')
 @argh.arg('--ignores', '-i', default=[], type=str, action='append')
-@argh.arg('--extends', '-e', default=None)
-@argh.arg('--output', '-o', default=None)
-def pypi2nix(dists, ignores, extends, output):
-    expressions = python2nix.Pypi2Nix(dists, ignores, extends)
+@argh.arg('--extends', '-e', default=None, type=open)
+@argh.arg('--output', '-o', default=None, type=argparse.FileType('w+'))
+def cli(dists, ignores, extends, output):
+
+    if extends:
+        extends = json.load(extends)
+
+    expressions = pypi2nix.Pypi2Nix(dists, ignores, extends)
+
     if output:
-        return expressions.to_file(output)
+        return output.write(str(expressions))
     else:
-        return expressions.to_string().split('\n')
+        return str(expressions).split('\n')
 
 
 def main():
-    argh.dispatch_command(pypi2nix)
+    argh.dispatch_command(cli)
 
 if __name__ == '__main__':
     main()

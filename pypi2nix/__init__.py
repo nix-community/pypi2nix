@@ -31,9 +31,7 @@ ALL_TEMPLATE = '''{ pkgs, python, buildPythonPackage }:
 let %(distname)s = python.modules // rec {
   inherit python;
   inherit (pkgs) fetchurl stdenv;
-
 %(expressions)s
-
 }; in %(distname)s'''
 
 
@@ -43,31 +41,23 @@ class Pypi2Nix(object):
         self.ignores = ignores
         self.extends = extends
 
-        if self.extends and os.path.exists(self.extends):
-            fd = open(extends)
-            self.extends = json.load(fd)
-            fd.close()
-
         self.dist = None
         self.dists = {}
         for dist_name in dists:
-            dist = distlib.locators.locate(dist_name, True)
+            dist = distlib.locators.locate(dist_name)
             if self.dist is None:
                 self.dist = dist
             self.process(dist)
 
+    def get_nixname(self, dist):
+        name = dist.name.split(' ')[0]
+        name = name.replace('.', '_').replace('-', '_')
+        return name.lower()
+
     def process(self, dist):
-        nixname = dist.name.replace('.', '_').replace('-', '_').lower()
+        nixname = self.get_nixname(dist)
         if nixname in self.dists:
             return nixname
-
-        deps = []
-        for dep_name in dist.requires:
-            print dep_name
-            dep_dist = distlib.locators.locate(dep_name, True)
-            dep_nixname = self.process(dep_dist)
-            if dep_dist.name not in self.ignores:
-                deps.append(dep_nixname)
 
         buildtime_deps = []
         if dist.download_url.endswith('.zip'):
@@ -79,13 +69,25 @@ class Pypi2Nix(object):
             'version': dist.version,
             'download_url': dist.download_url,
             'md5sum': dist.md5_digest,
-            'deps': ' '.join(deps),
             'buildtime_deps': ' '.join(buildtime_deps),
         }
 
+        deps = []
+        for dep_name in dist.requires:
+            dep_dist = distlib.locators.locate(dep_name)
+            dep_nixname = self.get_nixname(dep_dist)
+            if dep_nixname in self.dists:
+                continue
+            print dep_name
+            self.process(dep_dist)
+            if dep_dist.name not in self.ignores:
+                deps.append(dep_nixname)
+
+        self.dists[nixname]['deps'] = ' '.join(deps)
+
         return nixname
 
-    def to_string(self):
+    def __str__(self):
         distname = self.dist.name + self.dist.version.replace('.', '')
         distname = distname[0].lower() + distname[1:]
         distname += 'Packages'
@@ -97,12 +99,3 @@ class Pypi2Nix(object):
                 TEMPLATE % self.dists[nixname]
                 for nixname in self.dists
                 if self.dists[nixname]['name'] not in self.ignores])}
-
-    def to_file(self, filename):
-        f = open(filename, 'w+')
-        try:
-            f.write(self.to_string())
-        finally:
-            f.close()
-        return 'Nix expressions for "%s" distribution written to: %s' % (
-            self.dist.name, filename)
