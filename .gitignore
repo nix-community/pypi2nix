@@ -1,5 +1,4 @@
 *.py?
-*.nix
 
 /.installed.cfg
 /bin/
@@ -10,3 +9,8 @@
 /lib/
 /src/
 /pypi2nix.egg-info/
+
+/plone/.installed.cfg
+/plone/bin/
+/plone/bootstrap.py
+/plone/parts/
