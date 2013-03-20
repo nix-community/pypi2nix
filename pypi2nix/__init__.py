@@ -54,10 +54,26 @@ class Pypi2Nix(object):
         for dist_name in dists:
             if self.pins and dist_name in self.pins:
                 dist_name = "%s (== %s)" % (dist_name, self.pins[dist_name])
-            dist = distlib.locators.locate(dist_name)
+            dist = self.locate(dist_name)
             if self.dist is None:
                 self.dist = dist
             self.process(dist)
+
+    def locate(self, name):
+        print name
+        try:
+            dist = distlib.locators.locate(name)
+        except distlib.version.UnsupportedVersionError:
+            # default version scheme (adaptive) should also fallback to
+            # legacy version scheme, doing this manually
+            # needed for "pytz (==2012g)" requirement
+            scheme = distlib.locators.default_locator.scheme
+            distlib.locators.default_locator.scheme = 'legacy'
+            try:
+                dist = distlib.locators.locate(name)
+            finally:
+                distlib.locators.default_locator.scheme = scheme
+        return dist
 
     def get_pins(self, pins):
         dist_pins = {}
@@ -82,28 +98,18 @@ class Pypi2Nix(object):
         else:
             dep_name = dep_name_full
 
-        try:
-            dep_dist = distlib.locators.locate(dep_name)
-        except distlib.version.UnsupportedVersionError:
-            # default version scheme (adaptive) should also fallback to
-            # legacy version scheme, doing this manually
-            # needed for "pytz (==2012g)" requirement
-            scheme = distlib.locators.default_locator.scheme
-            distlib.locators.default_locator.scheme = 'legacy'
-            try:
-                dep_dist = distlib.locators.locate(dep_name)
-            finally:
-                distlib.locators.default_locator.scheme = scheme
+        dep_dist = self.locate(dep_name)
         dep_nixname = self.get_nixname(dep_dist.name)
 
         if dep_nixname not in self.dists:
-            print dep_name
             self.process(dep_dist)
 
         if dep_dist.name not in self.ignores and dep_nixname not in rev_deps:
             return dep_nixname
 
     def process(self, dist, rev_deps=[]):
+        if dist is None:
+            import pdb; pdb.set_trace()
         nixname = self.get_nixname(dist.name)
         if nixname in self.dists:
             return nixname
