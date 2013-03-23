@@ -1,0 +1,12 @@
+{
+    "pg8000": {
+        "download_url": "http://pybrary.net/pg8000/dist/pg8000-1.08.tar.gz",
+        "md5sum": "2e8317a22d0e09a6f12e98ddf3bb75fd"
+    },
+    "btrees": {
+        "buildtime_deps": "persistent zope_interface"
+    },
+    "zope_exceptions": {
+        "buildtime_deps": "pkgs.unzip zope_interface setuptools"
+    }
+}
