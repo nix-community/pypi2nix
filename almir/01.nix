@@ -71,10 +71,15 @@ let almir014Packages = python.modules // rec {
       url = "http://pypi.python.org/packages/source/a/almir/almir-0.1.4.tar.gz";
       md5 = "be43a6dc7c667b9ad5a243e0e76d8917";
     };
-    buildInputs = [ pyramid zope_sqlalchemy pyramid_exclog tissue deform webhelpers mysql_connector_repackaged webtest pyramid_jinja2 docutils deform_bootstrap pg8000 unittest2 mock pyramid_tm sqlalchemy pytz coverage transaction pyramid_beaker colander nose waitress ];
-    propagatedBuildInputs = [ pyramid_tm pyramid zope_sqlalchemy pyramid_exclog pytz webhelpers mysql_connector_repackaged pyramid_beaker colander docutils transaction deform_bootstrap pg8000 sqlalchemy pyramid_jinja2 waitress deform ];
+    buildInputs = [ pkgs.makeWrapper pyramid zope_sqlalchemy pyramid_exclog tissue deform webhelpers mysql_connector_repackaged webtest pyramid_jinja2 docutils deform_bootstrap pg8000 unittest2 mock pyramid_tm sqlalchemy pytz coverage transaction pyramid_beaker colander nose waitress ];
+    propagatedBuildInputs = [ pyramid_tm pyramid zope_sqlalchemy pyramid_exclog pytz webhelpers mysql_connector_repackaged pyramid_beaker colander docutils transaction deform_bootstrap pg8000 sqlalchemy pyramid_jinja2 waitress deform pkgs.python27Full pythonPackages.recursivePthLoader ];
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
+    '';
+    postInstall = ''
+      ln -s ${pyramid}/bin/pserve $out/bin
+      wrapProgram "$out/bin/pserve" \
+        --suffix PYTHONPATH : "$out/lib/python2.7/site-packages"
     '';
     doCheck = false;
     meta = {
@@ -212,7 +217,7 @@ let almir014Packages = python.modules // rec {
       md5 = "b7df1ab97f90f39529d27ba6da1f6b1c";
     };
     buildInputs = [ pkgs.unzip jinja2 pyramid webtest ];
-    propagatedBuildInputs = [  ];
+    propagatedBuildInputs = [ jinja2 ];
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
