@@ -20,21 +20,22 @@ TEMPLATE = """
     doCheck = false;
     meta = {
        maintainers = [
-         stdenv.lib.maintainers.chaoflow
          stdenv.lib.maintainers.garbas
-         stdenv.lib.maintainers.goibhniu
+         stdenv.lib.maintainers.iElectric
       ];
     };
   };
 """
 
-ALL_TEMPLATE = '''{ pkgs, python, buildPythonPackage }:
+ALL_TEMPLATE = '''{ pkgs, python, pythonPackages, buildPythonPackage }:
 
 let %(distname)s = python.modules // rec {
   inherit python;
+  inherit (pythonPackages) setuptools;
   inherit (pkgs) fetchurl stdenv;
 %(expressions)s
-}; in %(distname)s'''
+}; in %(distname)s
+'''
 
 
 class Pypi2Nix(object):
@@ -62,17 +63,15 @@ class Pypi2Nix(object):
     def locate(self, name):
         print name
         try:
-            dist = distlib.locators.locate(name)
+            dist = distlib.locators.locate(name, True)
         except distlib.version.UnsupportedVersionError:
             # default version scheme (adaptive) should also fallback to
             # legacy version scheme, doing this manually
             # needed for "pytz (==2012g)" requirement
             scheme = distlib.locators.default_locator.scheme
             distlib.locators.default_locator.scheme = 'legacy'
-            try:
-                dist = distlib.locators.locate(name)
-            finally:
-                distlib.locators.default_locator.scheme = scheme
+            dist = distlib.locators.locate(name, True)
+            distlib.locators.default_locator.scheme = scheme
         return dist
 
     def get_pins(self, pins):
@@ -104,12 +103,10 @@ class Pypi2Nix(object):
         if dep_nixname not in self.dists:
             self.process(dep_dist)
 
-        if dep_dist.name not in self.ignores and dep_nixname not in rev_deps:
+        if dep_nixname not in rev_deps:
             return dep_nixname
 
     def process(self, dist, rev_deps=[]):
-        if dist is None:
-            import pdb; pdb.set_trace()
         nixname = self.get_nixname(dist.name)
         if nixname in self.dists:
             return nixname
@@ -128,7 +125,7 @@ class Pypi2Nix(object):
         buildtime_deps = []
         if dist.download_url.endswith('.zip'):
             buildtime_deps.append('pkgs.unzip')
-        for dep_name in dist.get_requirements('setup'):
+        for dep_name in list(dist.setup_requires) + list(dist.test_requires):
             dep_nixname = self.get_nixname(dep_name)
             self.rev_deps.setdefault(dep_nixname, [])
             self.rev_deps[dep_nixname].append(nixname)
@@ -137,7 +134,7 @@ class Pypi2Nix(object):
                 buildtime_deps.append(dep_nixname)
 
         deps = []
-        for dep_name in dist.get_requirements('install'):
+        for dep_name in dist.requires:
             dep_nixname = self.get_nixname(dep_name)
             self.rev_deps.setdefault(dep_nixname, [])
             self.rev_deps[dep_nixname].append(nixname)
@@ -145,10 +142,8 @@ class Pypi2Nix(object):
             if dep_nixname:
                 deps.append(dep_nixname)
 
-        self.dists[nixname]['deps'] = (' '.join(
-            deps)).replace('setuptools', 'pkgs.setuptools')
-        self.dists[nixname]['buildtime_deps'] = (' '.join(
-            buildtime_deps)).replace('setuptools', 'pkgs.setuptools')
+        self.dists[nixname]['deps'] = ' '.join(deps)
+        self.dists[nixname]['buildtime_deps'] = ' '.join(buildtime_deps)
 
     def __str__(self):
         distname = self.dist.name + self.dist.version.replace('.', '')
