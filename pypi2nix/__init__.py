@@ -118,7 +118,7 @@ class Pypi2Nix(object):
             'nixname': nixname,
             'name': dist.name,
             'version': dist.version,
-            'download_url': dist.download_url,
+            'download_url': dist.download_url.replace(dist.name + '-' + dist.version, '${name}'),
             'md5sum': dist.md5_digest,
         }
 
