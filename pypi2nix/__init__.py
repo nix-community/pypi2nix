@@ -8,16 +8,19 @@ import distlib.locators
 TEMPLATE = """
   %(nixname)s = buildPythonPackage rec {
     name = "%(name)s-%(version)s";
+
     src = fetchurl {
       url = "%(download_url)s";
       md5 = "%(md5sum)s";
     };
+
     buildInputs = [ %(buildtime_deps)s ];
     propagatedBuildInputs = [ %(deps)s ];
+
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
-    doCheck = false;
+
     meta = {
       maintainers = [
         stdenv.lib.maintainers.garbas
