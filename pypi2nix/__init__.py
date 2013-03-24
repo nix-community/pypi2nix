@@ -19,10 +19,11 @@ TEMPLATE = """
     '';
     doCheck = false;
     meta = {
-       maintainers = [
-         stdenv.lib.maintainers.garbas
-         stdenv.lib.maintainers.iElectric
+      maintainers = [
+        stdenv.lib.maintainers.garbas
+        stdenv.lib.maintainers.iElectric
       ];
+      platforms = stdenv.lib.platforms.all;
     };
   };
 """
