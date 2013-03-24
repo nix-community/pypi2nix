@@ -62,9 +62,10 @@ class Pypi2Nix(object):
             self.process(dist)
 
     def locate(self, name):
-        print name
+        print "Getting: %s" % name
         try:
             dist = distlib.locators.locate(name, True)
+            print "Got: %s-%s" % (dist.name, dist.version)
         except distlib.version.UnsupportedVersionError:
             # default version scheme (adaptive) should also fallback to
             # legacy version scheme, doing this manually
