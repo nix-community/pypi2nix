@@ -14,3 +14,8 @@
 /plone/bin/
 /plone/bootstrap.py
 /plone/parts/
+/plone/cfg/
+/plone/include/
+/plone/lib/
+/plone/nixenv
+/plone/var/
