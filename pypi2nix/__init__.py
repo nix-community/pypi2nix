@@ -1,3 +1,4 @@
+import sys
 import copy
 import json
 import distlib.version
@@ -16,6 +17,7 @@ TEMPLATE = """
 
     buildInputs = [ %(buildtime_deps)s ];
     propagatedBuildInputs = [ %(deps)s ];
+    doCheck = false;
 
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
@@ -31,21 +33,22 @@ TEMPLATE = """
   };
 """
 
-ALL_TEMPLATE = '''{ pkgs, python, pythonPackages, buildPythonPackage }:
+ALL_TEMPLATE = '''{ pkgs, python, pythonPackages }:
 
-let %(distname)s = python.modules // rec {
+let %(name)s = python.modules // rec {
   inherit python;
-  inherit (pythonPackages) setuptools;
+  inherit (pythonPackages) setuptools buildPythonPackage;
   inherit (pkgs) fetchurl stdenv;
 %(expressions)s
-}; in %(distname)s
+}; in %(name)s
 '''
 
 
 class Pypi2Nix(object):
 
-    def __init__(self, dists, ignores=[], extends=None, pins=None):
+    def __init__(self, name, dists, ignores=[], extends=None, pins=None):
         self.ignores = ignores
+        self.name = name
         if extends:
             extends = json.load(extends)
         self.extends = extends
@@ -53,31 +56,9 @@ class Pypi2Nix(object):
             pins = self.get_pins(pins)
         self.pins = pins
 
-        self.rev_deps = {}
-        self.dist = None
         self.dists = {}
         for dist_name in dists:
-            if self.pins and dist_name in self.pins:
-                dist_name = "%s (== %s)" % (dist_name, self.pins[dist_name])
-            dist = self.locate(dist_name)
-            if self.dist is None:
-                self.dist = dist
-            self.process(dist)
-
-    def locate(self, name):
-        print "Getting: %s" % name
-        try:
-            dist = distlib.locators.locate(name, True)
-            print "Got: %s-%s" % (dist.name, dist.version)
-        except distlib.version.UnsupportedVersionError:
-            # default version scheme (adaptive) should also fallback to
-            # legacy version scheme, doing this manually
-            # needed for "pytz (==2012g)" requirement
-            scheme = distlib.locators.default_locator.scheme
-            distlib.locators.default_locator.scheme = 'legacy'
-            dist = distlib.locators.locate(name, True)
-            distlib.locators.default_locator.scheme = scheme
-        return dist
+            self.get_dist(dist_name)
 
     def get_pins(self, pins):
         dist_pins = {}
@@ -87,7 +68,7 @@ class Pypi2Nix(object):
             line = line.split('==')
             if len(line) != 2:
                 continue
-            dist_pins[line[0]] = line[1].strip()
+            dist_pins[line[0].lower()] = line[1].strip()
         return dist_pins
 
     def get_nixname(self, name):
@@ -95,71 +76,84 @@ class Pypi2Nix(object):
         name = name.replace('.', '_').replace('-', '_')
         return name.lower()
 
-    def process_dist(self, dep_name_full, rev_deps):
-        dep_name = dep_name_full.split(' ')[0]
-        if self.pins and dep_name in self.pins:
-            dep_name = "%s (== %s)" % (dep_name, self.pins[dep_name])
-        else:
-            dep_name = dep_name_full
+    def get_dist(self, name, reverse_deps=[], prefix=""):
+        name = name.split(' ')[0].lower()
+        if self.pins and name in self.pins:
+            name = "%s (== %s)" % (name, self.pins[name])
 
-        dep_dist = self.locate(dep_name)
-        dep_nixname = self.get_nixname(dep_dist.name)
+        nixname = self.get_nixname(name)
+        print '%s| %s' % (prefix, nixname)
 
-        if dep_nixname not in self.dists:
-            self.process(dep_dist)
+        print "%s|-> Getting: %s" % (prefix, name)
+        try:
+            dist = distlib.locators.locate(name, True)
+        except distlib.version.UnsupportedVersionError:
+            # default version scheme (adaptive) should also fallback to
+            # legacy version scheme, doing this manually
+            # needed for "pytz (==2012g)" requirement
+            scheme = distlib.locators.default_locator.scheme
+            distlib.locators.default_locator.scheme = 'legacy'
+            dist = distlib.locators.locate(name, True)
+            distlib.locators.default_locator.scheme = scheme
+        print "%s|-> Got: %s-%s" % (prefix, dist.name, dist.version)
 
-        if dep_nixname not in rev_deps:
-            return dep_nixname
+        reverse_deps = copy.deepcopy(reverse_deps)
+        reverse_deps.append(nixname)
 
-    def process(self, dist, rev_deps=[]):
+        deps = self.get_dependencies(
+            dist, reverse_deps, prefix + 4 * " ")
+
+        if type(deps) is tuple and len(deps) == 2:
+            if dist.download_url.endswith('.zip'):
+                deps[1].append('pkgs.unzip')
+            self.dists[nixname] = {
+                'nixname': nixname,
+                'name': dist.name,
+                'version': dist.version,
+                'download_url': dist.download_url,
+                'md5sum': dist.md5_digest,
+                'deps': ' '.join(deps[0]),
+                'buildtime_deps': ' '.join(deps[1]),
+            }
+
+    def get_dependencies(self, dist, reverse_deps, prefix=""):
         nixname = self.get_nixname(dist.name)
         if nixname in self.dists:
-            return nixname
-
-        rev_deps.append(nixname)
-        copy_rev_deps = copy.deepcopy(rev_deps)
-
-        self.dists[nixname] = {
-            'nixname': nixname,
-            'name': dist.name,
-            'version': dist.version,
-            'download_url': dist.download_url.replace(dist.name + '-' + dist.version, '${name}'),
-            'md5sum': dist.md5_digest,
-        }
+            print "%s|-> Cached: %s-%s" % (prefix, dist.name, dist.version)
+            return
 
         buildtime_deps = []
-        if dist.download_url.endswith('.zip'):
-            buildtime_deps.append('pkgs.unzip')
-        for dep_name in list(dist.setup_requires) + list(dist.test_requires):
-            dep_nixname = self.get_nixname(dep_name)
-            self.rev_deps.setdefault(dep_nixname, [])
-            self.rev_deps[dep_nixname].append(nixname)
-            dep_nixname = self.process_dist(dep_name, [])
-            if dep_nixname:
-                buildtime_deps.append(dep_nixname)
+        for dist_name in list(dist.setup_requires):  # + list(dist.test_requires):
+            nixname = self.get_nixname(dist_name)
+            if nixname in reverse_deps:
+                print "%s|-> Recursing dependency: %s" % (prefix, nixname)
+                continue
+            self.get_dist(dist_name, reverse_deps, prefix)
+            buildtime_deps.append(nixname)
 
         deps = []
-        for dep_name in dist.requires:
-            dep_nixname = self.get_nixname(dep_name)
-            self.rev_deps.setdefault(dep_nixname, [])
-            self.rev_deps[dep_nixname].append(nixname)
-            dep_nixname = self.process_dist(dep_name, copy_rev_deps)
-            if dep_nixname:
-                deps.append(dep_nixname)
+        for dist_name in list(dist.requires) + list(dist.setup_requires):
+            nixname = self.get_nixname(dist_name)
+            if nixname in reverse_deps:
+                print "%s|-> Recursing dependency: %s" % (prefix, nixname)
+                continue
+            self.get_dist(
+                dist_name, reverse_deps, prefix)
+            deps.append(nixname)
 
-        self.dists[nixname]['deps'] = ' '.join(deps)
-        self.dists[nixname]['buildtime_deps'] = ' '.join(buildtime_deps)
+        return deps, buildtime_deps
 
     def __str__(self):
-        distname = self.dist.name + self.dist.version.replace('.', '')
-        distname = distname[0].lower() + distname[1:]
-        distname += 'Packages'
         if self.extends:
             for name in self.extends:
                 self.dists[name].update(self.extends[name])
-        return ALL_TEMPLATE % {
-            'distname': distname,
-            'expressions': ''.join([
-                TEMPLATE % self.dists[nixname]
-                for nixname in self.dists
-                if self.dists[nixname]['name'] not in self.ignores])}
+        return '# DO NOT EDIT THIS FILE!\n#\n' + \
+               '# Nix expressions autogenerated with:\n' + \
+               '#   ' + ''.join(sys.argv) + '\n\n' + \
+            ALL_TEMPLATE % {
+               'name': self.name,
+               'expressions': ''.join([
+                   TEMPLATE % self.dists[nixname]
+                   for nixname in self.dists
+                   if self.dists[nixname]['name'] not in self.ignores])}
+
