@@ -9,21 +9,20 @@ import distlib.locators
 TEMPLATE = """
   %(nixname)s = buildPythonPackage rec {
     name = "%(name)s-%(version)s";
-
     src = fetchurl {
       url = "%(download_url)s";
       md5 = "%(md5sum)s";
     };
-
     buildInputs = [ %(buildtime_deps)s ];
     propagatedBuildInputs = [ %(deps)s ];
     doCheck = false;
-
     installCommand = ''
       easy_install --always-unzip --no-deps --prefix="$out" .
     '';
-
+    %(extra)s
     meta = {
+      description = "%(description)s";
+      homepage = "%(homepage)s";
       maintainers = [
         stdenv.lib.maintainers.garbas
         stdenv.lib.maintainers.iElectric
@@ -114,6 +113,9 @@ class Pypi2Nix(object):
                 'md5sum': dist.md5_digest,
                 'deps': ' '.join(deps[0]),
                 'buildtime_deps': ' '.join(deps[1]),
+                'homepage': dist.metadata.get('home_page'),
+                'description': dist.metadata.get('description'),
+                'extra': '',
             }
 
     def get_dependencies(self, dist, reverse_deps, prefix=""):
