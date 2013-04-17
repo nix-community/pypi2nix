@@ -65,7 +65,7 @@ class Pypi2Nix(object):
             line = line.split('==')
             if len(line) != 2:
                 continue
-            dist_pins[line[0].lower()] = line[1].strip()
+            dist_pins[line[0].strip().lower()] = line[1].strip()
         return dist_pins
 
     def get_nixname(self, name):
