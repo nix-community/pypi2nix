@@ -1,0 +1,30 @@
+{
+    "lxml": {
+        "buildtime_deps": "pkgs.libxml2 pkgs.libxslt"
+    },
+    "plone_app_portlets": {
+        "md5sum": "3d18ff10053f5a04670f22e6359d2804"
+    },
+    "products_plonepas": {
+        "md5sum": "f504cdfb5d1e9703cf526f6f03c9a1c5"
+    },
+    "plone_app_search": {
+        "md5sum": "80dffacba718ab809d28147b5b6b0892"
+    },
+    "plone_app_upgrade": {
+        "md5sum": "8da18e8173668cad813dd8bb5a35ee9e"
+    },
+    "plone_app_workflow": {
+        "md5sum": "350ea680ccf7eb9b1598927cafad4f38"
+    },
+    "plone_app_controlpanel": {
+        "md5sum": "401c8880865f398c281953f5837108b9"
+    },
+    "elementtree": {
+        "md5sum": "30e2fe5edd143f347e03a8baf5d60f8a"
+    },
+    "unidecode": {
+        "download_url": "http://pypi.python.org/packages/source/U/Unidecode/Unidecode-0.04.1.tar.gz",
+        "md5sum": "c4c9ed8d40cff25c390ff5d5112b9308"
+    }
+}

@@ -1,4 +1,7 @@
 {
+    "lxml": {
+        "buildtime_deps": "pkgs.libxml2 pkgs.libxslt"
+    },
     "unidecode": {
         "download_url": "http://pypi.python.org/packages/source/U/Unidecode/Unidecode-0.04.1.tar.gz",
         "md5sum": "c4c9ed8d40cff25c390ff5d5112b9308"
