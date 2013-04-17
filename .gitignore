@@ -19,3 +19,10 @@
 /plone/lib/
 /plone/nixenv
 /plone/var/
+
+/sentry/bin/
+/sentry/include/
+/sentry/lib/
+/sentry/nixenv
+/sentry/sentry.conf.py
+/sentry/sentry.db
