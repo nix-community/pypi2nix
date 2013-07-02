@@ -2,7 +2,7 @@
 
 let
     pkgs = import ../../nixpkgs { };
-    plone43Packages = import ./4.3.0.nix {
+    plone43Packages = import ./4.3.1.nix {
         inherit pkgs;
         pythonPackages = pkgs.python27Packages;
     };
@@ -28,7 +28,8 @@ buildEnv {
     plone43Packages.pillow
     plone43Packages.mailinglogger
     plone43Packages.plone_recipe_zope2instance
+    plone43Packages.plone_recipe_zeoserver
     plone43Packages.zc_recipe_egg
-    sentryPackages.raven
+#    sentryPackages.raven
   ] ++ lib.attrValues python27.modules;
 }

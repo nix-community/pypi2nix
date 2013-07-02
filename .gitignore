@@ -19,6 +19,8 @@
 /plone/lib/
 /plone/nixenv
 /plone/var/
+/plone/downloads/
+/plone/eggs/
 
 /sentry/bin/
 /sentry/include/
