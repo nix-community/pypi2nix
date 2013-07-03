@@ -485,4 +485,4 @@ zc.relation==1.0
 eggtestinfo==0.3
 plone.recipe.zeoserver==1.2.6
 plone.recipe.varnish==1.2.2
-
+collective.recipe.filestorage==0.6

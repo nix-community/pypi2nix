@@ -2,6 +2,9 @@
     "lxml": {
         "buildtime_deps": "pkgs.libxml2 pkgs.libxslt"
     },
+    "collective_recipe_template": {
+        "deps": "zc_buildout setuptools pythonPackages.genshi"
+    },
     "plone_recipe_varnish": {
         "version": "1.3dev",
         "download_url": "https://github.com/collective/plone.recipe.varnish/archive/38ef4a86ce2e1c407e35ab36487bc1311c4eb1e3.zip",
