@@ -5,5 +5,10 @@
     "unidecode": {
         "download_url": "http://pypi.python.org/packages/source/U/Unidecode/Unidecode-0.04.1.tar.gz",
         "md5sum": "c4c9ed8d40cff25c390ff5d5112b9308"
+    },
+    "z3c_form": {
+        "version": "3.0",
+        "download_url": "http://pypi.python.org/packages/source/z/z3c.form/z3c.form-3.0.zip",
+        "md5sum": "f9fa3cf56c83722425b3b1be4467ce46"
     }
 }
