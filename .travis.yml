@@ -6,4 +6,4 @@ install:
   - pip install . --use-mirrors
 script:
   - flake8 setup.py
-  - flake8 python2nix
+  - flake8 pypi2nix
