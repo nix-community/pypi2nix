@@ -1,161 +1,67 @@
-import sys
-import copy
 import json
-import distlib.version
-import distlib.locators
+from distutils2.pypi import xmlrpc
+from distutils2.version import get_version_predicate
 
-#distlib.locators.default_locator.scheme = '
+TMPL_TOP = '''{ pkgs, stdenv, fetchurl, python, lowPrio, self }:
 
-TEMPLATE = """
-  %(nixname)s = buildPythonPackage rec {
-    name = "%(name)s-%(version)s";
-    src = fetchurl {
-      url = "%(download_url)s";
-      md5 = "%(md5sum)s";
-    };
-    buildInputs = [ %(buildtime_deps)s ];
-    propagatedBuildInputs = [ %(deps)s ];
-    doCheck = false;
-    installCommand = ''
-      easy_install --always-unzip --no-deps --prefix="$out" .
-    '';
-    %(extra)s
-    meta = {
-      description = "%(description)s";
-      homepage = "%(homepage)s";
-      maintainers = [
-        stdenv.lib.maintainers.garbas
-        stdenv.lib.maintainers.iElectric
-      ];
-    };
-  };
-"""
+let
+  inherit (self) buildPythonPackage;
 
-ALL_TEMPLATE = '''{ pkgs, pythonPackages }:
-
-let %(name)s = pythonPackages.python.modules // rec {
-  inherit (pythonPackages) buildPythonPackage %(ignores)s;
-  inherit (pkgs) fetchurl stdenv;
-%(expressions)s
-}; in %(name)s
+in
+{'''
+TMPL_BOTTOM = '''
+}
+'''
+TMPL_EXPR = '''
+  {
+    name = "%(name)s";
+  }
 '''
 
 
-class Pypi2Nix(object):
+class PypiPackage(object):
 
-    def __init__(self, name, dists, ignores=[], extends=None, pins=None):
-        self.ignores = ignores
+    def __init__(self, name, version=None):
         self.name = name
-        if extends:
-            extends = json.load(extends)
-        self.extends = extends
-        if pins:
-            pins = self.get_pins(pins)
-        self.pins = pins
-
-        self.dists = {}
-        for dist_name in dists:
-            self.get_dist(dist_name)
-
-    def get_pins(self, pins):
-        dist_pins = {}
-        for line in pins:
-            if '==' not in line:
-                continue
-            line = line.split('==')
-            if len(line) != 2:
-                continue
-            dist_pins[line[0].strip().lower()] = line[1].strip()
-        return dist_pins
-
-    def get_nixname(self, name):
-        name = name.split(' ')[0]
-        name = name.replace('.', '_').replace('-', '_')
-        return name.lower()
-
-    def get_dist(self, name, reverse_deps=[], prefix=""):
-        name = name.split(' ')[0].lower()
-        if self.pins and name in self.pins:
-            name = "%s (== %s)" % (name, self.pins[name])
-
-        nixname = self.get_nixname(name)
-        if nixname in self.ignores:
-            return
-        print '%s| %s' % (prefix, nixname)
-
-        print "%s|-> Getting: %s" % (prefix, name)
-        try:
-            dist = distlib.locators.locate(name, True)
-        except distlib.version.UnsupportedVersionError:
-            # default version scheme (adaptive) should also fallback to
-            # legacy version scheme, doing this manually
-            # needed for "pytz (==2012g)" requirement
-            scheme = distlib.locators.default_locator.scheme
-            distlib.locators.default_locator.scheme = 'legacy'
-            dist = distlib.locators.locate(name, True)
-            distlib.locators.default_locator.scheme = scheme
-        print "%s|-> Got: %s-%s" % (prefix, dist.name, dist.version)
-
-        reverse_deps = copy.deepcopy(reverse_deps)
-        reverse_deps.append(nixname)
-
-        deps = self.get_dependencies(
-            dist, reverse_deps, prefix + 4 * " ")
-
-        if type(deps) is tuple and len(deps) == 2:
-            if dist.download_url.endswith('.zip'):
-                deps[1].append('pkgs.unzip')
-            self.dists[nixname] = {
-                'nixname': nixname,
-                'name': dist.name,
-                'version': dist.version,
-                'download_url': dist.download_url,
-                'md5sum': dist.md5_digest,
-                'deps': ' '.join(deps[0]),
-                'buildtime_deps': ' '.join(deps[1]),
-                'homepage': dist.metadata.get('home_page'),
-                'description': dist.metadata.get('description'),
-                'extra': '',
-            }
-
-    def get_dependencies(self, dist, reverse_deps, prefix=""):
-        nixname = self.get_nixname(dist.name)
-        if nixname in self.dists:
-            print "%s|-> Cached: %s-%s" % (prefix, dist.name, dist.version)
-            return
-
-        buildtime_deps = []
-        for dist_name in list(dist.setup_requires):  # + list(dist.test_requires):
-            nixname = self.get_nixname(dist_name)
-            if nixname in reverse_deps:
-                print "%s|-> Recursing dependency: %s" % (prefix, nixname)
-                continue
-            self.get_dist(dist_name, reverse_deps, prefix)
-            buildtime_deps.append(nixname)
-
-        deps = []
-        for dist_name in list(dist.requires) + list(dist.setup_requires):
-            nixname = self.get_nixname(dist_name)
-            if nixname in reverse_deps:
-                print "%s|-> Recursing dependency: %s" % (prefix, nixname)
-                continue
-            self.get_dist(
-                dist_name, reverse_deps, prefix)
-            deps.append(nixname)
-
-        return deps, buildtime_deps
+        self.version = version
+        self.pypi = xmlrpc.Client()
 
     def __str__(self):
-        if self.extends:
-            for name in self.extends:
-                self.dists[name].update(self.extends[name])
-        return '# DO NOT EDIT THIS FILE!\n#\n' + \
-               '# Nix expressions autogenerated with:\n' + \
-               '#   ' + ' '.join(sys.argv) + '\n\n' + \
-            ALL_TEMPLATE % {
-               'name': self.name,
-               'ignores': ' '.join(self.ignores),
-               'expressions': ''.join([
-                   TEMPLATE % self.dists[nixname]
-                   for nixname in self.dists
-                   if self.dists[nixname]['name'] not in self.ignores])}
+        if self.version is None:
+            releases = self.pypi.get_releases(
+                self.name, show_hidden=True, force_update=True)
+            predicate = get_version_predicate(self.name)
+            self.version = str(releases.get_last(predicate).version)
+
+        release = self.pypi.get_distributions(self.name, self.version)
+        print release.dists['sdist']
+
+        import pdb; pdb.set_trace()
+
+        return TMPL_EXPR % dict(name=self.name)
+
+
+def fetch_package(self, config):
+    if isinstance(config, basestring):
+        name = config
+        requirements = {}
+    else:
+        name = config['name']
+        requirements = config['requirements']
+
+    version = None
+    if name in requirements:
+        version = requirements[name]
+
+    if name not in self.cache or version not in self.cache[name]:
+        self.cache.setdefault(name, {})
+        self.cache[name][version] = PypiPackage(name, version)
+
+        # TODO: handle dependencies here
+
+    return self.cache[name][version]
+
+
+def lalala(x):
+    print 'aaaa'
+    return x

@@ -19,8 +19,7 @@ setup(
         'License :: OSI Approved :: GNU General Public License (GPL)',
     ],
     install_requires=[
-        'argh',
-        'distlib',
+        'distutils2',
     ],
     entry_points = {
         'console_scripts': [
