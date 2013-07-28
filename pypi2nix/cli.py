@@ -116,11 +116,17 @@ def main():
     for version in packages_per_version:
         print TMPL_VERSION_START % version
         for package in packages_per_version[version]:
+            if package.startswith('setuptools-'):
+                continue
             tmp = copy.deepcopy(packages[package])
             tmp['name'] = package
-            tmp['dependencies'] = ' '.join(['self."%s"' % i
-                                            for i in tmp['dependencies']
-                                            if i != package])
+            tmp['dependencies'] = ' '.join([
+                i.startswith('setuptools-') \
+                    and 'self.setuptools'
+                    or 'self."%s"' % i
+                for i in tmp['dependencies']
+                if i != package
+            ])
             tmp.setdefault('buildInputs', '')
             if tmp['url'].endswith('.zip'):
                 tmp['buildInputs'] = 'pkgs.unzip'
