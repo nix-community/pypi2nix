@@ -144,7 +144,7 @@ def parse_buildout_result(text):
                 '%s%s-%s' % (
                     i,
                     len(tmp_result[i]['extras']) and '[%s]' % ','.join(
-                       self. tmp_result[i]['extras']) or '',
+                        tmp_result[i]['extras']) or '',
                     tmp_result[i]['version'])
                 for i in data['dependencies']]
         }
