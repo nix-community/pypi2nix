@@ -1,14 +1,28 @@
 import sys
 import copy
 import json
-import tempfile
 import xmlrpclib
 from pypi2nix.buildout import run_buildout
 
-TMPL_START = '''{ pkgs, stdenv, fetchurl, python, lowPrio, self }:
+
+def deep_update(a, b):
+    '''recursively merges dict's. not just simple a['key'] = b['key'], if
+    both a and bhave a key who's value is a dict then dict_merge is called
+    on both values and the result stored in the returned dictionary.'''
+    if not isinstance(b, dict):
+        return b
+    result = copy.deepcopy(a)
+    for k, v in b.iteritems():
+        if k in result and isinstance(result[k], dict):
+                result[k] = deep_update(result[k], v)
+        else:
+            result[k] = copy.deepcopy(v)
+    return result
+
+
+TMPL_START = '''{ pkgs, stdenv, fetchurl, python, self }:
 
 let
-  inherit (self) buildPythonPackage;
 in
 {'''
 TMPL_END = '''
@@ -19,16 +33,23 @@ TMPL_VERSION_START = '''
 TMPL_VERSION_END = '''
 }
 '''
+#Plone = self."Plone-4.3.1";
 TMPL_NIX_EXPR = '''
-  "%(name)s" = buildPythonPackage {
+  "%(name)s" = self.buildPythonPackage {
     name = "%(name)s";
     src = fetchurl {
         url = "%(url)s";
         md5 = "%(md5)s";
     };
-    propagatedBuildInputs = [ %(dependencies)s ];
+    doCheck = %(doCheck)s;
+    buildInputs = [ %(buildInputs)s ];
+    propagatedBuildInputs = [ %(propagatedBuildInputs)s ];
+    installCommand = ''%(installCommand)s'';
+
     meta = {
-      description = "%(description)s";
+      description = ''
+        %(description)s
+        '';
       homepage = "%(homepage)s";
       license = "%(license)s";
     };
@@ -87,20 +108,25 @@ def main():
         packages_per_version[lib_version] = \
             packages_per_version[lib_version].union(
                 set([i for i in tmp.keys()]))
-        packages.update(tmp)
+        packages = deep_update(packages, tmp)
 
     client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
     for package_name in packages:
-        metadata = client.release_data(
-            packages[package_name]['name'],
-            packages[package_name]['version'])
-        packages[package_name]['description'] = metadata['summary']
-        packages[package_name]['homepage'] = metadata['home_page']
-        packages[package_name]['license'] = metadata['license']
+        try:
+            metadata = client.release_data(
+                packages[package_name]['name'],
+                packages[package_name]['version'])
+            packages[package_name]['description'] = metadata['summary']
+            packages[package_name]['homepage'] = metadata['home_page']
+            packages[package_name]['license'] = metadata['license']
+        except:
+            packages[package_name]['description'] = ""
+            packages[package_name]['homepage'] = ""
+            packages[package_name]['license'] = ""
 
         release = None
         releases = client.release_urls(
-            packages[package_name]['name'],
+            packages[package_name]['name'].replace('webob', 'WebOb'),
             packages[package_name]['version'])
         for item in releases:
             if item['packagetype'] == 'sdist' and \
@@ -108,7 +134,7 @@ def main():
                 release = item
                 break
         if release is None:
-            raise("No source/sdist release version for %s!" % package_name)
+            raise Exception("No source/sdist release version for %s!" % package_name)
         packages[package_name]['md5'] = release['md5_digest']
         packages[package_name]['url'] = release['url']
 
@@ -119,17 +145,26 @@ def main():
             if package.startswith('setuptools-'):
                 continue
             tmp = copy.deepcopy(packages[package])
+
             tmp['name'] = package
-            tmp['dependencies'] = ' '.join([
-                i.startswith('setuptools-') \
-                    and 'self.setuptools'
-                    or 'self."%s"' % i
-                for i in tmp['dependencies']
+
+            tmp['propagatedBuildInputs'] = ' '.join([
+                i.startswith('setuptools-')
+                and 'self.setuptools'
+                or ((i.startswith('python.modules.') or i.startswith('pkgs.'))
+                    and i or 'self."%s"' % i)
+                for i in tmp['propagatedBuildInputs']
                 if i != package
             ])
-            tmp.setdefault('buildInputs', '')
+
+            tmp.setdefault('buildInputs', [])
+            tmp['buildInputs'] = [
+                (i.startswith('python.modules.') or i.startswith('pkgs.'))
+                and i or 'self."%s"' % i
+                for i in tmp['buildInputs']]
             if tmp['url'].endswith('.zip'):
-                tmp['buildInputs'] = 'pkgs.unzip'
+                tmp['buildInputs'].append('pkgs.unzip')
+            tmp['buildInputs'] = ' '.join(tmp['buildInputs'])
 
             print TMPL_NIX_EXPR % tmp
         print TMPL_VERSION_END
