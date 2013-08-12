@@ -1,6 +1,7 @@
 import sys
 import copy
 import json
+import tempfile
 import xmlrpclib
 from pypi2nix.buildout import run_buildout
 
@@ -73,14 +74,20 @@ def main():
         f = open(sys.argv[1])
         specifications = json.load(f)
     except ValueError as e:
-        raise ValueError("File %s is not valid JSON file." % sys.argv[1])
+        print "File %s is not valid JSON file." % sys.argv[1]
+        print e
+        sys.exit(1)
     except Exception as e:
-        raise e
-    finally:
-        f.close()
+        print "Usage: pypi2nix <jsonfile>"
+        if len(sys.argv) == 1:
+            print "Please provide <jsonfile>!."
+        else:
+            print e
+        sys.exit(1)
 
-    #eggsdir = tempfile.mkdtemp(suffix='pypi2nix-eggs')
-    eggsdir = '/home/rok/.buildout/eggs'
+    f.close()
+
+    eggsdir = tempfile.mkdtemp(suffix='pypi2nix-eggs')
 
     configs = []
     for spec in specifications:
