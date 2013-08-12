@@ -1,9 +1,20 @@
+import os
 import sys
 import copy
 import json
-import tempfile
+import errno
 import xmlrpclib
 from pypi2nix.buildout import run_buildout
+
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
 
 
 def deep_update(a, b):
@@ -87,7 +98,8 @@ def main():
 
     f.close()
 
-    eggsdir = tempfile.mkdtemp(suffix='pypi2nix-eggs')
+    eggsdir = os.path.expanduser('~/.buildout/eggs')
+    mkdir_p(eggsdir)
 
     configs = []
     for spec in specifications:
