@@ -35,7 +35,7 @@ stdenv.mkDerivation {
     EOF
     python bootstrap.py
     bin/buildout -q
-    sed -i -e 's@self.name = specification.project_name.lower()@self.name, self.project_name = specification.project_name.lower(), specification.project_name@g' /home/rok/.buildout/eggs/tl.eggdeps*/tl/eggdeps/graph.py
+    sed -i -e 's@self.name = specification.project_name.lower()@self.name, self.project_name = specification.project_name.lower(), specification.project_name@g' %(eggsdir)s/tl.eggdeps*/tl/eggdeps/graph.py
     sed -i -e 's@name_string = "%%s %%s" %% (node.name, node.dist.version)@name_string = "%%s %%s" %% (node.project_name, node.dist.version)@g' %(eggsdir)s/tl.eggdeps*/tl/eggdeps/plaintext.py
     sed -i -e 's@name_string = node.name@name_string = node.project_name@g' %(eggsdir)s/tl.eggdeps*/tl/eggdeps/plaintext.py
     bin/eggdeps -nt %(specifications)s > $out
