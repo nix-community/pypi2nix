@@ -185,6 +185,12 @@ class Buildout(object):
                     'doCheck' in self.override[name])
                 and str(self.override[name]['doCheck']).lower()
                 or str(self.doCheck).lower(),
+
+                'configurePhase': (
+                    name in self.override and
+                    'configurePhase' in self.override[name])
+                and self.override[name]['configurePhase']
+                or None,
                 'installCommand': self.installCommand
             }
 

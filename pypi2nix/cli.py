@@ -55,9 +55,8 @@ TMPL_NIX_EXPR = '''
     };
     doCheck = %(doCheck)s;
     buildInputs = [ %(buildInputs)s ];
-    propagatedBuildInputs = [ %(propagatedBuildInputs)s ];
+    propagatedBuildInputs = [ %(propagatedBuildInputs)s ];%(configurePhase)s
     installCommand = ''%(installCommand)s'';
-
     meta = {
       description = ''
         %(description)s
@@ -184,6 +183,14 @@ def main():
             if tmp['url'].endswith('.zip'):
                 tmp['buildInputs'].append('pkgs.unzip')
             tmp['buildInputs'] = ' '.join(tmp['buildInputs'])
+
+            if tmp['configurePhase'] is None:
+                tmp['configurePhase'] = ""
+            else:
+                tmp['configurePhase'] = "\n    configurePhase = ''" +\
+                    "\n      " +\
+                    ("\n      ".join(tmp['configurePhase'])) +\
+                    "\n    '';"
 
             print TMPL_NIX_EXPR % tmp
         print TMPL_VERSION_END
