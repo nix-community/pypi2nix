@@ -230,16 +230,7 @@ class Buildout(object):
 
         self.checked.append(to_check)
 
+
 def run_buildout(eggsdir, config):
     buildout = Buildout(config)
     return buildout.run(eggsdir)
-
-if __name__ == '__main__':
-    buildout = Buildout({
-        "name": "Plone",
-        "extends": "http://dist.plone.org/release/4.3.1/versions.cfg",
-        "environment": "py27",
-        "buildInputs": ['python27'],
-    })
-    tmp = buildout.run("/home/rok/.buildout/eggs")
-    import pdb; pdb.set_trace()

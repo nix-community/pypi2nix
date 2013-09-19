@@ -45,7 +45,8 @@ TMPL_VERSION_START = '''
 TMPL_VERSION_END = '''
 }
 '''
-#Plone = self."Plone-4.3.1";
+TMPL_NIX_ALIAS = '''
+  "%s" = self."%s";'''
 TMPL_NIX_EXPR = '''
   "%(name)s" = self.buildPythonPackage {
     name = "%(name)s";
@@ -100,12 +101,14 @@ def main():
     eggsdir = os.path.expanduser('~/.buildout/eggs')
     mkdir_p(eggsdir)
 
-    configs = []
+    configs, aliases = [], {}
     for spec in specifications:
         if isinstance(spec, basestring):
             spec = {'name': spec,
+                    'aliases': [spec],
                     'environment': DEFAULT_ENVIRONMENT
                     }
+        spec.setdefault('aliases', [spec['name']])
         spec.setdefault('buildInputs', [])
         if 'environments' in spec:
             for environment in spec['environments']:
@@ -118,6 +121,22 @@ def main():
             spec['environment'] = DEFAULT_ENVIRONMENT
             configs.append((LIB_VERSIONS[DEFAULT_ENVIRONMENT], spec))
 
+        for alias in spec['aliases']:
+            aliases.setdefault(alias, [])
+            aliases[alias].append(spec['name'])
+
+    bad_aliases = []
+    for alias in aliases:
+        if len(aliases[alias]) != 1:
+            bad_aliases.append(alias, aliases[alias])
+
+    if bad_aliases:
+        print "Aliases duplicated:"
+        for alias in bad_aliases:
+            print "-> alias '%s' is defined in specification of %s and %s" % (
+                alias[0], ', '.join(alias[1][:-1]), alias[1][-1])
+        sys.exit(1)
+
     packages = {}
     packages_per_version = {}
     for lib_version, config in configs:
@@ -128,6 +147,7 @@ def main():
                 set([i for i in tmp.keys()]))
         packages = deep_update(packages, tmp)
 
+    # TODO: we can read metadata from EGG-INFO
     client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
     for package_name in packages:
         try:
@@ -163,6 +183,9 @@ def main():
             if package.startswith('setuptools-'):
                 continue
             tmp = copy.deepcopy(packages[package])
+
+            if tmp['name'] in aliases:
+                print TMPL_NIX_ALIAS % (tmp['name'], package)
 
             tmp['name'] = package
 
