@@ -39,6 +39,8 @@ stdenv.mkDerivation {
     sed -i -e 's@name_string = "%%s %%s" %% (node.name, node.dist.version)@name_string = "%%s %%s" %% (node.project_name, node.dist.version)@g' %(eggsdir)s/tl.eggdeps*/tl/eggdeps/plaintext.py
     sed -i -e 's@name_string = node.name@name_string = node.project_name@g' %(eggsdir)s/tl.eggdeps*/tl/eggdeps/plaintext.py
     bin/eggdeps -nt %(specifications)s > $out
+    echo "### --- ###" >> $out
+    cat bin/eggdeps >> $out
   '';
 }
 '''
@@ -104,9 +106,13 @@ class Buildout(object):
         return self.parse_buildout_result(open(output.strip()).read())
 
     def parse_buildout_result(self, text):
+        lines = text.split('### --- ###')[0].strip().split('\n')
+        paths = text.split('### --- ###')[1].split('sys.path[0:0] = [\n')[1]
+        paths = paths.split('\n  ]\n\nimport tl.eggdeps.cli')[0].split('\n')
+        paths = [i.strip().strip(',').strip("'") for i in paths]
 
         tmp_result, parents, previous = {}, [None], None
-        for line in text.split('\n'):
+        for line in lines:
             stripped_line = line.strip()
             stripped_line_split = stripped_line.split(' ')
             if len(stripped_line) == 0:
@@ -157,11 +163,17 @@ class Buildout(object):
 
             previous = line
 
+        def get_path(name):
+            for path in paths:
+                if name in path:
+                    return path
+
         result = {}
         for name, data in tmp_result.items():
             result[self.fullname(name, tmp_result)] = {
                 'name': name,
                 'version': data['version'],
+                'path': get_path(name),
                 'buildInputs': (
                     name in self.override and
                     'buildInputs' in self.override[name]

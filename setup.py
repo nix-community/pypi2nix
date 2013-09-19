@@ -18,9 +18,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License (GPL)',
     ],
-    install_requires=[
-        'distutils2',
-    ],
     entry_points = {
         'console_scripts': [
             'pypi2nix= pypi2nix.cli:main',

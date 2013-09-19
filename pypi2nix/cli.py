@@ -147,7 +147,6 @@ def main():
                 set([i for i in tmp.keys()]))
         packages = deep_update(packages, tmp)
 
-    # TODO: we can read metadata from EGG-INFO
     client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
     for package_name in packages:
         try:
