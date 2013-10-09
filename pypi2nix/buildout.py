@@ -11,13 +11,12 @@ import subprocess
 NIX_BUILDOUT = '''with (import <nixpkgs> {});
 stdenv.mkDerivation {
   name = "%(name)s";
-  buildInputs = [ %(buildInputs)s ];
+  buildInputs = [ %(buildInputs)s pkgs.python27Packages.zc_buildout_nix ];
   __noChroot = true;
   buildCommand = ''
     # %(timestamp)s
     unset http_proxy
     unset ftp_proxy
-    wget https://raw.github.com/buildout/buildout/master/bootstrap/bootstrap.py
     cat > buildout.cfg <<EOF
     [buildout]
     extends = %(extends)s
@@ -33,8 +32,7 @@ stdenv.mkDerivation {
     [versions]
     %(versions)s
     EOF
-    python bootstrap.py
-    bin/buildout -q
+    ${pkgs.python27Packages.zc_buildout_nix}/bin/buildout-nix -q
     sed -i -e 's@self.name = specification.project_name.lower()@self.name, self.project_name = specification.project_name.lower(), specification.project_name@g' %(eggsdir)s/tl.eggdeps*/tl/eggdeps/graph.py
     sed -i -e 's@name_string = "%%s %%s" %% (node.name, node.dist.version)@name_string = "%%s %%s" %% (node.project_name, node.dist.version)@g' %(eggsdir)s/tl.eggdeps*/tl/eggdeps/plaintext.py
     sed -i -e 's@name_string = node.name@name_string = node.project_name@g' %(eggsdir)s/tl.eggdeps*/tl/eggdeps/plaintext.py
