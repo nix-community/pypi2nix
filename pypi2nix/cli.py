@@ -1,10 +1,17 @@
 import os
 import sys
-import copy
 import json
 import errno
-import xmlrpclib
-from pypi2nix.buildout import run_buildout
+import shlex
+import subprocess
+
+
+DEFAULT_ENVIRONMENT = u"2.7"
+ENVIRONMENTS = {
+    u"2.6": "python26Full",
+    u"2.7": "python27Full",
+    u"3.3": "python33",
+}
 
 
 def mkdir_p(path):
@@ -17,75 +24,29 @@ def mkdir_p(path):
             raise
 
 
-def deep_update(a, b):
-    '''recursively merges dict's. not just simple a['key'] = b['key'], if
-    both a and bhave a key who's value is a dict then dict_merge is called
-    on both values and the result stored in the returned dictionary.'''
-    if not isinstance(b, dict):
-        return b
-    result = copy.deepcopy(a)
-    for k, v in b.iteritems():
-        if k in result and isinstance(result[k], dict):
-                result[k] = deep_update(result[k], v)
-        else:
-            result[k] = copy.deepcopy(v)
-    return result
-
-
-TMPL_START = '''{ pkgs, stdenv, fetchurl, python, self }:
-
-let
-in
-{'''
-TMPL_END = '''
-}'''
-TMPL_VERSION_START = '''
-} // pkgs.lib.optionalAttrs (python.majorVersion == "%s") {
-'''
-TMPL_VERSION_END = '''
-}
-'''
-TMPL_NIX_ALIAS = '''
-  "%s" = self."%s";'''
-TMPL_NIX_EXPR = '''
-  "%(name)s" = self.buildPythonPackage {
-    name = "%(name)s";
-    src = fetchurl {
-        url = "%(url)s";
-        md5 = "%(md5)s";
-    };
-    doCheck = %(doCheck)s;
-    buildInputs = [ %(buildInputs)s ];
-    propagatedBuildInputs = [ %(propagatedBuildInputs)s ];%(configurePhase)s
-    installCommand = ''%(installCommand)s'';
-    meta = {
-      description = ''
-        %(description)s
-        '';
-      homepage = "%(homepage)s";
-      license = "%(license)s";
-    };
-  };
-'''
-
-DEFAULT_ENVIRONMENT = "py27"
-ENVIRONMENTS = {
-    u"py26": "python26Full",
-    u"py27": "python27Full",
-}
-LIB_VERSIONS = {
-    u"py26": "2.6",
-    u"py27": "2.7",
-}
+def prepare_spec(spec):
+    if isinstance(spec, basestring):
+        name = spec
+        versions = {}
+    else:
+        name = spec['name']
+        versions = spec.get('versions', {})
+    return dict(
+        name=name,
+        versions=versions,
+    )
 
 
 def main():
 
+    #
+    # Open JSON file
+    #
     try:
         f = open(sys.argv[1])
         specifications = json.load(f)
     except ValueError as e:
-        print "File %s is not valid JSON file." % sys.argv[1]
+        print "File {} is not valid JSON file.".format(sys.argv[1])
         print e
         sys.exit(1)
     except Exception as e:
@@ -95,124 +56,37 @@ def main():
         else:
             print e
         sys.exit(1)
-
     f.close()
 
-    eggsdir = os.path.expanduser('~/.buildout/eggs')
-    mkdir_p(eggsdir)
-
-    configs, aliases = [], {}
+    #
+    # Figure out how many env we need to package packages for
+    #
+    environments = {}
     for spec in specifications:
-        if isinstance(spec, basestring):
-            spec = {'name': spec,
-                    'aliases': [spec],
-                    'environment': DEFAULT_ENVIRONMENT
-                    }
-        spec.setdefault('aliases', [spec['name']])
-        spec.setdefault('buildInputs', [])
-        if 'environments' in spec:
-            for environment in spec['environments']:
-                temp_spec = copy.deepcopy(spec)
-                temp_spec['environment'] = environment
-                temp_spec['buildInputs'].append(ENVIRONMENTS[environment])
-                configs.append((LIB_VERSIONS[environment], temp_spec))
-        else:
-            spec['buildInputs'].append(ENVIRONMENTS[DEFAULT_ENVIRONMENT])
-            spec['environment'] = DEFAULT_ENVIRONMENT
-            configs.append((LIB_VERSIONS[DEFAULT_ENVIRONMENT], spec))
-
-        for alias in spec['aliases']:
-            aliases.setdefault(alias, [])
-            aliases[alias].append(spec['name'])
-
-    bad_aliases = []
-    for alias in aliases:
-        if len(aliases[alias]) != 1:
-            bad_aliases.append(alias, aliases[alias])
-
-    if bad_aliases:
-        print "Aliases duplicated:"
-        for alias in bad_aliases:
-            print "-> alias '%s' is defined in specification of %s and %s" % (
-                alias[0], ', '.join(alias[1][:-1]), alias[1][-1])
-        sys.exit(1)
-
-    packages = {}
-    packages_per_version = {}
-    for lib_version, config in configs:
-        tmp = run_buildout(eggsdir, config)
-        packages_per_version.setdefault(lib_version, set([]))
-        packages_per_version[lib_version] = \
-            packages_per_version[lib_version].union(
-                set([i for i in tmp.keys()]))
-        packages = deep_update(packages, tmp)
-
-    client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
-    for package_name in packages:
-        try:
-            metadata = client.release_data(
-                packages[package_name]['name'],
-                packages[package_name]['version'])
-            packages[package_name]['description'] = metadata['summary']
-            packages[package_name]['homepage'] = metadata['home_page']
-            packages[package_name]['license'] = metadata['license']
-        except:
-            packages[package_name]['description'] = ""
-            packages[package_name]['homepage'] = ""
-            packages[package_name]['license'] = ""
-
-        release = None
-        releases = client.release_urls(
-            packages[package_name]['name'].replace('webob', 'WebOb'),
-            packages[package_name]['version'])
-        for item in releases:
-            if item['packagetype'] == 'sdist' and \
-               item['python_version'] == 'source':
-                release = item
-                break
-        if release is None:
-            raise Exception("No source/sdist release version for %s!" % package_name)
-        packages[package_name]['md5'] = release['md5_digest']
-        packages[package_name]['url'] = release['url']
-
-    print TMPL_START
-    for version in packages_per_version:
-        print TMPL_VERSION_START % version
-        for package in packages_per_version[version]:
-            if package.startswith('setuptools-'):
-                continue
-            tmp = copy.deepcopy(packages[package])
-
-            if tmp['name'] in aliases:
-                print TMPL_NIX_ALIAS % (tmp['name'], package)
-
-            tmp['name'] = package
-
-            tmp['propagatedBuildInputs'] = ' '.join([
-                i.startswith('setuptools-')
-                and 'self.setuptools'
-                or ((i.startswith('python.modules.') or i.startswith('pkgs.'))
-                    and i or 'self."%s"' % i)
-                for i in tmp['propagatedBuildInputs']
-                if i != package
-            ])
-
-            tmp.setdefault('buildInputs', [])
-            tmp['buildInputs'] = [
-                (i.startswith('python.modules.') or i.startswith('pkgs.'))
-                and i or 'self."%s"' % i
-                for i in tmp['buildInputs']]
-            if tmp['url'].endswith('.zip'):
-                tmp['buildInputs'].append('pkgs.unzip')
-            tmp['buildInputs'] = ' '.join(tmp['buildInputs'])
-
-            if tmp['configurePhase'] is None:
-                tmp['configurePhase'] = ""
+        if type(spec) is dict and 'env' in spec:
+            if isinstance(spec['env'], basestring):
+                environments.setdefault(spec['env'], [])
+                environments[spec['env']].append(prepare_spec(spec))
             else:
-                tmp['configurePhase'] = "\n    configurePhase = ''" +\
-                    "\n      " +\
-                    ("\n      ".join(tmp['configurePhase'])) +\
-                    "\n    '';"
+                for env in spec['env']:
+                    if env not in ENVIRONMENTS:
+                        print "'{}' not defined in ENVIRONMENTS ({})".format(
+                            env, ENVIRONMENTS)
+                        sys.exit(1)
+                    environments.setdefault(env, [])
+                    environments[env].append(prepare_spec(spec))
+        else:
+            environments.setdefault(DEFAULT_ENVIRONMENT, [])
+            environments[DEFAULT_ENVIRONMENT].append(prepare_spec(spec))
 
-            print TMPL_NIX_EXPR % tmp
-        print TMPL_VERSION_END
+    HOME = os.getenv('HOME')
+    mkdir_p(HOME + '/.pypi2nix/profiles/')
+    for env in environments:
+        subprocess.check_output(
+            "nix-env -p /home/rok/.pypi2nix/profiles/{} "
+            "-f '<nixpkgs>' -iA {}".format(env, ENVIRONMENTS[env]),
+            shell=True,
+        )
+        for spec in environments[env]:
+            TODO:
+            print spec
