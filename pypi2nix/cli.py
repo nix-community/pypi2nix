@@ -88,5 +88,4 @@ def main():
             shell=True,
         )
         for spec in environments[env]:
-            TODO:
             print spec
