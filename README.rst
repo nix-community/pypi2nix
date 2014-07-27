@@ -23,8 +23,7 @@ To step into development environment::
 
     % nix-shell
 
-How ``pypi2nix`` works internally look at `In details`_ section of this
-document.
+How ``pypi2nix`` works internally look at `Design`_ section of this document.
 
 
 Installation
@@ -51,8 +50,8 @@ Code away!
 If you are having issues, please let us know via issue tracker.
 
 
-In details
-----------
+Design
+------
 
 ::
 
