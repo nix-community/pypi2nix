@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
+
 from setuptools import setup
 from setuptools import find_packages
 
-
 setup(
     name="pypi2nix",
-    version="0.0.1",
-    author=u"Rok Garbas, Cillian de Róiste",
+    version=open("VERSION").read(),
+    author=u"Rok Garbas, Cillian de Róiste, Jaka Hudoklin",
     description=(
-        "Scripts and tools to help create nix package expressions for "
-        "python projects"
+        "A tool that generates nix expressions for your python packages, so "
+        "you don't have to."
     ),
-    license="GPL",
+    license="BSD",
     keywords="nixos nix packaging",
-    url="http://nixos.org",
+    url="https://github.com/NixOS/pypi2nix",
     classifiers=[
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'License :: OSI Approved :: BSD License',
     ],
     entry_points = {
         'console_scripts': [
-            'pypi2nix= pypi2nix.cli:main',
+            'pypi2nix = pypi2nix.cli:main',
         ],
     },
     packages = find_packages(),
