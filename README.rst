@@ -9,14 +9,18 @@ simply do:::
 
 Using ``setuptools``::
 
+    # not yet working
     % pypi2nix setup.py
 
 Using ``requirements.txt`` (created by ``pip freeze``)::
 
+    # working but only if you provide full set of dependencies
+    # eg. pip freeze will give you this
     % pypi2nix requirements.txt
 
 Using ``zc.buildout``::
 
+    # not yet working
     % pypi2nix buildout.cfg
 
 To step into development environment::

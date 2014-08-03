@@ -6,8 +6,11 @@ from pip.req import parse_requirements
 
 
 def do(txt_file, json_file='generated.json'):
+    print '-> generating: generated.json'
+
     results = {}
     if os.path.exists(json_file):
+        print '  -> loading existing {}'.format(json_file)
         results = json.load(open(json_file))
 
     finder = PackageFinder(
@@ -16,17 +19,27 @@ def do(txt_file, json_file='generated.json'):
         allow_all_external=True,
         use_wheel=False
     )
+
+    print '  -> reading {}'.format(txt_file)
     reqs = parse_requirements(txt_file, finder)
 
+    print '  -> proccessing every specification in {}'.format(txt_file)
     for req in reqs:
-        print '  -> {}'.format(req.name)
-        if req.name not in results:
+        spec_name = str(req.__dict__['req']).replace('==', '-')
+        if spec_name in results:
+            print '    -> {} already in {}'.format(spec_name, json_file)
+        else:
+            print '    -> {} getting info'.format(spec_name)
             link = finder.find_requirement(req, False)
             results.update({
-                req.name: {
-                    "name": str(req.__dict__['req']).replace('==', '-'),
-                    link.hash_name: link.hash,
+                spec_name: {
+                    "name": spec_name,
+                    "hash_name": link.hash_name,
+                    "hash": link.hash,
                     "url": link.url_without_fragment
                 }})
 
     json.dump(results, open(json_file, 'wb+'))
+
+    print '  -> done'
+    return json_file

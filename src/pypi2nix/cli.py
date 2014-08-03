@@ -1,22 +1,44 @@
+import sys
 import click
-
-from pypi2nix import txt2json
-from pypi2nix import json2nix
+import pypi2nix.txt2json
+import pypi2nix.json2wheels
+import pypi2nix.wheels2nix
 
 
 @click.command()
+@click.option('--nix-path', '-I', type=str, default='')
 @click.argument('input', type=click.Path(exists=True))
-def main(input):
-    print '-> requirements.txt'
+def main(input, nix_path):
+    py_file = None
+    cfg_file = None
+    txt_file = None
+    json_file = None
+    wheels_file = None
+    nix_file = None
 
-    txt2json.do(input)
+    # detect input and start 
+    if input.endswith('setup.py'):
+        py_file = input
+    elif input.endswith('.cfg'):
+        cfg_file = input
+    elif input.endswith('.txt'):
+        txt_file = input
+    elif input.endswith('.json'):
+        json_file = input
+    elif input.endswith('.wheels'):
+        wheels_file = input
+    else:
+        print '<input> was not correct type. check help for more info.'
+        sys.exit(1)
 
-    print '-> generated.json'
+    if txt_file:
+        json_file = pypi2nix.txt2json.do(txt_file)
 
-    json2nix.do()
+    if json_file:
+        wheels_file = pypi2nix.json2wheels.do(json_file, nix_path=nix_path)
 
-    print '-> generated.nix'
+    if wheels_file:
+        nix_file = pypi2nix.wheels2nix.do(wheels_file, nix_path=nix_path)
 
     #defaultNix.do()
-
-    print '-> default.nix'
+    #print '-> default.nix'
