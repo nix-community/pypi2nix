@@ -4,43 +4,36 @@ with import <nixpkgs> { };
 
 let
 
-  python = python27;
-
   wheelsFor = python: self:
     let
-      base = callPackage ../../../nixos/nixpkgs/pkgs/development/python-wheels/wheels-base.nix {} python self;
-      meta =
-        map (x: python.wheels.build x) (
+      base = pkgs.callPackage ../../nixpkgs/pkgs/development/python-wheels/wheels-base.nix {} python self;
+      wheels =
+        builtins.listToAttrs (
           map (x: {
             name = x.name;
-            src = fetchurl {
-              url = x.url;
-              ${x.hash_name} = x.hash;
+            value = {
+              name = x.spec_name;
+              src = fetchurl {
+                url = x.url;
+                ${x.hash_name} = x.hash;
+              };
             };
           })
           (lib.attrValues (
             builtins.fromJSON (builtins.readFile ./generated.json)
           ))
         );
-      generated = import ./generated.nix python self;
-    in
-      base // (lib.mapAttrs
-        (name: wheelspec:
-          let
-            wheel = self.build ((lib.attrByPath [name] {} meta) //
-                                (lib.attrByPath [name] {} generated) //
-                                wheelspec);
-          in wheel)
-        self);
+     requires = {
+       sentry.requires = lib.attrValues (
+         lib.filterAttrs (n: w: (w.isWheel or false && n != "sentry")) self);
+     };
+   in
+     base // (lib.mapAttrs (name: wheel:
+      self.build ((lib.attrByPath [name] {} requires) // wheel)) wheels);
 
-  wheels = wheelsFor python wheels;
+ wheels = wheelsFor python27 wheels;
 
-  wheelhouse = callPackage ../../../../nixos/nixpkgs/pkgs/development/python-wheels/wheelhouse.nix {};
-
-  all = wheelhouse {
-    name = "${python.libPrefix}-sentry-wheelhouse-all-wheels";
-    wheels = lib.filter (x: x.isWheel or false) (lib.attrValues wheels);
-  };
-
-in 
- wheels // { inherit all; }
+in python27.tool {
+  name = "sentry";
+  wheel = lib.getAttr "sentry" wheels;
+}

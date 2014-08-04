@@ -33,7 +33,8 @@ def do(txt_file, json_file='generated.json'):
             link = finder.find_requirement(req, False)
             results.update({
                 spec_name: {
-                    "name": spec_name,
+                    "name": req.name,
+                    "spec_name": spec_name,
                     "hash_name": link.hash_name,
                     "hash": link.hash,
                     "url": link.url_without_fragment
