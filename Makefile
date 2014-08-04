@@ -6,14 +6,15 @@ CLICK_HASH=a1bff2d2270745affd5bc60e66e50c23
 
 all:
 
-$(DESTDIR)/: $(DESTDIR)/bin/pypi2nix
+$(DESTDIR)/: $(DESTDIR)/pypi2nix
 
-$(DESTDIR)/bin/pypi2nix: src/
-	mkdir $(DESTDIR)/bin
-	cd $< && zip -qr pypi2nix.zip * && cd ..
-	echo '#!/usr/bin/env python' | cat - $<pypi2nix.zip > $(DESTDIR)/bin/pypi2nix
-	chmod +x $(DESTDIR)/bin/pypi2nix
-	rm $<pypi2nix.zip
+$(DESTDIR)/pypi2nix: src/
+	@mkdir -p $(DESTDIR)
+	@cd $< && zip -qr pypi2nix.zip * && cd ..
+	@echo '#!/usr/bin/env python' | cat - $<pypi2nix.zip > $(DESTDIR)/pypi2nix
+	@chmod +x $(DESTDIR)/pypi2nix
+	@rm $<pypi2nix.zip
+	@echo "$(DESTDIR)/pypi2nix" is ready to be used
 
 install: $(DESTDIR)/
 
@@ -42,5 +43,8 @@ bootstrap:
 	@rm src/click -rf
 	@mv click-${CLICK_VERSION}/click src/ 
 	@rm click-${CLICK_VERSION} -rf
+
+clear:
+	@rm -rf $(DESTDIR)
 
 .PHONY: all install bootstrap

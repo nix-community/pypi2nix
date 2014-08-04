@@ -49,6 +49,15 @@ To develop ``pypi2nix``:::
     % git clone git://github.com/NixOS/pypi2nix.git
     % nix-shell
 
+To build `pypi2nix` binary::
+
+    % make clear install DESTDIR=./out
+
+As example you can try generate Sentry's delependencies::
+
+    % cd examples
+    % ./../out/pypi2nix sentry.nix --nix-path=nixpkgs=/path/to/nixpkgs-chaoflows-python-branch
+
 Code away!
 
 If you are having issues, please let us know via issue tracker.
