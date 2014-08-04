@@ -18,7 +18,7 @@ in stdenv.mkDerivation rec {
   buildInputs = [
     zip
     python27
-    unveil
+    wget
   ];
 
 }

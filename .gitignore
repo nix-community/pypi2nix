@@ -1,2 +1,5 @@
 *.py?
 /out/
+/examples/result*
+/result*
+/examples/generated*
