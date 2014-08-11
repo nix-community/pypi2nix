@@ -1,0 +1,124 @@
+Allow hosts
+-----------
+
+On some environments the links visited by `zc.buildout` can be forbidden
+by paranoiac firewalls. These URL might be on the chain of links
+visited by `zc.buildout` whether they are defined in the `find-links` option
+or by various eggs in their `url`, `download_url` and `dependency_links` metadata.
+
+It is even harder to track that package_index works like a spider and
+might visit links and go to other location.
+
+The `allow-hosts` option provides a way to prevent this, and
+works exactly like the one provided in `easy_install`
+(see `easy_install allow-hosts option`_).
+
+You can provide a list of allowed host, together with wildcards::
+
+    [buildout]
+    ...
+
+    allow-hosts =
+        *.python.org
+        example.com
+
+Let's create a develop egg in our buildout that specifies
+`dependency_links` which points to a server in the outside world::
+
+    >>> mkdir(sample_buildout, 'allowdemo')
+    >>> write(sample_buildout, 'allowdemo', 'dependencydemo.py',
+    ...       'import eggrecipekss.core')
+    >>> write(sample_buildout, 'allowdemo', 'setup.py',
+    ... '''from setuptools import setup; setup(
+    ...     name='allowdemo', py_modules=['dependencydemo'],
+    ...     install_requires = 'kss.core',
+    ...     dependency_links = ['http://dist.plone.org'],
+    ...     zip_safe=True, version='1')
+    ... ''')
+
+Now let's configure the buildout to use the develop egg,
+together with some rules that disallow any web site but PyPI and
+local files::
+
+    >>> write(sample_buildout, 'buildout.cfg',
+    ... '''
+    ... [buildout]
+    ... develop = allowdemo
+    ... parts = eggs
+    ... allow-hosts =
+    ...     pypi.python.org
+    ...
+    ... [eggs]
+    ... recipe = zc.recipe.egg:eggs
+    ... eggs = allowdemo
+    ... ''')
+
+Now we can run the buildout and make sure all attempts to dist.plone.org fails::
+
+    >>> print_(system(buildout), end='') # doctest: +ELLIPSIS
+    Develop: '/sample-buildout/allowdemo'
+    Installing eggs...
+    ...
+    While:
+      Installing eggs.
+      Getting distribution for 'kss.core'.
+    Error: Couldn't find a distribution for 'kss.core'.
+
+That's what we wanted : this will prevent any attempt to access
+unwanted domains. For instance, some packages are listing in their
+links `svn://` links. These can lead to error in some cases, and
+can therefore be protected like this::
+
+XXX (showcase with a svn:// file)
+
+    >>> write(sample_buildout, 'buildout.cfg',
+    ... '''
+    ... [buildout]
+    ... develop = allowdemo
+    ... parts = eggs
+    ... allow-hosts =
+    ...     ^(!svn://).*
+    ...
+    ... [eggs]
+    ... recipe = zc.recipe.egg:eggs
+    ... eggs = allowdemo
+    ... ''')
+
+Now we can run the buildout and make sure all attempts to dist.plone.org fails::
+
+    >>> print_(system(buildout), end='') # doctest: +ELLIPSIS
+    Develop: '/sample-buildout/allowdemo'
+    Installing eggs...
+    ...
+    While:
+      Installing eggs.
+      Getting distribution for 'kss.core'.
+    Error: Couldn't find a distribution for 'kss.core'.
+
+Test for issues
+---------------
+
+Test for 1.0.5 breakage as in https://bugs.launchpad.net/zc.buildout/+bug/239212::
+
+    >>> write(sample_buildout, 'buildout.cfg',
+    ... '''
+    ... [buildout]
+    ... parts=python
+    ... foo = ${python:interpreter}
+    ...
+    ... [python]
+    ... recipe=zc.recipe.egg
+    ... eggs=zc.buildout
+    ... interpreter=python
+    ... ''')
+    >>> print_('XX'); print_(system(buildout), end='') # doctest: +ELLIPSIS
+    X...
+    Unused options for buildout: 'foo'.
+    Installing python.
+    Generated script '/sample-buildout/bin/buildout'.
+    Generated interpreter '/sample-buildout/bin/python'.
+
+The bug 239212 above would have got us an *AttributeError* on
+*buildout._allow_hosts*.  This was fixed in this changeset:
+http://svn.zope.org/zc.buildout/trunk/src/zc/buildout/buildout.py?rev=87309&r1=87277&r2=87309
+

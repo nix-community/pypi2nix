@@ -31,6 +31,9 @@ def main(input, nix_path):
         print '<input> was not correct type. check help for more info.'
         sys.exit(1)
 
+    if cfg_file:
+        json_file = pypi2nix.cfg2txt.do(txt_file)
+
     if txt_file:
         json_file = pypi2nix.txt2json.do(txt_file)
 

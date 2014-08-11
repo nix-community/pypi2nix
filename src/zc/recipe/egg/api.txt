@@ -1,0 +1,154 @@
+Egg Recipe API for other Recipes
+================================
+
+It is common for recipes to accept a collection of egg specifications
+and generate scripts based on the resulting working sets.  The egg
+recipe provides an API that other recipes can use.
+
+A recipe can reuse the egg recipe, supporting the eggs, find-links,
+index, and extra-paths options.  This is done by creating an
+egg recipe instance in a recipes's constructor.  In the recipe's
+install script, the egg-recipe instance's working_set method is used
+to collect the requested eggs and working set.
+
+To illustrate, we create a sample recipe that is a very thin layer
+around the egg recipe:
+
+    >>> mkdir(sample_buildout, 'sample')
+    >>> write(sample_buildout, 'sample', 'sample.py', 
+    ... """
+    ... import logging, os, sys
+    ... import zc.recipe.egg
+    ...
+    ... def print_(*args):
+    ...     sys.stdout.write(' '.join(map(str, args)) + '\\n')
+    ...
+    ... class Sample:
+    ...
+    ...     def __init__(self, buildout, name, options):
+    ...         self.egg = zc.recipe.egg.Scripts(buildout, name, options)
+    ...         self.name = name
+    ...         self.options = options
+    ...
+    ...     def install(self):
+    ...         extras = self.options['extras'].split()
+    ...         requirements, ws = self.egg.working_set(extras)
+    ...         print_('Part:', self.name)
+    ...         print_('Egg requirements:')
+    ...         for r in requirements:
+    ...             print_(r)
+    ...         print_('Working set:')
+    ...         for d in ws:
+    ...             print_(d)
+    ...         print_('extra paths:', self.egg.extra_paths)
+    ...         return ()
+    ...
+    ...     update = install
+    ... """)
+
+Here we instantiated the egg recipe in the constructor, saving it in
+an attribute.  This also initialized the options dictionary.
+
+In our install method, we called the working_set method on the
+instance we saved.  The working_set method takes an optional sequence
+of extra requirements to be included in the working set.
+
+    >>> write(sample_buildout, 'sample', 'setup.py',
+    ... """
+    ... from setuptools import setup
+    ... 
+    ... setup(
+    ...     name = "sample",
+    ...     entry_points = {'zc.buildout': ['default = sample:Sample']},
+    ...     install_requires = 'zc.recipe.egg',
+    ...     )
+    ... """)
+
+
+    >>> write(sample_buildout, 'sample', 'README.txt', " ")
+
+    >>> write(sample_buildout, 'buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop = sample
+    ... parts = sample-part
+    ...
+    ... [sample-part]
+    ... recipe = sample
+    ... eggs = demo<0.3
+    ... find-links = %(server)s
+    ... index = %(server)sindex
+    ... extras = other
+    ... """ % dict(server=link_server))
+
+    >>> import os
+    >>> os.chdir(sample_buildout)
+    >>> buildout = os.path.join(sample_buildout, 'bin', 'buildout')
+    >>> print_(system(buildout + ' -q'), end='')
+    Part: sample-part
+    Egg requirements:
+    demo<0.3
+    Working set:
+    demo 0.2
+    other 1.0
+    demoneeded 1.1
+    extra paths: []
+
+We can see that the options were augmented with additional data
+computed by the egg recipe by looking at .installed.cfg:
+
+    >>> cat(sample_buildout, '.installed.cfg')
+    [buildout]
+    installed_develop_eggs = /sample-buildout/develop-eggs/sample.egg-link
+    parts = sample-part
+    <BLANKLINE>
+    [sample-part]
+    __buildout_installed__ = 
+    __buildout_signature__ = sample-6aWMvV2EJ9Ijq+bR8ugArQ==
+            zc.recipe.egg-cAsnudgkduAa/Fd+WJIM6Q==
+            setuptools-0.7-py2.4.egg
+            zc.buildout-+rYeCcmFuD1K/aB77XTj5A==
+    _b = /sample-buildout/bin
+    _d = /sample-buildout/develop-eggs
+    _e = /sample-buildout/eggs
+    bin-directory = /sample-buildout/bin
+    develop-eggs-directory = /sample-buildout/develop-eggs
+    eggs = demo<0.3
+    eggs-directory = /sample-buildout/eggs
+    extras = other
+    find-links = http://localhost:27071/
+    index = http://localhost:27071/index
+    recipe = sample
+
+If we use the extra-paths option:
+
+
+    >>> write(sample_buildout, 'buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop = sample
+    ... parts = sample-part
+    ...
+    ... [sample-part]
+    ... recipe = sample
+    ... eggs = demo<0.3
+    ... find-links = %(server)s
+    ... index = %(server)sindex
+    ... extras = other
+    ... extra-paths = /foo/bar
+    ...               /spam/eggs
+    ... """ % dict(server=link_server))
+
+Then we'll see that reflected in the extra_paths attribute in the egg
+recipe instance:
+
+    >>> print_(system(buildout + ' -q'), end='')
+    Part: sample-part
+    Egg requirements:
+    demo<0.3
+    Working set:
+    demo 0.2
+    other 1.0
+    demoneeded 1.1
+    extra paths: ['/foo/bar', '/spam/eggs']
+

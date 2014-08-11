@@ -1,0 +1,51 @@
+Using zc.buildout to run setup scripts
+======================================
+
+zc buildout has a convenience command for running setup scripts.  Why?
+There are two reasons.  If a setup script doesn't import setuptools,
+you can't use any setuptools-provided commands, like bdist_egg.  When
+buildout runs a setup script, it arranges to import setuptools before
+running the script so setuptools-provided commands are available.
+
+If you use a squeaky-clean Python to do your development, the setup
+script that would import setuptools because setuptools isn't in the
+path.  Because buildout requires setuptools and knows where it has
+installed a setuptools egg, it adds the setuptools egg to the Python
+path before running the script.  To run a setup script, use the
+buildout setup command, passing the name of a script or a directory
+containing a setup script and arguments to the script.  Let's look at
+an example:
+
+    >>> mkdir('test')
+    >>> cd('test')
+    >>> write('setup.py',
+    ... '''
+    ... from distutils.core import setup
+    ... setup(name='sample')
+    ... ''')
+
+We've created a super simple (stupid) setup script.  Note that it
+doesn't import setuptools.  Let's try running it to create an egg.
+We'll use the buildout script from our sample buildout:
+
+    >>> print_(system(buildout+' setup'), end='')
+    ... # doctest: +NORMALIZE_WHITESPACE
+    Error: The setup command requires the path to a setup script or
+    directory containing a setup script, and its arguments.
+
+Oops, we forgot to give the name of the setup script:
+
+    >>> print_(system(buildout+' setup setup.py bdist_egg'))
+    ... # doctest: +ELLIPSIS
+    Running setup script 'setup.py'.
+    ...
+
+    >>> ls('dist')
+    -  sample-0.0.0-py2.5.egg
+
+Note that we can specify a directory name.  This is often shorter and
+preferred by the lazy :)
+
+    >>> print_(system(buildout+' setup . bdist_egg')) # doctest: +ELLIPSIS
+    Running setup script './setup.py'.
+    ...
