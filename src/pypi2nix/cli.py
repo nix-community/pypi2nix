@@ -23,6 +23,9 @@ def main(input_file, nix_path):
         raise Exception(
             '<input_file> was not correct type. check help for more info.')
 
+    if py_file:
+        txt_file = py2txt.do(py_file)
+
     if cfg_file:
         json_file = cfg2txt.do(cfg_file)
 
