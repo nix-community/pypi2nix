@@ -3,7 +3,7 @@
     ~~~~~~~~~~~~~~~~~~
 
     This module contains implementations for the termui module.  To keep the
-    import time of click down, some infrequently used functionality is placed
+    import time of Click down, some infrequently used functionality is placed
     in this module and only imported as needed.
 
     :copyright: (c) 2014 by Armin Ronacher.
@@ -52,7 +52,7 @@ class ProgressBar(object):
     def __init__(self, iterable, length=None, fill_char='#', empty_char=' ',
                  bar_template='%(bar)s', info_sep='  ', show_eta=True,
                  show_percent=None, show_pos=False, item_show_func=None,
-                 label=None, file=None, width=30):
+                 label=None, file=None, color=None, width=30):
         self.fill_char = fill_char
         self.empty_char = empty_char
         self.bar_template = bar_template
@@ -65,6 +65,7 @@ class ProgressBar(object):
         if file is None:
             file = _default_text_stdout()
         self.file = file
+        self.color = color
         self.width = width
         self.autowidth = width == 0
 
@@ -174,13 +175,13 @@ class ProgressBar(object):
             'label': self.label,
             'bar': bar,
             'info': self.info_sep.join(info_bits)
-        }).strip()
+        }).rstrip()
 
     def render_progress(self):
         from .termui import get_terminal_size
 
         if self.is_hidden:
-            echo(self.label, file=self.file)
+            echo(self.label, file=self.file, color=self.color)
             self.file.flush()
             return
 
@@ -206,12 +207,12 @@ class ProgressBar(object):
         if self.max_width is None or self.max_width < line_len:
             self.max_width = line_len
         # Use echo here so that we get colorama support.
-        echo(line, file=self.file, nl=False)
+        echo(line, file=self.file, nl=False, color=self.color)
         self.file.write(' ' * (clear_width - line_len))
         self.file.flush()
 
-    def make_step(self):
-        self.pos += 1
+    def make_step(self, n_steps):
+        self.pos += n_steps
         if self.length_known and self.pos >= self.length:
             self.finished = True
 
@@ -222,6 +223,10 @@ class ProgressBar(object):
         self.avg = self.avg[-6:] + [-(self.start - time.time()) / (self.pos)]
 
         self.eta_known = self.length_known
+
+    def update(self, n_steps):
+        self.make_step(n_steps)
+        self.render_progress()
 
     def finish(self):
         self.eta_known = 0
@@ -239,8 +244,7 @@ class ProgressBar(object):
             self.render_progress()
             raise StopIteration()
         else:
-            self.make_step()
-            self.render_progress()
+            self.update(1)
             return rv
 
     if not PY2:
@@ -248,61 +252,85 @@ class ProgressBar(object):
         del next
 
 
-def pager(text):
+def pager(text, color=None):
     """Decide what method to use for paging through text."""
     stdout = _default_text_stdout()
     if not isatty(sys.stdin) or not isatty(stdout):
-        return _nullpager(stdout, text)
+        return _nullpager(stdout, text, color)
     if 'PAGER' in os.environ:
         if WIN:
-            return _tempfilepager(strip_ansi(text), os.environ['PAGER'])
-        elif os.environ.get('TERM') in ('dumb', 'emacs'):
-            return _pipepager(strip_ansi(text), os.environ['PAGER'])
-        else:
-            return _pipepager(text, os.environ['PAGER'])
+            return _tempfilepager(text, os.environ['PAGER'], color)
+        return _pipepager(text, os.environ['PAGER'], color)
     if os.environ.get('TERM') in ('dumb', 'emacs'):
-        return _nullpager(stdout, text)
+        return _nullpager(stdout, text, color)
     if WIN or sys.platform.startswith('os2'):
-        return _tempfilepager(strip_ansi(text), 'more <')
+        return _tempfilepager(text, 'more <', color)
     if hasattr(os, 'system') and os.system('(less) 2>/dev/null') == 0:
-        return _pipepager(text, 'less')
+        return _pipepager(text, 'less', color)
 
     import tempfile
     fd, filename = tempfile.mkstemp()
     os.close(fd)
     try:
         if hasattr(os, 'system') and os.system('more "%s"' % filename) == 0:
-            return _pipepager(text, 'more')
-        return _nullpager(stdout, text)
+            return _pipepager(text, 'more', color)
+        return _nullpager(stdout, text, color)
     finally:
         os.unlink(filename)
 
 
-def _pipepager(text, cmd):
-    """Page through text by feeding it to another program."""
-    pipe = os.popen(cmd, 'w')
+def _pipepager(text, cmd, color):
+    """Page through text by feeding it to another program.  Invoking a
+    pager through this might support colors.
+    """
+    import subprocess
+    env = dict(os.environ)
+
+    # If we're piping to less we might support colors under the
+    # condition that
+    cmd_detail = cmd.rsplit('/', 1)[-1].split()
+    if color is None and cmd_detail[0] == 'less':
+        less_flags = os.environ.get('LESS', '') + ' '.join(cmd_detail[1:])
+        if not less_flags:
+            env['LESS'] = '-R'
+            color = True
+        elif 'r' in less_flags or 'R' in less_flags:
+            color = True
+
+    if not color:
+        text = strip_ansi(text)
+
+    c = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE,
+                         env=env)
+    encoding = get_best_encoding(c.stdin)
     try:
-        pipe.write(text)
-        pipe.close()
+        c.stdin.write(text.encode(encoding, 'replace'))
+        c.stdin.close()
     except IOError:
         pass
+    c.wait()
 
 
-def _tempfilepager(text, cmd):
+def _tempfilepager(text, cmd, color):
     """Page through text by invoking a program on a temporary file."""
     import tempfile
     filename = tempfile.mktemp()
-    with open_stream(filename, 'w')[0] as f:
-        f.write(text)
+    if not color:
+        text = strip_ansi(text)
+    encoding = get_best_encoding(sys.stdout)
+    with open_stream(filename, 'wb')[0] as f:
+        f.write(text.encode(encoding))
     try:
         os.system(cmd + ' "' + filename + '"')
     finally:
         os.unlink(filename)
 
 
-def _nullpager(stream, text):
+def _nullpager(stream, text, color):
     """Simply print unformatted text.  This is the ultimate fallback."""
-    stream.write(strip_ansi(text))
+    if not color:
+        text = strip_ansi(text)
+    stream.write(text)
 
 
 class Editor(object):
@@ -324,7 +352,7 @@ class Editor(object):
         if WIN:
             return 'notepad'
         for editor in 'vim', 'nano':
-            if os.system('which %s &> /dev/null' % editor) == 0:
+            if os.system('which %s >/dev/null 2>&1' % editor) == 0:
                 return editor
         return 'vi'
 

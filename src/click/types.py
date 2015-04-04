@@ -20,6 +20,7 @@ class ParamType(object):
         This can be the case when the object is used with prompt
         inputs.
     """
+    is_composite = False
 
     #: the descriptive name of this type
     name = None
@@ -46,7 +47,7 @@ class ParamType(object):
         .. versionadded:: 2.0
         """
 
-    def convert(self, param, ctx, value):
+    def convert(self, value, param, ctx):
         """Converts the value.  This is not invoked for values that are
         `None` (the missing value).
         """
@@ -67,6 +68,14 @@ class ParamType(object):
         raise BadParameter(message, ctx=ctx, param=param)
 
 
+class CompositeParamType(ParamType):
+    is_composite = True
+
+    @property
+    def arity(self):
+        raise NotImplementedError()
+
+
 class FuncParamType(ParamType):
 
     def __init__(self, func):
@@ -82,6 +91,16 @@ class FuncParamType(ParamType):
             except UnicodeError:
                 value = str(value).decode('utf-8', 'replace')
             self.fail(value, param, ctx)
+
+
+class UnprocessedParamType(ParamType):
+    name = 'text'
+
+    def convert(self, value, param, ctx):
+        return value
+
+    def __repr__(self):
+        return 'UNPROCESSED'
 
 
 class StringParamType(ParamType):
@@ -106,8 +125,8 @@ class StringParamType(ParamType):
 
 
 class Choice(ParamType):
-    """The choice type allows a value to checked against a fixed set of
-    supported values.  All of these values have to be integers.
+    """The choice type allows a value to be checked against a fixed set of
+    supported values.  All of these values have to be strings.
 
     See :ref:`choice-opts` for an example.
     """
@@ -255,7 +274,7 @@ class File(ParamType):
     upon first IO.  The default is to be non lazy for standard input and
     output streams as well as files opened for reading, lazy otherwise.
 
-    Starting with click 2.0, files can also be opened atomically in which
+    Starting with Click 2.0, files can also be opened atomically in which
     case all writes go into a separate file in the same folder and upon
     completion the file will be moved over to the original location.  This
     is useful if a file regularly read by other users is modified.
@@ -319,7 +338,7 @@ class File(ParamType):
 
 class Path(ParamType):
     """The path type is similar to the :class:`File` type but it performs
-    different checks.  First of all, instead of returning a open file
+    different checks.  First of all, instead of returning an open file
     handle it returns just the filename.  Secondly, it can perform various
     basic checks about what the file or directory should be.
 
@@ -395,10 +414,40 @@ class Path(ParamType):
         return rv
 
 
+class Tuple(CompositeParamType):
+    """The default behavior of Click is to apply a type on a value directly.
+    This works well in most cases, except for when `nargs` is set to a fixed
+    count and differnt types should be used for different items.  In this
+    case the :class:`Tuple` type can be used.  This type can only be used
+    if `nargs` is set to a fixed number.
+
+    For more information see :ref:`tuple-type`.
+
+    This can be selected by using a Python tuple literal as a type.
+
+    :param types: a list of types that should be used for the tuple items.
+    """
+
+    def __init__(self, types):
+        self.types = [convert_type(ty) for ty in types]
+
+    @property
+    def arity(self):
+        return len(self.types)
+
+    def convert(self, value, param, ctx):
+        if len(value) != len(self.types):
+            raise TypeError('It would appear that nargs is set to conflict '
+                            'with the composite type arity.')
+        return tuple(ty(x, param, ctx) for ty, x in zip(self.types, value))
+
+
 def convert_type(ty, default=None):
     """Converts a callable or python ty into the most appropriate param
     ty.
     """
+    if isinstance(ty, tuple):
+        return Tuple(ty)
     if isinstance(ty, ParamType):
         return ty
     guessed_type = False
@@ -430,6 +479,20 @@ def convert_type(ty, default=None):
             pass
     return FuncParamType(ty)
 
+
+#: A dummy parameter type that just does nothing.  From a user's
+#: perspective this appears to just be the same as `STRING` but internally
+#: no string conversion takes place.  This is necessary to achieve the
+#: same bytes/unicode behavior on Python 2/3 in situations where you want
+#: to not convert argument types.  This is usually useful when working
+#: with file paths as they can appear in bytes and unicode.
+#:
+#: For path related uses the :class:`Path` type is a better choice but
+#: there are situations where an unprocessed type is useful which is why
+#: it is is provided.
+#:
+#: .. versionadded:: 4.0
+UNPROCESSED = UnprocessedParamType()
 
 #: A unicode string parameter type which is the implicit default.  This
 #: can also be selected by using ``str`` as type.

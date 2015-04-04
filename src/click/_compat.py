@@ -99,7 +99,7 @@ class _FixupStream(object):
     def readable(self):
         x = getattr(self._stream, 'readable', None)
         if x is not None:
-            return x
+            return x()
         try:
             self._stream.read(0)
         except Exception:
@@ -109,7 +109,7 @@ class _FixupStream(object):
     def writable(self):
         x = getattr(self._stream, 'writable', None)
         if x is not None:
-            return x
+            return x()
         try:
             self._stream.write('')
         except Exception:
@@ -122,7 +122,7 @@ class _FixupStream(object):
     def seekable(self):
         x = getattr(self._stream, 'seekable', None)
         if x is not None:
-            return x
+            return x()
         try:
             self._stream.seek(self._stream.tell())
         except Exception:
@@ -456,6 +456,18 @@ colorama = None
 get_winterm_size = None
 
 
+def strip_ansi(value):
+    return _ansi_re.sub('', value)
+
+
+def should_strip_ansi(stream=None, color=None):
+    if color is None:
+        if stream is None:
+            stream = sys.stdin
+        return not isatty(stream)
+    return not color
+
+
 # If we're on Windows, we provide transparent integration through
 # colorama.  This will make ANSI colors through the echo function
 # work automatically.
@@ -470,7 +482,7 @@ if WIN:
     else:
         _ansi_stream_wrappers = WeakKeyDictionary()
 
-        def auto_wrap_for_ansi(stream):
+        def auto_wrap_for_ansi(stream, color=None):
             """This function wraps a stream so that calls through colorama
             are issued to the win32 console API to recolor on demand.  It
             also ensures to reset the colors if a write call is interrupted
@@ -482,7 +494,7 @@ if WIN:
                 cached = None
             if cached is not None:
                 return cached
-            strip = not isatty(stream)
+            strip = should_strip_ansi(stream, color)
             ansi_wrapper = colorama.AnsiToWin32(stream, strip=strip)
             rv = ansi_wrapper.stream
             _write = rv.write
@@ -507,10 +519,6 @@ if WIN:
             return win.Right - win.Left, win.Bottom - win.Top
 
 
-def strip_ansi(value):
-    return _ansi_re.sub('', value)
-
-
 def term_len(x):
     return len(strip_ansi(x))
 
@@ -522,26 +530,29 @@ def isatty(stream):
         return False
 
 
-_default_text_cache = WeakKeyDictionary()
-
-
-def _default_text_stdout():
-    """Like :func:`get_text_stdout` but uses a cache if available to speed
-    it up.  This will not create streams over and over again.
-    """
-    stream = sys.stdout
-    try:
-        rv = _default_text_cache.get(stream)
-    except Exception:
-        rv = None
-    if rv is not None:
+def _make_cached_stream_func(src_func, wrapper_func):
+    cache = WeakKeyDictionary()
+    def func():
+        stream = src_func()
+        try:
+            rv = cache.get(stream)
+        except Exception:
+            rv = None
+        if rv is not None:
+            return rv
+        rv = wrapper_func()
+        try:
+            cache[stream] = rv
+        except Exception:
+            pass
         return rv
-    rv = get_text_stdout()
-    try:
-        _default_text_cache[stream] = rv
-    except Exception:
-        pass
-    return rv
+    return func
+
+
+_default_text_stdout = _make_cached_stream_func(
+    lambda: sys.stdout, get_text_stdout)
+_default_text_stderr = _make_cached_stream_func(
+    lambda: sys.stderr, get_text_stderr)
 
 
 binary_streams = {
