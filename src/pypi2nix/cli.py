@@ -7,29 +7,20 @@ import pypi2nix.wheels2nix
 
 @click.command()
 @click.option('--nix-path', '-I', type=str, default='')
-@click.argument('input', type=click.Path(exists=True))
-def main(input, nix_path):
-    py_file = None
-    cfg_file = None
-    txt_file = None
-    json_file = None
-    wheels_file = None
+@click.argument('input_file', type=click.Path(exists=True))
+def main(input_file, nix_path):
+    i = lambda end: input_file.endswith(end)
+
+    py_file = input_file if i('setup.py') else None
+    cfg_file = input_file if i('.cfg') else None
+    txt_file = input_file if i('.txt') else None
+    json_file = input_file if i('.json') else None
+    wheels_file = input_file if i('.wheels') else None
     nix_file = None
 
-    # detect input and start 
-    if input.endswith('setup.py'):
-        py_file = input
-    elif input.endswith('.cfg'):
-        cfg_file = input
-    elif input.endswith('.txt'):
-        txt_file = input
-    elif input.endswith('.json'):
-        json_file = input
-    elif input.endswith('.wheels'):
-        wheels_file = input
-    else:
-        print '<input> was not correct type. check help for more info.'
-        sys.exit(1)
+    if not (py_file or cfg_file or txt_file or json_file or wheels_file):
+        raise Exception(
+            '<input_file> was not correct type. check help for more info.')
 
     if cfg_file:
         json_file = pypi2nix.cfg2txt.do(txt_file)
