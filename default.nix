@@ -14,10 +14,10 @@ let
     md5 = "01026f87978932060cc86c1dc527903e";
   };
 
-  clickName = "click-3.3";
+  clickName = "click-4.0";
   click = fetchurl {
 		url = "https://pypi.python.org/packages/source/c/click/${clickName}.tar.gz";
-    md5 = "40edaba4d216915a8326c5b2cb52781d";
+    md5 = "79b475a1dbd566d8ce7daba5e6c1aaa7";
   };
 
   setuptoolsName = "setuptools-5.5.1";
