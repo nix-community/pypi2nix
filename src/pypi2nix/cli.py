@@ -23,7 +23,7 @@ def main(input_file, nix_path):
             '<input_file> was not correct type. check help for more info.')
 
     if cfg_file:
-        json_file = pypi2nix.cfg2txt.do(txt_file)
+        json_file = pypi2nix.cfg2txt.do(cfg_file)
 
     if txt_file:
         json_file = pypi2nix.txt2json.do(txt_file)
