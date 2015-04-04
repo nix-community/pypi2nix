@@ -59,4 +59,7 @@ in mkDerivation rec {
     ls -la $out/bin
   '';
 
+  # This package contains no binaries to patch or strip.
+  dontPatchELF = true;
+  dontStrip = true;
 }
