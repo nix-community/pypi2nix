@@ -134,14 +134,18 @@ def _param_memo(f, param):
 
 
 def argument(*param_decls, **attrs):
-    """Attaches an option to the command.  All positional arguments are
+    """Attaches an argument to the command.  All positional arguments are
     passed as parameter declarations to :class:`Argument`; all keyword
-    arguments are forwarded unchanged.  This is equivalent to creating an
-    :class:`Option` instance manually and attaching it to the
-    :attr:`Command.params` list.
+    arguments are forwarded unchanged (except ``cls``).
+    This is equivalent to creating an :class:`Argument` instance manually
+    and attaching it to the :attr:`Command.params` list.
+
+    :param cls: the argument class to instantiate.  This defaults to
+                :class:`Argument`.
     """
     def decorator(f):
-        _param_memo(f, Argument(param_decls, **attrs))
+        ArgumentClass = attrs.pop('cls', Argument)
+        _param_memo(f, ArgumentClass(param_decls, **attrs))
         return f
     return decorator
 
@@ -149,14 +153,18 @@ def argument(*param_decls, **attrs):
 def option(*param_decls, **attrs):
     """Attaches an option to the command.  All positional arguments are
     passed as parameter declarations to :class:`Option`; all keyword
-    arguments are forwarded unchanged.  This is equivalent to creating an
-    :class:`Option` instance manually and attaching it to the
-    :attr:`Command.params` list.
+    arguments are forwarded unchanged (except ``cls``).
+    This is equivalent to creating an :class:`Option` instance manually
+    and attaching it to the :attr:`Command.params` list.
+
+    :param cls: the option class to instantiate.  This defaults to
+                :class:`Option`.
     """
     def decorator(f):
         if 'help' in attrs:
             attrs['help'] = inspect.cleandoc(attrs['help'])
-        _param_memo(f, Option(param_decls, **attrs))
+        OptionClass = attrs.pop('cls', Option)
+        _param_memo(f, OptionClass(param_decls, **attrs))
         return f
     return decorator
 
@@ -216,7 +224,7 @@ def version_option(version=None, *param_decls, **attrs):
     printing out the version number.  This is implemented as an eager
     option that prints the version and exits the program in the callback.
 
-    :param version: the version number to show.  If not provided click
+    :param version: the version number to show.  If not provided Click
                     attempts an auto discovery via setuptools.
     :param prog_name: the name of the program (defaults to autodetection)
     :param message: custom message to show instead of the default
@@ -253,7 +261,7 @@ def version_option(version=None, *param_decls, **attrs):
             echo(message % {
                 'prog': prog,
                 'version': ver,
-            })
+            }, color=ctx.color)
             ctx.exit()
 
         attrs.setdefault('is_flag', True)
@@ -278,7 +286,7 @@ def help_option(*param_decls, **attrs):
     def decorator(f):
         def callback(ctx, param, value):
             if value and not ctx.resilient_parsing:
-                echo(ctx.get_help())
+                echo(ctx.get_help(), color=ctx.color)
                 ctx.exit()
         attrs.setdefault('is_flag', True)
         attrs.setdefault('expose_value', False)

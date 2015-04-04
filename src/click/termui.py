@@ -3,8 +3,7 @@ import sys
 import struct
 
 from ._compat import raw_input, text_type, string_types, \
-     colorama, isatty, strip_ansi, get_winterm_size, \
-     DEFAULT_COLUMNS, WIN
+     isatty, strip_ansi, get_winterm_size, DEFAULT_COLUMNS, WIN
 from .utils import echo
 from .exceptions import Abort, UsageError
 from .types import convert_type
@@ -33,12 +32,16 @@ def _build_prompt(text, suffix, show_default=False, default=None):
 
 def prompt(text, default=None, hide_input=False,
            confirmation_prompt=False, type=None,
-           value_proc=None, prompt_suffix=': ', show_default=True):
+           value_proc=None, prompt_suffix=': ',
+           show_default=True, err=False):
     """Prompts a user for input.  This is a convenience function that can
     be used to prompt a user for input later.
 
     If the user aborts the input by sending a interrupt signal, this
     function will catch it and raise a :exc:`Abort` exception.
+
+    .. versionadded:: 4.0
+       Added the `err` parameter.
 
     :param text: the text to show for the prompt.
     :param default: the default value to use if no input happens.  If this
@@ -52,6 +55,8 @@ def prompt(text, default=None, hide_input=False,
                        convert a value.
     :param prompt_suffix: a suffix that should be added to the prompt.
     :param show_default: shows or hides the default value in the prompt.
+    :param err: if set to true the file defaults to ``stderr`` instead of
+                ``stdout``, the same as with echo.
     """
     result = None
 
@@ -60,7 +65,7 @@ def prompt(text, default=None, hide_input=False,
         try:
             # Write the prompt separately so that we get nice
             # coloring through colorama on Windows
-            echo(text, nl=False)
+            echo(text, nl=False, err=err)
             return f('')
         except (KeyboardInterrupt, EOFError):
             raise Abort()
@@ -83,7 +88,7 @@ def prompt(text, default=None, hide_input=False,
         try:
             result = value_proc(value)
         except UsageError as e:
-            echo('Error: %s' % e.message)
+            echo('Error: %s' % e.message, err=err)
             continue
         if not confirmation_prompt:
             return result
@@ -93,15 +98,18 @@ def prompt(text, default=None, hide_input=False,
                 break
         if value == value2:
             return result
-        echo('Error: the two entered values do not match')
+        echo('Error: the two entered values do not match', err=err)
 
 
 def confirm(text, default=False, abort=False, prompt_suffix=': ',
-            show_default=True):
+            show_default=True, err=False):
     """Prompts for confirmation (yes/no question).
 
     If the user aborts the input by sending a interrupt signal this
     function will catch it and raise a :exc:`Abort` exception.
+
+    .. versionadded:: 4.0
+       Added the `err` parameter.
 
     :param text: the question to ask.
     :param default: the default for the prompt.
@@ -109,6 +117,8 @@ def confirm(text, default=False, abort=False, prompt_suffix=': ',
                   exception by raising :exc:`Abort`.
     :param prompt_suffix: a suffix that should be added to the prompt.
     :param show_default: shows or hides the default value in the prompt.
+    :param err: if set to true the file defaults to ``stderr`` instead of
+                ``stdout``, the same as with echo.
     """
     prompt = _build_prompt(text, prompt_suffix, show_default,
                            default and 'Y/n' or 'y/N')
@@ -116,7 +126,7 @@ def confirm(text, default=False, abort=False, prompt_suffix=': ',
         try:
             # Write the prompt separately so that we get nice
             # coloring through colorama on Windows
-            echo(prompt, nl=False)
+            echo(prompt, nl=False, err=err)
             value = visible_prompt_func('').lower().strip()
         except (KeyboardInterrupt, EOFError):
             raise Abort()
@@ -127,7 +137,7 @@ def confirm(text, default=False, abort=False, prompt_suffix=': ',
         elif value == '':
             rv = default
         else:
-            echo('Error: invalid input')
+            echo('Error: invalid input', err=err)
             continue
         break
     if abort and not rv:
@@ -176,23 +186,28 @@ def get_terminal_size():
     return int(cr[1]), int(cr[0])
 
 
-def echo_via_pager(text):
+def echo_via_pager(text, color=None):
     """This function takes a text and shows it via an environment specific
     pager on stdout.
 
+    .. versionchanged:: 3.0
+       Added the `color` flag.
+
     :param text: the text to page.
+    :param color: controls if the pager supports ANSI colors or not.  The
+                  default is autodetection.
     """
     if not isinstance(text, string_types):
         text = text_type(text)
     from ._termui_impl import pager
-    return pager(text + '\n')
+    return pager(text + '\n', color)
 
 
 def progressbar(iterable=None, length=None, label=None, show_eta=True,
                 show_percent=None, show_pos=False,
                 item_show_func=None, fill_char='#', empty_char='-',
                 bar_template='%(label)s  [%(bar)s]  %(info)s',
-                info_sep='  ', width=36, file=None):
+                info_sep='  ', width=36, file=None, color=None):
     """This function creates an iterable context manager that can be used
     to iterate over something while showing a progress bar.  It will
     either iterate over the `iterable` or `length` items (that are counted
@@ -216,7 +231,21 @@ def progressbar(iterable=None, length=None, label=None, show_eta=True,
             for item in bar:
                 do_something_with(item)
 
+    Alternatively, if no iterable is specified, one can manually update the
+    progress bar through the `update()` method instead of directly
+    iterating over the progress bar.  The update method accepts the number
+    of steps to increment the bar with::
+
+        with progressbar(length=chunks.total_bytes) as bar:
+            for chunk in chunks:
+                process_chunk(chunk)
+                bar.update(chunks.bytes)
+
     .. versionadded:: 2.0
+
+    .. versionadded:: 4.0
+       Added the `color` parameter.  Added a `update` method to the
+       progressbar object.
 
     :param iterable: an iterable to iterate over.  If not provided the length
                      is required.
@@ -252,6 +281,10 @@ def progressbar(iterable=None, length=None, label=None, show_eta=True,
                   terminal width
     :param file: the file to write to.  If this is not a terminal then
                  only the label is printed.
+    :param color: controls if the terminal supports ANSI colors or not.  The
+                  default is autodetection.  This is only needed if ANSI
+                  codes are included anywhere in the progress bar output
+                  which is not the case by default.
     """
     from ._termui_impl import ProgressBar
     return ProgressBar(iterable=iterable, length=length, show_eta=show_eta,
@@ -259,7 +292,7 @@ def progressbar(iterable=None, length=None, label=None, show_eta=True,
                        item_show_func=item_show_func, fill_char=fill_char,
                        empty_char=empty_char, bar_template=bar_template,
                        info_sep=info_sep, file=file, label=label,
-                       width=width)
+                       width=width, color=color)
 
 
 def clear():
@@ -274,7 +307,7 @@ def clear():
     # If we're on Windows and we don't have colorama available, then we
     # clear the screen by shelling out.  Otherwise we can use an escape
     # sequence.
-    if WIN and colorama is None:
+    if WIN:
         os.system('cls')
     else:
         sys.stdout.write('\033[2J\033[1;1H')
@@ -351,7 +384,7 @@ def style(text, fg=None, bg=None, bold=None, dim=None, underline=None,
 
 def unstyle(text):
     """Removes ANSI styling information from a string.  Usually it's not
-    necessary to use this function as click's echo function will
+    necessary to use this function as Click's echo function will
     automatically remove styling if necessary.
 
     .. versionadded:: 2.0
@@ -361,7 +394,7 @@ def unstyle(text):
     return strip_ansi(text)
 
 
-def secho(text, file=None, nl=True, **styles):
+def secho(text, file=None, nl=True, err=False, color=None, **styles):
     """This function combines :func:`echo` and :func:`style` into one
     call.  As such the following two calls are the same::
 
@@ -373,8 +406,7 @@ def secho(text, file=None, nl=True, **styles):
 
     .. versionadded:: 2.0
     """
-    text = style(text, **styles)
-    return echo(text, file=file, nl=nl)
+    return echo(style(text, **styles), file=file, nl=nl, err=err, color=color)
 
 
 def edit(text=None, editor=None, env=None, require_save=True,
@@ -467,7 +499,7 @@ def getchar(echo=False):
     return f(echo)
 
 
-def pause(info='Press any key to continue ...'):
+def pause(info='Press any key to continue ...', err=False):
     """This command stops execution and waits for the user to press any
     key to continue.  This is similar to the Windows batch "pause"
     command.  If the program is not run through a terminal, this command
@@ -475,17 +507,22 @@ def pause(info='Press any key to continue ...'):
 
     .. versionadded:: 2.0
 
+    .. versionadded:: 4.0
+       Added the `err` parameter.
+
     :param info: the info string to print before pausing.
+    :param err: if set to message goes to ``stderr`` instead of
+                ``stdout``, the same as with echo.
     """
     if not isatty(sys.stdin) or not isatty(sys.stdout):
         return
     try:
         if info:
-            echo(info, nl=False)
+            echo(info, nl=False, err=err)
         try:
             getchar()
         except (KeyboardInterrupt, EOFError):
             pass
     finally:
         if info:
-            echo()
+            echo(err=err)

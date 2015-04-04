@@ -4,8 +4,8 @@ from collections import deque
 
 from ._compat import text_type, open_stream, get_streerror, string_types, \
      PY2, binary_streams, text_streams, filename_to_ui, \
-     auto_wrap_for_ansi, strip_ansi, isatty, _default_text_stdout, \
-     is_bytes, WIN
+     auto_wrap_for_ansi, strip_ansi, should_strip_ansi, \
+     _default_text_stdout, _default_text_stderr, is_bytes, WIN
 
 if not PY2:
     from ._compat import _find_binary_writer
@@ -73,7 +73,7 @@ def unpack_args(args, nargs_spec):
         rv[spos] = tuple(args)
         args = []
 
-    return rv, list(args)
+    return tuple(rv), list(args)
 
 
 def safecall(func):
@@ -103,8 +103,7 @@ def make_default_short_help(help, max_length=45):
     done = False
 
     for word in words:
-        if '.' in word:
-            word = word.split('.', 1)[0] + '.'
+        if word[-1:] == '.':
             done = True
         new_length = result and 1 + len(word) or len(word)
         if total_length + new_length > max_length:
@@ -159,7 +158,7 @@ class LazyFile(object):
     def open(self):
         """Opens the file if it's not yet open.  This call might fail with
         a :exc:`FileError`.  Not handling this error will produce an error
-        that click shows.
+        that Click shows.
         """
         if self._f is not None:
             return self._f
@@ -193,7 +192,25 @@ class LazyFile(object):
         self.close_intelligently()
 
 
-def echo(message=None, file=None, nl=True):
+class KeepOpenFile(object):
+
+    def __init__(self, file):
+        self._file = file
+
+    def __getattr__(self, name):
+        return getattr(self._file, name)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, tb):
+        pass
+
+    def __repr__(self):
+        return repr(self._file)
+
+
+def echo(message=None, file=None, nl=True, err=False, color=None):
     """Prints a message plus a newline to the given file or stdout.  On
     first sight, this looks like the print function, but it has improved
     support for handling Unicode and binary data that does not fail no
@@ -215,15 +232,29 @@ def echo(message=None, file=None, nl=True):
     .. _colorama: http://pypi.python.org/pypi/colorama
 
     .. versionchanged:: 2.0
-       Starting with version 2.0 of click, the echo function will work
+       Starting with version 2.0 of Click, the echo function will work
        with colorama if it's installed.
+
+    .. versionadded:: 3.0
+       The `err` parameter was added.
+
+    .. versionchanged:: 4.0
+       Added the `color` flag.
 
     :param message: the message to print
     :param file: the file to write to (defaults to ``stdout``)
+    :param err: if set to true the file defaults to ``stderr`` instead of
+                ``stdout``.  This is faster and easier than calling
+                :func:`get_text_stderr` yourself.
     :param nl: if set to `True` (the default) a newline is printed afterwards.
+    :param color: controls if the terminal supports ANSI colors or not.  The
+                  default is autodetection.
     """
     if file is None:
-        file = _default_text_stdout()
+        if err:
+            file = _default_text_stderr()
+        else:
+            file = _default_text_stdout()
 
     # Convert non bytes/text into the native string type.
     if message is not None and not isinstance(message, echo_native_types):
@@ -250,12 +281,12 @@ def echo(message=None, file=None, nl=True):
     # to strip the color or we use the colorama support to translate the
     # ansi codes to API calls.
     if message and not is_bytes(message):
-        if not isatty(file):
+        if should_strip_ansi(file, color):
             message = strip_ansi(message)
         elif WIN:
             if auto_wrap_for_ansi is not None:
                 file = auto_wrap_for_ansi(file)
-            else:
+            elif not color:
                 message = strip_ansi(message)
 
     if message:
@@ -296,6 +327,39 @@ def get_text_stream(name, encoding=None, errors='strict'):
     if opener is None:
         raise TypeError('Unknown standard stream %r' % name)
     return opener(encoding, errors)
+
+
+def open_file(filename, mode='r', encoding=None, errors='strict',
+              lazy=False, atomic=False):
+    """This is similar to how the :class:`File` works but for manual
+    usage.  Files are opened non lazy by default.  This can open regular
+    files as well as stdin/stdout if ``'-'`` is passed.
+
+    If stdin/stdout is returned the stream is wrapped so that the context
+    manager will not close the stream accidentally.  This makes it possible
+    to always use the function like this without having to worry to
+    accidentally close a standard stream::
+
+        with open_file(filename) as f:
+            ...
+
+    .. versionadded:: 3.0
+
+    :param filename: the name of the file to open (or ``'-'`` for stdin/stdout).
+    :param mode: the mode in which to open the file.
+    :param encoding: the encoding to use.
+    :param errors: the error handling for this file.
+    :param lazy: can be flipped to true to open the file lazily.
+    :param atomic: in atomic mode writes go into a temporary file and it's
+                   moved on close.
+    """
+    if lazy:
+        return LazyFile(filename, mode, encoding, errors, atomic=atomic)
+    f, should_close = open_stream(filename, mode, encoding, errors,
+                                  atomic=atomic)
+    if not should_close:
+        f = KeepOpenFile(f)
+    return f
 
 
 def format_filename(filename, shorten=False):

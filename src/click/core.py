@@ -2,11 +2,13 @@ import os
 import sys
 import codecs
 from contextlib import contextmanager
-from itertools import chain, repeat
+from itertools import repeat
+from functools import update_wrapper
 
 from .types import convert_type, IntRange, BOOL
 from .utils import make_str, make_default_short_help, echo
-from .exceptions import ClickException, UsageError, BadParameter, Abort
+from .exceptions import ClickException, UsageError, BadParameter, Abort, \
+     MissingParameter
 from .termui import prompt, confirm
 from .formatting import HelpFormatter, join_options
 from .parser import OptionParser, split_opt
@@ -14,6 +16,10 @@ from .parser import OptionParser, split_opt
 from ._compat import PY2, isidentifier, iteritems
 
 _missing = object()
+
+
+SUBCOMMAND_METAVAR = 'COMMAND [ARGS]...'
+SUBCOMMANDS_METAVAR = 'COMMAND1 [ARGS]... [COMMAND2 [ARGS]...]...'
 
 
 def _bashcomplete(cmd, prog_name, complete_var=None):
@@ -24,7 +30,7 @@ def _bashcomplete(cmd, prog_name, complete_var=None):
     if not complete_instr:
         return
 
-    from click._bashcomplete import bashcomplete
+    from ._bashcomplete import bashcomplete
     if bashcomplete(cmd, prog_name, complete_var, complete_instr):
         sys.exit(1)
 
@@ -38,12 +44,12 @@ def invoke_param_callback(callback, ctx, param, value):
     args = getattr(code, 'co_argcount', 3)
 
     if args < 3:
-        # This will become a warning in click 3.0:
-        ## from warnings import warn
-        ## warn(Warning('Invoked legacy parameter callback "%s".  The new '
-        ##              'signature for such callbacks starting with '
-        ##              'click 2.0 is (ctx, param, value).'
-        ##              % callback), stacklevel=3)
+        # This will become a warning in Click 3.0:
+        from warnings import warn
+        warn(Warning('Invoked legacy parameter callback "%s".  The new '
+                     'signature for such callbacks starting with '
+                     'click 2.0 is (ctx, param, value).'
+                     % callback), stacklevel=3)
         return callback(ctx, value)
     return callback(ctx, param, value)
 
@@ -98,11 +104,19 @@ class Context(object):
        Added the `resilient_parsing`, `help_option_names`,
        `token_normalize_func` parameters.
 
+    .. versionadded:: 3.0
+       Added the `allow_extra_args` and `allow_interspersed_args`
+       parameters.
+
+    .. versionadded:: 4.0
+       Added the `color`, `ignore_unknown_options`, and
+       `max_content_width` parameters.
+
     :param command: the command class for this context.
     :param parent: the parent context.
-    :param info_name: the info name for this invokation.  Generally this
+    :param info_name: the info name for this invocation.  Generally this
                       is the most descriptive name for the script or
-                      command.  For the toplevel script is is usually
+                      command.  For the toplevel script it is usually
                       the name of the script, for commands below it it's
                       the name of the script.
     :param obj: an arbitrary object of user data.
@@ -117,10 +131,28 @@ class Context(object):
                            inherit from parent context.  If no context
                            defines the terminal width then auto
                            detection will be applied.
-    :param resilient_parsing: if this flag is enabled then click will
+    :param max_content_width: the maximum width for content rendered by
+                              Click (this currently only affects help
+                              pages).  This defaults to 80 characters if
+                              not overridden.  In other words: even if the
+                              terminal is larger than that, Click will not
+                              format things wider than 80 characters by
+                              default.  In addition to that, formatters might
+                              add some safety mapping on the right.
+    :param resilient_parsing: if this flag is enabled then Click will
                               parse without any interactivity or callback
                               invocation.  This is useful for implementing
                               things such as completion support.
+    :param allow_extra_args: if this is set to `True` then extra arguments
+                             at the end will not raise an error and will be
+                             kept on the context.  The default is to inherit
+                             from the command.
+    :param allow_interspersed_args: if this is set to `False` then options
+                                    and arguments cannot be mixed.  The
+                                    default is to inherit from the command.
+    :param ignore_unknown_options: instructs click to ignore options it does
+                                   not know and keeps them for later
+                                   processing.
     :param help_option_names: optionally a list of strings that define how
                               the default help parameter is named.  The
                               default is ``['--help']``.
@@ -128,12 +160,20 @@ class Context(object):
                                  normalize tokens (options, choices,
                                  etc.).  This for instance can be used to
                                  implement case insensitive behavior.
+    :param color: controls if the terminal supports ANSI colors or not.  The
+                  default is autodetection.  This is only needed if ANSI
+                  codes are used in texts that Click prints which is by
+                  default not the case.  This for instance would affect
+                  help output.
     """
 
     def __init__(self, command, parent=None, info_name=None, obj=None,
                  auto_envvar_prefix=None, default_map=None,
-                 terminal_width=None, resilient_parsing=False,
-                 help_option_names=None, token_normalize_func=None):
+                 terminal_width=None, max_content_width=None,
+                 resilient_parsing=False, allow_extra_args=None,
+                 allow_interspersed_args=None,
+                 ignore_unknown_options=None, help_option_names=None,
+                 token_normalize_func=None, color=None):
         #: the parent context or `None` if none exists.
         self.parent = parent
         #: the :class:`Command` for this context.
@@ -145,12 +185,6 @@ class Context(object):
         self.params = {}
         #: the leftover arguments.
         self.args = []
-        #: this flag indicates if a subcommand is going to be executed.
-        #: a group callback can use this information to figure out if it's
-        #: being executed directly or because the execution flow passes
-        #: onwards to a subcommand.  By default it's `None`, but it can be
-        #: the name of the subcommand to execute.
-        self.invoked_subcommand = None
         if obj is None and parent is not None:
             obj = parent.obj
         #: the user object stored.
@@ -162,10 +196,56 @@ class Context(object):
             default_map = parent.default_map.get(info_name)
         self.default_map = default_map
 
+        #: This flag indicates if a subcommand is going to be executed. A
+        #: group callback can use this information to figure out if it's
+        #: being executed directly or because the execution flow passes
+        #: onwards to a subcommand. By default it's None, but it can be
+        #: the name of the subcommand to execute.
+        #:
+        #: If chaining is enabled this will be set to ``'*'`` in case
+        #: any commands are executed.  It is however not possible to
+        #: figure out which ones.  If you require this knowledge you
+        #: should use a :func:`resultcallback`.
+        self.invoked_subcommand = None
+
         if terminal_width is None and parent is not None:
             terminal_width = parent.terminal_width
         #: The width of the terminal (None is autodetection).
         self.terminal_width = terminal_width
+
+        if max_content_width is None and parent is not None:
+            max_content_width = parent.max_content_width
+        #: The maximum width of formatted content (None implies a sensible
+        #: default which is 80 for most things).
+        self.max_content_width = max_content_width
+
+        if allow_extra_args is None:
+            allow_extra_args = command.allow_extra_args
+        #: Indicates if the context allows extra args or if it should
+        #: fail on parsing.
+        #:
+        #: .. versionadded:: 3.0
+        self.allow_extra_args = allow_extra_args
+
+        if allow_interspersed_args is None:
+            allow_interspersed_args = command.allow_interspersed_args
+        #: Indicates if the context allows mixing of arguments and
+        #: options or not.
+        #:
+        #: .. versionadded:: 3.0
+        self.allow_interspersed_args = allow_interspersed_args
+
+        if ignore_unknown_options is None:
+            ignore_unknown_options = command.ignore_unknown_options
+        #: Instructs click to ignore options that a command does not
+        #: understand and will store it on the context for later
+        #: processing.  This is primarily useful for situations where you
+        #: want to call into external programs.  Generally this pattern is
+        #: strongly discouraged because it's not possibly to losslessly
+        #: forward all arguments.
+        #:
+        #: .. versionadded:: 4.0
+        self.ignore_unknown_options = ignore_unknown_options
 
         if help_option_names is None:
             if parent is not None:
@@ -183,7 +263,7 @@ class Context(object):
         #: options, choices, commands etc.
         self.token_normalize_func = token_normalize_func
 
-        #: Indicates if resilient parsing is enabled.  In that case click
+        #: Indicates if resilient parsing is enabled.  In that case Click
         #: will do its best to not cause any failures.
         self.resilient_parsing = resilient_parsing
 
@@ -200,17 +280,47 @@ class Context(object):
             self.auto_envvar_prefix = auto_envvar_prefix.upper()
         self.auto_envvar_prefix = auto_envvar_prefix
 
+        if color is None and parent is not None:
+            color = parent.color
+
+        #: Controls if styling output is wanted or not.
+        self.color = color
+
         self._close_callbacks = []
+        self._depth = 0
 
     def __enter__(self):
+        self._depth += 1
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
-        self.close()
+        self._depth -= 1
+        if self._depth == 0:
+            self.close()
+
+    def _get_invoked_subcommands(self):
+        from warnings import warn
+        warn(Warning('This API does not work properly and has been largely '
+                     'removed in Click 3.2 to fix a regression the '
+                     'introduction of this API caused.  Consult the '
+                     'upgrade documentation for more information.  For '
+                     'more information about this see '
+                     'http://click.pocoo.org/upgrading/#upgrading-to-3.2'),
+             stacklevel=2)
+        if self.invoked_subcommand is None:
+            return []
+        return [self.invoked_subcommand]
+    def _set_invoked_subcommands(self, value):
+        self.invoked_subcommand = \
+            len(value) > 1 and '*' or value and value[0] or None
+    invoked_subcommands = property(_get_invoked_subcommands,
+                                   _set_invoked_subcommands)
+    del _get_invoked_subcommands, _set_invoked_subcommands
 
     def make_formatter(self):
         """Creates the formatter for the help and usage output."""
-        return HelpFormatter(width=self.terminal_width)
+        return HelpFormatter(width=self.terminal_width,
+                             max_width=self.max_content_width)
 
     def call_on_close(self, f):
         """This decorator remembers a function as callback that should be
@@ -306,26 +416,66 @@ class Context(object):
         return self.command.get_help(self)
 
     def invoke(*args, **kwargs):
-        """Invokes a command callback in exactly the way it expects.
+        """Invokes a command callback in exactly the way it expects.  There
+        are two ways to invoke this method:
+
+        1.  the first argument can be a callback and all other arguments and
+            keyword arguments are forwarded directly to the function.
+        2.  the first argument is a click command object.  In that case all
+            arguments are forwarded as well but proper click parameters
+            (options and click arguments) must be keyword arguments and Click
+            will fill in defaults.
+
+        Note that before Click 3.2 keyword arguments were not properly filled
+        in against the intention of this code and no context was created.  For
+        more information about this change and why it was done in a bugfix
+        release see :ref:`upgrade-to-3.2`.
         """
         self, callback = args[:2]
+        ctx = self
+
+        # This is just to improve the error message in cases where old
+        # code incorrectly invoked this method.  This will eventually be
+        # removed.
+        injected_arguments = False
 
         # It's also possible to invoke another command which might or
-        # might not have a callback.
+        # might not have a callback.  In that case we also fill
+        # in defaults and make a new context for this command.
         if isinstance(callback, Command):
-            callback = callback.callback
+            other_cmd = callback
+            callback = other_cmd.callback
+            ctx = Context(other_cmd, info_name=other_cmd.name, parent=self)
             if callback is None:
                 raise TypeError('The given command does not have a '
                                 'callback that can be invoked.')
 
+            for param in other_cmd.params:
+                if param.name not in kwargs and param.expose_value:
+                    kwargs[param.name] = param.get_default(ctx)
+                    injected_arguments = True
+
         args = args[2:]
         if getattr(callback, '__click_pass_context__', False):
-            args = (self,) + args
+            args = (ctx,) + args
         with augment_usage_errors(self):
-            return callback(*args, **kwargs)
+            try:
+                with ctx:
+                    return callback(*args, **kwargs)
+            except TypeError as e:
+                if not injected_arguments:
+                    raise
+                if 'got multiple values for' in str(e):
+                    raise RuntimeError(
+                        'You called .invoke() on the context with a command '
+                        'but provided parameters as positional arguments.  '
+                        'This is not supported but sometimes worked by chance '
+                        'in older versions of Click.  To fix this see '
+                        'http://click.pocoo.org/upgrading/#upgrading-to-3.2')
+                raise
 
     def forward(*args, **kwargs):
-        """Similar to :meth:`forward` but fills in default keyword
+        """Similar to :meth:`invoke` but fills in default keyword
         arguments from the current context if the other command expects
         it.  This cannot invoke callbacks directly, only other commands.
         """
@@ -337,8 +487,7 @@ class Context(object):
             raise TypeError('Callback is not a command.')
 
         for param in self.params:
-            if param in self.params and \
-               param not in kwargs:
+            if param not in kwargs:
                 kwargs[param] = self.params[param]
 
         return self.invoke(cmd, **kwargs)
@@ -348,13 +497,13 @@ class BaseCommand(object):
     """The base command implements the minimal API contract of commands.
     Most code will never use this as it does not implement a lot of useful
     functionality but it can act as the direct subclass of alternative
-    parsing methods that do not depend on the click parser.
+    parsing methods that do not depend on the Click parser.
 
-    For instance, this can be used to bridge click and other systems like
+    For instance, this can be used to bridge Click and other systems like
     argparse or docopt.
 
     Because base commands do not implement a lot of the API that other
-    parts of click take for granted, they are not supported for all
+    parts of Click take for granted, they are not supported for all
     operations.  For instance, they cannot be used with the decorators
     usually and they have no built-in callback system.
 
@@ -365,6 +514,12 @@ class BaseCommand(object):
     :param context_settings: an optional dictionary with defaults that are
                              passed to the context object.
     """
+    #: the default for the :attr:`Context.allow_extra_args` flag.
+    allow_extra_args = False
+    #: the default for the :attr:`Context.allow_interspersed_args` flag.
+    allow_interspersed_args = True
+    #: the default for the :attr:`Context.ignore_unknown_options` flag.
+    ignore_unknown_options = False
 
     def __init__(self, name, context_settings=None):
         #: the name the command thinks it has.  Upon registering a command
@@ -372,6 +527,8 @@ class BaseCommand(object):
         #: with this information.  You should instead use the
         #: :class:`Context`\'s :attr:`~Context.info_name` attribute.
         self.name = name
+        if context_settings is None:
+            context_settings = {}
         #: an optional dictionary with defaults passed to the context.
         self.context_settings = context_settings
 
@@ -396,7 +553,7 @@ class BaseCommand(object):
         :param extra: extra keyword arguments forwarded to the context
                       constructor.
         """
-        for key, value in iteritems(self.context_settings or {}):
+        for key, value in iteritems(self.context_settings):
             if key not in extra:
                 extra[key] = value
         ctx = Context(self, info_name=info_name, parent=parent, **extra)
@@ -417,7 +574,8 @@ class BaseCommand(object):
         """
         raise NotImplementedError('Base commands are not invokable by default')
 
-    def main(self, args=None, prog_name=None, complete_var=None, **extra):
+    def main(self, args=None, prog_name=None, complete_var=None,
+             standalone_mode=True, **extra):
         """This is the way to invoke a script with all the bells and
         whistles as a command line application.  This will always terminate
         the application after a call.  If this is not wanted, ``SystemExit``
@@ -425,6 +583,9 @@ class BaseCommand(object):
 
         This method is also available by directly calling the instance of
         a :class:`Command`.
+
+        .. versionadded:: 3.0
+           Added the `standalone_mode` flag to control the standalone mode.
 
         :param args: the arguments that should be used for parsing.  If not
                      provided, ``sys.argv[1:]`` is used.
@@ -435,6 +596,15 @@ class BaseCommand(object):
                              bash completion support.  The default is
                              ``"_<prog_name>_COMPLETE"`` with prog name in
                              uppercase.
+        :param standalone_mode: the default behavior is to invoke the script
+                                in standalone mode.  Click will then
+                                handle exceptions and convert them into
+                                error messages and the function will never
+                                return but shut down the interpreter.  If
+                                this is set to `False` they will be
+                                propagated to the caller and the return
+                                value of this function is the return value
+                                of :meth:`invoke`.
         :param extra: extra keyword arguments are forwarded to the context
                       constructor.  See :class:`Context` for more information.
         """
@@ -471,15 +641,21 @@ class BaseCommand(object):
         try:
             try:
                 with self.make_context(prog_name, args, **extra) as ctx:
-                    self.invoke(ctx)
+                    rv = self.invoke(ctx)
+                    if not standalone_mode:
+                        return rv
                     ctx.exit()
             except (EOFError, KeyboardInterrupt):
                 echo(file=sys.stderr)
                 raise Abort()
             except ClickException as e:
+                if not standalone_mode:
+                    raise
                 e.show()
                 sys.exit(e.exit_code)
         except Abort:
+            if not standalone_mode:
+                raise
             echo('Aborted!', file=sys.stderr)
             sys.exit(1)
 
@@ -490,7 +666,7 @@ class BaseCommand(object):
 
 class Command(BaseCommand):
     """Commands are the basic building block of command line interfaces in
-    click.  A basic command handles command line parsing and might dispatch
+    Click.  A basic command handles command line parsing and might dispatch
     more parsing to commands nested below it.
 
     .. versionchanged:: 2.0
@@ -510,7 +686,6 @@ class Command(BaseCommand):
     :param add_help_option: by default each command registers a ``--help``
                             option.  This can be disabled by this parameter.
     """
-    allow_extra_args = False
 
     def __init__(self, name, context_settings=None, callback=None,
                  params=None, help=None, epilog=None, short_help=None,
@@ -568,12 +743,12 @@ class Command(BaseCommand):
     def get_help_option(self, ctx):
         """Returns the help option object."""
         help_options = self.get_help_option_names(ctx)
-        if not help_options:
+        if not help_options or not self.add_help_option:
             return
 
         def show_help(ctx, param, value):
             if value and not ctx.resilient_parsing:
-                echo(ctx.get_help())
+                echo(ctx.get_help(), color=ctx.color)
                 ctx.exit()
         return Option(help_options, is_flag=True,
                       is_eager=True, expose_value=False,
@@ -583,6 +758,8 @@ class Command(BaseCommand):
     def make_parser(self, ctx):
         """Creates the underlying option parser for this command."""
         parser = OptionParser(ctx)
+        parser.allow_interspersed_args = ctx.allow_interspersed_args
+        parser.ignore_unknown_options = ctx.ignore_unknown_options
         for param in self.get_params(ctx):
             param.add_to_parser(parser, ctx)
         return parser
@@ -644,19 +821,20 @@ class Command(BaseCommand):
                 param_order, self.get_params(ctx)):
             value, args = param.handle_parse_result(ctx, opts, args)
 
-        if args and not self.allow_extra_args and not ctx.resilient_parsing:
+        if args and not ctx.allow_extra_args and not ctx.resilient_parsing:
             ctx.fail('Got unexpected extra argument%s (%s)'
                      % (len(args) != 1 and 's' or '',
                         ' '.join(map(make_str, args))))
 
         ctx.args = args
+        return args
 
     def invoke(self, ctx):
         """Given a context, this invokes the attached callback (if it exists)
         in the right way.
         """
         if self.callback is not None:
-            ctx.invoke(self.callback, **ctx.params)
+            return ctx.invoke(self.callback, **ctx.params)
 
 
 class MultiCommand(Command):
@@ -675,23 +853,34 @@ class MultiCommand(Command):
                             passed.
     :param subcommand_metavar: the string that is used in the documentation
                                to indicate the subcommand place.
+    :param chain: if this is set to `True` chaining of multiple subcommands
+                  is enabled.  This restricts the form of commands in that
+                  they cannot have optional arguments but it allows
+                  multiple commands to be chained together.
+    :param result_callback: the result callback to attach to this multi
+                            command.
     """
     allow_extra_args = True
+    allow_interspersed_args = False
 
     def __init__(self, name=None, invoke_without_command=False,
-                 no_args_is_help=None, subcommand_metavar='COMMAND [ARGS]...',
-                 **attrs):
+                 no_args_is_help=None, subcommand_metavar=None,
+                 chain=False, result_callback=None, **attrs):
         Command.__init__(self, name, **attrs)
         if no_args_is_help is None:
             no_args_is_help = not invoke_without_command
         self.no_args_is_help = no_args_is_help
         self.invoke_without_command = invoke_without_command
+        if subcommand_metavar is None:
+            if chain:
+                subcommand_metavar = SUBCOMMANDS_METAVAR
+            else:
+                subcommand_metavar = SUBCOMMAND_METAVAR
         self.subcommand_metavar = subcommand_metavar
-
-    def make_parser(self, ctx):
-        parser = Command.make_parser(self, ctx)
-        parser.allow_interspersed_args = False
-        return parser
+        self.chain = chain
+        #: The result callback that is stored.  This can be set or
+        #: overridden with the :func:`resultcallback` decorator.
+        self.result_callback = result_callback
 
     def collect_usage_pieces(self, ctx):
         rv = Command.collect_usage_pieces(self, ctx)
@@ -701,6 +890,43 @@ class MultiCommand(Command):
     def format_options(self, ctx, formatter):
         Command.format_options(self, ctx, formatter)
         self.format_commands(ctx, formatter)
+
+    def resultcallback(self, replace=False):
+        """Adds a result callback to the chain command.  By default if a
+        result callback is already registered this will chain them but
+        this can be disabled with the `replace` parameter.  The result
+        callback is invoked with the return value of the subcommand
+        (or the list of return values from all subcommands if chaining
+        is enabled) as well as the parameters as they would be passed
+        to the main callback.
+
+        Example::
+
+            @click.group()
+            @click.option('-i', '--input', default=23)
+            def cli(input):
+                return 42
+
+            @cli.resultcallback()
+            def process_result(result, input):
+                return result + input
+
+        .. versionadded:: 3.0
+
+        :param replace: if set to `True` an already existing result
+                        callback will be removed.
+        """
+        def decorator(f):
+            old_callback = self.result_callback
+            if old_callback is None or replace:
+                self.result_callback = f
+                return f
+            def function(__value, *args, **kwargs):
+                return f(old_callback(__value, *args, **kwargs),
+                         *args, **kwargs)
+            self.result_callback = rv = update_wrapper(function, f)
+            return rv
+        return decorator
 
     def format_commands(self, ctx, formatter):
         """Extra format methods for multi methods that adds all the commands
@@ -722,17 +948,77 @@ class MultiCommand(Command):
 
     def parse_args(self, ctx, args):
         if not args and self.no_args_is_help and not ctx.resilient_parsing:
-            echo(ctx.get_help())
+            echo(ctx.get_help(), color=ctx.color)
             ctx.exit()
         return Command.parse_args(self, ctx, args)
 
     def invoke(self, ctx):
+        def _process_result(value):
+            if self.result_callback is not None:
+                value = ctx.invoke(self.result_callback, value,
+                                   **ctx.params)
+            return value
+
         if not ctx.args:
+            # If we are invoked without command the chain flag controls
+            # how this happens.  If we are not in chain mode, the return
+            # value here is the return value of the command.
+            # If however we are in chain mode, the return value is the
+            # return value of the result processor invoked with an empty
+            # list (which means that no subcommand actually was executed).
             if self.invoke_without_command:
-                return Command.invoke(self, ctx)
+                if not self.chain:
+                    return Command.invoke(self, ctx)
+                with ctx:
+                    Command.invoke(self, ctx)
+                    return _process_result([])
             ctx.fail('Missing command.')
 
-        cmd_name = make_str(ctx.args[0])
+        args = ctx.args
+
+        # If we're not in chain mode, we only allow the invocation of a
+        # single command but we also inform the current context about the
+        # name of the command to invoke.
+        if not self.chain:
+            # Make sure the context is entered so we do not clean up
+            # resources until the result processor has worked.
+            with ctx:
+                cmd_name, cmd, args = self.resolve_command(ctx, args)
+                ctx.invoked_subcommand = cmd_name
+                Command.invoke(self, ctx)
+                sub_ctx = cmd.make_context(cmd_name, args, parent=ctx)
+                with sub_ctx:
+                    return _process_result(sub_ctx.command.invoke(sub_ctx))
+
+        # In chain mode we create the contexts step by step, but after the
+        # base command has been invoked.  Because at that point we do not
+        # know the subcommands yet, the invoked subcommand attribute is
+        # set to ``*`` to inform the command that subcommands are executed
+        # but nothing else.
+        with ctx:
+            ctx.invoked_subcommand = args and '*' or None
+            Command.invoke(self, ctx)
+
+            # Otherwise we make every single context and invoke them in a
+            # chain.  In that case the return value to the result processor
+            # is the list of all invoked subcommand's results.
+            contexts = []
+            while args:
+                cmd_name, cmd, args = self.resolve_command(ctx, args)
+                sub_ctx = cmd.make_context(cmd_name, args, parent=ctx,
+                                           allow_extra_args=True,
+                                           allow_interspersed_args=False)
+                contexts.append(sub_ctx)
+                args = sub_ctx.args
+
+            rv = []
+            for sub_ctx in contexts:
+                with sub_ctx:
+                    rv.append(sub_ctx.command.invoke(sub_ctx))
+            return _process_result(rv)
+
+    def resolve_command(self, ctx, args):
+        cmd_name = make_str(args[0])
         original_cmd_name = cmd_name
 
         # Get the command
@@ -755,16 +1041,7 @@ class MultiCommand(Command):
                 self.parse_args(ctx, ctx.args)
             ctx.fail('No such command "%s".' % original_cmd_name)
 
-        return self.invoke_subcommand(ctx, cmd, cmd_name, ctx.args[1:])
-
-    def invoke_subcommand(self, ctx, cmd, cmd_name, args):
-        # Whenever we dispatch to a subcommand we also invoke the regular
-        # callback.  This is done so that parameters can be handled.
-        ctx.invoked_subcommand = cmd_name
-        Command.invoke(self, ctx)
-
-        with cmd.make_context(cmd_name, args, parent=ctx) as cmd_ctx:
-            return cmd.invoke(cmd_ctx)
+        return cmd_name, cmd, args[1:]
 
     def get_command(self, ctx, cmd_name):
         """Given a context and a command name, this returns a
@@ -781,7 +1058,7 @@ class MultiCommand(Command):
 
 class Group(MultiCommand):
     """A group allows a command to have subcommands attached.  This is the
-    most common way to implement nesting in click.
+    most common way to implement nesting in Click.
 
     :param commands: a dictionary of commands.
     """
@@ -870,7 +1147,7 @@ class Parameter(object):
 
     .. versionchanged:: 2.0
        Changed signature for parameter callback to also be passed the
-       parameter.  In click 2.0, the old callback format will still work,
+       parameter.  In Click 2.0, the old callback format will still work,
        but it will raise a warning to give you change to migrate the
        code easier.
 
@@ -886,10 +1163,12 @@ class Parameter(object):
                     without any arguments.
     :param callback: a callback that should be executed after the parameter
                      was matched.  This is called as ``fn(ctx, param,
-                     value)`` and needs to return the value.  Before click
+                     value)`` and needs to return the value.  Before Click
                      2.0, the signature was ``(ctx, value)``.
     :param nargs: the number of arguments to match.  If not ``1`` the return
-                  value is a tuple instead of single value.
+                  value is a tuple instead of single value.  The default for
+                  nargs is ``1`` (except if the type is a tuple, then it's
+                  the arity of the tuple).
     :param metavar: how the value is represented in the help page.
     :param expose_value: if this is `True` then the value is passed onwards
                          to the command callback and stored on the context,
@@ -903,11 +1182,21 @@ class Parameter(object):
     param_type_name = 'parameter'
 
     def __init__(self, param_decls=None, type=None, required=False,
-                 default=None, callback=None, nargs=1, metavar=None,
+                 default=None, callback=None, nargs=None, metavar=None,
                  expose_value=True, is_eager=False, envvar=None):
         self.name, self.opts, self.secondary_opts = \
             self._parse_decls(param_decls or (), expose_value)
+
         self.type = convert_type(type, default)
+
+        # Default nargs to what the type tells us if we have that
+        # information available.
+        if nargs is None:
+            if self.type.is_composite:
+                nargs = self.type.arity
+            else:
+                nargs = 1
+
         self.required = required
         self.callback = callback
         self.nargs = nargs
@@ -917,6 +1206,13 @@ class Parameter(object):
         self.is_eager = is_eager
         self.metavar = metavar
         self.envvar = envvar
+
+    @property
+    def human_readable_name(self):
+        """Returns the human readable name of this parameter.  This is the
+        same as the name for options, but the metavar for arguments.
+        """
+        return self.name
 
     def make_metavar(self):
         if self.metavar is not None:
@@ -935,7 +1231,7 @@ class Parameter(object):
             rv = self.default()
         else:
             rv = self.default
-        return self.type(rv, self, ctx)
+        return self.type_cast_value(ctx, rv)
 
     def add_to_parser(self, parser, ctx):
         pass
@@ -948,15 +1244,37 @@ class Parameter(object):
             value = self.value_from_envvar(ctx)
         return value
 
-    def process_value(self, ctx, value):
-        """Given a value and context this runs the logic to convert the
-        value as necessary.
+    def type_cast_value(self, ctx, value):
+        """Given a value this runs it properly through the type system.
+        This automatically handles things like `nargs` and `multiple` as
+        well as composite types.
         """
+        if self.type.is_composite:
+            if self.nargs <= 1:
+                raise TypeError('Attempted to invoke composite type '
+                                'but nargs has been set to %s.  This is '
+                                'not supported; nargs needs to be set to '
+                                'a fixed value > 1.' % self.nargs)
+            if self.multiple:
+                return tuple(self.type(x or (), self, ctx) for x in value or ())
+            return self.type(value or (), self, ctx)
+
         def _convert(value, level):
             if level == 0:
                 return self.type(value, self, ctx)
             return tuple(_convert(x, level - 1) for x in value or ())
         return _convert(value, (self.nargs != 1) + bool(self.multiple))
+
+    def process_value(self, ctx, value):
+        """Given a value and context this runs the logic to convert the
+        value as necessary.
+        """
+        # If the value we were given is None we do nothing.  This way
+        # code that calls this can easily figure out if something was
+        # not provided.  Otherwise it would be converted into an empty
+        # tuple for multiple invocations which is inconvenient.
+        if value is not None:
+            return self.type_cast_value(ctx, value)
 
     def value_is_missing(self, value):
         if value is None:
@@ -972,20 +1290,9 @@ class Parameter(object):
             value = self.get_default(ctx)
 
         if self.required and self.value_is_missing(value):
-            ctx.fail(self.get_missing_message(ctx))
+            raise MissingParameter(ctx=ctx, param=self)
 
         return value
-
-    def get_missing_message(self, ctx):
-        rv = 'Missing %s %s.' % (
-            self.param_type_name,
-            ' / '.join('"%s"' % x for x in chain(
-                self.opts, self.secondary_opts)),
-        )
-        extra = self.type.get_missing_message(self)
-        if extra:
-            rv += '  ' + extra
-        return rv
 
     def resolve_envvar_value(self, ctx):
         if self.envvar is None:
@@ -1118,6 +1425,8 @@ class Option(Parameter):
 
         # Sanity check for stuff we don't support
         if __debug__:
+            if self.nargs < 0:
+                raise TypeError('Options cannot have nargs < 0')
             if self.prompt and self.is_flag and not self.is_bool_flag:
                 raise TypeError('Cannot prompt for flags that are not bools.')
             if not self.is_bool_flag and self.secondary_opts:
@@ -1168,6 +1477,11 @@ class Option(Parameter):
                 return None, opts, secondary_opts
             raise TypeError('Could not determine name for option')
 
+        if not opts and not secondary_opts:
+            raise TypeError('No options defined but a name was passed (%s). '
+                            'Did you mean to declare an argument instead '
+                            'of an option?' % name)
+
         return name, opts, secondary_opts
 
     def add_to_parser(self, parser, ctx):
@@ -1217,7 +1531,10 @@ class Option(Parameter):
         help = self.help or ''
         extra = []
         if self.default is not None and self.show_default:
-            extra.append('default: %s' % self.default)
+            extra.append('default: %s' % (
+                         ', '.join('%s' % d for d in self.default)
+                         if isinstance(self.default, (list, tuple))
+                         else self.default, ))
         if self.required:
             extra.append('required')
         if extra:
@@ -1299,6 +1616,12 @@ class Argument(Parameter):
             else:
                 required = attrs.get('nargs', 1) > 0
         Parameter.__init__(self, param_decls, required=required, **attrs)
+
+    @property
+    def human_readable_name(self):
+        if self.metavar is not None:
+            return self.metavar
+        return self.name.upper()
 
     def make_metavar(self):
         if self.metavar is not None:

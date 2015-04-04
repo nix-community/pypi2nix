@@ -1,11 +1,17 @@
 import os
 import sys
-import click
 import shutil
 import tempfile
 import contextlib
 
 from ._compat import iteritems, PY2
+
+
+# If someone wants to vendor click, we want to ensure the
+# correct package is discovered.  Ideally we could use a
+# relative import here but unfortunately Python does not
+# support that.
+clickpkg = sys.modules[__name__.rsplit('.', 1)[0]]
 
 
 if PY2:
@@ -66,7 +72,8 @@ def make_input_stream(input, charset):
 class Result(object):
     """Holds the captured result of an invoked CLI script."""
 
-    def __init__(self, runner, output_bytes, exit_code, exception):
+    def __init__(self, runner, output_bytes, exit_code, exception,
+                 exc_info=None):
         #: The runner that created the result
         self.runner = runner
         #: The output as bytes.
@@ -75,6 +82,8 @@ class Result(object):
         self.exit_code = exit_code
         #: The exception that happend if one did.
         self.exception = exception
+        #: The traceback
+        self.exc_info = exc_info
 
     @property
     def output(self):
@@ -89,14 +98,14 @@ class Result(object):
 
 
 class CliRunner(object):
-    """The CLI runner provides functionality to invoke a click command line
+    """The CLI runner provides functionality to invoke a Click command line
     script for unittesting purposes in a isolated environment.  This only
     works in single-threaded systems without any concurrency as it changes the
     global interpreter state.
 
     :param charset: the character set for the input and output data.  This is
                     UTF-8 by default and should not be changed currently as
-                    the reporting to click only works in Python 2 properly.
+                    the reporting to Click only works in Python 2 properly.
     :param env: a dictionary with environment variables for overriding.
     :param echo_stdin: if this is set to `True`, then reading from stdin writes
                        to stdout.  This is useful for showing examples in
@@ -126,17 +135,22 @@ class CliRunner(object):
         return rv
 
     @contextlib.contextmanager
-    def isolation(self, input=None, env=None):
+    def isolation(self, input=None, env=None, color=False):
         """A context manager that sets up the isolation for invoking of a
         command line tool.  This sets up stdin with the given input data
         and `os.environ` with the overrides from the given dictionary.
-        This also rebinds some internals in click to be mocked (like the
+        This also rebinds some internals in Click to be mocked (like the
         prompt functionality).
 
         This is automatically done in the :meth:`invoke` method.
 
+        .. versionadded:: 4.0
+           The ``color`` parameter was added.
+
         :param input: the input stream to put into sys.stdin.
         :param env: the environment overrides as dictionary.
+        :param color: whether the output should contain color codes. The
+                      application can still override this explicitly.
         """
         input = make_input_stream(input, self.charset)
 
@@ -179,12 +193,20 @@ class CliRunner(object):
                 sys.stdout.flush()
             return char
 
-        old_visible_prompt_func = click.termui.visible_prompt_func
-        old_hidden_prompt_func = click.termui.hidden_prompt_func
-        old__getchar_func = click.termui._getchar
-        click.termui.visible_prompt_func = visible_input
-        click.termui.hidden_prompt_func = hidden_input
-        click.termui._getchar = _getchar
+        default_color = color
+        def should_strip_ansi(stream=None, color=None):
+            if color is None:
+                return not default_color
+            return not color
+
+        old_visible_prompt_func = clickpkg.termui.visible_prompt_func
+        old_hidden_prompt_func = clickpkg.termui.hidden_prompt_func
+        old__getchar_func = clickpkg.termui._getchar
+        old_should_strip_ansi = clickpkg.utils.should_strip_ansi
+        clickpkg.termui.visible_prompt_func = visible_input
+        clickpkg.termui.hidden_prompt_func = hidden_input
+        clickpkg.termui._getchar = _getchar
+        clickpkg.utils.should_strip_ansi = should_strip_ansi
 
         old_env = {}
         try:
@@ -210,25 +232,42 @@ class CliRunner(object):
             sys.stdout = old_stdout
             sys.stderr = old_stderr
             sys.stdin = old_stdin
-            click.termui.visible_prompt_func = old_visible_prompt_func
-            click.termui.hidden_prompt_func = old_hidden_prompt_func
-            click.termui._getchar = old__getchar_func
+            clickpkg.termui.visible_prompt_func = old_visible_prompt_func
+            clickpkg.termui.hidden_prompt_func = old_hidden_prompt_func
+            clickpkg.termui._getchar = old__getchar_func
+            clickpkg.utils.should_strip_ansi = old_should_strip_ansi
 
-    def invoke(self, cli, args=None, input=None, env=None, **extra):
+    def invoke(self, cli, args=None, input=None, env=None,
+               catch_exceptions=True, color=False, **extra):
         """Invokes a command in an isolated environment.  The arguments are
         forwarded directly to the command line script, the `extra` keyword
-        arguments are passed to the :meth:`~click.Command.main` function of
+        arguments are passed to the :meth:`~clickpkg.Command.main` function of
         the command.
 
         This returns a :class:`Result` object.
+
+        .. versionadded:: 3.0
+           The ``catch_exceptions`` parameter was added.
+
+        .. versionchanged:: 3.0
+           The result object now has an `exc_info` attribute with the
+           traceback if available.
+
+        .. versionadded:: 4.0
+           The ``color`` parameter was added.
 
         :param cli: the command to invoke
         :param args: the arguments to invoke
         :param input: the input data for `sys.stdin`.
         :param env: the environment overrides.
+        :param catch_exceptions: Whether to catch any other exceptions than
+                                 ``SystemExit``.
         :param extra: the keyword arguments to pass to :meth:`main`.
+        :param color: whether the output should contain color codes. The
+                      application can still override this explicitly.
         """
-        with self.isolation(input=input, env=env) as out:
+        exc_info = None
+        with self.isolation(input=input, env=env, color=color) as out:
             exception = None
             exit_code = 0
 
@@ -239,16 +278,22 @@ class CliRunner(object):
                 if e.code != 0:
                     exception = e
                 exit_code = e.code
+                exc_info = sys.exc_info()
             except Exception as e:
+                if not catch_exceptions:
+                    raise
                 exception = e
                 exit_code = -1
-            sys.stdout.flush()
-            output = out.getvalue()
+                exc_info = sys.exc_info()
+            finally:
+                sys.stdout.flush()
+                output = out.getvalue()
 
         return Result(runner=self,
                       output_bytes=output,
                       exit_code=exit_code,
-                      exception=exception)
+                      exception=exception,
+                      exc_info=exc_info)
 
     @contextlib.contextmanager
     def isolated_filesystem(self):

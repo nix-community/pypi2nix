@@ -24,11 +24,11 @@ from .decorators import pass_context, pass_obj, make_pass_decorator, \
      password_option, version_option, help_option
 
 # Types
-from .types import ParamType, File, Path, Choice, IntRange, STRING, INT, \
-     FLOAT, BOOL, UUID
+from .types import ParamType, File, Path, Choice, IntRange, Tuple, \
+     STRING, INT, FLOAT, BOOL, UUID, UNPROCESSED
 
 # Utilities
-from .utils import echo, get_binary_stream, get_text_stream, \
+from .utils import echo, get_binary_stream, get_text_stream, open_file, \
      format_filename, get_app_dir
 
 # Terminal functions
@@ -38,7 +38,7 @@ from .termui import prompt, confirm, get_terminal_size, echo_via_pager, \
 
 # Exceptions
 from .exceptions import ClickException, UsageError, BadParameter, \
-     FileError, Abort
+     FileError, Abort, NoSuchOption, BadOptionUsage, MissingParameter
 
 # Formatting
 from .formatting import HelpFormatter, wrap_text
@@ -58,12 +58,12 @@ __all__ = [
     'version_option', 'help_option',
 
     # Types
-    'ParamType', 'File', 'Path', 'Choice', 'IntRange', 'STRING', 'INT',
-    'FLOAT', 'BOOL', 'UUID',
+    'ParamType', 'File', 'Path', 'Choice', 'IntRange', 'Tuple', 'STRING',
+    'INT', 'FLOAT', 'BOOL', 'UUID', 'UNPROCESSED',
 
     # Utilities
-    'echo', 'get_binary_stream', 'get_text_stream', 'format_filename',
-    'get_app_dir',
+    'echo', 'get_binary_stream', 'get_text_stream', 'open_file',
+    'format_filename', 'get_app_dir',
 
     # Terminal functions
     'prompt', 'confirm', 'get_terminal_size', 'echo_via_pager',
@@ -72,7 +72,7 @@ __all__ = [
 
     # Exceptions
     'ClickException', 'UsageError', 'BadParameter', 'FileError',
-    'Abort',
+    'Abort', 'NoSuchOption', 'BadOptionUsage', 'MissingParameter',
 
     # Formatting
     'HelpFormatter', 'wrap_text',
@@ -82,4 +82,4 @@ __all__ = [
 ]
 
 
-__version__ = '2.5'
+__version__ = '4.0'
