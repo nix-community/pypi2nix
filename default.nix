@@ -56,7 +56,6 @@ in mkDerivation rec {
 	  cd src && zip -qr ../pypi2nix.zip * && cd ..
 	  echo '#!/usr/bin/env python' | cat - pypi2nix.zip > $out/bin/pypi2nix
 	  chmod +x $out/bin/pypi2nix
-    ls -la $out/bin
   '';
 
   # This package contains no binaries to patch or strip.
