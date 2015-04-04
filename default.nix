@@ -45,11 +45,11 @@ in mkDerivation rec {
   buildInputs = with pkgs; [ zip ];
   sourceRoot = "pypi2nix";
   postUnpack = ''
-    mv ${pipName}/pip pypi2nix/src/pip";
-    mv ${clickName}/click pypi2nix/src/click";
-    mv ${setuptoolsName}/setuptools pypi2nix/src/setuptools";
-    mv ${zcbuildoutName}/src/zc pypi2nix/src/zc";
-    mv ${zcrecipeegg}/src/zc/recipe pypi2nix/src/zc/recipe";
+    mv ${pipName}/pip pypi2nix/src/pip
+    mv ${clickName}/click pypi2nix/src/click
+    mv ${setuptoolsName}/setuptools pypi2nix/src/setuptools
+    mv ${zcbuildoutName}/src/zc pypi2nix/src/zc
+    mv ${zcrecipeeggName}/src/zc/recipe pypi2nix/src/zc/recipe
   '';
   installPhase = ''
     mkdir $out/bin
