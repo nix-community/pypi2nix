@@ -1,5 +1,27 @@
-pypi2nix
-========
+Create Nix expressions for python packages
+==========================================
+
+
+wheels.nix
+----------
+
+Extracted from python branch from chaoflow's work.
+
+    https://github.com/chaoflow/nixpkgs/tree/python/pkgs/development/python-wheels
+
+::
+
+    pyEnv = python.buildEnv {
+      buildInput = [];
+      propagatedBuildInput
+    };
+
+    python
+
+
+
+
+
 
 A tool that generates `nix expressions`_ for your python packages, so you
 don't have to.
