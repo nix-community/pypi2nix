@@ -52,9 +52,9 @@ in mkDerivation rec {
     mv ${zcrecipeeggName}/src/zc/recipe pypi2nix/src/zc/recipe
   '';
   installPhase = ''
-    mkdir $out/bin
-	  cd src && zip -qr pypi2nix.zip * && cd ..
-	  echo '#!/usr/bin/env python' | cat - $<pypi2nix.zip > $out/bin/pypi2nix
+    mkdir -p $out/bin
+	  cd src && zip -qr ../pypi2nix.zip * && cd ..
+	  echo '#!/usr/bin/env python' | cat - pypi2nix.zip > $out/bin/pypi2nix
 	  chmod +x $out/bin/pypi2nix
     ls -la $out/bin
   '';
