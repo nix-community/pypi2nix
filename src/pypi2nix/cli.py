@@ -1,8 +1,9 @@
 import sys
 import click
-import pypi2nix.txt2json
-import pypi2nix.json2wheels
-import pypi2nix.wheels2nix
+import py2txt
+import txt2json
+import json2wheels
+import wheels2nix
 
 
 @click.command()
@@ -23,16 +24,16 @@ def main(input_file, nix_path):
             '<input_file> was not correct type. check help for more info.')
 
     if cfg_file:
-        json_file = pypi2nix.cfg2txt.do(cfg_file)
+        json_file = cfg2txt.do(cfg_file)
 
     if txt_file:
-        json_file = pypi2nix.txt2json.do(txt_file)
+        json_file = txt2json.do(txt_file)
 
     if json_file:
-        wheels_file = pypi2nix.json2wheels.do(json_file, nix_path=nix_path)
+        wheels_file = json2wheels.do(json_file, nix_path=nix_path)
 
     if wheels_file:
-        nix_file = pypi2nix.wheels2nix.do(wheels_file, nix_path=nix_path)
+        nix_file = wheels2nix.do(wheels_file, nix_path=nix_path)
 
     #defaultNix.do()
     #print '-> default.nix'
