@@ -5,7 +5,7 @@ let
 in pkgs.stdenv.mkDerivation rec {
   name = "pypi2nix-pip-bootstrapping";
   __noChroot = true;
-  buildInputs = [ pkgs.strace pkgs.which pkgs.wget pkgs.makeWrapper pkgs.python ];
+  buildInputs = [ pkgs.which pkgs.wget pkgs.makeWrapper pkgs.python ];
   buildCommand = ''
     unset http_proxy
     unset https_proxy
@@ -13,8 +13,7 @@ in pkgs.stdenv.mkDerivation rec {
 
     mkdir tmp-bin
     ln -s `which python` tmp-bin/python
-    wrapProgram tmp-bin/python \
-        --set  PYTHONUSERBASE "`pwd`/tmp"
+    wrapProgram tmp-bin/python --set PYTHONUSERBASE "`pwd`/tmp"
 
     export PYTHONUSERBASE=./tmp
     export PATH=./tmp-bin:$PATH
