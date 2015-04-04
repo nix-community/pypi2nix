@@ -1,6 +1,7 @@
 import os
 import json
 
+from pip.download import PipSession
 from pip.index import PackageFinder
 from pip.req import parse_requirements
 
@@ -13,15 +14,18 @@ def do(txt_file, json_file='generated.json'):
         print '  -> loading existing {}'.format(json_file)
         results = json.load(open(json_file))
 
+    session = PipSession()
+
     finder = PackageFinder(
         find_links=[],
         index_urls=['https://pypi.python.org/simple/'],
         allow_all_external=True,
-        use_wheel=False
+        use_wheel=False,
+        session=session
     )
 
     print '  -> reading {}'.format(txt_file)
-    reqs = parse_requirements(txt_file, finder)
+    reqs = parse_requirements(txt_file, finder, session=session)
 
     print '  -> proccessing every specification in {}'.format(txt_file)
     for req in reqs:
