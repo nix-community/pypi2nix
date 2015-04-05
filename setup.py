@@ -23,5 +23,5 @@ setup(
             'pypi2nix = pypi2nix.cli:main',
         ],
     },
-    packages = find_packages(),
+    packages = find_packages('src'),
 )
