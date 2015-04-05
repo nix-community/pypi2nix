@@ -1,7 +1,7 @@
-import sys
 import click
-import pypi2nix.txt2json
 import pypi2nix.json2wheels
+import pypi2nix.py2txt
+import pypi2nix.txt2json
 import pypi2nix.wheels2nix
 
 
@@ -22,17 +22,30 @@ def main(input_file, nix_path):
         raise Exception(
             '<input_file> was not correct type. check help for more info.')
 
+    if py_file:
+        click.secho('Converting setup.py to requirements.txt', fg='yellow')
+        txt_file = pypi2nix.py2txt.do(py_file)
+        click.secho('Got %s' % txt_file, fg='green')
+
     if cfg_file:
-        json_file = pypi2nix.cfg2txt.do(cfg_file)
+        click.secho('Converting %s to requirements.txt' % cfg_file, fg='yellow')
+        txt_file = cfg2txt.do(cfg_file)
+        click.secho('Got %s' % txt_file, fg='green')
 
     if txt_file:
+        click.secho('Converting %s to json' % txt_file, fg='yellow')
         json_file = pypi2nix.txt2json.do(txt_file)
+        click.secho('Got %s' % json_file, fg='green')
 
     if json_file:
+        click.secho('Converting %s to wheels' % json_file, fg='yellow')
         wheels_file = pypi2nix.json2wheels.do(json_file, nix_path=nix_path)
+        click.secho('Got %s' % wheels_file, fg='green')
 
     if wheels_file:
+        click.secho('Converting %s to nix' % wheels_file, fg='yellow')
         nix_file = pypi2nix.wheels2nix.do(wheels_file, nix_path=nix_path)
+        click.secho('Got %s' % nix_file, fg='green')
 
     #defaultNix.do()
     #print '-> default.nix'
