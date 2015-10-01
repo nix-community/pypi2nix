@@ -1,5 +1,6 @@
+import os
 import click
-import pypi2nix
+import pypi2nix.py2txt
 
 
 @click.command()
@@ -18,9 +19,9 @@ def main(input_file, nix_path, python):
     nix_file = None
 
     # TODO: more asserts and raise ClickExceptions
-    if any(py_file, cfg_file, txt_file, json_file, wheels_file):
-        raise Exception(
-            '<input_file> was not correct type. check help for more info.')
+    #if any(py_file, cfg_file, txt_file, json_file, wheels_file):
+    #    raise Exception(
+    #        '<input_file> was not correct type. check help for more info.')
 
     #
     # Stage 1
@@ -38,6 +39,9 @@ def main(input_file, nix_path, python):
         txt_file = cfg2txt.do(cfg_file)
         click.secho('Got %s' % txt_file, fg='green')
 
+    with open(txt_file) as f:
+        print f.read()
+    return
     #
     # Stage 2
     #
@@ -71,3 +75,6 @@ def main(input_file, nix_path, python):
         click.secho('Converting %s to nix' % wheels_file, fg='yellow')
         nix_file = pypi2nix.wheels2nix.do(wheels_file, nix_path=nix_path)
         click.secho('Got %s' % nix_file, fg='green')
+
+if __name__ == "__main__":
+    main()

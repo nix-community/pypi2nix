@@ -1,9 +1,10 @@
 { path
+, cache ? "$out/cache"
 , extraBuildInputs ? []
-, cache ? null
 }:
 
 let
+
   pkgs = import <nixpkgs> {};
   pypi2nix_bootstrap = import ./bootstrap.nix {
     inherit (pkgs) stdenv fetchurl unzip which makeWrapper python;
@@ -17,21 +18,19 @@ in pkgs.stdenv.mkDerivation rec {
     pypi2nix_bootstrap pkgs.stdenv
   ] ++ (map (name: builtins.getAttr name pkgs) extraBuildInputs);
 
-  buildCommand = (
-    pkgs.lib.optionalString (cache != null) ''
-    ''
-  ) + ''
+  buildCommand = ''
     unset http_proxy
     unset https_proxy
     unset ftp_proxy
 
-    mkdir $out
+    mkdir -p $out/cache $out/wheelhouse
 
-    export PYTHONPATH=${bootstrap}/base
+    export PYTHONPATH=${pypi2nix_bootstrap}/base
 
-    pip wheel ${path} --wheel-dir ${cache} --find-links ${cache}
-    pip install ${path} --find-links ${cache} --target $out/wheelhouse --no-index
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel ${path} --wheel-dir ${cache} --find-links ${cache}
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip install ${path} --find-links ${cache} --target $out/wheelhouse --no-index
 
-    PYTHONPATH=$PYTHONPATH:$out/wheelhouse pip freeze > $out/requirements.txt
+    PYTHONPATH=$out/wheelhouse:$PYTHONPATH pip freeze > $out/requirements.txt
+    cat $out/requirements.txt
   '';
 }
