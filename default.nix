@@ -70,7 +70,7 @@ in mkDerivation rec {
     TMP_PATH=/tmp/`pwd | md5sum | cut -f 1 -d " "`-$name
 
     rm -rf $TMP_PATH
-    mkdir -p $TMP_PATH/pkgs
+    mkdir -p $TMP_PATH/bin $TMP_PATH/pkgs
 
     cd $TMP_PATH
     runHook unpackPhase
@@ -82,7 +82,11 @@ in mkDerivation rec {
     mv $TMP_PATH/${zcbuildoutName}/src/zc          $TMP_PATH/pkgs/zc
     mv $TMP_PATH/${zcrecipeeggName}/src/zc/recipe  $TMP_PATH/pkgs/zc/recipe
 
+    echo "python -c 'import pypi2nix.cli; pypi2nix.cli.main()'" > $TMP_PATH/bin/pypi2nix
+    chmod +x $TMP_PATH/bin/*
+
+    export PATH=$TMP_PATH/bin:$PATH
     export PYTHONPATH=`pwd`/src:$TMP_PATH/pkgs
-    alias pypi2nix="python -c 'import pypi2nix.cli; pypi2nix.cli.main()'"
+
   '';
 }
