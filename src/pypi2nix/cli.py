@@ -1,51 +1,73 @@
 import click
-import pypi2nix.json2wheels
-import pypi2nix.py2txt
-import pypi2nix.txt2json
-import pypi2nix.wheels2nix
+import pypi2nix
 
 
 @click.command()
-@click.option('--nix-path', '-I', type=str, default='')
+@click.option('--nix-path', '-I', type=str, default=None)
+@click.option('--python', '-P', type=str, default='2.7', help='Python version')
 @click.argument('input_file', type=click.Path(exists=True))
-def main(input_file, nix_path):
-    i = lambda end: input_file.endswith(end)
+def main(input_file, nix_path, python):
 
-    py_file = input_file if i('setup.py') else None
-    cfg_file = input_file if i('.cfg') else None
-    txt_file = input_file if i('.txt') else None
-    json_file = input_file if i('.json') else None
-    wheels_file = input_file if i('.wheels') else None
+    i = lambda end: input_file.endswith(end) and input_file or None
+
+    py_file = i('setup.py')
+    cfg_file = i('.cfg')
+    txt_file = i('.txt')
+    json_file = i('.json')
+    wheels_file = i('.wheels')
     nix_file = None
 
-    if not (py_file or cfg_file or txt_file or json_file or wheels_file):
+    # TODO: more asserts and raise ClickExceptions
+    if any(py_file, cfg_file, txt_file, json_file, wheels_file):
         raise Exception(
             '<input_file> was not correct type. check help for more info.')
 
+    #
+    # Stage 1
+    #
+    # from setup.py or buildout.cfg we create complete list of all requirements
+    # needed.
+    #
     if py_file:
         click.secho('Converting setup.py to requirements.txt', fg='yellow')
         txt_file = pypi2nix.py2txt.do(py_file)
         click.secho('Got %s' % txt_file, fg='green')
 
-    if cfg_file:
+    elif cfg_file:
         click.secho('Converting %s to requirements.txt' % cfg_file, fg='yellow')
         txt_file = cfg2txt.do(cfg_file)
         click.secho('Got %s' % txt_file, fg='green')
 
+    #
+    # Stage 2
+    #
+    # from requirements.txt file we fetch metadata of the packages and store
+    # them in json file. This file also serves as cache, so that we dont have
+    # go online everytime.
+    #
     if txt_file:
         click.secho('Converting %s to json' % txt_file, fg='yellow')
         json_file = pypi2nix.txt2json.do(txt_file)
         click.secho('Got %s' % json_file, fg='green')
 
+    #
+    # Stage 3
+    #
+    # once we have all the metadata we can create wheels and install them, so
+    # that metadata.json is produced for each package which we process to
+    # extract dependencies for packages
+    #
     if json_file:
         click.secho('Converting %s to wheels' % json_file, fg='yellow')
         wheels_file = pypi2nix.json2wheels.do(json_file, nix_path=nix_path)
         click.secho('Got %s' % wheels_file, fg='green')
 
+    #
+    # Stage 3
+    #
+    # With all above we can now generate nix expressions
+    # 
     if wheels_file:
         click.secho('Converting %s to nix' % wheels_file, fg='yellow')
         nix_file = pypi2nix.wheels2nix.do(wheels_file, nix_path=nix_path)
         click.secho('Got %s' % nix_file, fg='green')
-
-    #defaultNix.do()
-    #print '-> default.nix'

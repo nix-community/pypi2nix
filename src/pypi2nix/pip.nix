@@ -14,6 +14,7 @@
 , wheelVersion ? "0.24.0"
 , wheelHash ? "3b0d66f0d127ea8befaa5d11453107fd"
 }:
+
 let
   pkgs = import <nixpkgs> {};
   pypiurl = "https://pypi.python.org/packages/source";
@@ -52,10 +53,16 @@ let
     '';
   };
 
+  pypi2nix_bootstrap = import ./bootstrap.nix {};
+
 in pkgs.stdenv.mkDerivation rec {
-  name = "pypi2nix-pip-bootstrap";
+  name = "pypi2nix-py2txt";
   __noChroot = true;
-  buildInputs = [ bootstrap pkgs.stdenv ] ++ (map (name: builtins.getAttr name pkgs) extraBuildInputs);
+
+  buildInputs = [
+    pypi2nix_bootstrap pkgs.stdenv
+  ] ++ (map (name: builtins.getAttr name pkgs) extraBuildInputs);
+
   buildCommand = (
     pkgs.lib.optionalString (cache != null) ''
     ''
@@ -69,11 +76,8 @@ in pkgs.stdenv.mkDerivation rec {
     export PYTHONPATH=${bootstrap}/base
 
     pip wheel ${path} --wheel-dir ${cache} --find-links ${cache}
-    pip install ${path} --find-links ${cache} --target tmp --no-index
+    pip install ${path} --find-links ${cache} --target $out/wheelhouse --no-index
 
-    PYTHONPATH=$PYTHONPATH:tmp pip freeze > requirements.txt
-
-    mv tmp $out/wheelhouse
-    cp requirements.txt $out/
+    PYTHONPATH=$PYTHONPATH:$out/wheelhouse pip freeze > $out/requirements.txt
   '';
 }
