@@ -1,4 +1,5 @@
-{ cfg 
+{ cfg
+, cache ? "$out/cache"
 , extraBuildInputs ? []
 }:
 
@@ -14,7 +15,7 @@ in pkgs.stdenv.mkDerivation rec {
   __noChroot = true;
 
   buildInputs = [
-    pypi2nix_bootstrap pkgs.stdenv
+    pypi2nix_bootstrap pkgs.unzip
   ] ++ (map (name: builtins.getAttr name pkgs) extraBuildInputs);
 
   buildCommand = ''
@@ -22,9 +23,9 @@ in pkgs.stdenv.mkDerivation rec {
     unset https_proxy
     unset ftp_proxy
 
-    mkdir -p $out/cache $out/eggs
+    mkdir -p $out/cache $out/wheelhouse
 
-    export PYTHONPATH=${pypi2nix_bootstrap}/base:${pypi2nix_bootstrap}/extra
+    export PYTHONPATH=${pypi2nix_bootstrap}/base
 
 
     mkdir tmp
@@ -33,14 +34,23 @@ in pkgs.stdenv.mkDerivation rec {
     cat <<EOF > tmp/.pypi2nix.cfg
     [buildout]
     extends = ${cfg}
-    download-cache = $out/cache
-    eggs-directory = $out/eggs
+    download-cache = cache
+    eggs-directory = eggs
     extensions = buildout.requirements
     dump-requirements-file = $out/requirements.txt
     overwrite-requirements-file = true
     EOF
 
-    buildout -c tmp/.pypi2nix.cfg
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH buildout -c tmp/.pypi2nix.cfg
+
+    for file in tmp/cache/dist/*; do
+      PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel $file --wheel-dir ${cache} --no-deps
+    done
+
+    cd $out/wheelhouse
+    for file in ${cache}/*; do
+      unzip -qo $file
+    done
   '';
 }
 

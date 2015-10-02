@@ -1,4 +1,5 @@
 import os
+import json
 import click
 import pypi2nix.py2txt
 import pypi2nix.cfg2txt
@@ -47,9 +48,11 @@ def main(input_file):
     # them in json file. This file also serves as cache, so that we dont have
     # go online everytime.
     #
+    # returns a list of tuples (url, md5), eg.:
     if txt_file:
         click.secho('Converting %s to json' % txt_file, fg='yellow')
         json_file = pypi2nix.txt2json.do(txt_file)
+        print json_file
         click.secho('Got %s' % json_file, fg='green')
 
     #
@@ -58,15 +61,22 @@ def main(input_file):
     # once we have all the metadata we can create wheels and install them, so
     # that metadata.json is produced for each package which we process to
     # extract dependencies for packages
-    #
+
+    # returns a list of dicts, eg:
+    # [
+    #   dict(name=..., url=..., md5=..., deps=[...<list-of names>...]),
+    #   ...
+    # ]
     if json_file:
+
+        if type(json_file) != list:
+            with open(json_file) as f:
+                json_file = json.load(f)
+
         click.secho('Converting %s to wheels' % json_file, fg='yellow')
         wheels_file = pypi2nix.json2wheels.do(json_file)
         click.secho('Got %s' % wheels_file, fg='green')
 
-    with open(wheels_file) as f:
-        print f.read()
-    return
     #
     # Stage 3
     #

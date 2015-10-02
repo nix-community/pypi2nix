@@ -15,7 +15,7 @@ in pkgs.stdenv.mkDerivation rec {
   __noChroot = true;
 
   buildInputs = [
-    pypi2nix_bootstrap pkgs.stdenv
+    pypi2nix_bootstrap pkgs.unzip
   ] ++ (map (name: builtins.getAttr name pkgs) extraBuildInputs);
 
   buildCommand = ''
@@ -28,9 +28,11 @@ in pkgs.stdenv.mkDerivation rec {
     export PYTHONPATH=${pypi2nix_bootstrap}/base
 
     PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel ${path} --wheel-dir ${cache} --find-links ${cache}
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip install ${path} --find-links ${cache} --target $out/wheelhouse --no-index
-
     PYTHONPATH=$out/wheelhouse:$PYTHONPATH pip freeze > $out/requirements.txt
-    cat $out/requirements.txt
+
+    cd $out/wheelhouse
+    for file in ${cache}/*; do
+      unzip -qo $file
+    done
   '';
 }
