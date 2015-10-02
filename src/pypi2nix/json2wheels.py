@@ -1,11 +1,7 @@
 import pypi2nix.cmd
 
 
-def do(json_file='generated.json', wheels_file='generated.wheels',
-       nix_path=''):
-
-    if nix_path != '':
-        nix_path = '-I ' + nix_path
+def do(json_file='generated.json', wheels_file='generated.wheels'):
 
     out, err = pypi2nix.cmd.do(
         "nix-build -E '"
@@ -21,7 +17,9 @@ def do(json_file='generated.json', wheels_file='generated.wheels',
             "(lib.attrValues ("
                 "builtins.fromJSON (builtins.readFile ./%s)"
             "))"
-          ")' %s" % (json_file, nix_path))
+          ")'" % (json_file))
+
+    # TODO: raise click exception
     if err:
         raise Exception(err)
 

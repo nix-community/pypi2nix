@@ -2,9 +2,9 @@ import os
 import cmd
 
 
-def do(py_file):
-    out, err = cmd.do('nix-build %s/buildout.nix --argstr path %s' % (
-        os.path.dirname(__file__), os.path.dirname(py_file)))
+def do(cfg_file):
+    out, err = cmd.do('nix-build %s/buildout.nix --argstr cfg %s' % (
+        os.path.dirname(__file__), os.path.abspath(cfg_file)))
 
     # TODO: handle err
 

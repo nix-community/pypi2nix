@@ -1,13 +1,14 @@
 import os
 import click
 import pypi2nix.py2txt
+import pypi2nix.cfg2txt
+import pypi2nix.txt2json
+import pypi2nix.json2wheels
 
 
 @click.command()
-@click.option('--nix-path', '-I', type=str, default=None)
-@click.option('--python', '-P', type=str, default='2.7', help='Python version')
 @click.argument('input_file', type=click.Path(exists=True))
-def main(input_file, nix_path, python):
+def main(input_file):
 
     i = lambda end: input_file.endswith(end) and input_file or None
 
@@ -36,12 +37,9 @@ def main(input_file, nix_path, python):
 
     elif cfg_file:
         click.secho('Converting %s to requirements.txt' % cfg_file, fg='yellow')
-        txt_file = cfg2txt.do(cfg_file)
+        txt_file = pypi2nix.cfg2txt.do(cfg_file)
         click.secho('Got %s' % txt_file, fg='green')
 
-    with open(txt_file) as f:
-        print f.read()
-    return
     #
     # Stage 2
     #
@@ -63,9 +61,12 @@ def main(input_file, nix_path, python):
     #
     if json_file:
         click.secho('Converting %s to wheels' % json_file, fg='yellow')
-        wheels_file = pypi2nix.json2wheels.do(json_file, nix_path=nix_path)
+        wheels_file = pypi2nix.json2wheels.do(json_file)
         click.secho('Got %s' % wheels_file, fg='green')
 
+    with open(wheels_file) as f:
+        print f.read()
+    return
     #
     # Stage 3
     #
@@ -73,7 +74,7 @@ def main(input_file, nix_path, python):
     # 
     if wheels_file:
         click.secho('Converting %s to nix' % wheels_file, fg='yellow')
-        nix_file = pypi2nix.wheels2nix.do(wheels_file, nix_path=nix_path)
+        nix_file = pypi2nix.wheels2nix.do(wheels_file)
         click.secho('Got %s' % nix_file, fg='green')
 
 if __name__ == "__main__":

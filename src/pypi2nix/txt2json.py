@@ -21,7 +21,6 @@ def do(txt_file, json_file='generated.json'):
         find_links=[],
         index_urls=['https://pypi.python.org/simple/'],
         allow_all_external=True,
-        use_wheel=False,
         session=session
     )
 
@@ -45,7 +44,8 @@ def do(txt_file, json_file='generated.json'):
                     "url": link.url_without_fragment
                 }})
 
-    json.dump(results, open(json_file, 'wb+'))
+    # XXX: dont persist this for now
+    #json.dump(results, open(json_file, 'wb+'))
 
     click.secho('  -> done', fg='cyan')
     return json_file
