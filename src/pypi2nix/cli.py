@@ -44,20 +44,6 @@ def main(input_file):
     #
     # Stage 2
     #
-    # from requirements.txt file we fetch metadata of the packages and store
-    # them in json file. This file also serves as cache, so that we dont have
-    # go online everytime.
-    #
-    # returns a list of tuples (url, md5), eg.:
-    if txt_file:
-        click.secho('Converting %s to json' % txt_file, fg='yellow')
-        json_file = pypi2nix.txt2json.do(txt_file)
-        print json_file
-        click.secho('Got %s' % json_file, fg='green')
-
-    #
-    # Stage 3
-    #
     # once we have all the metadata we can create wheels and install them, so
     # that metadata.json is produced for each package which we process to
     # extract dependencies for packages
@@ -68,7 +54,6 @@ def main(input_file):
     #   ...
     # ]
     if json_file:
-
         if type(json_file) != list:
             with open(json_file) as f:
                 json_file = json.load(f)
@@ -81,7 +66,7 @@ def main(input_file):
     # Stage 3
     #
     # With all above we can now generate nix expressions
-    # 
+    #
     if wheels_file:
         click.secho('Converting %s to nix' % wheels_file, fg='yellow')
         nix_file = pypi2nix.wheels2nix.do(wheels_file)
