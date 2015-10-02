@@ -1,4 +1,4 @@
-{ path
+{ input_file 
 , cache ? "$out/cache"
 , extraBuildInputs ? []
 }:
@@ -11,7 +11,7 @@ let
   };
 
 in pkgs.stdenv.mkDerivation rec {
-  name = "pypi2nix-py2txt";
+  name = "pypi2nix-pip";
   __noChroot = true;
 
   buildInputs = [
@@ -27,8 +27,11 @@ in pkgs.stdenv.mkDerivation rec {
 
     export PYTHONPATH=${pypi2nix_bootstrap}/base
 
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel ${path} --wheel-dir ${cache} --find-links ${cache}
-    PYTHONPATH=$out/wheelhouse:$PYTHONPATH pip freeze > $out/requirements.txt
+    if [[ "${input_file}" == *txt ]]; then
+      PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel -r ${input_file} --wheel-dir ${cache} --find-links ${cache}
+    else
+      PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel `dirname ${input_file}` --wheel-dir ${cache} --find-links ${cache}
+    fi
 
     cd $out/wheelhouse
     for file in ${cache}/*; do

@@ -15,4 +15,5 @@ def do(command):
         stderr=subprocess.PIPE,
         )
 
-    return p.communicate()
+    tmp = p.communicate()
+    return [ p.returncode ] + list(tmp)
