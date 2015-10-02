@@ -16,14 +16,6 @@ def main(input_file):
     py_file = i('setup.py')
     cfg_file = i('.cfg')
     txt_file = i('.txt')
-    json_file = i('.json')
-    wheels_file = i('.wheels')
-    nix_file = None
-
-    # TODO: more asserts and raise ClickExceptions
-    #if any(py_file, cfg_file, txt_file, json_file, wheels_file):
-    #    raise Exception(
-    #        '<input_file> was not correct type. check help for more info.')
 
     #
     # Stage 1
@@ -33,13 +25,20 @@ def main(input_file):
     #
     if py_file:
         click.secho('Converting setup.py to requirements.txt', fg='yellow')
-        txt_file = pypi2nix.py2txt.do(py_file)
+        wheels_dir = pypi2nix.py2txt.do(py_file)
         click.secho('Got %s' % txt_file, fg='green')
 
     elif cfg_file:
         click.secho('Converting %s to requirements.txt' % cfg_file, fg='yellow')
-        txt_file = pypi2nix.cfg2txt.do(cfg_file)
+        wheels_dir = pypi2nix.cfg2txt.do(cfg_file)
         click.secho('Got %s' % txt_file, fg='green')
+
+    elif txt_file:
+        click.secho('Converting %s to requirements.txt' % cfg_file, fg='yellow')
+        wheels_dir = pypi2nix.cfg2txt.do(cfg_file)
+        click.secho('Got %s' % txt_file, fg='green')
+    else:
+        raise click.ClickException('You need to provide correct <input_file>.')
 
     #
     # Stage 2
@@ -50,7 +49,7 @@ def main(input_file):
 
     # returns a list of dicts, eg:
     # [
-    #   dict(name=..., url=..., md5=..., deps=[...<list-of names>...]),
+    #   dict(name=..., version=..., url=..., md5=..., deps=[...<list-of names>...]),
     #   ...
     # ]
     if json_file:
