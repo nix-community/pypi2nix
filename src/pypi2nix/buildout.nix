@@ -1,4 +1,4 @@
-{ cfg
+{ input_file 
 , cache ? "$out/cache"
 , extraBuildInputs ? []
 }:
@@ -11,7 +11,7 @@ let
   };
 
 in pkgs.stdenv.mkDerivation rec {
-  name = "pypi2nix-cfg2txt";
+  name = "pypi2nix-buildout";
   __noChroot = true;
 
   buildInputs = [
@@ -27,18 +27,14 @@ in pkgs.stdenv.mkDerivation rec {
 
     export PYTHONPATH=${pypi2nix_bootstrap}/base
 
-
     mkdir tmp
-    cp -R `dirname ${cfg}`/* tmp
+    cp -R `dirname ${input_file}`/* tmp
 
     cat <<EOF > tmp/.pypi2nix.cfg
     [buildout]
-    extends = ${cfg}
+    extends = ${input_file}
     download-cache = cache
     eggs-directory = eggs
-    extensions = buildout.requirements
-    dump-requirements-file = $out/requirements.txt
-    overwrite-requirements-file = true
     EOF
 
     PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH buildout -c tmp/.pypi2nix.cfg

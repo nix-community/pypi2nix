@@ -15,7 +15,6 @@ in
       cp ${deps.setuptoolsWhl} index/setuptools-${deps.setuptoolsVersion}-py2.py3-none-any.whl
       cp ${deps.wheel} index/wheel-${deps.wheelVersion}.tar.gz
       cp ${deps.zcbuildout} index/zc.buildout-${deps.zcbuildoutVersion}.tar.gz
-      cp ${deps.buildoutRequirements} index/buildout.requirements-${deps.buildoutRequirementsVersion}.tar.gz
 
       mkdir tmp
       mv pip tmp/
@@ -25,9 +24,8 @@ in
 
       PYTHONPATH=$out/base python -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'wheel', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
 
-      PYTHONPATH=$out/base python -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'zc.buildout', 'buildout.requirements', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
+      PYTHONPATH=$out/base python -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'zc.buildout', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
       touch $out/extra/zc/__init__.py
-      touch $out/extra/buildout/__init__.py
 
       echo -e "#!${python}/bin/python\nimport sys, pip; sys.exit(pip.main())" > $out/bin/pip
       echo -e "#!${python}/bin/python\nimport sys, zc.buildout.buildout\nsys.exit(zc.buildout.buildout.main())" > $out/bin/buildout
