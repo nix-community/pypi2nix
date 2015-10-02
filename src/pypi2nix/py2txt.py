@@ -8,4 +8,4 @@ def do(py_file):
 
     # TODO: handle err
 
-    return os.path.join(out.split('\n')[0], 'requirements.txt')
+    return os.path.join(out.split('\n')[0], 'wheelhouse')
