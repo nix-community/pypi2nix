@@ -22,6 +22,13 @@ URL = 'https://pypi.python.org/simple/'
 #   }
 # ]
 
+def extract_requires(item):
+    if 'requires' in item:
+        for line in item['requires']:
+            components = line.split()
+            if components[0] not in ['setuptools']:
+                deps.append(components[0])
+
 def extract_deps(metadata):
     """Get dependent packages from metadata.
 
@@ -31,10 +38,13 @@ def extract_deps(metadata):
     """
     deps = []
     if 'run_requires' in metadata:
-        for req_line in metadata['run_requires'][0]['requires']:
-            components = req_line.split()
-            deps.append(components[0])
-    return deps
+        for item in metadata['run_requires']:
+            if 'requires' in item:
+                for line in item['requires']:
+                    components = line.split()
+                    if components[0] not in ['setuptools']:
+                        deps.append(components[0])
+    return list(set(deps))
 
 
 def parse(metadata_json):
@@ -45,7 +55,8 @@ def parse(metadata_json):
     version = metadata['version']
 
     finder = pip.index.PackageFinder(
-        index_urls=[URL], session=SESSION, find_links=[])
+        index_urls=[URL], session=SESSION, find_links=[],
+        format_control=pip.index.FormatControl(set([':all:']), set([])))
     req = pip.req.InstallRequirement.from_line('%s==%s' % (name, version))
     link = finder.find_requirement(req, False)
     assert link.hash_name == 'md5'
@@ -54,7 +65,7 @@ def parse(metadata_json):
         'version': version,
         'url': link.url_without_fragment,
         'md5': link.hash,
-        'deps': extract_deps(metadata)
+        'deps': extract_deps(metadata),
     }
 
 

@@ -1,4 +1,4 @@
-{ input_file 
+{ requirementsFile
 , cache ? "$out/cache"
 , extraBuildInputs ? []
 }:
@@ -23,15 +23,12 @@ in pkgs.stdenv.mkDerivation rec {
     unset https_proxy
     unset ftp_proxy
 
-    mkdir -p $out/cache $out/wheelhouse
+    mkdir -p ${cache} $out/wheelhouse
 
     export PYTHONPATH=${pypi2nix_bootstrap}/base
 
-    if [[ "${input_file}" == *txt ]]; then
-      PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel -r ${input_file} --wheel-dir ${cache} --find-links ${cache}
-    else
-      PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel `dirname ${input_file}` --wheel-dir ${cache} --find-links ${cache}
-    fi
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel -r ${requirementsFile} --wheel-dir ${cache} --find-links ${cache}
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip freeze > $out/requirements.txt
 
     cd $out/wheelhouse
     for file in ${cache}/*; do

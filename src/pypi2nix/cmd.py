@@ -12,8 +12,16 @@ def do(command):
     p = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         )
 
-    tmp = p.communicate()
-    return [ p.returncode ] + list(tmp)
+    out = []
+    while True:
+        line = p.stdout.readline()
+        if line == '' and p.poll() != None:
+            break
+        if line != '':
+            click.secho('    ' + line.rstrip('\n'), fg='yellow')
+            out.append(line)
+
+    return p.returncode
