@@ -14,7 +14,7 @@ in mkDerivation rec {
   version = builtins.readFile ./VERSION;
   name = "pypi2nix-${version}";
   srcs = with deps; [ ./. pip click setuptools zcbuildout zcrecipeegg ];
-  buildInputs = with pkgs; [ zip ];
+  buildInputs = with pkgs; [ zip pythonPackages.ipdb ];
   sourceRoot = "pypi2nix";
   postUnpack = ''
     if [ "$IN_NIX_SHELL" != "1" ]; then
@@ -58,7 +58,6 @@ in mkDerivation rec {
     chmod +x $TMP_PATH/bin/*
 
     export PATH=$TMP_PATH/bin:$PATH
-    export PYTHONPATH=`pwd`/src:$TMP_PATH/pkgs
-
+    export PYTHONPATH=`pwd`/src:$TMP_PATH/pkgs:$PYTHONPATH
   '';
 }
