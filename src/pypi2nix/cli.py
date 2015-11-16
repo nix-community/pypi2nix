@@ -58,8 +58,10 @@ def main(input_file, nix_path, extra_build_inputs):
     base_dir = os.path.dirname(input_file)
     base_name = os.path.splitext(os.path.basename(input_file))[0]
     default_file = os.path.join(base_dir, '{}.nix'.format(base_name))
-    generate_file = os.path.join(base_dir, '{}_generated.nix'.format(base_name))
-    overwrite_file = os.path.join(base_dir, '{}_overwrite.nix'.format(base_name))
+    generate_file = os.path.join(
+        base_dir, '{}_generated.nix'.format(base_name))
+    overwrite_file = os.path.join(
+        base_dir, '{}_overwrite.nix'.format(base_name))
 
     with open(input_file) as f:
         pypi2nix.stage3.do(metadata, generate_file)
@@ -82,7 +84,9 @@ def main(input_file, nix_path, extra_build_inputs):
             write("let")
             write("  pkgs = import <nixpkgs> { };")
             write("  pythonPackages = pkgs.python27Packages;")
-            write("  generated = import ./sentry_generated.nix { inherit pkgs self pythonPackages; };")
-            write("  overrides = import ./sentry_overwrite.nix { inherit pkgs self generated pythonPackages; };")
+            write("  generated = import ./sentry_generated.nix { "
+                  "inherit pkgs self pythonPackages; };")
+            write("  overrides = import ./sentry_overwrite.nix { "
+                  "inherit pkgs self generated pythonPackages; };")
             write("  self = generated // overrides;")
             write("in self")

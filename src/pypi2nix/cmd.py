@@ -18,7 +18,7 @@ def do(command):
     out = []
     while True:
         line = p.stdout.readline()
-        if line == '' and p.poll() != None:
+        if line == '' and p.poll() is not None:
             break
         if line != '':
             click.secho('    ' + line.rstrip('\n'), fg='yellow')

@@ -12,23 +12,6 @@ SESSION = pip.download.PipSession()
 URL = 'https://pypi.python.org/simple/'
 
 
-# "run_requires" : [
-#   {
-#     "requires" : [
-#       "pyflakes (>=0.8.1,<0.9)",
-#       "pep8 (>=1.5.7,!=1.6.0,!=1.6.1,!=1.6.2)",
-#       "mccabe"
-#     ]
-#   }
-# ]
-
-def extract_requires(item):
-    if 'requires' in item:
-        for line in item['requires']:
-            components = line.split()
-            if components[0] not in ['setuptools']:
-                deps.append(components[0])
-
 def extract_deps(metadata):
     """Get dependent packages from metadata.
 

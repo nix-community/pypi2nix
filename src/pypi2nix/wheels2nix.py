@@ -8,7 +8,6 @@ def do(wheels_file='generated.wheels', nix_file='generated.nix',
     if nix_path != '':
         nix_path = '-I ' + nix_path
 
-
     wheels = []
     for wheel in open(wheels_file).read().split('\n'):
         if not wheel:

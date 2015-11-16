@@ -1,8 +1,6 @@
 import os
-import grp
 import click
 import pypi2nix.cmd
-import tempfile
 
 
 def do(input_file, nix_path=None, extra_build_inputs=None):
