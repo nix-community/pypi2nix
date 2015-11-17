@@ -4,60 +4,61 @@
 let
 
   pkgs = import <nixpkgs> { };
+  deps = import ./src/pypi2nix/deps.nix { inherit fetchurl; };
 
   inherit (pkgs) fetchurl;
   inherit (pkgs.stdenv) mkDerivation;
-
-  deps = import ./src/pypi2nix/deps.nix { inherit fetchurl; };
 
 in mkDerivation rec {
   version = builtins.readFile ./VERSION;
   name = "pypi2nix-${version}";
   srcs = with deps; [ ./. pip click setuptools zcbuildout zcrecipeegg ];
-  buildInputs = with pkgs; [ zip pythonPackages.ipdb ];
-  sourceRoot = "pypi2nix";
+  buildInputs = with pkgs; [ zip makeWrapper ];
+  sourceRoot = ".";
+
   postUnpack = ''
+    mkdir -p $out/pkgs
+
+    mv pip-*/pip                        $out/pkgs/pip
+    mv click-*/click                    $out/pkgs/click
+    mv setuptools-*/setuptools          $out/pkgs/setuptools
+    mv zc.buildout-*/src/zc             $out/pkgs/zc
+    mv zc.recipe.egg-*/src/zc/recipe    $out/pkgs/zc/recipe
+
     if [ "$IN_NIX_SHELL" != "1" ]; then
-      mv pip-${deps.pipVersion}/pip pypi2nix/src/pip
-      mv click-${deps.clickVersion}/click pypi2nix/src/click
-      mv setuptools-${deps.setuptoolsVersion}/setuptools pypi2nix/src/setuptools
-      mv zc.buildout-${deps.zcbuildoutVersion}/src/zc pypi2nix/src/zc
-      mv zc.recipe.egg-${deps.zcrecipeeggVersion}/src/zc/recipe pypi2nix/src/zc/recipe
+      mv pypi2nix/src/pypi2nix          $out/pkgs/pypi2nix
     fi
   '';
 
-  installPhase = ''
+  commonPhase = ''
     mkdir -p $out/bin
-      cd src && zip -qr ../pypi2nix.zip * && cd ..
-      echo '#!/usr/bin/env python' | cat - pypi2nix.zip > $out/bin/pypi2nix
-      chmod +x $out/bin/pypi2nix
+
+    echo "#!${pkgs.python}/bin/python"  >  $out/bin/pypi2nix
+    echo "import pypi2nix.cli"          >> $out/bin/pypi2nix
+    echo "pypi2nix.cli.main()"          >> $out/bin/pypi2nix
+
+    chmod +x $out/bin/pypi2nix
+
+    export PYTHONPATH=$out/pkgs:$PYTHONPATH
   '';
 
-  # This package contains no binaries to patch or strip.
-  dontPatchELF = true;
-  dontStrip = true;
+  installPhase = commonPhase + ''
+    wrapProgram $out/bin/pypi2nix --prefix PYTHONPATH : "$PYTHONPATH"
+  '';
 
   shellHook = ''
-    TMP_HOME=`pwd`
-    TMP_PATH=/tmp/`pwd | md5sum | cut -f 1 -d " "`-$name
+    export home=`pwd`
+    export out=/tmp/`pwd | md5sum | cut -f 1 -d " "`-$name
 
-    rm -rf $TMP_PATH
-    mkdir -p $TMP_PATH/bin $TMP_PATH/pkgs
+    rm -rf $out
+    mkdir -p $out
 
-    cd $TMP_PATH
+    cd $out
     runHook unpackPhase
-    cd $TMP_HOME
+    runHook commonPhase
+    cd $home
 
-    mv $TMP_PATH/pip-${deps.pipVersion}/pip $TMP_PATH/pkgs/pip
-    mv $TMP_PATH/click-${deps.clickVersion}/click $TMP_PATH/pkgs/click
-    mv $TMP_PATH/setuptools-${deps.setuptoolsVersion}/setuptools $TMP_PATH/pkgs/setuptools
-    mv $TMP_PATH/zc.buildout-${deps.zcbuildoutVersion}/src/zc $TMP_PATH/pkgs/zc
-    mv $TMP_PATH/zc.recipe.egg-${deps.zcrecipeeggVersion}/src/zc/recipe $TMP_PATH/pkgs/zc/recipe
-
-    echo -e "#!${pkgs.python}/bin/python\nimport pypi2nix.cli\npypi2nix.cli.main()" > $TMP_PATH/bin/pypi2nix
-    chmod +x $TMP_PATH/bin/*
-
-    export PATH=$TMP_PATH/bin:$PATH
-    export PYTHONPATH=`pwd`/src:$TMP_PATH/pkgs:$PYTHONPATH
+    export PATH=$out/bin:$PATH
+    export PYTHONPATH=`pwd`/src:$PYTHONPATH
   '';
 }
