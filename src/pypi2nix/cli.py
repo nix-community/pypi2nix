@@ -84,9 +84,11 @@ def main(input_file, nix_path, extra_build_inputs):
             write("let")
             write("  pkgs = import <nixpkgs> { };")
             write("  pythonPackages = pkgs.python27Packages;")
-            write("  generated = import ./sentry_generated.nix { "
-                  "inherit pkgs self pythonPackages; };")
-            write("  overrides = import ./sentry_overwrite.nix { "
-                  "inherit pkgs self generated pythonPackages; };")
+            write("  generated = import ./{generate_file} {{ "
+                  "inherit pkgs self pythonPackages; }};".format(
+                      generate_file=generate_file))
+            write("  overrides = import ./{overwrite_file} {{ "
+                  "inherit pkgs self generated pythonPackages; }};".format(
+                      overwrite_file=overwrite_file))
             write("  self = generated // overrides;")
             write("in self")
