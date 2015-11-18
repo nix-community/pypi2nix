@@ -32,10 +32,11 @@ def do(metadata, generate_file):
         for item in metadata:
             write('   "%(name)s" = buildPythonPackage {' % item)
             write('     name = "%(name)s-%(version)s";' % item)
-            write('     src = fetchurl {')
-            write('       url = "%(url)s";' % item)
-            write('       md5 = "%(md5)s";' % item)
-            write('     };')
+            if 'url' in item and 'md5' in item:
+                write('     src = fetchurl {')
+                write('       url = "%(url)s";' % item)
+                write('       md5 = "%(md5)s";' % item)
+                write('     };')
             write('     doCheck = false;')
             write('     propagatedBuildInputs = [ %s ];' % ' '.join([
                 'self."%(name)s"' % metadata_by_name[x]

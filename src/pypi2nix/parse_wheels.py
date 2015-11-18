@@ -37,19 +37,27 @@ def parse(metadata_json):
     name = metadata['name']
     version = metadata['version']
 
-    finder = pip.index.PackageFinder(
-        index_urls=[URL], session=SESSION, find_links=[],
-        format_control=pip.index.FormatControl(set([':all:']), set([])))
-    req = pip.req.InstallRequirement.from_line('%s==%s' % (name, version))
-    link = finder.find_requirement(req, False)
-    assert link.hash_name == 'md5'
-    return {
-        'name': name,
-        'version': version,
-        'url': link.url_without_fragment,
-        'md5': link.hash,
-        'deps': extract_deps(metadata),
-    }
+    try:
+        finder = pip.index.PackageFinder(
+            index_urls=[URL], session=SESSION, find_links=[],
+            format_control=pip.index.FormatControl(set([':all:']), set([])))
+        req = pip.req.InstallRequirement.from_line('%s==%s' % (name, version))
+        link = finder.find_requirement(req, False)
+        assert link.hash_name == 'md5'
+        return {
+            'name': name,
+            'version': version,
+            'url': link.url_without_fragment,
+            'md5': link.hash,
+            'deps': extract_deps(metadata),
+        }
+
+    except:
+        return {
+            'name': name,
+            'version': version,
+            'deps': extract_deps(metadata),
+        }
 
 
 def try_candidates(distinfo):

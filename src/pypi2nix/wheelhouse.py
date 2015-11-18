@@ -1,4 +1,5 @@
 import os
+import stat
 import click
 import pypi2nix.cmd
 
@@ -8,6 +9,10 @@ def do(input_file, nix_path=None, extra_build_inputs=None):
     if not input_file.endswith('.txt'):
         raise click.ClickException('You need to provide correct <input_file>.')
 
+    if not os.path.exists(input_file):
+        raise click.ClickException(
+            'requirement file (%s) does not exists' % input_file)
+
     input_file = os.path.abspath(input_file)
     current_dir = os.path.dirname(__file__)
     cache_dir = os.path.expanduser('~/.pypi2nix/cache')
@@ -15,6 +20,11 @@ def do(input_file, nix_path=None, extra_build_inputs=None):
 
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir)
+        os.chmod(
+            cache_dir,
+            stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH |
+            stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH |
+            stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
     if nix_path:
         nix_path = ' '.join('-I {}'.format(i) for i in nix_path)

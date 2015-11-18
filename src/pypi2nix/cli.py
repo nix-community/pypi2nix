@@ -1,5 +1,7 @@
 import os
 import click
+import random
+import string
 import pypi2nix.wheelhouse
 import pypi2nix.parse_wheels
 import pypi2nix.stage3
@@ -19,13 +21,76 @@ import pypi2nix.stage3
 @click.option(
     '-E', '--extra-build-inputs',
     default=None,
-    help=u'TODO: add help message.'
+    help=u'Extra build dependencies needed for installation of required '
+         u'python packages.'
 )
-@click.argument('input_file', type=click.Path(exists=True))
-def main(input_file, nix_path, extra_build_inputs):
+@click.option(
+    '-r', '--requirements',
+    required=False,
+    default=None,
+    type=click.Path(exists=True),
+    help=u'',
+)
+@click.option(
+    '-b', '--buildout',
+    required=False,
+    default=None,
+    type=click.Path(exists=True),
+    help=u'TODO',
+)
+@click.option(
+    '--name',
+    required=False,
+    default=None,
+    help=u'TODO',
+)
+@click.argument(
+    'specification',
+    nargs=-1,
+    required=False,
+    default=None,
+)
+def main(specification, name, requirements, buildout, nix_path,
+         extra_build_inputs):
     '''
         INPUT_FILE should be requirements.txt (output of pip freeze).
     '''
+
+    home_dir = os.path.expanduser('~/.pypi2nix')
+    if not os.path.isdir(home_dir):
+        os.makedirs(home_dir)
+
+    _input = [specification, requirements, buildout]
+
+    if not any(_input):
+        raise click.exceptions.UsageError(
+            u'Please tell what you want to be packages by specifying `-b` '
+            u'(buildout.cfg), `-r` (requirements.txt) or by providing '
+            u'package specification as a argument of pypi2nix command')
+
+    if len(filter(lambda x: x, _input)) >= 2:
+        raise click.exceptions.UsageError(
+            u'Please only specify one of the options: `-b`, `-r` or package.')
+
+    if buildout:
+        raise click.exceptions.ClickException(
+            u'Not yet implemented!')
+
+    elif requirements:
+        input_file = requirements
+        input_name = os.path.splitext(os.path.basename(input_file))[0]
+
+    elif specification:
+        input_name = '_'.join(specification)
+        input_file = os.path.expanduser(os.path.join(
+            '~/.pypi2nix', 'requirements-%s.txt' % (''.join(
+                random.choice(string.ascii_uppercase + string.digits)
+                for _ in range(6)))))
+        with open(input_file, 'w+') as f:
+            f.write('\n'.join(specification))
+
+    if name:
+        input_name = name
 
     #
     # Stage 1
@@ -55,13 +120,12 @@ def main(input_file, nix_path, extra_build_inputs):
     #
     # With all above we can now generate nix expressions
     #
-    base_dir = os.path.dirname(input_file)
-    base_name = os.path.splitext(os.path.basename(input_file))[0]
-    default_file = os.path.join(base_dir, '{}.nix'.format(base_name))
+    base_dir = os.getcwd()
+    default_file = os.path.join(base_dir, '{}.nix'.format(input_name))
     generate_file = os.path.join(
-        base_dir, '{}_generated.nix'.format(base_name))
+        base_dir, '{}_generated.nix'.format(input_name))
     overwrite_file = os.path.join(
-        base_dir, '{}_overwrite.nix'.format(base_name))
+        base_dir, '{}_overwrite.nix'.format(input_name))
 
     with open(input_file) as f:
         pypi2nix.stage3.do(metadata, generate_file)
@@ -84,9 +148,10 @@ def main(input_file, nix_path, extra_build_inputs):
             write("let")
             write("  pkgs = import <nixpkgs> { };")
             write("  pythonPackages = pkgs.python27Packages;")
-            write("  generated = import ./sentry_generated.nix { "
-                  "inherit pkgs self pythonPackages; };")
-            write("  overrides = import ./sentry_overwrite.nix { "
-                  "inherit pkgs self generated pythonPackages; };")
+            write("  generated = import ./%s_generated.nix { "
+                  "inherit pkgs self pythonPackages; };" % input_name)
+            write("  overrides = import ./%s_overwrite.nix { "
+                  "inherit pkgs self generated pythonPackages; };" % (
+                      input_name))
             write("  self = generated // overrides;")
             write("in self")
