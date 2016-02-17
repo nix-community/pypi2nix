@@ -2,12 +2,11 @@
 NIX_PATH=
 SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql"
 
-all: sentry
+all: sentry empy
 
 sentry: sentry.nix
 
 sentry.nix: sentry.txt
-	which pypi2nix
 	pypi2nix sentry.txt -E $(SENTRY_BUILD_INPUTS)
 
 sentry.txt:
@@ -17,6 +16,20 @@ sentry.txt:
 		    virtualenv sentry;\
 			sentry/bin/pip install -U sentry;\
 			sentry/bin/pip freeze > sentry.txt;\
-			" \
-		-I nixpkgs=/home/rok/dev/nixos/nixpkgs
-	
+			"
+
+empy: empy.nix
+
+empy.nix: empy.txt
+	pypi2nix -r empy.txt -I $(NIX_PATH)
+
+empy.txt:
+	nix-shell \
+		-p pythonPackages.virtualenv \
+	    --command "\
+		    virtualenv empy;\
+			empy/bin/pip install -U empy;\
+			empy/bin/pip freeze > empy.txt;\
+			"\
+		-I $(NIX_PATH)
+	chmod 777 empy.txt
