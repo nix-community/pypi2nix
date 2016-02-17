@@ -1,4 +1,4 @@
-{ requirementsFile
+{ requirements
 , cache ? "$out/cache"
 , extraBuildInputs ? []
 }:
@@ -12,7 +12,7 @@ in pkgs.stdenv.mkDerivation rec {
   name = "pypi2nix-pip";
   __noChroot = true;
 
-  
+
   buildInputs = [
     pypi2nix_bootstrap pkgs.unzip pkgs.gitAndTools.git
   ] ++ (map (name: pkgs.lib.getAttrFromPath
@@ -23,12 +23,14 @@ in pkgs.stdenv.mkDerivation rec {
     unset https_proxy
     unset ftp_proxy
 
-    mkdir -p ${cache} $out/wheelhouse
+    mkdir -p $out/wheelhouse
 
     export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
     export PYTHONPATH=${pypi2nix_bootstrap}/base
 
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel -r ${requirementsFile} --wheel-dir ${cache} --find-links ${cache}
+    echo "${requirements}" > requirements.txt
+
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel -r requirements.txt --wheel-dir ${cache} --find-links ${cache}
     PYTHONPATH=${cache}:${pypi2nix_bootstrap}/extra:$PYTHONPATH pip freeze > $out/requirements.txt
 
     cd $out/wheelhouse

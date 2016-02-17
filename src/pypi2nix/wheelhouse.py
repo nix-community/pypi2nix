@@ -13,9 +13,11 @@ def do(input_file, nix_path=None, extra_build_inputs=None):
         raise click.ClickException(
             'requirement file (%s) does not exists' % input_file)
 
-    input_file = os.path.abspath(input_file)
+    with open(input_file) as f:
+        requirements = f.read()
+
     current_dir = os.path.dirname(__file__)
-    cache_dir = os.path.expanduser('~/.pypi2nix/cache')
+    cache_dir = os.path.expanduser('/tmp/pypi2nix/cache')
     output = os.path.expanduser('~/.pypi2nix/out')
 
     if not os.path.exists(cache_dir):
@@ -39,7 +41,7 @@ def do(input_file, nix_path=None, extra_build_inputs=None):
 
     command = 'nix-build {current_dir}/pip.nix'\
               '  --option build-use-chroot false'\
-              '  --argstr requirementsFile "{input_file}"'\
+              '  --argstr requirements "{requirements}"'\
               '  --argstr cache "{cache_dir}"'\
               '  --arg extraBuildInputs \'{extra_build_inputs}\''\
               '  {nix_path} -o {output} --show-trace'.format(**locals())
