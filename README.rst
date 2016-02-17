@@ -1,119 +1,32 @@
-Create Nix expressions for python packages
-==========================================
+Until proper documentation is written let this serve as an example:
+
+1. clone this repository::
+
+    % git clone https://github.com/garbas/pypi2nix
+    % cd pypi2nix
+
+2. run nix-shell command and you should have ``pypi2nix`` command working::
+
+   pypi2nix/ % nix-shell
+   (nix-shell) pypi2nix/ % which pypi2nix
+   /tmp/...-pypi2nix-1.0.0/bin/pypi2nix
+   
+3. run pypi2nix on some requirements.txt file::
+
+   (nix-shell) pypi2nix/ % echo "empy" > requirements.txt
+   (nix-shell) pypi2nix/ % pypi2nix -r requirements.txt
+   (nix-shell) pypi2nix/ % ls -la requirements*
+   -rw-r--r-- 1 rok users 1064 Feb 17 23:30 requirements_generated.nix
+   -rw-r--r-- 1 rok users  311 Feb 17 23:30 requirements.nix
+   -rw-r--r-- 1 rok users  148 Feb 17 23:30 requirements_overwrite.nix
+   -rw-r--r-- 1 rok users    5 Feb 17 23:29 requirements.txt
+
+4. build your package::
+
+   (nix-shell) pypi2nix/ % nix-build requirements.nix -A empy
 
 
-wheels.nix
-----------
-
-Extracted from python branch from chaoflow's work.
-
-    https://github.com/chaoflow/nixpkgs/tree/python/pkgs/development/python-wheels
-
-::
-
-    pyEnv = python.buildEnv {
-      buildInput = [];
-      propagatedBuildInput
-    };
-
-    python
+Ping me `@garbas`_ if you get stuck.
 
 
-
-
-
-
-A tool that generates `nix expressions`_ for your python packages, so you
-don't have to.
-
-To simply create development environment for you python project you
-simply do:::
-
-Using ``setuptools``::
-
-    # not yet working
-    % pypi2nix setup.py
-
-Using ``requirements.txt`` (created by ``pip freeze``)::
-
-    # working but only if you provide full set of dependencies
-    # eg. pip freeze will give you this
-    % pypi2nix requirements.txt
-
-Using ``zc.buildout``::
-
-    # not yet working
-    % pypi2nix buildout.cfg
-
-To step into development environment::
-
-    % nix-shell
-
-How ``pypi2nix`` works internally look at `Design`_ section of this document.
-
-
-Installation
-------------
-
-Install ``pypi2nix`` by running:::
-
-    % nix-env -i pypi2nix
-
-
-Contribute
-----------
-
-- Issue Tracker: https://github.com/NixOS/pypi2nix
-- Source Code: https://github.com/NixOS/pypi2nix
-
-To develop ``pypi2nix``:::
-
-    % git clone git://github.com/NixOS/pypi2nix.git
-    % nix-shell
-
-To build `pypi2nix` binary::
-
-    % make clear install DESTDIR=./out
-
-As example you can try generate Sentry's delependencies::
-
-    % cd examples
-    % ./../out/pypi2nix sentry.nix --nix-path=nixpkgs=/path/to/nixpkgs-chaoflows-python-branch
-
-Code away!
-
-If you are having issues, please let us know via issue tracker.
-
-
-Design
-------
-
-::
-
-    % pypi2nix <input>
-
-Above command will first generate ``generated.json`` file which includes md5
-hashes for all python packages we need to package. We used JSON format here
-because its easy to read from nix and python, and this step is used to cache
-all lookups to pypi on any subsequent calls.
-
-Then it will use it to build python wheels inside ``/nix/store`` and read all
-metadata (description, homepage, license, requires, ...) and create
-``generated.nix``.
-
-Last piece to connect everything together is ``default.nix``. This file is
-going to be generated and if file already exists it will ask you if you want to
-override it.
-
-And that's it. Looks complicated, but that's just the way python packaging is.
-
-You should read more about `nix-shell`_ and how to use it with ``default.nix``
-to get most out of python development with nix.
-
-
-License
--------
-
-.. _`nix expressions`: http://nixos.org/nix/manual/#chap-writing-nix-expressions
-.. _`nixpkgs`: https://github.com/NixOS/nixpkgs
-.. _`nix-shell`: http://nixos.org/nix/manual/#sec-nix-shell
+.. _`@garbas`: https://twitter.com/garbas
