@@ -38,6 +38,7 @@ def do(input_file, nix_path=None, extra_build_inputs=None):
         extra_build_inputs = '[]'
 
     command = 'nix-build {current_dir}/pip.nix'\
+              '  --option build-use-chroot false'\
               '  --argstr requirementsFile "{input_file}"'\
               '  --argstr cache "{cache_dir}"'\
               '  --arg extraBuildInputs \'{extra_build_inputs}\''\
