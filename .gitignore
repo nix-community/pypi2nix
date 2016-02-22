@@ -1,5 +1,6 @@
 *.py?
 /out/
-/examples/result*
+/examples/*
+!/examples/*_override.nix
 /result*
 /examples/generated*

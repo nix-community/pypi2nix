@@ -124,34 +124,43 @@ def main(specification, name, requirements, buildout, nix_path,
     default_file = os.path.join(base_dir, '{}.nix'.format(input_name))
     generate_file = os.path.join(
         base_dir, '{}_generated.nix'.format(input_name))
-    overwrite_file = os.path.join(
-        base_dir, '{}_overwrite.nix'.format(input_name))
+    override_file = os.path.join(
+        base_dir, '{}_override.nix'.format(input_name))
 
     with open(input_file) as f:
         pypi2nix.stage3.do(metadata, generate_file)
 
-    if not os.path.exists(overwrite_file):
-        with open(overwrite_file, 'wa+') as f:
+    if not os.path.exists(override_file):
+        with open(override_file, 'wa+') as f:
             write = lambda x: f.write(x + '\n')
-
-            write("{ pkgs, self, generated, pythonPackages}:")
-            write("let")
-            write("  inherit (pkgs.lib) overrideDerivation;")
-            write("  inherit (pythonPackages) buildPythonPackage python;")
-            write("in {")
+            write("{ pkgs, python }:")
+            write("")
+            write("self: super: {")
             write("}")
 
     if not os.path.exists(default_file):
         with open(default_file, 'wa+') as f:
             write = lambda x: f.write(x + '\n')
-            write("{ }:")
+            write("{ system ? builtins.currentSystem")
+            write(", nixpkgs ? <nixpkgs>")
+            write("}:")
+            write("")
             write("let")
-            write("  pkgs = import <nixpkgs> { };")
+            write("")
+            write("  inherit (pkgs.stdenv.lib) fix' extends;")
+            write("")
+            write("  pkgs = import nixpkgs { inherit system; };")
             write("  pythonPackages = pkgs.python27Packages;")
-            write("  generated = import ./%s_generated.nix { "
-                  "inherit pkgs self pythonPackages; };" % input_name)
-            write("  overrides = import ./%s_overwrite.nix { "
-                  "inherit pkgs self generated pythonPackages; };" % (
-                      input_name))
-            write("  self = generated // overrides;")
-            write("in self")
+            write("")
+            write("  python = {")
+            write("    interpreter = pythonPackages.python;")
+            write("    mkDerivation = pythonPackages.buildPythonPackage;")
+            write("    modules = pythonPackages.python.modules;")
+            write("    overrideDerivation = drv: f: pythonPackages.buildPythonPackage (drv.drvAttrs // f drv.drvAttrs);")
+            write("    pkgs = pythonPackages;")
+            write("  };")
+            write("")
+            write("  generated = import %s { inherit pkgs python; };" % generate_file)
+            write("  overrides = import %s { inherit pkgs python; };" % override_file)
+            write("")
+            write("in fix' (extends overrides generated)")

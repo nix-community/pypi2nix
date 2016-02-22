@@ -30,7 +30,7 @@ rec {
   };
 
   setuptoolsWhl = fetchurl {
-    url = "${pypi_url}/3.4/s/setuptools/setuptools-${setuptoolsVersion}-py2.py3-none-any.whl";
+    url = "${pypi_url}/3.5/s/setuptools/setuptools-${setuptoolsVersion}-py2.py3-none-any.whl";
     md5 = setuptoolsWhlHash;
   };
 

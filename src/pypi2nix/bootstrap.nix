@@ -21,14 +21,15 @@ in
       cd tmp
 
       python -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'pip', 'setuptools', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/base']))"
-
       PYTHONPATH=$out/base python -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'wheel', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
-
       PYTHONPATH=$out/base python -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'zc.buildout', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
       touch $out/extra/zc/__init__.py
 
       echo -e "#!${python}/bin/python\nimport sys, pip; sys.exit(pip.main())" > $out/bin/pip
       echo -e "#!${python}/bin/python\nimport sys, zc.buildout.buildout\nsys.exit(zc.buildout.buildout.main())" > $out/bin/buildout
+
+      sed -i -e "s|zinfo = zipfile.ZipInfo(path, date_time)|zinfo = zipfile.ZipInfo(path, (1980,1,1,0,0,0))|" $out/extra/wheel/archive.py
+      python -m compileall -f $out/extra/wheel/archive.py
 
       chmod +x $out/bin/*
     '';

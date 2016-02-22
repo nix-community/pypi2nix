@@ -26,7 +26,10 @@ def extract_deps(metadata):
                 for line in item['requires']:
                     components = line.split()
                     if components[0] not in ['setuptools']:
-                        deps.append(components[0])
+                        if '[' in components[0]:
+                            deps.append(components[0].split('[')[0])
+                        else:
+                            deps.append(components[0])
     return list(set(deps))
 
 

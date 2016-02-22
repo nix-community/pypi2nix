@@ -16,31 +16,29 @@ def find_license(item):
 
 
 def do(metadata, generate_file):
-    metadata_by_name = {x['name']: x for x in metadata}
+    metadata_by_name = {x['name'].lower(): x for x in metadata}
     # top_level = list(set(metadata.keys()).difference(set(reduce(
     #     lambda x, y: x + y, list(set([x['deps'] for x in metadata]))))))
 
     with open(generate_file, 'wa+') as f:
         write = lambda x: f.write(x + '\n')
 
-        write("{ pkgs, self, pythonPackages}:")
-        write("let")
-        write("  inherit (pythonPackages) buildPythonPackage;")
-        write("  inherit (pkgs) fetchurl lib;")
-        write("in {")
+        write("{ pkgs, python }:")
+        write("")
+        write("self: {")
 
         for item in metadata:
-            write('   "%(name)s" = buildPythonPackage {' % item)
+            write('   "%(name)s" = python.mkDerivation {' % item)
             write('     name = "%(name)s-%(version)s";' % item)
             if 'url' in item and 'md5' in item:
-                write('     src = fetchurl {')
+                write('     src = pkgs.fetchurl {')
                 write('       url = "%(url)s";' % item)
                 write('       md5 = "%(md5)s";' % item)
                 write('     };')
             write('     doCheck = false;')
             write('     propagatedBuildInputs = [ %s ];' % ' '.join([
-                'self."%(name)s"' % metadata_by_name[x]
-                for x in item['deps'] if x in metadata_by_name]))
+                'self."%(name)s"' % metadata_by_name[x.lower()]
+                for x in item['deps'] if x.lower() in metadata_by_name]))
             write('     meta = {')
             # write('       homepage = "%s"' % find_homepage(item))
             # write('       license = "%s"' % find_license(item))

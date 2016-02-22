@@ -1,7 +1,8 @@
-import os
-import stat
 import click
+import hashlib
+import os
 import pypi2nix.cmd
+import stat
 
 
 def do(input_file, nix_path=None, extra_build_inputs=None):
@@ -17,7 +18,8 @@ def do(input_file, nix_path=None, extra_build_inputs=None):
         requirements = f.read()
 
     current_dir = os.path.dirname(__file__)
-    cache_dir = os.path.expanduser('/tmp/pypi2nix/cache')
+    cache_dir = os.path.expanduser(
+        '/tmp/pypi2nix/cache/' + hashlib.md5(requirements).hexdigest())
     output = os.path.expanduser('~/.pypi2nix/out')
 
     if not os.path.exists(cache_dir):
