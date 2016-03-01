@@ -29,11 +29,10 @@ in mkDerivation rec {
     mv zc.recipe.egg-*/src/zc/recipe    $out/pkgs/zc/recipe
 
     if [ "$IN_NIX_SHELL" != "1" ]; then
-      if [ -e pypi2nix ]; then
-        mv pypi2nix/src/pypi2nix          $out/pkgs/pypi2nix
-      fi
       if [ -e git-export ]; then
-        mv git-export/src/pypi2nix          $out/pkgs/pypi2nix
+        mv git-export/src/pypi2nix      $out/pkgs/pypi2nix
+      else
+        mv pypi2nix*/src/pypi2nix       $out/pkgs/pypi2nix
       fi
     fi
   '';
