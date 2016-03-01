@@ -9,8 +9,6 @@ let
   python = (builtins.getAttr "python${pythonVersion}Packages" pkgs).python;
   deps = import ./src/pypi2nix/deps.nix { inherit fetchurl; };
 
-  pypi2nixName = builtins.elemAt (pkgs.lib.splitString "-" (pkgs.lib.last (pkgs.lib.splitString "/" pypi2nix))) 1;
-
   inherit (pkgs) fetchurl;
   inherit (pkgs.stdenv) mkDerivation;
 
@@ -31,7 +29,7 @@ in mkDerivation rec {
     mv zc.recipe.egg-*/src/zc/recipe    $out/pkgs/zc/recipe
 
     if [ "$IN_NIX_SHELL" != "1" ]; then
-      mv ${pypi2nixName}/src/pypi2nix          $out/pkgs/pypi2nix
+      mv pypi2nix*/src/pypi2nix          $out/pkgs/pypi2nix
     fi
   '';
 
