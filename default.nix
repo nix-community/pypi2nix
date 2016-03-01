@@ -1,9 +1,12 @@
-{ }:
+{ pypi2nix ? { outPath = ./.; name = "pypi2nix"; }
+, pkgs ? import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/77f8f35d57618c1ba456d968524f2fb2c3448295.tar.gz") {}
 
+, pythonVersion ? "27"
+}:
 
 let
 
-  pkgs = import <nixpkgs> { };
+  python = (builtins.getAttr "python${pythonVersion}Packages" pkgs).python;
   deps = import ./src/pypi2nix/deps.nix { inherit fetchurl; };
 
   inherit (pkgs) fetchurl;
@@ -12,7 +15,7 @@ let
 in mkDerivation rec {
   version = builtins.readFile ./VERSION;
   name = "pypi2nix-${version}";
-  srcs = with deps; [ ./. pip click setuptools zcbuildout zcrecipeegg ];
+  srcs = with deps; [ pypi2nix pip click setuptools zcbuildout zcrecipeegg ];
   buildInputs = with pkgs; [ zip makeWrapper ];
   sourceRoot = ".";
 
@@ -33,7 +36,7 @@ in mkDerivation rec {
   commonPhase = ''
     mkdir -p $out/bin
 
-    echo "#!${pkgs.python}/bin/python"  >  $out/bin/pypi2nix
+    echo "#!${python}/bin/python"  >  $out/bin/pypi2nix
     echo "import pypi2nix.cli"          >> $out/bin/pypi2nix
     echo "pypi2nix.cli.main()"          >> $out/bin/pypi2nix
 
