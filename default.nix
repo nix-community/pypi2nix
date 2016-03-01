@@ -29,6 +29,7 @@ in mkDerivation rec {
     mv zc.recipe.egg-*/src/zc/recipe    $out/pkgs/zc/recipe
 
     if [ "$IN_NIX_SHELL" != "1" ]; then
+      ls -la
       mv pypi2nix*/src/pypi2nix          $out/pkgs/pypi2nix
     fi
   '';
