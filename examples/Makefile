@@ -3,9 +3,9 @@ SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql"
 LEKTOR_BUILD_INPUTS="libffi openssl unzip"
 
 
-all: sentry empy lektor
+all: sentry empy lektor rss2email
 
-clear: sentry-clear empy-clear lektor-clear
+clear: sentry-clear empy-clear lektor-clear rss2email-clear
 
 
 sentry: sentry.nix
@@ -54,3 +54,19 @@ lektor-clear:
 	rm -f lektor.txt
 	rm -f lektor.nix
 	rm -f lektor_generated.nix
+
+
+rss2email: rss2email.nix
+	nix-build rss2email.nix -A rss2email -o rss2email
+
+rss2email.nix: rss2email.txt
+	pypi2nix -r rss2email.txt -V "3.4" -I $(NIX_PATH)
+
+rss2email.txt: rss2email-clear
+	echo "https://github.com/wking/rss2email/archive/master.zip" > rss2email.txt
+
+rss2email-clear:
+	rm -f rss2email
+	rm -f rss2email.txt
+	rm -f rss2email.nix
+	rm -f rss2email_generated.nix

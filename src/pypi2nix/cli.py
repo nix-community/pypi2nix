@@ -7,6 +7,11 @@ import pypi2nix.parse_wheels
 import pypi2nix.stage3
 
 
+PYTHON_VERSIONS = {
+    "2.7": "python27",
+    "3.4": "python34"
+}
+
 @click.command()
 @click.option(
     '-I', '--nix-path',
@@ -23,6 +28,13 @@ import pypi2nix.stage3
     default=None,
     help=u'Extra build dependencies needed for installation of required '
          u'python packages.'
+)
+@click.option(
+    '-V', '--python-version',
+    required=True,
+    default="2.7",
+    type=click.Choice(PYTHON_VERSIONS.keys()),
+    help=u'Provide which python version we build for.',
 )
 @click.option(
     '-r', '--requirements',
@@ -51,7 +63,7 @@ import pypi2nix.stage3
     default=None,
 )
 def main(specification, name, requirements, buildout, nix_path,
-         extra_build_inputs):
+         extra_build_inputs, python_version):
     '''
         INPUT_FILE should be requirements.txt (output of pip freeze).
     '''
@@ -100,7 +112,8 @@ def main(specification, name, requirements, buildout, nix_path,
     #
     click.secho('Downloading wheels and creating wheelhouse', fg='green')
     wheels_dir = pypi2nix.wheelhouse.do(
-        input_file, nix_path, extra_build_inputs)
+        input_file, nix_path, extra_build_inputs,
+        PYTHON_VERSIONS[python_version])
 
     #
     # Stage 2
@@ -150,7 +163,8 @@ def main(specification, name, requirements, buildout, nix_path,
             write("  inherit (pkgs.stdenv.lib) fix' extends;")
             write("")
             write("  pkgs = import nixpkgs { inherit system; };")
-            write("  pythonPackages = pkgs.python27Packages;")
+            write("  pythonPackages = pkgs.%sPackages;" % (
+                PYTHON_VERSIONS[python_version]))
             write("")
             write("  python = {")
             write("    interpreter = pythonPackages.python;")

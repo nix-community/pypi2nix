@@ -5,7 +5,7 @@ import pypi2nix.cmd
 import stat
 
 
-def do(input_file, nix_path=None, extra_build_inputs=None):
+def do(input_file, nix_path=None, extra_build_inputs=None, python="python27"):
 
     if not input_file.endswith('.txt'):
         raise click.ClickException('You need to provide correct <input_file>.')
@@ -45,7 +45,8 @@ def do(input_file, nix_path=None, extra_build_inputs=None):
               '  --option build-use-chroot false'\
               '  --argstr requirements "{requirements}"'\
               '  --argstr cache "{cache_dir}"'\
-              '  --arg extraBuildInputs \'{extra_build_inputs}\''\
+              '  --arg extraBuildInputs "{extra_build_inputs}"'\
+              '  --argstr pythonVersion "{python}"'\
               '  {nix_path} -o {output} --show-trace'.format(**locals())
 
     returncode = pypi2nix.cmd.do(command)

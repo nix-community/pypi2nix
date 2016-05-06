@@ -1,12 +1,14 @@
 { requirements
 , cache ? "$out/cache"
 , extraBuildInputs ? []
+, pythonVersion ? "python27"
 }:
 
 let
   pkgs = import <nixpkgs> {};
   pypi2nix_bootstrap = import ./bootstrap.nix {
-    inherit (pkgs) stdenv fetchurl unzip which makeWrapper python;
+    inherit (pkgs) stdenv fetchurl unzip which makeWrapper;
+    python = builtins.getAttr pythonVersion pkgs;
   };
 in pkgs.stdenv.mkDerivation rec {
   name = "pypi2nix-pip";

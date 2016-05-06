@@ -1,11 +1,12 @@
 { pypi2nix ? { outPath = ./.; name = "pypi2nix"; }
-, pkgs ? import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/77f8f35d57618c1ba456d968524f2fb2c3448295.tar.gz") {}
+, nixpkgs ? builtins.fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/77f8f35d57618c1ba456d968524f2fb2c3448295.tar.gz"
 
 , pythonVersion ? "27"
 }:
 
 let
 
+  pkgs = import nixpkgs {};
   python = (builtins.getAttr "python${pythonVersion}Packages" pkgs).python;
   deps = import ./src/pypi2nix/deps.nix { inherit fetchurl; };
 
