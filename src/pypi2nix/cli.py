@@ -30,19 +30,6 @@ PYTHON_VERSIONS = {
          u'through -I take precedence over NIX_PATH.',
 )
 @click.option(
-    '-E', '--extra-build-inputs',
-    default=None,
-    help=u'Extra build dependencies needed for installation of required '
-         u'python packages.'
-)
-@click.option(
-    '-V', '--python-version',
-    required=True,
-    default="2.7",
-    type=click.Choice(PYTHON_VERSIONS.keys()),
-    help=u'Provide which python version we build for.',
-)
-@click.option(
     '-r', '--requirements',
     required=False,
     default=None,
@@ -62,6 +49,27 @@ PYTHON_VERSIONS = {
     default=None,
     help=u'TODO',
 )
+@click.option(
+    '-C', '--cache-dir',
+    required=False,
+    default=None,
+    type=click.Path(exists=True, file_okay=True, writable=True,
+                    resolve_path=True),
+    help=u'Cache directory to be used for downloading packages.',
+)
+@click.option(
+    '-E', '--extra-build-inputs',
+    default=None,
+    help=u'Extra build dependencies needed for installation of required '
+         u'python packages.'
+)
+@click.option(
+    '-V', '--python-version',
+    required=True,
+    default="2.7",
+    type=click.Choice(PYTHON_VERSIONS.keys()),
+    help=u'Provide which python version we build for.',
+)
 @click.argument(
     'specification',
     nargs=-1,
@@ -69,7 +77,7 @@ PYTHON_VERSIONS = {
     default=None,
 )
 def main(specification, name, requirements, buildout, nix_path,
-         extra_build_inputs, python_version):
+         extra_build_inputs, python_version, cache_dir):
     '''
         INPUT_FILE should be requirements.txt (output of pip freeze).
     '''
@@ -119,7 +127,7 @@ def main(specification, name, requirements, buildout, nix_path,
     click.secho('Downloading wheels and creating wheelhouse', fg='green')
     wheels_dir = pypi2nix.wheelhouse.do(
         input_file, nix_path, extra_build_inputs,
-        PYTHON_VERSIONS[python_version])
+        PYTHON_VERSIONS[python_version], cache_dir)
 
     #
     # Stage 2

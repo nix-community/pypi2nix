@@ -5,7 +5,8 @@ import pypi2nix.cmd
 import stat
 
 
-def do(input_file, nix_path=None, extra_build_inputs=None, python="python27"):
+def do(input_file, nix_path=None, extra_build_inputs=None, python="python27",
+        cache_dir=None):
 
     if not input_file.endswith('.txt'):
         raise click.ClickException('You need to provide correct <input_file>.')
@@ -16,11 +17,14 @@ def do(input_file, nix_path=None, extra_build_inputs=None, python="python27"):
 
     with open(input_file) as f:
         requirements = f.read()
+    requirements = requirements.strip()
 
     current_dir = os.path.dirname(__file__)
-    cache_dir = os.path.expanduser(
-        '/tmp/pypi2nix/cache/' + hashlib.md5(requirements).hexdigest())
     output = os.path.expanduser('~/.pypi2nix/out')
+
+    if not cache_dir:
+        cache_dir = os.path.expanduser(
+            '/tmp/pypi2nix/cache/' + hashlib.md5(requirements).hexdigest())
 
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir)
@@ -45,8 +49,8 @@ def do(input_file, nix_path=None, extra_build_inputs=None, python="python27"):
               '  --option build-use-chroot false'\
               '  --argstr requirements "{requirements}"'\
               '  --argstr cache "{cache_dir}"'\
-              '  --arg extraBuildInputs "{extra_build_inputs}"'\
               '  --argstr pythonVersion "{python}"'\
+              '  --arg extraBuildInputs \'{extra_build_inputs}\''\
               '  {nix_path} -o {output} --show-trace'.format(**locals())
 
     returncode = pypi2nix.cmd.do(command)

@@ -1,6 +1,7 @@
 
 SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql"
 LEKTOR_BUILD_INPUTS="libffi openssl unzip"
+PYPI2NIX=pypi2nix
 
 
 all: sentry empy lektor rss2email
@@ -12,10 +13,10 @@ sentry: sentry.nix
 	nix-build sentry.nix -A sentry -o sentry
 
 sentry.nix: sentry.txt
-	pypi2nix -r sentry.txt -E $(SENTRY_BUILD_INPUTS) -I $(NIX_PATH)
+	$(PYPI2NIX) -r sentry.txt -E $(SENTRY_BUILD_INPUTS) -I $(NIX_PATH)
 
 sentry.txt: sentry-clear
-	echo "Sentry" > sentry.txt
+	echo "Sentry" >> sentry.txt
 
 sentry-clear:
 	rm -f sentry
@@ -28,7 +29,7 @@ empy: empy.nix
 	nix-build empy.nix -A empy -o empy
 
 empy.nix: empy.txt
-	pypi2nix -r empy.txt -I $(NIX_PATH)
+	$(PYPI2NIX) -r empy.txt -I $(NIX_PATH)
 
 empy.txt: empy-clear
 	echo "empy" > empy.txt
@@ -44,7 +45,7 @@ lektor: lektor.nix
 	nix-build lektor.nix -A Lektor -o lektor
 
 lektor.nix: lektor.txt
-	pypi2nix -r lektor.txt -E $(LEKTOR_BUILD_INPUTS) -I $(NIX_PATH)
+	$(PYPI2NIX) -r lektor.txt -E $(LEKTOR_BUILD_INPUTS) -I $(NIX_PATH)
 
 lektor.txt: lektor-clear
 	echo "Lektor" > lektor.txt
@@ -60,7 +61,7 @@ rss2email: rss2email.nix
 	nix-build rss2email.nix -A rss2email -o rss2email
 
 rss2email.nix: rss2email.txt
-	pypi2nix -r rss2email.txt -V "3.4" -I $(NIX_PATH)
+	$(PYPI2NIX) -r rss2email.txt -V "3.4" -I $(NIX_PATH)
 
 rss2email.txt: rss2email-clear
 	echo "https://github.com/wking/rss2email/archive/master.zip" > rss2email.txt
