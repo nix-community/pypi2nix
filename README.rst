@@ -1,29 +1,55 @@
-Until proper documentation is written let this serve as an example:
+pypi2nix
+========
 
-1. clone this repository::
+pypi2nix generates nix expressions for PyPI packages.
 
-    % git clone https://github.com/garbas/pypi2nix
-    % cd pypi2nix
+Quick start
+-----------
 
-2. run nix-shell command and you should have ``pypi2nix`` command working::
+1. Clone the repository::
 
-   pypi2nix/ % nix-shell
-   (nix-shell) pypi2nix/ % which pypi2nix
-   /tmp/...-pypi2nix-1.0.0/bin/pypi2nix
-   
-3. run pypi2nix on some requirements.txt file::
+        git clone https://github.com/garbas/pypi2nix cd pypi2nix
 
-   (nix-shell) pypi2nix/ % echo "empy" > requirements.txt
-   (nix-shell) pypi2nix/ % pypi2nix -r requirements.txt
-   (nix-shell) pypi2nix/ % ls -la requirements*
-   -rw-r--r-- 1 rok users 1064 Feb 17 23:30 requirements_generated.nix
-   -rw-r--r-- 1 rok users  311 Feb 17 23:30 requirements.nix
-   -rw-r--r-- 1 rok users  148 Feb 17 23:30 requirements_overwrite.nix
-   -rw-r--r-- 1 rok users    5 Feb 17 23:29 requirements.txt
+2. Inside the directory, run the ``nix-shell`` command::
 
-4. build your package::
+        nix-shell
 
-   (nix-shell) pypi2nix/ % nix-build requirements.nix -A empy
+   Now, the ``pypi2nix`` command should be available. To check this is the
+   case, you can run ``which pypi2nix``.
+
+3. Add the name of your package to a text file, e.g.::
+
+        echo "empy" > requirements.txt
+
+   Alternatively, you can also try a URL like::
+
+        echo "https://github.com/wking/rss2email/archive/master.zip" > requirements.txt
+
+4. Run the ``pypi2nix`` command::
+
+        pypi2nix -r requirements.txt
+
+   If your package requires a specific version of Python, you can use the
+   ``-V`` option. For example, ::
+
+        pypi2nix -r requirements.txt -V "3.4"
+
+   If your project requires some system libraries you can use the ``-E``
+   option. For example, ::
+
+        pypi2nix -r requirements.txt -V "3.4" -E "libxslt libxml2"
+
+   Pypi2nix will now generate a file ``requirements.nix``.
+
+5. Build your package via::
+
+        nix-build requirements.nix -A empy
+
+Examples
+--------
+
+The file ``examples/Makefile`` contains specific instructions for packages like
+``sentry``, ``empy``, ``lektor`` and ``rss2email``.
 
 
 Ping me `@garbas`_ if you get stuck.
