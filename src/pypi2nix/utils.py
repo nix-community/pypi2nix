@@ -4,6 +4,8 @@ import shlex
 import subprocess
 
 
+TO_IGNORE = ["setuptools"]
+
 PYTHON_VERSIONS = {
     "2.6": "python26",
     "2.7": "python27",

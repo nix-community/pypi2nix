@@ -8,7 +8,7 @@ import pip.download
 import pip.index
 import pip.req
 
-from pypi2nix.utils import curry
+from pypi2nix.utils import TO_IGNORE, curry
 
 
 SESSION = pip.download.PipSession()
@@ -37,7 +37,7 @@ def extract_deps(metadata):
             if 'requires' in item:
                 for line in item['requires']:
                     components = line.split()
-                    if components[0] not in ['setuptools']:
+                    if components[0] not in TO_IGNORE:
                         if '[' in components[0]:
                             deps.append(components[0].split('[')[0])
                         else:
@@ -45,10 +45,8 @@ def extract_deps(metadata):
     return list(set(deps))
 
 
-def parse(metadata_json):
+def parse(metadata):
     """Parse relevant information out of a metadata.json file."""
-    with open(metadata_json) as f:
-        metadata = json.load(f)
     name = metadata['name']
     version = metadata['version']
 
@@ -83,7 +81,12 @@ def try_candidates(distinfo):
     for cand in ('metadata.json', 'pydist.json'):
         fn = p.join(distinfo, cand)
         if p.exists(fn):
-            return parse(fn)
+            with open(fn) as f:
+                metadata = json.load(f)
+                if metadata['name'] in TO_IGNORE:
+                    return 
+                else:
+                    return parse(metadata)
     raise click.ClickException('unable to find json in %s' % distinfo)
 
 
@@ -101,5 +104,7 @@ def extract_metadata_from_wheelhouse(wheel_dir):
     res = []
     for distinfo in glob.glob(p.join(wheel_dir, '*.dist-info')):
         click.secho('|-> %s' % p.basename(distinfo), fg='blue')
-        res.append(try_candidates(distinfo))
+        tmp = try_candidates(distinfo)
+        if tmp:
+            res.append(tmp)
     return res
