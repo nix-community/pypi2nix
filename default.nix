@@ -1,23 +1,14 @@
-{ pypi2nix ? { outPath = ./.; name = "pypi2nix"; }
-, nixpkgs ? builtins.fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/77f8f35d57618c1ba456d968524f2fb2c3448295.tar.gz"
-
-, pythonVersion ? "27"
+{ stdenv, fetchurl, python, zip, makeWrapper
+, src ? { outPath = ./.; name = "pypi2nix"; }
 }:
 
 let
-
-  pkgs = import nixpkgs {};
-  python = (builtins.getAttr "python${pythonVersion}Packages" pkgs).python;
   deps = import ./src/pypi2nix/deps.nix { inherit fetchurl; };
-
-  inherit (pkgs) fetchurl;
-  inherit (pkgs.stdenv) mkDerivation;
-
-in mkDerivation rec {
   version = builtins.readFile ./VERSION;
+in stdenv.mkDerivation rec {
   name = "pypi2nix-${version}";
-  srcs = with deps; [ pypi2nix pip click setuptools zcbuildout zcrecipeegg ];
-  buildInputs = with pkgs; [ pythonFull zip makeWrapper ];
+  srcs = with deps; [ src pip click setuptools zcbuildout zcrecipeegg ];
+  buildInputs = [ python zip makeWrapper ];
   sourceRoot = ".";
 
   postUnpack = ''
