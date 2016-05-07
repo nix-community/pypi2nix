@@ -8,8 +8,20 @@ import pip.download
 import pip.index
 import pip.req
 
+from pypi2nix.utils import curry
+
+
 SESSION = pip.download.PipSession()
 URL = 'https://pypi.python.org/simple/'
+
+
+def find_homepage(item):
+    homepage = ''
+    if 'extensions' in item and \
+            'python.details' in item['extensions'] and \
+            'project_urls' in item['extensions']['python.details']:
+        homepage = item['extensions']['python.details'].get('Home', '')
+    return homepage
 
 
 def extract_deps(metadata):
@@ -53,6 +65,9 @@ def parse(metadata_json):
             'url': link.url_without_fragment,
             'md5': link.hash,
             'deps': extract_deps(metadata),
+            'homepage': find_homepage(metadata),
+            'license': metadata.get('license', ''),
+            'description': metadata.get('summary', ''),
         }
 
     except:
@@ -72,7 +87,17 @@ def try_candidates(distinfo):
     raise click.ClickException('unable to find json in %s' % distinfo)
 
 
-def do(wheel_dir):
+@curry
+def extract_metadata_from_wheelhouse(wheel_dir):
+    '''
+    once we have all the metadata we can create wheels and install them, so
+    that metadata.json is produced for each package which we process to
+    extract dependencies for packages
+    '''
+
+    click.secho(
+        'Stage2: Extracting metadata from {}'.format(wheel_dir), fg='green')
+
     res = []
     for distinfo in glob.glob(p.join(wheel_dir, '*.dist-info')):
         click.secho('|-> %s' % p.basename(distinfo), fg='blue')

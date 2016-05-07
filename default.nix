@@ -17,7 +17,7 @@ in mkDerivation rec {
   version = builtins.readFile ./VERSION;
   name = "pypi2nix-${version}";
   srcs = with deps; [ pypi2nix pip click setuptools zcbuildout zcrecipeegg ];
-  buildInputs = with pkgs; [ zip makeWrapper ];
+  buildInputs = with pkgs; [ pythonFull zip makeWrapper ];
   sourceRoot = ".";
 
   postUnpack = ''

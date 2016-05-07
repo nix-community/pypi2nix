@@ -32,7 +32,7 @@ in pkgs.stdenv.mkDerivation rec {
 
     echo "${requirements}" > requirements.txt
 
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel -r requirements.txt --wheel-dir ${cache} --find-links ${cache}
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel -r requirements.txt --no-binary :all: --wheel-dir ${cache} --find-links ${cache}
     PYTHONPATH=${cache}:${pypi2nix_bootstrap}/extra:$PYTHONPATH pip freeze > $out/requirements.txt
 
     cd $out/wheelhouse

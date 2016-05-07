@@ -1,15 +1,20 @@
 import click
 import hashlib
 import os
-import pypi2nix.cmd
 import stat
 
+from pypi2nix.utils import curry, cmd
 
-def do(input_file, nix_path=None, extra_build_inputs=None, python="python27",
+
+@curry
+def download_wheels_and_create_wheelhouse(
+        input_file, nix_path=None, extra_build_inputs=None, python="python27",
         cache_dir=None):
+    '''from setup.py or buildout.cfg we create complete list of all
+       requirements needed.
+    '''
 
-    if not input_file.endswith('.txt'):
-        raise click.ClickException('You need to provide correct <input_file>.')
+    click.secho('Downloading wheels and creating wheelhouse', fg='green')
 
     if not os.path.exists(input_file):
         raise click.ClickException(
@@ -53,7 +58,7 @@ def do(input_file, nix_path=None, extra_build_inputs=None, python="python27",
               '  --arg extraBuildInputs \'{extra_build_inputs}\''\
               '  {nix_path} -o {output} --show-trace'.format(**locals())
 
-    returncode = pypi2nix.cmd.do(command)
+    returncode = cmd(command)
     if returncode != 0:
         raise click.ClickException(
             u'While trying to run the command something went wrong.')

@@ -2,20 +2,11 @@ import os
 import click
 import random
 import string
-import pypi2nix.wheelhouse
-import pypi2nix.parse_wheels
-import pypi2nix.stage3
 
-
-PYTHON_VERSIONS = {
-    "2.6": "python26",
-    "2.7": "python27",
-    "3.2": "python32",
-    "3.3": "python33",
-    "3.4": "python34",
-    "3.5": "python35",
-    "pypy": "pypy",
-}
+from pypi2nix.stage1 import download_wheels_and_create_wheelhouse
+from pypi2nix.stage2 import extract_metadata_from_wheelhouse
+from pypi2nix.stage3 import generate_nix_expressions
+from pypi2nix.utils import PYTHON_VERSIONS, compose
 
 
 @click.command()
@@ -78,26 +69,15 @@ PYTHON_VERSIONS = {
 )
 def main(specification, name, requirements, buildout, nix_path,
          extra_build_inputs, python_version, cache_dir):
-    '''
-        INPUT_FILE should be requirements.txt (output of pip freeze).
-    '''
+    """INPUT_FILE should be requirements.txt (output of pip freeze).
+    """
 
+    # ensure that working folder exists
     home_dir = os.path.expanduser('~/.pypi2nix')
     if not os.path.isdir(home_dir):
         os.makedirs(home_dir)
 
-    _input = [specification, requirements, buildout]
-
-    if not any(_input):
-        raise click.exceptions.UsageError(
-            u'Please tell what you want to be packages by specifying `-b` '
-            u'(buildout.cfg), `-r` (requirements.txt) or by providing '
-            u'package specification as a argument of pypi2nix command')
-
-    if len(filter(lambda x: x, _input)) >= 2:
-        raise click.exceptions.UsageError(
-            u'Please only specify one of the options: `-b`, `-r` or package.')
-
+    # adjust input_name/input_file based on the inputs
     if buildout:
         raise click.exceptions.ClickException(
             u'Not yet implemented!')
@@ -115,80 +95,21 @@ def main(specification, name, requirements, buildout, nix_path,
         with open(input_file, 'w+') as f:
             f.write('\n'.join(specification))
 
-    if name:
-        input_name = name
+    else:
+        raise click.exceptions.UsageError(
+            u'Please tell what you want to be packages by specifying `-b` '
+            u'(buildout.cfg), `-r` (requirements.txt) or by providing '
+            u'package specification as a argument of pypi2nix command')
 
-    #
-    # Stage 1
-    #
-    # from setup.py or buildout.cfg we create complete list of all requirements
-    # needed.
-    #
-    click.secho('Downloading wheels and creating wheelhouse', fg='green')
-    wheels_dir = pypi2nix.wheelhouse.do(
-        input_file, nix_path, extra_build_inputs,
-        PYTHON_VERSIONS[python_version], cache_dir)
-
-    #
-    # Stage 2
-    #
-    # once we have all the metadata we can create wheels and install them, so
-    # that metadata.json is produced for each package which we process to
-    # extract dependencies for packages
-    #
-    click.secho(
-        'Stage2: Extracting metadata from {}'.format(wheels_dir), fg='green')
-    metadata = pypi2nix.parse_wheels.do(wheels_dir)
-    click.secho(
-        'Got metadata from {:d} packages'.format(len(metadata)), fg='green')
-
-    #
-    # Stage 3
-    #
-    # With all above we can now generate nix expressions
-    #
-    base_dir = os.getcwd()
-    default_file = os.path.join(base_dir, '{}.nix'.format(input_name))
-    generate_file = os.path.join(
-        base_dir, '{}_generated.nix'.format(input_name))
-    override_file = os.path.join(
-        base_dir, '{}_override.nix'.format(input_name))
-
-    with open(input_file) as f:
-        pypi2nix.stage3.do(metadata, generate_file)
-
-    if not os.path.exists(override_file):
-        with open(override_file, 'wa+') as f:
-            write = lambda x: f.write(x + '\n')
-            write("{ pkgs, python }:")
-            write("")
-            write("self: super: {")
-            write("}")
-
-    if not os.path.exists(default_file):
-        with open(default_file, 'wa+') as f:
-            write = lambda x: f.write(x + '\n')
-            write("{ system ? builtins.currentSystem")
-            write(", nixpkgs ? <nixpkgs>")
-            write("}:")
-            write("")
-            write("let")
-            write("")
-            write("  inherit (pkgs.stdenv.lib) fix' extends;")
-            write("")
-            write("  pkgs = import nixpkgs { inherit system; };")
-            write("  pythonPackages = pkgs.%sPackages;" % (
-                PYTHON_VERSIONS[python_version]))
-            write("")
-            write("  python = {")
-            write("    interpreter = pythonPackages.python;")
-            write("    mkDerivation = pythonPackages.buildPythonPackage;")
-            write("    modules = pythonPackages.python.modules;")
-            write("    overrideDerivation = drv: f: pythonPackages.buildPythonPackage (drv.drvAttrs // f drv.drvAttrs);")
-            write("    pkgs = pythonPackages;")
-            write("  };")
-            write("")
-            write("  generated = import %s { inherit pkgs python; };" % generate_file)
-            write("  overrides = import %s { inherit pkgs python; };" % override_file)
-            write("")
-            write("in fix' (extends overrides generated)")
+    compose(
+        download_wheels_and_create_wheelhouse(
+            nix_path=nix_path,
+            extra_build_inputs=extra_build_inputs,
+            python=PYTHON_VERSIONS[python_version],
+            cache_dir=cache_dir),
+        extract_metadata_from_wheelhouse,
+        generate_nix_expressions(
+            input_name=input_name,
+            input_file=input_file,
+            python_version=python_version),
+    )(input_file=input_file)
