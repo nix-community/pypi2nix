@@ -2,6 +2,15 @@
 
 self: super: {
 
+   "honcho" = python.overrideDerivation super."cffi" (old: {
+      src = pkgs.fetchFromGitHub {
+        owner = "nickstenning";
+        repo = "honcho";
+        rev = "v0.7.1";
+        sha256 = "0xzrby0dy77wh29pk1nz20ic1fqw4l0cmdz8vq3iv2yx5y7nnb4l";
+      };
+   });
+
    "cffi" = python.overrideDerivation super."cffi" (old: {
       buildInputs = old.buildInputs ++ [ pkgs.libffi ];
    });
