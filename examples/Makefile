@@ -4,7 +4,7 @@ LEKTOR_BUILD_INPUTS="libffi openssl unzip"
 PYPI2NIX=pypi2nix
 
 
-all: sentry empy lektor rss2email
+all: sentry empy lektor rss2email awscli
 
 clear: sentry-clear empy-clear lektor-clear rss2email-clear
 
@@ -71,3 +71,22 @@ rss2email-clear:
 	rm -f rss2email.txt
 	rm -f rss2email.nix
 	rm -f rss2email_generated.nix
+
+
+
+awscli: awscli.nix
+	nix-build awscli.nix -A awscli -o awscli
+
+awscli.nix: awscli.txt
+	$(PYPI2NIX) -r awscli.txt -I $(NIX_PATH)
+
+awscli.txt: awscli-clear
+	echo "awscli" > awscli.txt
+
+awscli-clear:
+	rm -f awscli
+	rm -f awscli.txt
+	rm -f awscli.nix
+	rm -f awscli_generated.nix
+
+
