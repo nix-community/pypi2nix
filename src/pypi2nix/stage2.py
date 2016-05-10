@@ -37,11 +37,22 @@ def extract_deps(metadata):
             if 'requires' in item:
                 for line in item['requires']:
                     components = line.split()
-                    if components[0] not in TO_IGNORE:
-                        if '[' in components[0]:
-                            deps.append(components[0].split('[')[0])
-                        else:
-                            deps.append(components[0])
+
+                    dep = components[0]
+                    dep = dep.split("==")[0]
+                    dep = dep.split(">=")[0]
+                    dep = dep.split("<=")[0]
+                    dep = dep.split("<")[0]
+                    dep = dep.split(">")[0]
+
+                    if dep.lower() in TO_IGNORE:
+                        continue
+
+                    if '[' in dep:
+                        deps.append(dep.split('[')[0])
+                    else:
+                        deps.append(dep)
+
     return list(set(deps))
 
 
@@ -83,8 +94,8 @@ def try_candidates(distinfo):
         if p.exists(fn):
             with open(fn) as f:
                 metadata = json.load(f)
-                if metadata['name'] in TO_IGNORE:
-                    return 
+                if metadata['name'].lower() in TO_IGNORE:
+                    return
                 else:
                     return parse(metadata)
     raise click.ClickException('unable to find json in %s' % distinfo)
