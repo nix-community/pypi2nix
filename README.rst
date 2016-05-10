@@ -6,6 +6,17 @@ pypi2nix generates nix expressions for PyPI packages.
 Quick start
 -----------
 
+0. Ensure that Nix is installed and confiured properly
+
+   To install nix you can simple do::
+
+        curl https://nixos.org/nix/install | sh
+
+   Once installed make sure that ``build-use-sandbox`` in ``/etx/nix/nix.conf``
+   is set to ``relaxed`` (preferred) or ``false``. Read more about
+   ``build-use-sandbox`` option in the manual_.
+
+
 1. Clone the repository::
 
         git clone https://github.com/garbas/pypi2nix cd pypi2nix
@@ -56,3 +67,4 @@ Ping me `@garbas`_ if you get stuck.
 
 
 .. _`@garbas`: https://twitter.com/garbas
+.. _`manual`: http://nixos.org/nix/manual/#name-14
