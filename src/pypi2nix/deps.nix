@@ -1,6 +1,4 @@
 { fetchurl
-#, pypi_url ? "https://files.pythonhosted.org/packages"
-, pypi_url ? "https://pypi.io/packages/source/packages"
 }:
 
 rec {
@@ -36,32 +34,32 @@ rec {
   };
 
   pip = fetchurl {
-    url = "${pypi_url}/source/p/pip/pip-${pipVersion}.tar.gz";
+    url = "https://pypi.python.org/packages/41/27/9a8d24e1b55bd8c85e4d022da2922cb206f183e2d18fee4e320c9547e751/pip-${pipVersion}.tar.gz";
     md5 = pipHash;
   };
 
   setuptools = fetchurl {
-    url = "${pypi_url}/source/s/setuptools/setuptools-${setuptoolsVersion}.tar.gz";
+    url = "https://pypi.python.org/packages/ff/d4/209f4939c49e31f5524fa0027bf1c8ec3107abaf7c61fdaad704a648c281/setuptools-${setuptoolsVersion}.tar.gz";
     md5 = setuptoolsHash;
   };
 
   zcbuildout = fetchurl {
-    url = "${pypi_url}/source/z/zc.buildout/zc.buildout-${zcbuildoutVersion}.tar.gz";
+    url = "https://pypi.python.org/packages/bd/07/28eba9f0a9da3544611db7e1796583a9c61a3c83c26f6a80e4fd790752b1/zc.buildout-${zcbuildoutVersion}.tar.gz";
     md5 = zcbuildoutHash;
   };
 
   zcrecipeegg = fetchurl {
-    url = "${pypi_url}/source/z/zc.recipe.egg/zc.recipe.egg-${zcrecipeeggVersion}.tar.gz";
+    url = "https://pypi.python.org/packages/08/5e/ade683d229d77ed457017145672f1be4fd98be60f1a5344109a4e66a7d54/zc.recipe.egg-${zcrecipeeggVersion}.tar.gz";
     md5 = zcrecipeeggHash;
   };
 
   wheel = fetchurl {
-    url = "${pypi_url}/source/w/wheel/wheel-${wheelVersion}.tar.gz";
+    url = "https://pypi.python.org/packages/c9/1d/bd19e691fd4cfe908c76c429fe6e4436c9e83583c4414b54f6c85471954a/wheel-${wheelVersion}.tar.gz";
     md5 = wheelHash;
   };
 
   click = fetchurl {
-    url = "${pypi_url}/source/c/click/click-${clickVersion}.tar.gz";
+    url = "https://pypi.python.org/packages/7a/00/c14926d8232b36b08218067bcd5853caefb4737cda3f0a47437151344792/click-${clickVersion}.tar.gz";
     md5 = clickHash;
   };
 
