@@ -18,6 +18,7 @@ def do_generate(metadata, generate_file):
 
     with open(generate_file, 'wa+') as f:
         write = writer(f)
+        # TODO: write here the command that generated this file
         write("{ pkgs, python }:")
         write("")
         write("self: {")
@@ -34,12 +35,12 @@ def do_generate(metadata, generate_file):
             write('    propagatedBuildInputs = [ %s ];' % ' '.join([
                 'self."%(name)s"' % metadata_by_name[x.lower()]
                 for x in item['deps'] if x.lower() in metadata_by_name]))
-            write('     meta = {')
-            write('       homepage = "%(homepage)s";' % item)
-            write('       license = "%s";' % find_license(item['license']))
-            write('       description = "%(description)s";' % item)
-            write('     };')
-            write('   };')
+            write('    meta = {')
+            write('      homepage = "%(homepage)s";' % item)
+            write('      license = "%s";' % find_license(item['license']))
+            write('      description = "%(description)s";' % item)
+            write('    };')
+            write('  };')
 
         write('}')
 
@@ -67,9 +68,12 @@ def generate_nix_expressions(metadata, input_name, input_file, python_version):
             write("self: super: {")
             write("}")
 
+    # TODO: make sure we can configure the default.nix file name
+    # TODO: for some reason default file gets overriden
     if not os.path.exists(default_file):
         with open(default_file, 'wa+') as f:
             write = writer(f)
+            # TODO: include fromRequirements function
             write("{ system ? builtins.currentSystem")
             write(", nixpkgs ? <nixpkgs>")
             write("}:")
