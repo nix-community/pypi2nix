@@ -102,14 +102,12 @@ def main(specification, name, requirements, buildout, nix_path,
             u'package specification as a argument of pypi2nix command')
 
     compose(
-        download_wheels_and_create_wheelhouse(
-            nix_path=nix_path,
-            extra_build_inputs=extra_build_inputs,
-            python=PYTHON_VERSIONS[python_version],
-            cache_dir=cache_dir),
+        download_wheels_and_create_wheelhouse(nix_path=nix_path,
+                                              extra_build_inputs=extra_build_inputs,   # noqa
+                                              python=PYTHON_VERSIONS[python_version],  # noqa
+                                              cache_dir=cache_dir),
         extract_metadata_from_wheelhouse,
-        generate_nix_expressions(
-            input_name=input_name,
-            input_file=input_file,
-            python_version=python_version),
+        generate_nix_expressions(input_name=input_name,
+                                 input_file=input_file,
+                                 python_version=python_version),
     )(input_file=input_file)

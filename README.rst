@@ -60,7 +60,7 @@ Examples
 --------
 
 The file ``examples/Makefile`` contains specific instructions for packages like
-``sentry``, ``empy``, ``lektor`` and ``rss2email``.
+``sentry``, ``empy``, ``lektor``, ``awscli`` and ``rss2email``.
 
 
 Ping me `@garbas`_ if you get stuck.

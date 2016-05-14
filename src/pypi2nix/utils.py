@@ -17,6 +17,10 @@ PYTHON_VERSIONS = {
 }
 
 
+def safe(string):
+    return string.replace('"', '\\"')
+
+
 def compose(*functions):
     """
     https://mathieularose.com/function-composition-in-python

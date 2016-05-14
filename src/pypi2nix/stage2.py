@@ -8,7 +8,7 @@ import pip.download
 import pip.index
 import pip.req
 
-from pypi2nix.utils import TO_IGNORE, curry
+from pypi2nix.utils import TO_IGNORE, curry, safe
 
 
 SESSION = pip.download.PipSession()
@@ -74,9 +74,9 @@ def parse(metadata):
             'url': link.url_without_fragment,
             'md5': link.hash,
             'deps': extract_deps(metadata),
-            'homepage': find_homepage(metadata),
-            'license': metadata.get('license', ''),
-            'description': metadata.get('summary', ''),
+            'homepage': safe(find_homepage(metadata)),
+            'license': safe(metadata.get('license', '')),
+            'description': safe(metadata.get('summary', '')),
         }
 
     except:
