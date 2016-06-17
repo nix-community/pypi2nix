@@ -9,8 +9,8 @@ let
   pkgFor = system:
     if builtins.elem system supportedSystems
       then import ./default.nix {
-        inherit pypi2nix;
-        pkgs = import pkgs.path { inherit system; };
+         inherit (pkgs) stdenv fetchurl python zip makeWrapper;
+        src = pypi2nix;
       }
       else abort "Unsupported system type: ${system}";
 

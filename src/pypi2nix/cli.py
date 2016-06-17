@@ -24,7 +24,7 @@ from pypi2nix.utils import PYTHON_VERSIONS, compose
     '-r', '--requirements',
     required=False,
     default=None,
-    type=click.Path(exists=True),
+    type=click.Path(exists=True, resolve_path=True),
     help=u'',
 )
 @click.option(

@@ -12,13 +12,6 @@ Quick start
 
         curl https://nixos.org/nix/install | sh
 
-   **Don't forget to read the paragraph below!**
-
-   Once installed make sure that ``build-use-sandbox`` in ``/etx/nix/nix.conf``
-   is set to ``relaxed`` (preferred) or ``false``. Read more about
-   ``build-use-sandbox`` option in the manual_.
-
-
 1. Clone the repository::
 
         git clone https://github.com/garbas/pypi2nix cd pypi2nix

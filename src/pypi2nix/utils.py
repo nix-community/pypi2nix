@@ -133,7 +133,7 @@ def cmd(command):
     if isinstance(command, basestring):
         command = shlex.split(command)
 
-    click.secho('|-> ' + ' '.join(command), fg='blue')
+    click.echo('|-> ' + ' '.join(command))
     p = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
@@ -146,7 +146,7 @@ def cmd(command):
         if line == '' and p.poll() is not None:
             break
         if line != '':
-            click.secho('    ' + line.rstrip('\n'), fg='yellow')
+            click.echo('    ' + line.rstrip('\n'))
             out.append(line)
 
     return p.returncode

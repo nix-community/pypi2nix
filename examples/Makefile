@@ -1,5 +1,5 @@
 
-SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql"
+SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql freetype libjpeg zlib libtiff libwebp tcl lcms2"
 LEKTOR_BUILD_INPUTS="libffi openssl unzip"
 PYPI2NIX=pypi2nix
 

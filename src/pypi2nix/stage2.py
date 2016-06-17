@@ -109,12 +109,11 @@ def extract_metadata_from_wheelhouse(wheel_dir):
     extract dependencies for packages
     '''
 
-    click.secho(
-        'Stage2: Extracting metadata from {}'.format(wheel_dir), fg='green')
+    click.echo('Stage2: Extracting metadata from {}'.format(wheel_dir))
 
     res = []
     for distinfo in glob.glob(p.join(wheel_dir, '*.dist-info')):
-        click.secho('|-> %s' % p.basename(distinfo), fg='blue')
+        click.echo('|-> %s' % p.basename(distinfo))
         tmp = try_candidates(distinfo)
         if tmp:
             res.append(tmp)
