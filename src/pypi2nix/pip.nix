@@ -23,8 +23,8 @@ in pkgs.stdenv.mkDerivation rec {
     export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
     export PYTHONPATH=${pypi2nix_bootstrap}/base
 
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel -r ${requirements} --no-binary :all: --wheel-dir ${cache} --find-links ${cache}
-    PYTHONPATH=${cache}:${pypi2nix_bootstrap}/extra:$PYTHONPATH pip freeze > ./requirements.txt
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel -r ${requirements} --wheel-dir ${cache} --find-links ${cache}
+    PYTHONPATH=${cache}:${pypi2nix_bootstrap}/extra:$PYTHONPATH pip freeze > ${wheelhouse}/requirements.txt
 
     cd ${wheelhouse}
     for file in ${cache}/*; do
