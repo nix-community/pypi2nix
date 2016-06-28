@@ -6,3 +6,4 @@ script:
 cache:
     directories:
         - /nix
+        - /tmp/pypi2nix/cache
