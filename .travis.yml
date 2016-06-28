@@ -1,9 +1,5 @@
-language: python
-python:
-  - 2.7
 install:
-  - pip install flake8 --use-mirrors
-  - pip install . --use-mirrors
+  - curl https://nixos.org/nix/install | sh
+  - . $HOME/.nix-profile/etc/profile.d/nix.sh
 script:
-  - flake8 setup.py
-  - flake8 pypi2nix
+  - cd examples && make
