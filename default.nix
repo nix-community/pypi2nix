@@ -4,7 +4,7 @@
 
 let
   deps = import ./src/pypi2nix/deps.nix { inherit fetchurl; };
-  version = builtins.readFile ./VERSION;
+  version = builtins.readFile ./src/pypi2nix/VERSION;
 in stdenv.mkDerivation rec {
   name = "pypi2nix-${version}";
   srcs = with deps; [ src pip click setuptools zcbuildout zcrecipeegg ];  # six attrs effect ];

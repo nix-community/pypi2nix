@@ -48,7 +48,6 @@ def main(requirements_file,
     returncode = pypi2nix.utils.cmd(command)
     if returncode != 0:
         raise click.ClickException(
-            # TODO: better error
             u'While trying to run the command something went wrong.')
 
     return glob.glob(os.path.join(wheelhouse_dir, '*.dist-info'))

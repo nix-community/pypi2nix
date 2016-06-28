@@ -1,7 +1,13 @@
+import sys
 import os
 import click
 
-DEFAULT_NIX = '''
+
+DEFAULT_NIX = '''# generated using pypi2nix tool (version: %(version)s)
+#
+# COMMAND:
+#   pypi2nix %(command_arguments)s
+#
 
 { pkgs ? import <nixpkgs> {}
 }:
@@ -36,7 +42,12 @@ let
 in python
 '''
 
-GENERATED_NIX = '''
+GENERATED_NIX = '''# generated using pypi2nix tool (version: %s)
+#
+# COMMAND:
+#   pypi2nix %s
+#
+
 { pkgs, python, commonBuildInputs ? [], commonDoCheck ? false }:
 
 self: {
@@ -72,7 +83,6 @@ self: super: {
 
 
 def find_license(item):
-    # TODO: get license also from classifiers
     license = item.get('license')
     if license == 'ZPL 2.1':
         license = "lib.zpt21"
@@ -104,6 +114,10 @@ def main(packages_metadata,
     generated_file = os.path.join(project_folder, '{}_generated.nix'.format(requirements_name))
     overrides_file = os.path.join(project_folder, '{}_override.nix'.format(requirements_name))
 
+    version_file = os.path.join(os.path.dirname(__file__), 'VERSION')
+    with open(version_file) as f:
+        version = f.read()
+
     metadata_by_name = {x['name'].lower(): x for x in packages_metadata}
 
     generated_packages_metadata = []
@@ -118,7 +132,6 @@ def main(packages_metadata,
         generated_packages_metadata.append(dict(
             name=item.get("name", ""),
             version=item.get("version", ""),
-            # TODO: handle other formats (eg. wheel/egg)
             url=item.get("url", ""),
             hash_type="md5",
             hash_value=item.get("md5", ""),
@@ -128,13 +141,15 @@ def main(packages_metadata,
             description=item.get("description", ""),
         ))
 
-    generated = GENERATED_NIX % '\n\n'.join(
-        GENERATED_PACKAGE_NIX % x for x in generated_packages_metadata)
+    generated = GENERATED_NIX % (
+        version, ' '.join(sys.argv[1:]), '\n\n'.join(
+            GENERATED_PACKAGE_NIX % x for x in generated_packages_metadata))
 
-    # TODO: include known overrides
     overrides = OVERRIDES_NIX % ""
 
     default = DEFAULT_NIX % dict(
+        version=version,
+        command_arguments=' '.join(sys.argv[1:]),
         python_version=python_version,
         extra_build_inputs=extra_build_inputs
             and "with pkgs; [ %s ]" % (' '.join(extra_build_inputs))

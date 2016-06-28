@@ -99,12 +99,10 @@ def main(nix_path,
     if not os.path.exists(tmp_dir):
         os.makedirs(tmp_dir)
 
-    # TODO: create requirements.txt from buildout.cfg
     if buildout:
         raise click.exceptions.ClickException(
             u'Not yet implemented!')
 
-    # TODO: create requirements.txt from SPECIFICATION
     elif specification:
         raise click.exceptions.ClickException(
             u'Not yet implemented!')
