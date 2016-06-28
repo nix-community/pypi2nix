@@ -1,5 +1,8 @@
 install:
-  - curl https://nixos.org/nix/install | sh
-  - . $HOME/.nix-profile/etc/profile.d/nix.sh
+    - if [ ! -e /nix ]; then curl https://nixos.org/nix/install | sh; fi
+    - source $HOME/.nix-profile/etc/profile.d/nix.sh
 script:
-  - cd examples && make
+    - cd examples && make
+cache:
+    directories:
+        - /nix
