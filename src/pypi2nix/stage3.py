@@ -3,15 +3,13 @@ import click
 
 DEFAULT_NIX = '''
 
-{ system ? builtins.currentSystem
-, nixpkgs ? <nixpkgs>
+{ pkgs ? import <nixpkgs> {}
 }:
 
 let
 
   inherit (pkgs.stdenv.lib) fix' extends inNixShell;
 
-  pkgs = import nixpkgs { inherit system; };
   pythonPackages = pkgs.%(python_version)sPackages;
   commonBuildInputs = %(extra_build_inputs)s;
   commonDoCheck = false;
