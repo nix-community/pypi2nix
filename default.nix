@@ -7,7 +7,7 @@ let
   version = builtins.readFile ./VERSION;
 in stdenv.mkDerivation rec {
   name = "pypi2nix-${version}";
-  srcs = with deps; [ src pip click setuptools zcbuildout zcrecipeegg ];
+  srcs = with deps; [ src pip click setuptools zcbuildout zcrecipeegg ];  # six attrs effect ];
   buildInputs = [ python zip makeWrapper ];
   sourceRoot = ".";
 
@@ -19,6 +19,9 @@ in stdenv.mkDerivation rec {
     mv setuptools-*/setuptools          $out/pkgs/setuptools
     mv zc.buildout-*/src/zc             $out/pkgs/zc
     mv zc.recipe.egg-*/src/zc/recipe    $out/pkgs/zc/recipe
+    # mv six-*/six.py                    $out/pkgs/
+    # mv attrs-*/src/attr                $out/pkgs/attrs
+    # mv effect-*/effect                 $out/pkgs/effect
 
     if [ "$IN_NIX_SHELL" != "1" ]; then
       if [ -e git-export ]; then
@@ -32,7 +35,7 @@ in stdenv.mkDerivation rec {
   commonPhase = ''
     mkdir -p $out/bin
 
-    echo "#!${python}/bin/python"  >  $out/bin/pypi2nix
+    echo "#!${python}/bin/python3"       >  $out/bin/pypi2nix
     echo "import pypi2nix.cli"          >> $out/bin/pypi2nix
     echo "pypi2nix.cli.main()"          >> $out/bin/pypi2nix
 

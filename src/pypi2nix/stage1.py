@@ -1,65 +1,54 @@
 import click
+import glob
 import hashlib
 import os
+import tempfile
 
-from pypi2nix.utils import curry, cmd
+import pypi2nix.utils
 
 
-@curry
-def download_wheels_and_create_wheelhouse(
-        input_file, nix_path=None, extra_build_inputs=None, python="python27",
-        cache_dir=None):
-    '''from setup.py or buildout.cfg we create complete list of all
-       requirements needed.
-    '''
+def create_command_options(options):
+    command_options = []
+    for name, value in options.items():
+        if isinstance(value, str):
+            command_options.append('--argstr {} "{}"'.format(name, value))
+        elif isinstance(value, list):
+            value = "[ %s ]" % (' '.join(['"%s"' % x for x in value]))
+            command_options.append("--arg {} '{}'".format(name, value))
+    return ' '.join(command_options)
 
-    click.echo('Downloading wheels and creating wheelhouse')
 
-    if not os.path.exists(input_file):
-        raise click.ClickException(
-            'requirement file (%s) does not exists' % input_file)
+def main(requirements_file,
+         project_tmp_dir,
+         cache_dir,
+         wheelhouse_dir,
+         extra_build_inputs,
+         python_version,
+         nix_path=None
+         ):
+    """Create a complete (pip freeze) requirements.txt and a wheelhouse from
+       a user provided requirements.txt.
+    """
 
-    current_dir = os.path.dirname(__file__)
-    output = os.path.expanduser('~/.pypi2nix/out')
+    command = 'nix-shell {pip} {options} {nix_path} --show-trace --run exit'.format(  # noqa
+        pip=os.path.join(os.path.dirname(__file__), 'pip.nix'),
+        options=create_command_options(dict(
+            requirements_file=requirements_file,
+            project_tmp_dir=project_tmp_dir,
+            cache_dir=cache_dir,
+            wheelhouse_dir=wheelhouse_dir,
+            extra_build_inputs=extra_build_inputs,
+            python_version=python_version,
+        )),
+        nix_path=nix_path \
+            and ' '.join('-I {}'.format(i) for i in nix_path) \
+            or ''
+    )
 
-    with open(input_file) as f:
-        requirements = f.read()
-    requirements = requirements.strip()
-
-    if not cache_dir:
-        cache_dir = os.path.expanduser(
-            '/tmp/pypi2nix/cache/' + hashlib.md5(requirements).hexdigest())
-
-    if not os.path.exists(cache_dir):
-        os.makedirs(cache_dir)
-
-    wheelhouse_dir = os.path.expanduser(
-        '/tmp/pypi2nix/wheelhouse/' + hashlib.md5(requirements).hexdigest())
-    if not os.path.exists(wheelhouse_dir):
-        os.makedirs(wheelhouse_dir)
-
-    if nix_path:
-        nix_path = ' '.join('-I {}'.format(i) for i in nix_path)
-    else:
-        nix_path = ''
-
-    if extra_build_inputs:
-        extra_build_inputs = '[ {} ]'.format(' '.join([
-            '"{}"'.format(i) for i in extra_build_inputs.split()]))
-    else:
-        extra_build_inputs = '[]'
-
-    command = 'nix-shell {current_dir}/pip.nix'\
-              '  --argstr requirements "{input_file}"'\
-              '  --argstr cache "{cache_dir}"'\
-              '  --argstr wheelhouse "{wheelhouse_dir}"'\
-              '  --arg extraBuildInputs \'{extra_build_inputs}\''\
-              '  --argstr pythonVersion "{python}"'\
-              '  {nix_path} --show-trace --run exit'.format(**locals())
-
-    returncode = cmd(command)
+    returncode = pypi2nix.utils.cmd(command)
     if returncode != 0:
         raise click.ClickException(
+            # TODO: better error
             u'While trying to run the command something went wrong.')
 
-    return wheelhouse_dir
+    return glob.glob(os.path.join(wheelhouse_dir, '*.dist-info'))

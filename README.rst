@@ -1,37 +1,51 @@
-pypi2nix
-========
+pypi2nix - generates nix expressions for PyPI packages
+======================================================
 
-pypi2nix generates nix expressions for PyPI packages.
-
-Quick start
------------
 
 0. Ensure that Nix is installed and confiured properly
+------------------------------------------------------
 
-   To install nix you can simple do::
+To install nix you can simple do::
 
-        curl https://nixos.org/nix/install | sh
+    curl https://nixos.org/nix/install | sh
 
-1. Clone the repository::
 
-        git clone https://github.com/garbas/pypi2nix cd pypi2nix
+1. Clone the repository
+-----------------------
 
-2. Inside the directory, run the ``nix-shell`` command::
+::
 
-        nix-shell
+    git clone https://github.com/garbas/pypi2nix cd pypi2nix
 
-   Now, the ``pypi2nix`` command should be available. To check this is the
-   case, you can run ``which pypi2nix``.
 
-3. Add the name of your package to a text file, e.g.::
+2. Inside the directory, run the ``nix-shell`` command
+------------------------------------------------------
 
-        echo "empy" > requirements.txt
+::
 
-   Alternatively, you can also try a URL like::
+    nix-shell
 
-        echo "https://github.com/wking/rss2email/archive/master.zip" > requirements.txt
+Now, the ``pypi2nix`` command should be available. To check this is the case,
+you can run ``which pypi2nix``.
 
-4. Run the ``pypi2nix`` command::
+
+3. Add the name of your package to a text file, e.g.
+
+::
+
+    echo "empy" > requirements.txt
+
+Alternatively, you can also try a URL like
+
+::
+
+    echo "https://github.com/wking/rss2email/archive/master.zip" > requirements.txt
+
+
+4. Run the ``pypi2nix`` command
+-------------------------------
+
+::
 
         pypi2nix -r requirements.txt
 
@@ -47,9 +61,27 @@ Quick start
 
    Pypi2nix will now generate a file ``requirements.nix``.
 
-5. Build your package via::
+5. Build your package via
+-------------------------
 
-        nix-build requirements.nix -A empy
+Build one package::
+
+    % nix-build requirements.nix -A pkgs.empy
+
+Build all packages::
+
+    % nix-build requirements.nix -A pkgs
+
+Build python interpreter with all packages loaded::
+
+    % nix-build requirements.nix -A interpreter
+    % ./result/bin/python -c "import empy"
+
+Enter developent environemnt::
+
+    % nix-shell requirements.nix -A interpreter
+    (nix-shell) % python -c "import empy"
+
 
 Examples
 --------

@@ -1,102 +1,158 @@
 import os
+import click
 
-from pypi2nix.utils import PYTHON_VERSIONS, curry
+DEFAULT_NIX = '''
+
+{ system ? builtins.currentSystem
+, nixpkgs ? <nixpkgs>
+}:
+
+let
+
+  inherit (pkgs.stdenv.lib) fix' extends inNixShell;
+
+  pkgs = import nixpkgs { inherit system; };
+  pythonPackages = pkgs.%(python_version)sPackages;
+  commonBuildInputs = %(extra_build_inputs)s;
+  commonDoCheck = false;
+
+  buildEnv = { pkgs ? {}, modules ? {} }:
+    let
+      interpreter = pythonPackages.python.buildEnv.override {
+        extraLibs = (builtins.attrValues pkgs) ++ (builtins.attrValues modules);
+      };
+    in {
+      mkDerivation = pythonPackages.buildPythonPackage;
+      interpreter = if inNixShell then interpreter.env else interpreter;
+      overrideDerivation = drv: f: pythonPackages.buildPythonPackage (drv.drvAttrs // f drv.drvAttrs);
+      inherit buildEnv pkgs modules;
+    };
+
+  generated = import %(generated_file)s { inherit pkgs python commonBuildInputs commonDoCheck; };
+  overrides = import %(overrides_file)s { inherit pkgs python; };
+
+  python = buildEnv {
+    pkgs = fix' (extends overrides generated);
+  };
+
+in python
+'''
+
+GENERATED_NIX = '''
+{ pkgs, python, commonBuildInputs ? [], commonDoCheck ? false }:
+
+self: {
+%s
+}
+'''
+
+GENERATED_PACKAGE_NIX = '''
+  "%(name)s" = python.mkDerivation {
+    name = "%(name)s-%(version)s";
+    src = pkgs.fetchurl {
+      url = "%(url)s";
+      %(hash_type)s= "%(hash_value)s";
+    };
+    doCheck = commonDoCheck;
+    buildInputs = commonBuildInputs;
+    propagatedBuildInputs = %(propagatedBuildInputs)s;
+    meta = {
+      homepage = "%(homepage)s";
+      license = "%(license)s";
+      description = "%(description)s";
+    };
+  };
+'''
+
+OVERRIDES_NIX = '''
+{ pkgs, python }:
+
+self: super: {
+%s
+}
+'''
 
 
-def writer(f):
-    return lambda x: f.write(x + '\n')
-
-
-def find_license(license):
-    if license == '"ZPL 2.1':
+def find_license(item):
+    # TODO: get license also from classifiers
+    license = item.get('license')
+    if license == 'ZPL 2.1':
         license = "lib.zpt21"
+    elif license == 'MIT':
+        license = "lib.mit"
+    elif license == 'Apache 2.0':
+        license = "lib.asl20"
+    elif license is None:
+        license = ""
+    else:
+        click.echo(
+            "WARNING: Couldn't recognize license `{}` for `{}`".format(
+                license, item.get('name')))
     return license
 
 
-def do_generate(metadata, generate_file):
-    metadata_by_name = {x['name'].lower(): x for x in metadata}
-
-    with open(generate_file, 'wa+') as f:
-        write = writer(f)
-        # TODO: write here the command that generated this file
-        write("{ pkgs, python }:")
-        write("")
-        write("self: {")
-
-        for item in metadata:
-            write('  "%(name)s" = python.mkDerivation {' % item)
-            write('    name = "%(name)s-%(version)s";' % item)
-            if 'url' in item and 'md5' in item:
-                write('    src = pkgs.fetchurl {')
-                write('      url = "%(url)s";' % item)
-                write('      md5 = "%(md5)s";' % item)
-                write('    };')
-            write('    doCheck = false;')
-            write('    propagatedBuildInputs = [ %s ];' % ' '.join([
-                'self."%(name)s"' % metadata_by_name[x.lower()]
-                for x in item['deps'] if x.lower() in metadata_by_name]))
-            write('    meta = {')
-            write('      homepage = "%(homepage)s";' % item)
-            write('      license = "%s";' % find_license(item['license']))
-            write('      description = "%(description)s";' % item)
-            write('    };')
-            write('  };')
-
-        write('}')
-
-
-@curry
-def generate_nix_expressions(metadata, input_name, input_file, python_version):
-    '''With all above we can now generate nix expressions
+def main(packages_metadata,
+         requirements_name,
+         requirements_file,
+         extra_build_inputs,
+         python_version,
+         ):
+    '''Create Nix expressions.
     '''
 
-    base_dir = os.getcwd()
-    default_file = os.path.join(base_dir, '{}.nix'.format(input_name))
-    generate_file = os.path.join(
-        base_dir, '{}_generated.nix'.format(input_name))
-    override_file = os.path.join(
-        base_dir, '{}_override.nix'.format(input_name))
+    project_folder = os.path.dirname(requirements_file)
 
-    with open(input_file) as f:
-        do_generate(metadata, generate_file)
+    default_file = os.path.join(project_folder, '{}.nix'.format(requirements_name))
+    generated_file = os.path.join(project_folder, '{}_generated.nix'.format(requirements_name))
+    overrides_file = os.path.join(project_folder, '{}_override.nix'.format(requirements_name))
 
-    if not os.path.exists(override_file):
-        with open(override_file, 'wa+') as f:
-            write = writer(f)
-            write("{ pkgs, python }:")
-            write("")
-            write("self: super: {")
-            write("}")
+    metadata_by_name = {x['name'].lower(): x for x in packages_metadata}
 
-    # TODO: make sure we can configure the default.nix file name
-    # TODO: for some reason default file gets overriden
-    if not os.path.exists(default_file):
-        with open(default_file, 'wa+') as f:
-            write = writer(f)
-            # TODO: include fromRequirements function
-            write("{ system ? builtins.currentSystem")
-            write(", nixpkgs ? <nixpkgs>")
-            write("}:")
-            write("")
-            write("let")
-            write("")
-            write("  inherit (pkgs.stdenv.lib) fix' extends;")
-            write("")
-            write("  pkgs = import nixpkgs { inherit system; };")
-            write("  pythonPackages = pkgs.%sPackages;" % (
-                PYTHON_VERSIONS[python_version]))
-            write("")
-            write("  python = {")
-            write("    interpreter = pythonPackages.python;")
-            write("    mkDerivation = pythonPackages.buildPythonPackage;")
-            write("    modules = pythonPackages.python.modules;")
-            write("    overrideDerivation = drv: f: pythonPackages.buildPythonPackage (drv.drvAttrs // f drv.drvAttrs);")  # noqa
-            write("    pkgs = pythonPackages;")
-            write("  };")
-            write("")
-            write("  generated = import %s { inherit pkgs python; };" % (
-                generate_file))
-            write("  overrides = import %s { inherit pkgs python; };" % (
-                override_file))
-            write("")
-            write("in fix' (extends overrides generated)")
+    generated_packages_metadata = []
+    for item in sorted(packages_metadata, key=lambda x: x['name']):
+        propagatedBuildInputs = '[ ]'
+        if item.get('deps'):
+            deps = [x for x in item['deps'] if x.lower() in metadata_by_name.keys()]
+            if deps:
+                propagatedBuildInputs = "[\n%s\n  ]" % (
+                    '\n'.join(sorted(['    self."%s"' % (
+                        metadata_by_name[x.lower()]['name']) for x in deps])))
+        generated_packages_metadata.append(dict(
+            name=item.get("name", ""),
+            version=item.get("version", ""),
+            # TODO: handle other formats (eg. wheel/egg)
+            url=item.get("url", ""),
+            hash_type="md5",
+            hash_value=item.get("md5", ""),
+            propagatedBuildInputs=propagatedBuildInputs,
+            homepage=item.get("homepage", ""),
+            license=find_license(item),
+            description=item.get("description", ""),
+        ))
+
+    generated = GENERATED_NIX % '\n\n'.join(
+        GENERATED_PACKAGE_NIX % x for x in generated_packages_metadata)
+
+    # TODO: include known overrides
+    overrides = OVERRIDES_NIX % ""
+
+    default = DEFAULT_NIX % dict(
+        python_version=python_version,
+        extra_build_inputs=extra_build_inputs
+            and "with pkgs; [ %s ]" % (' '.join(extra_build_inputs))
+            or "[]",
+        generated_file='.' + generated_file[len(project_folder):],
+        overrides_file='.' + overrides_file[len(project_folder):],
+    )
+
+    with open(generated_file, 'w+') as f:
+        f.write(generated.strip())
+        click.echo('|-> writing %s' % generated_file)
+
+    if not os.path.exists(overrides_file):
+        with open(overrides_file, 'w+') as f:
+            f.write(overrides.strip())
+            click.echo('|-> writing %s' % overrides_file)
+
+    with open(default_file, 'w+') as f:
+        f.write(default.strip())

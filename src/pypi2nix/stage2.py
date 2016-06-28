@@ -3,12 +3,12 @@
 import click
 import glob
 import json
-import os.path as p
+import os.path 
 import pip.download
 import pip.index
 import pip.req
 
-from pypi2nix.utils import TO_IGNORE, curry, safe
+from pypi2nix.utils import TO_IGNORE, safe
 
 
 SESSION = pip.download.PipSession()
@@ -56,8 +56,9 @@ def extract_deps(metadata):
     return list(set(deps))
 
 
-def parse(metadata):
-    """Parse relevant information out of a metadata.json file."""
+def parse_metadata(metadata):
+    """Parse relevant information out of a metadata.json file.
+    """
     name = metadata['name']
     version = metadata['version']
 
@@ -87,34 +88,30 @@ def parse(metadata):
         }
 
 
-def try_candidates(distinfo):
-    """Find the actual metadata json file from several possible names."""
-    for cand in ('metadata.json', 'pydist.json'):
-        fn = p.join(distinfo, cand)
-        if p.exists(fn):
-            with open(fn) as f:
+def metadata(wheel):
+    """Find the actual metadata json file from several possible names.
+    """
+    for _file in ('metadata.json', 'pydist.json'):
+        wheel_file = os.path.join(wheel, _file)
+        if os.path.exists(wheel_file):
+            with open(wheel_file) as f:
                 metadata = json.load(f)
                 if metadata['name'].lower() in TO_IGNORE:
                     return
                 else:
-                    return parse(metadata)
-    raise click.ClickException('unable to find json in %s' % distinfo)
+                    return parse_metadata(metadata)
+    raise click.ClickException(
+        "Unable to find metadata.json/pydist.json in `%s` folder." %  wheel)
 
 
-@curry
-def extract_metadata_from_wheelhouse(wheel_dir):
-    '''
-    once we have all the metadata we can create wheels and install them, so
-    that metadata.json is produced for each package which we process to
-    extract dependencies for packages
-    '''
+def main(wheels):
+    """Extract packages metadata from wheels dist-info folders.
+    """
 
-    click.echo('Stage2: Extracting metadata from {}'.format(wheel_dir))
-
-    res = []
-    for distinfo in glob.glob(p.join(wheel_dir, '*.dist-info')):
-        click.echo('|-> %s' % p.basename(distinfo))
-        tmp = try_candidates(distinfo)
-        if tmp:
-            res.append(tmp)
-    return res
+    wheels_metadata = []
+    for wheel in wheels:
+        click.echo('|-> from %s' % os.path.basename(wheel))
+        wheel_metadata = metadata(wheel)
+        if wheel_metadata:
+            wheels_metadata.append(wheel_metadata)
+    return wheels_metadata

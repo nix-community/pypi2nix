@@ -3,16 +3,16 @@
 
 rec {
 
-  pipVersion = "8.1.1";
-  pipHash = "6b86f11841e89c8241d689956ba99ed7";
-  pipWhlHash = "22db7b6a517a09c29d54a76650f170eb";
+  pipVersion = "8.1.2";
+  pipHash = "87083c0b9867963b29f7aba3613e8f4a";
+  pipWhlHash = "0570520434c5b600d89ec95393b2650b";
 
-  setuptoolsVersion = "21.0.0";
-  setuptoolsHash = "81964fdb89534118707742e6d1a1ddb4";
-  setuptoolsWhlHash = "6027400d6870a7dad29952b7d2dfdc7b";
+  setuptoolsVersion = "23.0.0";
+  setuptoolsHash = "100a90664040f8ff232fbac02a4c5652";
+  setuptoolsWhlHash = "a066fd7bfb8faaad763acbdbcb290199";
 
-  zcbuildoutVersion = "2.5.1";
-  zcbuildoutHash = "c88947a3c021ee1509a331c4fa9be187";
+  zcbuildoutVersion = "2.5.2";
+  zcbuildoutHash = "06a21fb02528c07aa0db31de0389a244";
 
   zcrecipeeggVersion = "2.0.3";
   zcrecipeeggHash = "69a8ce276029390a36008150444aa0b4";
@@ -23,28 +23,43 @@ rec {
   clickVersion = "6.6";
   clickHash = "d0b09582123605220ad6977175f3e51d";
 
+  sixVersion = "1.10.0";
+  sixHash = "34eed507548117b2ab523ab14b2f8b55";
+
+  attrsVersion = "16.0.0";
+  attrsHash = "5bcdd418f6e83e580434c63067c08a73";
+
+  effectVersion = "0.10.1";
+  effectHash = "6a6fd28fb44179ce01a148d4e8bdbede";
+
+
+  # --- wheels used to bootstrap python environment ---------------------------
+
   pipWhl = fetchurl {
-    url = "https://pypi.python.org/packages/31/6a/0f19a7edef6c8e5065f4346137cc2a08e22e141942d66af2e1e72d851462/pip-${pipVersion}-py2.py3-none-any.whl";
+    url = "https://pypi.python.org/packages/9c/32/004ce0852e0a127f07f358b715015763273799bd798956fa930814b60f39/pip-${pipVersion}-py2.py3-none-any.whl";
     md5 = pipWhlHash;
   };
 
   setuptoolsWhl = fetchurl {
-    url = "https://pypi.python.org/packages/15/b7/a76624e5a3b18c8c1c8d33a5240b34cdabb08aef2da44b536a8b53ba1a45/setuptools-${setuptoolsVersion}-py2.py3-none-any.whl";
+    url = "https://pypi.python.org/packages/74/7c/c75c4f4032a4627406db06b742cdc7ba24c4833cd423ea7e22882380abde/setuptools-${setuptoolsVersion}-py2.py3-none-any.whl";
     md5 = setuptoolsWhlHash;
   };
 
+
+  # --- python packages needed ------------------------------------------------
+
   pip = fetchurl {
-    url = "https://pypi.python.org/packages/41/27/9a8d24e1b55bd8c85e4d022da2922cb206f183e2d18fee4e320c9547e751/pip-${pipVersion}.tar.gz";
+    url = "https://pypi.python.org/packages/e7/a8/7556133689add8d1a54c0b14aeff0acb03c64707ce100ecd53934da1aa13/pip-${pipVersion}.tar.gz";
     md5 = pipHash;
   };
 
   setuptools = fetchurl {
-    url = "https://pypi.python.org/packages/ff/d4/209f4939c49e31f5524fa0027bf1c8ec3107abaf7c61fdaad704a648c281/setuptools-${setuptoolsVersion}.tar.gz";
+    url = "https://pypi.python.org/packages/45/5e/79ca67a0d6f2f42bfdd9e467ef97398d6ad87ee2fa9c8cdf7caf3ddcab1e/setuptools-${setuptoolsVersion}.tar.gz";
     md5 = setuptoolsHash;
   };
 
   zcbuildout = fetchurl {
-    url = "https://pypi.python.org/packages/bd/07/28eba9f0a9da3544611db7e1796583a9c61a3c83c26f6a80e4fd790752b1/zc.buildout-${zcbuildoutVersion}.tar.gz";
+    url = "https://pypi.python.org/packages/ec/a1/60214738d5dcb199ad97034ecf349d18f3ab69659df827a5e182585bfe48/zc.buildout-${zcbuildoutVersion}.tar.gz";
     md5 = zcbuildoutHash;
   };
 
@@ -62,5 +77,20 @@ rec {
     url = "https://pypi.python.org/packages/7a/00/c14926d8232b36b08218067bcd5853caefb4737cda3f0a47437151344792/click-${clickVersion}.tar.gz";
     md5 = clickHash;
   };
+
+  # six = fetchurl {
+  #   url = "https://pypi.python.org/packages/b3/b2/238e2590826bfdd113244a40d9d3eb26918bd798fc187e2360a8367068db/six-${sixVersion}.tar.gz";
+  #   md5 = sixHash;
+  # };
+
+  # attrs = fetchurl {
+  #   url = "https://pypi.python.org/packages/89/15/80d388d696c8c8ba14874635207aa698eb30ef1242dbb54d9eccf0e927ff/attrs-${attrsVersion}.tar.gz";
+  #   md5 = attrsHash;
+  # };
+
+  # effect = fetchurl {
+  #   url = "https://pypi.python.org/packages/09/19/bd92fe0ba6080323caffd450db65ac7a5bb2d71d9b61fe6a2751a9c3292c/effect-${effectVersion}.tar.gz";
+  #   md5 = effectHash;
+  # };
 
 }

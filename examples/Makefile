@@ -1,18 +1,27 @@
 
 SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql freetype libjpeg zlib libtiff libwebp tcl lcms2"
 LEKTOR_BUILD_INPUTS="libffi openssl unzip"
-PYPI2NIX=pypi2nix
+PYPI2NIX=../result/bin/pypi2nix
 
 
 all: sentry empy lektor rss2email awscli
 
 clear: sentry-clear empy-clear lektor-clear rss2email-clear
 
+pypi2nix-clear:
+	rm -f ../result
+
+$(PYPI2NIX): pypi2nix-clear
+	cd .. && nix-build release.nix -A build.x86_64-linux 
 
 sentry: sentry.nix
-	nix-build sentry.nix -A sentry -o sentry
+	nix-build sentry.nix -o sentry -A interpreter --show-trace
+	./sentry/bin/python -c 'import sentry'
+	./sentry/bin/sentry --help
+	nix-shell sentry.nix -A interpreter --run "python -c 'import sentry'"
+	nix-shell sentry.nix -A interpreter --run "sentry --help"
 
-sentry.nix: sentry.txt
+sentry.nix: sentry.txt $(PYPI2NIX)
 	$(PYPI2NIX) -r sentry.txt -E $(SENTRY_BUILD_INPUTS) -I $(NIX_PATH)
 
 sentry.txt: sentry-clear
@@ -26,9 +35,11 @@ sentry-clear:
 
 
 empy: empy.nix
-	nix-build empy.nix -A empy -o empy
+	nix-build empy.nix -o empy -A interpreter --show-trace
+	./empy/bin/python -c 'import em'
+	nix-shell empy.nix -A interpreter --run "python -c 'import em'"
 
-empy.nix: empy.txt
+empy.nix: empy.txt $(PYPI2NIX)
 	$(PYPI2NIX) -r empy.txt -I $(NIX_PATH)
 
 empy.txt: empy-clear
@@ -42,9 +53,13 @@ empy-clear:
 
 
 lektor: lektor.nix
-	nix-build lektor.nix -A Lektor -o lektor
+	nix-build lektor.nix -o lektor -A interpreter --show-trace
+	./lektor/bin/python -c 'import lektor'
+	./lektor/bin/lektor --help
+	nix-shell lektor.nix -A interpreter --run "python -c 'import lektor'"
+	nix-shell lektor.nix -A interpreter --run "lektor --help"
 
-lektor.nix: lektor.txt
+lektor.nix: lektor.txt $(PYPI2NIX)
 	$(PYPI2NIX) -r lektor.txt -E $(LEKTOR_BUILD_INPUTS) -I $(NIX_PATH)
 
 lektor.txt: lektor-clear
@@ -58,9 +73,13 @@ lektor-clear:
 
 
 rss2email: rss2email.nix
-	nix-build rss2email.nix -A rss2email -o rss2email
+	nix-build rss2email.nix -o rss2email -A interpreter --show-trace
+	./rss2email/bin/python3 -c 'import rss2email'
+	./rss2email/bin/r2e --help
+	nix-build rss2email.nix -A interpreter --run "python3 -c 'import rss2email'"
+	nix-build rss2email.nix -A interpreter --run "r2e --help"
 
-rss2email.nix: rss2email.txt
+rss2email.nix: rss2email.txt $(PYPI2NIX)
 	$(PYPI2NIX) -r rss2email.txt -V "3.4" -I $(NIX_PATH)
 
 rss2email.txt: rss2email-clear
@@ -75,9 +94,13 @@ rss2email-clear:
 
 
 awscli: awscli.nix
-	nix-build awscli.nix -A awscli -o awscli
+	nix-build awscli.nix -o awscli -A interpreter --show-trace
+	./awscli/bin/python -c 'import awscli'
+	PAGER=none ./awscli/bin/aws help
+	nix-shell awscli.nix -A interpreter --run "python -c 'import awscli'"
+	nix-shell awscli.nix -A interpreter --run "PAGER=none aws help"
 
-awscli.nix: awscli.txt
+awscli.nix: awscli.txt $(PYPI2NIX)
 	$(PYPI2NIX) -r awscli.txt -I $(NIX_PATH)
 
 awscli.txt: awscli-clear
@@ -88,5 +111,3 @@ awscli-clear:
 	rm -f awscli.txt
 	rm -f awscli.nix
 	rm -f awscli_generated.nix
-
-
