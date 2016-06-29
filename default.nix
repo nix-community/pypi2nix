@@ -35,9 +35,9 @@ in stdenv.mkDerivation rec {
   commonPhase = ''
     mkdir -p $out/bin
 
-    echo "#!${python}/bin/python3"       >  $out/bin/pypi2nix
-    echo "import pypi2nix.cli"          >> $out/bin/pypi2nix
-    echo "pypi2nix.cli.main()"          >> $out/bin/pypi2nix
+    echo "#!${python}/bin/${python.interpretor)" >  $out/bin/pypi2nix
+    echo "import pypi2nix.cli" >> $out/bin/pypi2nix
+    echo "pypi2nix.cli.main()" >> $out/bin/pypi2nix
 
     chmod +x $out/bin/pypi2nix
 
