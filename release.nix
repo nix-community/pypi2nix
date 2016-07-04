@@ -1,5 +1,5 @@
 { pypi2nix ? { outPath = ./.; name = "pypi2nix"; }
-, supportedSystems ? [ "x86_64-linux" ]
+, supportedSystems ? [ "x86_64-linux" "x86_64-darwin" ]
 }:
 
 let
