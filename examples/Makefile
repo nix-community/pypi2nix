@@ -4,7 +4,8 @@ LEKTOR_BUILD_INPUTS="libffi openssl unzip"
 PYPI2NIX=../result/bin/pypi2nix
 
 
-all: sentry empy lektor rss2email awscli
+# commented out sentry since it doesn't work on travis
+all: empy lektor rss2email awscli
 
 clear: sentry-clear empy-clear lektor-clear rss2email-clear
 
