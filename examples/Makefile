@@ -28,7 +28,7 @@ sentry.nix: sentry.txt $(PYPI2NIX)
 	@$(PYPI2NIX) -r sentry.txt -E $(SENTRY_BUILD_INPUTS) -I $(NIX_PATH)
 
 sentry.txt: sentry-clear
-	@echo "Sentry" >> sentry.txt
+	@echo "Sentry==8.5.1" >> sentry.txt
 
 sentry-clear:
 	@rm -f sentry
