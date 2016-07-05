@@ -4,6 +4,7 @@ import click
 
 
 DEFAULT_NIX = '''# generated using pypi2nix tool (version: %(version)s)
+# See more at: https://github.com/garbas/pypi2nix
 #
 # COMMAND:
 #   pypi2nix %(command_arguments)s
