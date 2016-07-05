@@ -4,15 +4,14 @@ import click
 import glob
 import json
 import os.path 
-import pip.download
-import pip.index
-import pip.req
+import aiohttp
+import asyncio
 
 from pypi2nix.utils import TO_IGNORE, safe
 
 
-SESSION = pip.download.PipSession()
-URL = 'https://pypi.python.org/simple/'
+EXTENSIONS = ['tar.gz', 'tar.bz2', 'tar', 'zip', 'tgz']
+INDEX_URL = "https://pypi.io/pypi"
 
 
 def find_homepage(item):
@@ -56,38 +55,6 @@ def extract_deps(metadata):
     return list(set(deps))
 
 
-def parse_metadata(metadata):
-    """Parse relevant information out of a metadata.json file.
-    """
-    name = metadata['name']
-    version = metadata['version']
-
-    try:
-        finder = pip.index.PackageFinder(
-            index_urls=[URL], session=SESSION, find_links=[],
-            format_control=pip.index.FormatControl(set([':all:']), set([])))
-        req = pip.req.InstallRequirement.from_line('%s==%s' % (name, version))
-        link = finder.find_requirement(req, False)
-        assert link.hash_name == 'md5'
-        return {
-            'name': name,
-            'version': version,
-            'url': link.url_without_fragment,
-            'md5': link.hash,
-            'deps': extract_deps(metadata),
-            'homepage': safe(find_homepage(metadata)),
-            'license': safe(metadata.get('license', '')),
-            'description': safe(metadata.get('summary', '')),
-        }
-
-    except:
-        return {
-            'name': name,
-            'version': version,
-            'deps': extract_deps(metadata),
-        }
-
-
 def metadata(wheel):
     """Find the actual metadata json file from several possible names.
     """
@@ -99,9 +66,81 @@ def metadata(wheel):
                 if metadata['name'].lower() in TO_IGNORE:
                     return
                 else:
-                    return parse_metadata(metadata)
+                    return {
+                        'name': metadata['name'],
+                        'version': metadata['version'],
+                        'deps': extract_deps(metadata),
+                        'homepage': safe(find_homepage(metadata)),
+                        'license': safe(metadata.get('license', '')),
+                        'description': safe(metadata.get('summary', '')),
+                    }
     raise click.ClickException(
         "Unable to find metadata.json/pydist.json in `%s` folder." %  wheel)
+
+
+async def fetch_metadata(session, url):
+    """Fetch page asynchronously.
+
+    :param session: Session of client
+    :param url: Requested url
+    """
+    async with session.get(url) as response:
+        with aiohttp.Timeout(2):
+            async with session.get(url) as response:
+                assert response.status == 200
+                return await response.json()
+
+
+def fetch_all_metadata(packages, index=INDEX_URL):
+    """Yield JSON information obtained from PyPI index given an iterable of
+       package names.
+    """
+    loop = asyncio.get_event_loop()
+    conn = aiohttp.TCPConnector(verify_ssl=False)
+    with aiohttp.ClientSession(loop=loop, connector=conn) as session:
+        for package in packages:
+            url = "{}/{}/json".format(index, package['name'])
+            yield combine_metadata(package, loop.run_until_complete(fetch_metadata(session, url)))
+    loop.close()
+
+
+def combine_metadata(old, new):
+    if not new.get('releases'):
+        raise click.ClickException(
+            "Unable to find releases for packge {name}".format(**old))
+
+    if not new['releases'].get(old['version']):
+        raise click.ClickException(
+            "Unable to find releases for package {name} of version "
+            "{version}".format(**old))
+
+    release = None
+    releases = new['releases'][old['version']]
+    for possible_release in releases:
+        for extension in EXTENSIONS:
+            if possible_release['url'].endswith(extension):
+                release = dict()
+                release['url'] = possible_release['url']
+                digests = possible_release.get('digests')
+                if digests:
+                    release['hash_type'] = 'sha256'
+                    release['hash_value'] = possible_release['digests']['sha256']  # noqa
+                else:
+                    release['hash_type'] = 'md5'
+                    release['hash_value'] = possible_release['md5_digest']
+            if release:
+                break
+        if release:
+            break
+
+    if not release:
+        raise click.ClickException(
+            "Unable to find source releases for package {name} of version "
+            "{version}".format(**old))
+
+    old.update(release)
+
+    return old
 
 
 def main(wheels):
@@ -114,4 +153,5 @@ def main(wheels):
         wheel_metadata = metadata(wheel)
         if wheel_metadata:
             wheels_metadata.append(wheel_metadata)
-    return wheels_metadata
+
+    return list(fetch_all_metadata(wheels_metadata))
