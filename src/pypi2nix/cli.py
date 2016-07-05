@@ -44,7 +44,6 @@ import pypi2nix.utils
               )
 @click.option('-V', '--python-version',
               required=True,
-              default="2.7",
               type=click.Choice(pypi2nix.utils.PYTHON_VERSIONS.keys()),
               help=u'Provide which python version we build for.',
               )

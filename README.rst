@@ -47,9 +47,9 @@ Alternatively, you can also try a URL like
 
 ::
 
-        pypi2nix -r requirements.txt
+        pypi2nix -r requirements.txt -V "2.7"
 
-   If your package requires a specific version of Python, you can use the
+   If your package requires a different version of Python, you can use the
    ``-V`` option. For example, ::
 
         pypi2nix -r requirements.txt -V "3.4"

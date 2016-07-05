@@ -26,7 +26,7 @@ sentry: sentry.nix
 
 sentry.nix: sentry.txt $(PYPI2NIX)
 	@echo "generating sentry nix expressions ..."
-	@$(PYPI2NIX) -r sentry.txt -E $(SENTRY_BUILD_INPUTS) -I $(NIX_PATH)
+	@$(PYPI2NIX) -r sentry.txt -E $(SENTRY_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
 
 sentry.txt: sentry-clear
 	@echo "Sentry" > sentry.txt
@@ -46,7 +46,7 @@ empy: empy.nix
 
 empy.nix: empy.txt $(PYPI2NIX)
 	@echo "generating empy nix expressions ..."
-	@$(PYPI2NIX) -r empy.txt -I $(NIX_PATH)
+	@$(PYPI2NIX) -r empy.txt -I $(NIX_PATH) -V "2.7"
 
 empy.txt: empy-clear
 	@echo "empy" > empy.txt
@@ -68,7 +68,7 @@ lektor: lektor.nix
 
 lektor.nix: lektor.txt $(PYPI2NIX)
 	@echo "generating lektor nix expressions ..."
-	@$(PYPI2NIX) -r lektor.txt -E $(LEKTOR_BUILD_INPUTS) -I $(NIX_PATH)
+	@$(PYPI2NIX) -r lektor.txt -E $(LEKTOR_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
 
 lektor.txt: lektor-clear
 	@echo "Lektor" > lektor.txt
@@ -113,7 +113,7 @@ awscli: awscli.nix
 
 awscli.nix: awscli.txt $(PYPI2NIX)
 	@echo "generating awscli nix expressions ..."
-	@$(PYPI2NIX) -r awscli.txt -I $(NIX_PATH)
+	@$(PYPI2NIX) -r awscli.txt -I $(NIX_PATH) -V "2.7"
 
 awscli.txt: awscli-clear
 	@echo "awscli" > awscli.txt
