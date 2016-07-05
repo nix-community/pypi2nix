@@ -7,7 +7,16 @@ let
   version = builtins.readFile ./src/pypi2nix/VERSION;
 in stdenv.mkDerivation rec {
   name = "pypi2nix-${version}";
-  srcs = with deps; [ src pip click setuptools zcbuildout zcrecipeegg ];  # six attrs effect ];
+  srcs = with deps; [
+    src
+    pip
+    click
+    setuptools
+    zcbuildout
+    zcrecipeegg
+    chardet
+    aiohttp
+  ];  # six attrs effect ];
   buildInputs = [ python zip makeWrapper ];
   sourceRoot = ".";
 
@@ -22,6 +31,8 @@ in stdenv.mkDerivation rec {
     # mv six-*/six.py                    $out/pkgs/
     # mv attrs-*/src/attr                $out/pkgs/attrs
     # mv effect-*/effect                 $out/pkgs/effect
+    mv chardet-*/chardet                $out/pkgs/
+    mv aiohttp-*/aiohttp                $out/pkgs/
 
     if [ "$IN_NIX_SHELL" != "1" ]; then
       if [ -e git-export ]; then

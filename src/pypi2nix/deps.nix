@@ -32,6 +32,12 @@ rec {
   effectVersion = "0.10.1";
   effectHash = "6a6fd28fb44179ce01a148d4e8bdbede";
 
+  chardetVersion = "2.3.0";
+  chardetHash = "25274d664ccb5130adae08047416e1a8";
+
+  aiohttpVersion = "0.21.6";
+  aiodnsHash = "d7f63e51bc86a61d9bccca13986c3855";
+
 
   # --- wheels used to bootstrap python environment ---------------------------
 
@@ -92,5 +98,15 @@ rec {
   #   url = "https://pypi.python.org/packages/09/19/bd92fe0ba6080323caffd450db65ac7a5bb2d71d9b61fe6a2751a9c3292c/effect-${effectVersion}.tar.gz";
   #   md5 = effectHash;
   # };
+
+  chardet = fetchurl {
+    url = "https://pypi.python.org/packages/7d/87/4e3a3f38b2f5c578ce44f8dc2aa053217de9f0b6d737739b0ddac38ed237/chardet-${chardetVersion}.tar.gz";
+    md5 = chardetHash;
+  };
+
+  aiohttp = fetchurl {
+    url = "https://pypi.python.org/packages/04/78/9faeb8b5b1d53e8c81c99764412c2225d982943e4261bba2c6f725e15fce/aiohttp-${aiohttpVersion}.tar.gz";
+    md5 = aiodnsHash;
+  };
 
 }

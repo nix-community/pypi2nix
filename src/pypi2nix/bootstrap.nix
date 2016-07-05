@@ -15,6 +15,7 @@ in
       cp ${deps.setuptoolsWhl} index/setuptools-${deps.setuptoolsVersion}-py2.py3-none-any.whl
       cp ${deps.wheel} index/wheel-${deps.wheelVersion}.tar.gz
       cp ${deps.zcbuildout} index/zc.buildout-${deps.zcbuildoutVersion}.tar.gz
+      cp ${deps.zcrecipeegg} index/zc.recipe.egg-${deps.zcrecipeeggVersion}.tar.gz
 
       mkdir tmp
       mv pip tmp/
@@ -22,7 +23,7 @@ in
 
       ${python.interpreter} -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'pip', 'setuptools', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/base']))"
       PYTHONPATH=$out/base ${python.interpreter} -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'wheel', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
-      PYTHONPATH=$out/base ${python.interpreter} -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'zc.buildout', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
+      PYTHONPATH=$out/base ${python.interpreter} -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'zc.buildout', 'zc.recipe.egg', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
       touch $out/extra/zc/__init__.py
 
       echo -e "#!${python.interpreter}\nimport sys, pip; sys.exit(pip.main())" > $out/bin/pip
