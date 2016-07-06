@@ -1,11 +1,12 @@
 """Parse metadata from .dist-info directories in a wheelhouse."""
 
-import click
-import glob
-import json
-import os.path 
 import aiohttp
 import asyncio
+import click
+import glob
+import hashlib
+import json
+import os.path 
 
 from pypi2nix.utils import TO_IGNORE, safe
 
@@ -92,7 +93,7 @@ async def fetch_metadata(session, url):
                 return await response.json()
 
 
-def fetch_all_metadata(packages, index=INDEX_URL):
+def fetch_all_metadata(cache_dir, packages, index=INDEX_URL):
     """Yield JSON information obtained from PyPI index given an iterable of
        package names.
     """
@@ -101,18 +102,26 @@ def fetch_all_metadata(packages, index=INDEX_URL):
     with aiohttp.ClientSession(loop=loop, connector=conn) as session:
         for package in packages:
             url = "{}/{}/json".format(index, package['name'])
-            yield combine_metadata(package, loop.run_until_complete(fetch_metadata(session, url)))
+            yield combine_metadata(cache_dir, session, loop, package, loop.run_until_complete(fetch_metadata(session, url)))
     loop.close()
 
 
-def combine_metadata(old, new):
+async def download_file(session, url, filename, chunk_size=1024):
+    async with session.get(url) as resp:
+        with open(filename, 'wb') as f:
+            while True:
+                chunk = await resp.content.read(chunk_size)
+                if not chunk:
+                    break
+                f.write(chunk)
+
+
+def combine_metadata(cache_dir, session, loop, old, new):
     if not new.get('releases'):
         raise click.ClickException(
             "Unable to find releases for packge {name}".format(**old))
 
     if not new['releases'].get(old['version']):
-        import pdb
-        pdb.set_trace()
         raise click.ClickException(
             "Unable to find releases for package {name} of version "
             "{version}".format(**old))
@@ -125,12 +134,20 @@ def combine_metadata(old, new):
                 release = dict()
                 release['url'] = possible_release['url']
                 digests = possible_release.get('digests')
+                release['hash_type'] = 'sha256'
                 if digests:
-                    release['hash_type'] = 'sha256'
                     release['hash_value'] = possible_release['digests']['sha256']  # noqa
                 else:
-                    release['hash_type'] = 'md5'
-                    release['hash_value'] = possible_release['md5_digest']
+                    # download file if it doens not already exists
+                    filename = os.path.join(
+                        cache_dir, possible_release['filename'])
+                    if not os.path.exists(filename):
+                        loop.run_until_complete(download_file(session, possible_release['url'], filename))
+
+                    # calculate sha256
+                    with open(filename, 'rb') as f:
+                        release['hash_value'] = hashlib.sha256(f.read()).hexdigest()
+
             if release:
                 break
         if release:
@@ -146,7 +163,7 @@ def combine_metadata(old, new):
     return old
 
 
-def main(wheels):
+def main(wheels, cache_dir):
     """Extract packages metadata from wheels dist-info folders.
     """
 
@@ -157,4 +174,4 @@ def main(wheels):
         if wheel_metadata:
             wheels_metadata.append(wheel_metadata)
 
-    return list(fetch_all_metadata(wheels_metadata))
+    return list(fetch_all_metadata(cache_dir, wheels_metadata))
