@@ -19,7 +19,7 @@ let
 
   pythonPackages = pkgs.%(python_version)sPackages;
   commonBuildInputs = %(extra_build_inputs)s;
-  commonDoCheck = false;
+  commonDoCheck = %(extra_build_inputs)s;
 
   buildEnv = { pkgs ? {}, modules ? {} }:
     let
@@ -109,6 +109,7 @@ def main(packages_metadata,
          extra_build_inputs,
          python_version,
          top_level,
+         enable_tests,
          ):
     '''Create Nix expressions.
     '''
@@ -162,6 +163,7 @@ def main(packages_metadata,
             or "[]",
         generated_file='.' + generated_file[len(project_folder):],
         overrides_file='.' + overrides_file[len(project_folder):],
+        enable_tests=str(enable_tests).lower(),
     )
 
     with open(generated_file, 'w+') as f:

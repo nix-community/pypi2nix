@@ -42,6 +42,10 @@ import pypi2nix.utils
               help=u'Extra build dependencies needed for installation of '
                    u'required python packages.'
               )
+@click.option('-T', '--enable-tests',
+              is_flag=True,
+              help=u'Enable tests in generated packages.'
+              )
 @click.option('-V', '--python-version',
               required=True,
               type=click.Choice(pypi2nix.utils.PYTHON_VERSIONS.keys()),
@@ -68,6 +72,7 @@ def main(nix_path,
          basename,
          cache_dir,
          extra_build_inputs,
+         enable_tests,
          python_version,
          requirements,
          buildout,
@@ -160,4 +165,5 @@ def main(nix_path,
         extra_build_inputs=extra_build_inputs,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
         top_level=top_level,
+        enable_tests=enable_tests,
     )
