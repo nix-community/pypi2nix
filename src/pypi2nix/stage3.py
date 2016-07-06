@@ -19,7 +19,7 @@ let
 
   pythonPackages = pkgs.%(python_version)sPackages;
   commonBuildInputs = %(extra_build_inputs)s;
-  commonDoCheck = %(extra_build_inputs)s;
+  commonDoCheck = %(enable_tests)s;
 
   buildEnv = { pkgs ? {}, modules ? {} }:
     let
@@ -115,9 +115,9 @@ def main(packages_metadata,
          requirements_name,
          requirements_file,
          extra_build_inputs,
+         enable_tests,
          python_version,
          top_level,
-         enable_tests,
          ):
     '''Create Nix expressions.
     '''

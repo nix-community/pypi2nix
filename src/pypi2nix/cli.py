@@ -163,7 +163,7 @@ def main(nix_path,
         requirements_name=requirements_name,
         requirements_file=requirements_file,
         extra_build_inputs=extra_build_inputs,
+        enable_tests=enable_tests,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
         top_level=top_level,
-        enable_tests=enable_tests,
     )
