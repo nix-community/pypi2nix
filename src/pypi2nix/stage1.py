@@ -30,7 +30,7 @@ def main(requirements_files,
        a user provided requirements.txt.
     """
 
-    command = 'nix-shell {pip} {options} {nix_path} --show-trace --run exit'.format(  # noqa
+    command = 'nix-shell {pip} {options} {nix_path} --show-trace --pure --run exit'.format(  # noqa
         pip=os.path.join(os.path.dirname(__file__), 'pip.nix'),
         options=create_command_options(dict(
             requirements_files=requirements_files,
