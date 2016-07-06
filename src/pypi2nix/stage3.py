@@ -68,7 +68,7 @@ GENERATED_PACKAGE_NIX = '''
     doCheck = commonDoCheck;
     buildInputs = commonBuildInputs;
     propagatedBuildInputs = %(propagatedBuildInputs)s;
-    meta = {
+    meta = with pkgs.stdenv; {
       homepage = "%(homepage)s";
       license = %(license)s;
       description = "%(description)s";
@@ -115,7 +115,7 @@ def find_license(item):
 
 def main(packages_metadata,
          requirements_name,
-         requirements_file,
+         requirements_files,
          extra_build_inputs,
          enable_tests,
          python_version,
@@ -124,7 +124,7 @@ def main(packages_metadata,
     '''Create Nix expressions.
     '''
 
-    project_folder = os.path.dirname(requirements_file)
+    project_folder = os.path.dirname(requirements_files[0])
 
     default_file = os.path.join(project_folder, '{}.nix'.format(requirements_name))
     generated_file = os.path.join(project_folder, '{}_generated.nix'.format(requirements_name))

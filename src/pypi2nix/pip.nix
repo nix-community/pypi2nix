@@ -1,4 +1,4 @@
-{ requirements_file
+{ requirements_files
 , project_tmp_dir
 , cache_dir
 , wheelhouse_dir
@@ -24,7 +24,7 @@ in pkgs.stdenv.mkDerivation rec {
     export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
     export PYTHONPATH=${pypi2nix_bootstrap}/base
 
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel -r ${requirements_file} --no-binary :all: --wheel-dir ${project_tmp_dir} --find-links ${cache_dir}
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} --no-binary :all: --wheel-dir ${project_tmp_dir} --find-links ${cache_dir}
 
     cd ${wheelhouse_dir}
     for file in ${project_tmp_dir}/*; do

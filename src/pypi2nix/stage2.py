@@ -12,6 +12,7 @@ from pypi2nix.utils import TO_IGNORE, safe
 
 EXTENSIONS = ['tar.gz', 'tar.bz2', 'tar', 'zip', 'tgz']
 INDEX_URL = "https://pypi.io/pypi"
+INDEX_URL = "https://pypi.python.org/pypi"
 
 
 def find_homepage(item):
@@ -110,6 +111,8 @@ def combine_metadata(old, new):
             "Unable to find releases for packge {name}".format(**old))
 
     if not new['releases'].get(old['version']):
+        import pdb
+        pdb.set_trace()
         raise click.ClickException(
             "Unable to find releases for package {name} of version "
             "{version}".format(**old))

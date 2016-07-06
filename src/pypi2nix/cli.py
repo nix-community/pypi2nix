@@ -54,6 +54,7 @@ import pypi2nix.utils
 @click.option('-r', '--requirements',
               required=False,
               default=None,
+              multiple=True,
               type=click.Path(exists=True, resolve_path=True),
               help=u'pip requirements.txt file',
               )
@@ -112,8 +113,8 @@ def main(nix_path,
             u'Not yet implemented!')
 
     elif requirements:
-        requirements_file = requirements
-        requirements_name = os.path.splitext(os.path.basename(requirements))[0]
+        requirements_files = requirements
+        requirements_name = os.path.splitext(os.path.basename(requirements[0]))[0]
 
     if basename:
         requirements_name = basename
@@ -126,10 +127,13 @@ def main(nix_path,
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
 
-    with open(requirements_file) as f:
-        requirements = f.read()
-    project_hash = hashlib.md5(
-        (requirements_file + requirements).encode()).hexdigest()
+    requirements_hash = ''
+    for requirements_file in requirements_files:
+        requirements_hash += requirements_file
+        with open(requirements_file) as f:
+            requirements_hash += f.read()
+
+    project_hash = hashlib.md5(requirements_hash.encode()).hexdigest()
 
     project_tmp_dir = os.path.join(tmp_dir, project_hash, 'tmp')
     if os.path.exists(project_tmp_dir):
@@ -143,7 +147,7 @@ def main(nix_path,
     click.echo('Downloading wheels and creating wheelhouse ...')
 
     top_level, wheels = pypi2nix.stage1.main(
-        requirements_file=requirements_file,
+        requirements_files=requirements_files,
         project_tmp_dir=project_tmp_dir,
         cache_dir=cache_dir,
         wheelhouse_dir=wheelhouse_dir,
@@ -161,7 +165,7 @@ def main(nix_path,
     pypi2nix.stage3.main(
         packages_metadata=packages_metadata,
         requirements_name=requirements_name,
-        requirements_file=requirements_file,
+        requirements_files=requirements_files,
         extra_build_inputs=extra_build_inputs,
         enable_tests=enable_tests,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],

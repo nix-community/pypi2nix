@@ -5,7 +5,7 @@ PYPI2NIX=../result/bin/pypi2nix
 
 
 # commented out sentry since it doesn't work on travis
-all: empy lektor rss2email awscli
+all: empy lektor rss2email awscli_and_requests
 
 clear: sentry-clear empy-clear lektor-clear rss2email-clear
 
@@ -103,23 +103,26 @@ rss2email-clear:
 
 
 
-awscli: awscli.nix
-	@echo "building and testing awscli ..."
-	@nix-build awscli.nix -o awscli -A interpreter --show-trace
-	@./awscli/bin/python -c 'import awscli'
-	@PAGER=none ./awscli/bin/aws help
+awscli_and_requests: awscli_and_requests.nix
+	@echo "building and testing awscli and requests library ..."
+	@nix-build awscli.nix -o awscli_and_requests -A interpreter --show-trace
+	@./awscli_and_requests/bin/python -c 'import awscli; import requests'
+	@PAGER=none ./awscli_and_requests/bin/aws help
 	@nix-shell awscli.nix -A interpreter --run "python -c 'import awscli'"
+	@nix-shell awscli.nix -A interpreter --run "python -c 'import awscli; import requests'"
 	@nix-shell awscli.nix -A interpreter --run "PAGER=none aws help"
 
-awscli.nix: awscli.txt $(PYPI2NIX)
-	@echo "generating awscli nix expressions ..."
-	@$(PYPI2NIX) -r awscli.txt -I $(NIX_PATH) -V "2.7"
+awscli_and_requests.nix: awscli_and_requests.txt $(PYPI2NIX)
+	@echo "generating awscli and requests nix expressions ..."
+	@$(PYPI2NIX) -r awscli.txt -r requests.txt -I $(NIX_PATH) -V "2.7"
 
-awscli.txt: awscli-clear
+awscli_and_requests.txt: awscli_and_requests-clear
 	@echo "awscli" > awscli.txt
+	@echo "requests" > requests.txt
 
-awscli-clear:
-	@rm -f awscli
+awscli_and_requests-clear:
+	@rm -f awscli_and_requests
 	@rm -f awscli.txt
-	@rm -f awscli.nix
-	@rm -f awscli_generated.nix
+	@rm -f requests.txt
+	@rm -f awscli_and_requests.nix
+	@rm -f awscli_and_requests_generated.nix

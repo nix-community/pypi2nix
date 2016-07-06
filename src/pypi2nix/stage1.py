@@ -12,13 +12,13 @@ def create_command_options(options):
     for name, value in options.items():
         if isinstance(value, str):
             command_options.append('--argstr {} "{}"'.format(name, value))
-        elif isinstance(value, list):
+        elif isinstance(value, list) or isinstance(value, tuple):
             value = "[ %s ]" % (' '.join(['"%s"' % x for x in value]))
             command_options.append("--arg {} '{}'".format(name, value))
     return ' '.join(command_options)
 
 
-def main(requirements_file,
+def main(requirements_files,
          project_tmp_dir,
          cache_dir,
          wheelhouse_dir,
@@ -33,7 +33,7 @@ def main(requirements_file,
     command = 'nix-shell {pip} {options} {nix_path} --show-trace --run exit'.format(  # noqa
         pip=os.path.join(os.path.dirname(__file__), 'pip.nix'),
         options=create_command_options(dict(
-            requirements_file=requirements_file,
+            requirements_files=requirements_files,
             project_tmp_dir=project_tmp_dir,
             cache_dir=cache_dir,
             wheelhouse_dir=wheelhouse_dir,
@@ -51,12 +51,13 @@ def main(requirements_file,
             u'While trying to run the command something went wrong.')
 
     top_level = []
-    with open(requirements_file) as f:
-        line = f.read()
-        for sep in ['#', ' ', '==', '<=', '>=', '<', '>']:
-            line = line.split(sep)[0]
-        line = line.strip()
-        if line:
-            top_level.append(line)
+    for requirements_file in requirements_files:
+        with open(requirements_file) as f:
+            line = f.read()
+            for sep in ['#', ' ', '==', '<=', '>=', '<', '>']:
+                line = line.split(sep)[0]
+            line = line.strip()
+            if line:
+                top_level.append(line)
 
     return top_level, glob.glob(os.path.join(wheelhouse_dir, '*.dist-info'))
