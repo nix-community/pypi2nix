@@ -50,4 +50,13 @@ def main(requirements_file,
         raise click.ClickException(
             u'While trying to run the command something went wrong.')
 
-    return glob.glob(os.path.join(wheelhouse_dir, '*.dist-info'))
+    top_level = []
+    with open(requirements_file) as f:
+        line = f.read()
+        for sep in ['#', ' ', '==', '<=', '>=', '<', '>']:
+            line = line.split(sep)[0]
+        line = line.strip()
+        if line:
+            top_level.append(line)
+
+    return top_level, glob.glob(os.path.join(wheelhouse_dir, '*.dist-info'))

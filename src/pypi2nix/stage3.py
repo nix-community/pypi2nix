@@ -30,6 +30,8 @@ let
       mkDerivation = pythonPackages.buildPythonPackage;
       interpreter = if inNixShell then interpreter.env else interpreter;
       overrideDerivation = drv: f: pythonPackages.buildPythonPackage (drv.drvAttrs // f drv.drvAttrs);
+      pkgs_top_level = builtins.filter (x: !(builtins.hasAttr "top_level" x.passthru)) (
+          builtins.attrValues (builtins.removeAttrs pkgs ["__unfix__"]));
       inherit buildEnv pkgs modules;
     };
 
@@ -71,6 +73,7 @@ GENERATED_PACKAGE_NIX = '''
       license = "%(license)s";
       description = "%(description)s";
     };
+    passthru.top_level = %(top_level)s;
   };
 '''
 
@@ -105,6 +108,7 @@ def main(packages_metadata,
          requirements_file,
          extra_build_inputs,
          python_version,
+         top_level,
          ):
     '''Create Nix expressions.
     '''
@@ -127,8 +131,8 @@ def main(packages_metadata,
         if item.get('deps'):
             deps = [x for x in item['deps'] if x.lower() in metadata_by_name.keys()]
             if deps:
-                propagatedBuildInputs = "[\n%s\n  ]" % (
-                    '\n'.join(sorted(['    self."%s"' % (
+                propagatedBuildInputs = "[\n%s\n    ]" % (
+                    '\n'.join(sorted(['      self."%s"' % (
                         metadata_by_name[x.lower()]['name']) for x in deps])))
         generated_packages_metadata.append(dict(
             name=item.get("name", ""),
@@ -140,6 +144,7 @@ def main(packages_metadata,
             homepage=item.get("homepage", ""),
             license=find_license(item),
             description=item.get("description", ""),
+            top_level=str(item['name'] in top_level).lower(),
         ))
 
     generated = GENERATED_NIX % (

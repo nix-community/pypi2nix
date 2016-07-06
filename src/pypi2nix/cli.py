@@ -137,7 +137,7 @@ def main(nix_path,
 
     click.echo('Downloading wheels and creating wheelhouse ...')
 
-    wheels = pypi2nix.stage1.main(
+    top_level, wheels = pypi2nix.stage1.main(
         requirements_file=requirements_file,
         project_tmp_dir=project_tmp_dir,
         cache_dir=cache_dir,
@@ -159,4 +159,5 @@ def main(nix_path,
         requirements_file=requirements_file,
         extra_build_inputs=extra_build_inputs,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
+        top_level=top_level,
     )
