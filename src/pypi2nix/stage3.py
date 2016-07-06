@@ -70,7 +70,7 @@ GENERATED_PACKAGE_NIX = '''
     propagatedBuildInputs = %(propagatedBuildInputs)s;
     meta = {
       homepage = "%(homepage)s";
-      license = "%(license)s";
+      license = %(license)s;
       description = "%(description)s";
     };
     passthru.top_level = %(top_level)s;
@@ -103,11 +103,13 @@ def find_license(item):
     elif license in ['Python Software Foundation License']:
         license = "lib.psfl"
     elif license is None:
-        license = ""
+        license = '""'
     else:
         click.echo(
             "WARNING: Couldn't recognize license `{}` for `{}`".format(
                 license, item.get('name')))
+        license = '"' + license + '"'
+
     return license
 
 
