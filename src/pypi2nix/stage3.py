@@ -68,7 +68,7 @@ GENERATED_PACKAGE_NIX = '''
     doCheck = commonDoCheck;
     buildInputs = commonBuildInputs;
     propagatedBuildInputs = %(propagatedBuildInputs)s;
-    meta = with pkgs.stdenv; {
+    meta = with pkgs.stdenv.lib; {
       homepage = "%(homepage)s";
       license = %(license)s;
       description = "%(description)s";
@@ -89,19 +89,19 @@ self: super: {
 def find_license(item):
     license = item.get('license')
     if license == 'ZPL 2.1':
-        license = "lib.zpt21"
+        license = "licenses.zpt21"
     elif license in ['MIT', 'MIT License']:
-        license = "lib.mit"
+        license = "licenses.mit"
     elif license in ['BSD', 'BSD License', 'BSD-like', 
                      'BSD or Apache License, Version 2.0'] or \
             license.startswith('BSD -'):
-        license = "lib.bsdOriginal"
+        license = "licenses.bsdOriginal"
     elif license in ['Apache 2.0', 'Apache License 2.0']:
-        license = "lib.asl20"
+        license = "licenses.asl20"
     elif license in ['GNU Lesser General Public License (LGPL), Version 3']:
-        license = "lib.lgpl3"
+        license = "licenses.lgpl3"
     elif license in ['Python Software Foundation License']:
-        license = "lib.psfl"
+        license = "licenses.psfl"
     elif license is None:
         license = '""'
     else:
