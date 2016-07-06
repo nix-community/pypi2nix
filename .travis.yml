@@ -1,8 +1,8 @@
 install:
     - if [ ! -e /nix ]; then curl https://nixos.org/nix/install | sh; fi
     - source $HOME/.nix-profile/etc/profile.d/nix.sh
-    - nix-chanell --list
-    - nix-chanell --update
+    - nix-channel --list
+    - nix-channel --update
 script:
     - cd examples && make
 cache:
