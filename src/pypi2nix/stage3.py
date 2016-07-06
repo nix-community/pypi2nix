@@ -90,10 +90,18 @@ def find_license(item):
     license = item.get('license')
     if license == 'ZPL 2.1':
         license = "lib.zpt21"
-    elif license == 'MIT':
+    elif license in ['MIT', 'MIT License']:
         license = "lib.mit"
-    elif license == 'Apache 2.0':
+    elif license in ['BSD', 'BSD License', 'BSD-like', 
+                     'BSD or Apache License, Version 2.0'] or \
+            license.startswith('BSD -'):
+        license = "lib.bsdOriginal"
+    elif license in ['Apache 2.0', 'Apache License 2.0']:
         license = "lib.asl20"
+    elif license in ['GNU Lesser General Public License (LGPL), Version 3']:
+        license = "lib.lgpl3"
+    elif license in ['Python Software Foundation License']:
+        license = "lib.psfl"
     elif license is None:
         license = ""
     else:
