@@ -15,7 +15,7 @@ To install nix you can simple do::
 
 ::
 
-    git clone https://github.com/garbas/pypi2nix cd pypi2nix
+    git clone https://github.com/garbas/pypi2nix && cd pypi2nix
 
 
 2. Inside the directory, run the ``nix-shell`` command
