@@ -8,9 +8,9 @@
 
 let
   pkgs = import <nixpkgs> {};
+  python = builtins.getAttr python_version pkgs;
   pypi2nix_bootstrap = import ./bootstrap.nix {
-    inherit (pkgs) stdenv fetchurl unzip which makeWrapper;
-    python = builtins.getAttr python_version pkgs;
+    inherit (pkgs) stdenv fetchurl unzip which makeWrapper python;
   };
 in pkgs.stdenv.mkDerivation rec {
   name = "pypi2nix-pip";
@@ -23,6 +23,7 @@ in pkgs.stdenv.mkDerivation rec {
   shellHook = ''
     export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
     export PYTHONPATH=${pypi2nix_bootstrap}/base
+    export LANG=en_US.UTF-8
 
     PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} --no-binary :all: --wheel-dir ${project_tmp_dir} --find-links ${cache_dir}
 
