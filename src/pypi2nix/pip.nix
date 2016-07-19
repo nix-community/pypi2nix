@@ -15,10 +15,13 @@ let
 in pkgs.stdenv.mkDerivation rec {
   name = "pypi2nix-pip";
 
-  buildInputs = [
-    pypi2nix_bootstrap pkgs.unzip pkgs.gitAndTools.git
-  ] ++ (map (name: pkgs.lib.getAttrFromPath
-    (pkgs.lib.splitString "." name) pkgs) extra_build_inputs);
+  buildInputs = with pkgs; [
+    pypi2nix_bootstrap
+    unzip
+    gitAndTools.git
+  ] ++ (pkgs.lib.optional pkgs.stdenv.isLinux pkgs.glibcLocales)
+    ++ (map (name: pkgs.lib.getAttrFromPath
+          (pkgs.lib.splitString "." name) pkgs) extra_build_inputs);
 
   shellHook = ''
     export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
