@@ -35,14 +35,15 @@ let
       inherit buildEnv pkgs modules;
     };
 
+  python = buildEnv {};
   generated = import %(generated_file)s { inherit pkgs python commonBuildInputs commonDoCheck; };
   overrides = import %(overrides_file)s { inherit pkgs python; };
 
-  python = buildEnv {
+  python' = buildEnv {
     pkgs = fix' (extends overrides generated);
   };
 
-in python
+in python'
 '''
 
 GENERATED_NIX = '''# generated using pypi2nix tool (version: %s)
