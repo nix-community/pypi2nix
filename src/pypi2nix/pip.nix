@@ -10,7 +10,8 @@ let
   pkgs = import <nixpkgs> {};
   python = builtins.getAttr python_version pkgs;
   pypi2nix_bootstrap = import ./bootstrap.nix {
-    inherit (pkgs) stdenv fetchurl unzip which makeWrapper python;
+    inherit (pkgs) stdenv fetchurl unzip which makeWrapper;
+    inherit python;
   };
 in pkgs.stdenv.mkDerivation rec {
   name = "pypi2nix-pip";
