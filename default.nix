@@ -14,8 +14,7 @@ in stdenv.mkDerivation rec {
     setuptools
     zcbuildout
     zcrecipeegg
-    chardet
-    aiohttp
+    requests
   ];  # six attrs effect ];
   buildInputs = [ python zip makeWrapper ];
   sourceRoot = ".";
@@ -31,8 +30,7 @@ in stdenv.mkDerivation rec {
     # mv six-*/six.py                    $out/pkgs/
     # mv attrs-*/src/attr                $out/pkgs/attrs
     # mv effect-*/effect                 $out/pkgs/effect
-    mv chardet-*/chardet                $out/pkgs/
-    mv aiohttp-*/aiohttp                $out/pkgs/
+    mv requests-*/requests              $out/pkgs/
 
     if [ "$IN_NIX_SHELL" != "1" ]; then
       if [ -e git-export ]; then

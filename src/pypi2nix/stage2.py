@@ -1,12 +1,10 @@
 """Parse metadata from .dist-info directories in a wheelhouse."""
 
-import aiohttp
-import asyncio
 import click
-import glob
 import hashlib
 import json
-import os.path 
+import os.path
+import requests
 
 from pypi2nix.utils import TO_IGNORE, safe
 
@@ -57,7 +55,7 @@ def extract_deps(metadata):
     return list(set(deps))
 
 
-def metadata(wheel):
+def process_metadata(wheel):
     """Find the actual metadata json file from several possible names.
     """
     for _file in ('metadata.json', 'pydist.json'):
@@ -77,58 +75,38 @@ def metadata(wheel):
                         'description': safe(metadata.get('summary', '')),
                     }
     raise click.ClickException(
-        "Unable to find metadata.json/pydist.json in `%s` folder." %  wheel)
+        "Unable to find metadata.json/pydist.json in `%s` folder." % wheel)
 
 
-async def fetch_metadata(session, url):
-    """Fetch page asynchronously.
+def download_file(url, filename, chunk_size=1024):
+    r = requests.get(url, stream=True)
+    r.raise_for_status()  # TODO: handle this nicer
 
-    :param session: Session of client
-    :param url: Requested url
+    with open(filename, 'wb') as fd:
+        for chunk in r.iter_content(chunk_size):
+            fd.write(chunk)
+
+
+def process_wheel(cache_dir, wheel, index=INDEX_URL):
     """
-    async with session.get(url) as response:
-        with aiohttp.Timeout(2):
-            async with session.get(url) as response:
-                assert response.status == 200
-                return await response.json()
-
-
-def fetch_all_metadata(cache_dir, packages, index=INDEX_URL):
-    """Yield JSON information obtained from PyPI index given an iterable of
-       package names.
     """
-    loop = asyncio.get_event_loop()
-    conn = aiohttp.TCPConnector(verify_ssl=False)
-    with aiohttp.ClientSession(loop=loop, connector=conn) as session:
-        for package in packages:
-            url = "{}/{}/json".format(index, package['name'])
-            yield combine_metadata(cache_dir, session, loop, package, loop.run_until_complete(fetch_metadata(session, url)))
-    loop.close()
 
+    url = "{}/{}/json".format(index, wheel['name'])
+    r = requests.get(url)
+    r.raise_for_status()  # TODO: handle this nicer
+    wheel_data = r.json()
 
-async def download_file(session, url, filename, chunk_size=1024):
-    async with session.get(url) as resp:
-        with open(filename, 'wb') as f:
-            while True:
-                chunk = await resp.content.read(chunk_size)
-                if not chunk:
-                    break
-                f.write(chunk)
-
-
-def combine_metadata(cache_dir, session, loop, old, new):
-    if not new.get('releases'):
+    if not wheel_data.get('releases'):
         raise click.ClickException(
-            "Unable to find releases for packge {name}".format(**old))
+            "Unable to find releases for packge {name}".format(**wheel))
 
-    if not new['releases'].get(old['version']):
+    if not wheel_data['releases'].get(wheel['version']):
         raise click.ClickException(
             "Unable to find releases for package {name} of version "
-            "{version}".format(**old))
+            "{version}".format(**wheel))
 
     release = None
-    releases = new['releases'][old['version']]
-    for possible_release in releases:
+    for possible_release in wheel_data['releases'][wheel['version']]:
         for extension in EXTENSIONS:
             if possible_release['url'].endswith(extension):
                 release = dict()
@@ -142,11 +120,12 @@ def combine_metadata(cache_dir, session, loop, old, new):
                     filename = os.path.join(
                         cache_dir, possible_release['filename'])
                     if not os.path.exists(filename):
-                        loop.run_until_complete(download_file(session, possible_release['url'], filename))
+                        download_file(possible_release['url'], filename)
 
                     # calculate sha256
                     with open(filename, 'rb') as f:
-                        release['hash_value'] = hashlib.sha256(f.read()).hexdigest()
+                        hash = hashlib.sha256(f.read())
+                    release['hash_value'] = hash.hexdigest()
 
             if release:
                 break
@@ -156,22 +135,27 @@ def combine_metadata(cache_dir, session, loop, old, new):
     if not release:
         raise click.ClickException(
             "Unable to find source releases for package {name} of version "
-            "{version}".format(**old))
+            "{version}".format(**wheel))
 
-    old.update(release)
+    if release:
+        wheel.update(release)
 
-    return old
+    return wheel
 
 
-def main(wheels, cache_dir):
+def main(wheels, cache_dir, index=INDEX_URL):
     """Extract packages metadata from wheels dist-info folders.
     """
 
-    wheels_metadata = []
+    metadata = []
     for wheel in wheels:
-        click.echo('|-> from %s' % os.path.basename(wheel))
-        wheel_metadata = metadata(wheel)
-        if wheel_metadata:
-            wheels_metadata.append(wheel_metadata)
 
-    return list(fetch_all_metadata(cache_dir, wheels_metadata))
+        click.echo('|-> from %s' % os.path.basename(wheel))
+
+        wheel_metadata = process_metadata(wheel)
+        if not wheel_metadata:
+            continue
+
+        metadata.append(process_wheel(cache_dir, wheel_metadata, index))
+
+    return metadata
