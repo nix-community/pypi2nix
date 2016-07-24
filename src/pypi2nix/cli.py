@@ -158,7 +158,7 @@ def main(nix_path,
 
     click.echo('Extracting metadata ...')
 
-    packages_metadata = pypi2nix.stage2.main(wheels, cache_dir)
+    packages_metadata = pypi2nix.stage2.main(wheels, requirements_files, cache_dir)
 
     click.echo('Generating Nix expressions ...')
 

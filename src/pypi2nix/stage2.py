@@ -5,6 +5,7 @@ import hashlib
 import json
 import os.path
 import requests
+import tempfile
 
 from pypi2nix.utils import TO_IGNORE, safe
 
@@ -87,23 +88,7 @@ def download_file(url, filename, chunk_size=1024):
             fd.write(chunk)
 
 
-def process_wheel(cache_dir, wheel, index=INDEX_URL):
-    """
-    """
-
-    url = "{}/{}/json".format(index, wheel['name'])
-    r = requests.get(url)
-    r.raise_for_status()  # TODO: handle this nicer
-    wheel_data = r.json()
-
-    if not wheel_data.get('releases'):
-        raise click.ClickException(
-            "Unable to find releases for packge {name}".format(**wheel))
-
-    if not wheel_data['releases'].get(wheel['version']):
-        raise click.ClickException(
-            "Unable to find releases for package {name} of version "
-            "{version}".format(**wheel))
+def find_release(cache_dir, wheel, wheel_data):
 
     release = None
     for possible_release in wheel_data['releases'][wheel['version']]:
@@ -137,15 +122,67 @@ def process_wheel(cache_dir, wheel, index=INDEX_URL):
             "Unable to find source releases for package {name} of version "
             "{version}".format(**wheel))
 
-    if release:
-        wheel.update(release)
+    return release
+
+
+def process_wheel(cache_dir, wheel, sources, index=INDEX_URL):
+    """
+    """
+
+    if wheel['name'] in sources:
+        release = dict()
+        release['url'] = sources[wheel['name']]
+        release['hash_type'] = 'sha256'
+
+        r = requests.get(release['url'], stream=True)
+        r.raise_for_status()  # TODO: handle this nicer
+
+        chunk_size=1024
+        with tempfile.TemporaryFile() as fd:
+            for chunk in r.iter_content(chunk_size):
+                fd.write(chunk)
+            fd.seek(0)
+            hash = hashlib.sha256(fd.read())
+
+        release['hash_value'] = hash.hexdigest()
+
+    else:
+        url = "{}/{}/json".format(index, wheel['name'])
+        r = requests.get(url)
+        r.raise_for_status()  # TODO: handle this nicer
+        wheel_data = r.json()
+
+        if not wheel_data.get('releases'):
+            raise click.ClickException(
+                "Unable to find releases for packge {name}".format(**wheel))
+
+        if not wheel_data['releases'].get(wheel['version']):
+            raise click.ClickException(
+                "Unable to find releases for package {name} of version "
+                "{version}".format(**wheel))
+
+        release = find_release(cache_dir, wheel, wheel_data)
+
+    wheel.update(release)
 
     return wheel
 
 
-def main(wheels, cache_dir, index=INDEX_URL):
+def main(wheels, requirements_files, cache_dir, index=INDEX_URL):
     """Extract packages metadata from wheels dist-info folders.
     """
+
+    # get url's from requirements_files
+    sources = dict()
+    for requirements_file in requirements_files:
+        with open(requirements_file) as f:
+            lines = f.readlines()
+            for line in lines:
+                line = line.strip()
+                if line.startswith('http://') or line.startswith('https://'):
+                    url, egg = line.split('#')
+                    name = egg.split('egg=')[1]
+                    sources[name] = url
 
     metadata = []
     for wheel in wheels:
@@ -156,6 +193,7 @@ def main(wheels, cache_dir, index=INDEX_URL):
         if not wheel_metadata:
             continue
 
-        metadata.append(process_wheel(cache_dir, wheel_metadata, index))
+        metadata.append(
+            process_wheel(cache_dir, wheel_metadata, sources, index))
 
     return metadata

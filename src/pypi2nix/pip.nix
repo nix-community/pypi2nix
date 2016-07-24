@@ -36,6 +36,8 @@ in pkgs.stdenv.mkDerivation rec {
       unzip -qo $file
     done
 
+    PYTHONPATH=${wheelhouse_dir}:$PYTHONPATH pip freeze > ${project_tmp_dir}/requirements.txt
+
     cp -Rf ${project_tmp_dir}/* ${cache_dir}
   '';
 }
