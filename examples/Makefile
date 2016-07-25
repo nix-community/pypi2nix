@@ -93,7 +93,7 @@ rss2email.nix: rss2email.txt $(PYPI2NIX)
 	@$(PYPI2NIX) -r rss2email.txt -V "3.4" -I $(NIX_PATH)
 
 rss2email.txt: rss2email-clear
-	@echo "https://github.com/wking/rss2email/archive/master.zip" > rss2email.txt
+	@echo "https://github.com/wking/rss2email/archive/master.zip#egg=rss2email" > rss2email.txt
 
 rss2email-clear:
 	@rm -f rss2email

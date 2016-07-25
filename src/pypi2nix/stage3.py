@@ -121,15 +121,14 @@ def main(packages_metadata,
          enable_tests,
          python_version,
          top_level,
+         project_dir,
          ):
     '''Create Nix expressions.
     '''
 
-    project_folder = os.path.dirname(requirements_files[0])
-
-    default_file = os.path.join(project_folder, '{}.nix'.format(requirements_name))
-    generated_file = os.path.join(project_folder, '{}_generated.nix'.format(requirements_name))
-    overrides_file = os.path.join(project_folder, '{}_override.nix'.format(requirements_name))
+    default_file = os.path.join(project_dir, '{}.nix'.format(requirements_name))
+    generated_file = os.path.join(project_dir, '{}_generated.nix'.format(requirements_name))
+    overrides_file = os.path.join(project_dir, '{}_override.nix'.format(requirements_name))
 
     version_file = os.path.join(os.path.dirname(__file__), 'VERSION')
     with open(version_file) as f:
@@ -172,8 +171,8 @@ def main(packages_metadata,
         extra_build_inputs=extra_build_inputs
             and "with pkgs; [ %s ]" % (' '.join(extra_build_inputs))
             or "[]",
-        generated_file='.' + generated_file[len(project_folder):],
-        overrides_file='.' + overrides_file[len(project_folder):],
+        generated_file='.' + generated_file[len(project_dir):],
+        overrides_file='.' + overrides_file[len(project_dir):],
         enable_tests=str(enable_tests).lower(),
     )
 

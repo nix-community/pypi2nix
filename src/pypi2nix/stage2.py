@@ -80,7 +80,7 @@ def process_metadata(wheel):
 
 
 def download_file(url, filename, chunk_size=1024):
-    r = requests.get(url, stream=True)
+    r = requests.get(url, stream=True, timeout=3)
     r.raise_for_status()  # TODO: handle this nicer
 
     with open(filename, 'wb') as fd:
@@ -134,7 +134,7 @@ def process_wheel(cache_dir, wheel, sources, index=INDEX_URL):
         release['url'] = sources[wheel['name']]
         release['hash_type'] = 'sha256'
 
-        r = requests.get(release['url'], stream=True)
+        r = requests.get(release['url'], stream=True, timeout=3)
         r.raise_for_status()  # TODO: handle this nicer
 
         chunk_size=1024
@@ -148,7 +148,7 @@ def process_wheel(cache_dir, wheel, sources, index=INDEX_URL):
 
     else:
         url = "{}/{}/json".format(index, wheel['name'])
-        r = requests.get(url)
+        r = requests.get(url, timeout=3)
         r.raise_for_status()  # TODO: handle this nicer
         wheel_data = r.json()
 

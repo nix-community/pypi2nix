@@ -1,11 +1,8 @@
 import click
-import functools
 import hashlib
 import os
-import random
-import string
-import tempfile
 import shutil
+import tempfile
 
 import pypi2nix.stage1
 import pypi2nix.stage2
@@ -55,7 +52,8 @@ import pypi2nix.utils
               required=False,
               default=None,
               multiple=True,
-              type=click.Path(exists=True, resolve_path=True),
+              type=click.Path(exists=True, file_okay=True, dir_okay=False,
+                              resolve_path=True),
               help=u'pip requirements.txt file',
               )
 @click.option('-b', '--buildout',
@@ -64,11 +62,13 @@ import pypi2nix.utils
               type=click.Path(exists=True),
               help=u'zc.buildout configuration file',
               )
-@click.argument('specification',
-                nargs=-1,
-                required=False,
-                default=None,
-                )
+@click.option('-e', '--editable',
+              required=False,
+              default=None,
+              multiple=True,
+              type=str,
+              help=u'location/url to editable locations',
+              )
 def main(nix_path,
          basename,
          cache_dir,
@@ -77,47 +77,37 @@ def main(nix_path,
          python_version,
          requirements,
          buildout,
-         specification,
+         editable,
          ):
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
-
-    # A user should specify only one of following options:
-    #  * --requirements
-    #  * --buildout
-    #  * specifications
-    if functools.reduce(
-            lambda x, y: x + (y and 1 or 0),
-            [requirements, buildout, specification != tuple()], 0) != 1:
-        raise click.exceptions.UsageError(
-            "Only one of following options must be specified:\n"
-            " * -r/--requirements{}\n"
-            " * -b/--buildout{}\n"
-            " * SPECIFICATION{}\n".format(
-                pypi2nix.utils.pretty_option(requirements),
-                pypi2nix.utils.pretty_option(buildout),
-                pypi2nix.utils.pretty_option(specification),
-            ))
 
     # temporary pypi2nix folder and make sure it exists
     tmp_dir = os.path.join(tempfile.gettempdir(), 'pypi2nix')
     if not os.path.exists(tmp_dir):
         os.makedirs(tmp_dir)
 
+    requirements_files = []
+
+    if requirements:
+        requirements_files += requirements
+
     if buildout:
         raise click.exceptions.ClickException(
             u'Not yet implemented!')
 
-    elif specification:
-        raise click.exceptions.ClickException(
-            u'Not yet implemented!')
+    if editable:
+        editable_file = os.path.join(tmp_dir, 'editable.txt')
+        with open(editable_file, 'w+') as f:
+            for item in editable:
+                f.write('-e %s\n' % item)
+        requirements_files.append(editable_file)
 
-    elif requirements:
-        requirements_files = requirements
-        requirements_name = os.path.splitext(os.path.basename(requirements[0]))[0]
-
+    project_dir = os.getcwd()
     if basename:
         requirements_name = basename
+    else:
+        requirements_name = os.path.join(project_dir, 'requirements')
 
     if extra_build_inputs:
         extra_build_inputs = extra_build_inputs.split(' ')
@@ -158,7 +148,8 @@ def main(nix_path,
 
     click.echo('Extracting metadata ...')
 
-    packages_metadata = pypi2nix.stage2.main(wheels, requirements_files, cache_dir)
+    packages_metadata = pypi2nix.stage2.main(
+        wheels, requirements_files, cache_dir)
 
     click.echo('Generating Nix expressions ...')
 
@@ -170,4 +161,5 @@ def main(nix_path,
         enable_tests=enable_tests,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
         top_level=top_level,
+        project_dir=project_dir,
     )
