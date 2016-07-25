@@ -68,7 +68,7 @@ lektor: lektor.nix
 
 lektor.nix: lektor.txt $(PYPI2NIX)
 	@echo "generating lektor nix expressions ..."
-	@$(PYPI2NIX) --basename lektop -r lektor.txt -E $(LEKTOR_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
+	@$(PYPI2NIX) --basename lektor -r lektor.txt -E $(LEKTOR_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
 
 lektor.txt: lektor-clear
 	@echo "Lektor" > lektor.txt
