@@ -100,7 +100,13 @@ def main(nix_path,
         editable_file = os.path.join(tmp_dir, 'editable.txt')
         with open(editable_file, 'w+') as f:
             for item in editable:
-                f.write('-e %s\n' % item)
+                if os.path.isdir(item):
+                    f.write('-e %s\n' % item)
+                elif os.path.isfile(item):
+                    f.write('-e %s\n' % os.path.dirname(item))
+                else:
+                    f.write('%s\n' % item)
+
         requirements_files.append(editable_file)
 
     project_dir = os.getcwd()
