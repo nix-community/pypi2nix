@@ -21,7 +21,7 @@ let
         value = pkgs.lib.hydraJob (f system);
       }) supportedSystems);
 
-  version = builtins.readFile ./VERSION;
+  version = builtins.readFile ./src/pypi2nix/VERSION;
 
   self = {
 
