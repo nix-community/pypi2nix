@@ -1,68 +1,65 @@
 pypi2nix - generates nix expressions for PyPI packages
 ======================================================
 
+``pypi2nix`` is a command line tool that generates `Nix expressions`_ from
+different python specific sources.
 
-0. Ensure that Nix is installed and confiured properly
-------------------------------------------------------
+TODO: report bugs
 
-To install nix you can simple do::
+Ping me `@garbas`_ if you get stuck.
 
-    curl https://nixos.org/nix/install | sh
-
-
-1. Clone the repository
------------------------
-
-::
-
-    git clone https://github.com/garbas/pypi2nix && cd pypi2nix
+.. contents::
 
 
-2. Inside the directory, run the ``nix-shell`` command
-------------------------------------------------------
+1. Installation
+---------------
 
-::
+Make sure Nix is installed.::
 
-    nix-shell
+    % curl https://nixos.org/nix/install | sh
 
-Now, the ``pypi2nix`` command should be available. To check this is the case,
-you can run ``which pypi2nix``.
+Next clone `pypi2nix repository`_.::
 
+    % git clone https://github.com/garbas/pypi2nix
 
-3. Add the name of your package to a text file, e.g.
+And now install it using `nix-env`_ command.:: 
 
-::
-
-    echo "empy" > requirements.txt
-
-Alternatively, you can also try a URL like
-
-::
-
-    echo "https://github.com/wking/rss2email/archive/master.zip" > requirements.txt
+    % cd pypi2nix
+    % nix-env -f release.nix -iA build."x86_64-linux"
 
 
-4. Run the ``pypi2nix`` command
--------------------------------
+2. Usage
+--------
 
-::
+The easiest way to generate a Nix expressions is to invoke.::
 
-        pypi2nix -r requirements.txt -V "2.7"
+    % pypi2nix -V "3.5" -e packageA -e packageB==0.1
 
-   If your package requires a different version of Python, you can use the
-   ``-V`` option. For example, ::
+If you also have ``requirements.txt`` file for you python project you can use
+``-r`` option.::
 
-        pypi2nix -r requirements.txt -V "3.4"
+   
+    % pypi2nix -V "3.5" -e packageA -e packageB==0.1 \
+        -r requirements.txt -r requirements-dev.txt
 
-   If your project requires some system libraries you can use the ``-E``
-   option. For example, ::
+What is being generated
+^^^^^^^^^^^^^^^^^^^^^^^
 
-        pypi2nix -r requirements.txt -V "3.4" -E "libxslt libxml2"
+Option ``-V`` tells pypi2nix which python version to be used. To see which
+python versions are available consule ``pypi2nix --help``.
 
-   Pypi2nix will now generate a file ``requirements.nix``.
+Once Nix expressions are generated you should be able to see 3 new files:
 
-5. Build your package via
--------------------------
+- ``requirements_generated.nix`` - this are the generated nix expressions
+
+- ``requirements_override.nix`` - this is an empty file which is ment to
+  override generated nix expressions.
+
+- ``requirements.nix`` is a file which connects ``requirements_generated.nix``
+  and ``requirements_override.nix`` and exposes it for futher usage.
+
+Building generated packages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Build one package::
 
@@ -83,15 +80,33 @@ Enter developent environemnt::
     (nix-shell) % python -c "import empy"
 
 
-Examples
---------
+.. TODO: how to override packages
+.. TODO: how to create default.nix
 
-The file ``examples/Makefile`` contains specific instructions for packages like
+
+3. Existing examples
+--------------------
+
+The file `examples/Makefile`_ contains specific instructions for packages like
 ``sentry``, ``empy``, ``lektor``, ``awscli`` and ``rss2email``.
 
 
-Ping me `@garbas`_ if you get stuck.
+4. Help developing pypi2nix
+---------------------------
+
+Clone `pypi2nix repository`_ and using `nix-shell`_ command enter development
+environment.::
+
+    % git clone https://github.com/garbas/pypi2nix
+    % cd pypi2nix
+    % nix-shell
+
+Code is located in ``src/pypi2nix``.
 
 
+.. _`Nix expressions`: http://nixos.org/nix/manual/#chap-writing-nix-expressions
 .. _`@garbas`: https://twitter.com/garbas
-.. _`manual`: http://nixos.org/nix/manual/#name-14
+.. _`pypi2nix repository`: https://github.com/garbas/pypi2nix
+.. _`examples/Makefile`: https://github.com/garbas/pypi2nix/blob/master/examples/Makefile
+.. _`nix-shell`: http://nixos.org/nix/manual/#sec-nix-shell
+.. _`nix-env`: http://nixos.org/nix/manual/#sec-nix-env
