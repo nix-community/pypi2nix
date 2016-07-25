@@ -23,7 +23,7 @@ import pypi2nix.utils
               )
 @click.option('--basename',
               required=False,
-              default=None,
+              default='requirements',
               help=u'Basename which is used to generate files. By default '
                    u'it uses basename of provided file.',
               )
@@ -104,10 +104,7 @@ def main(nix_path,
         requirements_files.append(editable_file)
 
     project_dir = os.getcwd()
-    if basename:
-        requirements_name = basename
-    else:
-        requirements_name = os.path.join(project_dir, 'requirements')
+    requirements_name = os.path.join(project_dir, basename)
 
     if extra_build_inputs:
         extra_build_inputs = extra_build_inputs.split(' ')

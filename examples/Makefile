@@ -26,7 +26,7 @@ sentry: sentry.nix
 
 sentry.nix: sentry.txt $(PYPI2NIX)
 	@echo "generating sentry nix expressions ..."
-	@$(PYPI2NIX) -r sentry.txt -E $(SENTRY_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
+	@$(PYPI2NIX) --basename sentry -r sentry.txt -E $(SENTRY_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
 
 sentry.txt: sentry-clear
 	@echo "Sentry" > sentry.txt
@@ -46,7 +46,7 @@ empy: empy.nix
 
 empy.nix: empy.txt $(PYPI2NIX)
 	@echo "generating empy nix expressions ..."
-	@$(PYPI2NIX) -r empy.txt -I $(NIX_PATH) -V "2.7"
+	@$(PYPI2NIX) --basename empy -r empy.txt -I $(NIX_PATH) -V "2.7"
 
 empy.txt: empy-clear
 	@echo "empy" > empy.txt
@@ -68,7 +68,7 @@ lektor: lektor.nix
 
 lektor.nix: lektor.txt $(PYPI2NIX)
 	@echo "generating lektor nix expressions ..."
-	@$(PYPI2NIX) -r lektor.txt -E $(LEKTOR_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
+	@$(PYPI2NIX) --basename lektop -r lektor.txt -E $(LEKTOR_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
 
 lektor.txt: lektor-clear
 	@echo "Lektor" > lektor.txt
@@ -90,7 +90,7 @@ rss2email: rss2email.nix
 
 rss2email.nix: rss2email.txt $(PYPI2NIX)
 	@echo "generating rss2email nix expressions ..."
-	@$(PYPI2NIX) -r rss2email.txt -V "3.4" -I $(NIX_PATH)
+	@$(PYPI2NIX) --basename rss2email -r rss2email.txt -V "3.4" -I $(NIX_PATH)
 
 rss2email.txt: rss2email-clear
 	@echo "https://github.com/wking/rss2email/archive/master.zip#egg=rss2email" > rss2email.txt
@@ -114,7 +114,7 @@ awscli_and_requests: awscli_and_requests.nix
 
 awscli_and_requests.nix: awscli_and_requests.txt $(PYPI2NIX)
 	@echo "generating awscli and requests nix expressions ..."
-	@$(PYPI2NIX) -r awscli.txt -r requests.txt -I $(NIX_PATH) -V "2.7"
+	@$(PYPI2NIX) --basename awscli -r awscli.txt -r requests.txt -I $(NIX_PATH) -V "2.7"
 
 awscli_and_requests.txt: awscli_and_requests-clear
 	@echo "awscli" > awscli.txt
