@@ -80,6 +80,51 @@ Enter developent environemnt::
     (nix-shell) % python -c "import empy"
 
 
+Using generated packages
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you are working on a project where its dependencies are defined in
+``requirements.txt`` then you can create a ``default.nix`` and add generated
+packages as buildInputs as demonstrated here::
+
+    {}:
+    let
+      python = import ./requirements.nix { inherit pkgs; };
+    in python.mkDerivation {
+      name = "ProjectA-1.0.0";
+      src = ./.;
+      buildInputs = [
+        python.pkgs."coverage"
+        python.pkgs."flake8"
+        python.pkgs."mock"
+        python.pkgs."pytest"
+        python.pkgs."pytest-asyncio"
+        python.pkgs."pytest-cov"
+        python.pkgs."pytest-mock"
+        python.pkgs."pytest-xdist"
+        python.pkgs."virtualenv"
+      ];
+      propagatedBuildInputs = [
+        python.pkgs."aiohttp"
+        python.pkgs."arrow"
+        python.pkgs."defusedxml"
+        python.pkgs."frozendict"
+        python.pkgs."jsonschema"
+        python.pkgs."taskcluster"
+        python.pkgs."virtualenv"
+      ] ++ (builtins.attrValues python.modules);
+      ...
+    }
+    
+
+As you can see you can access all packages via ``python.pkgs."<name>"``. If you
+want to depend on *all* packages you can as well do::
+
+
+    propagatedBuildInputs = builtins.attrValues python.pkgs;
+
+
+
 .. TODO: how to override packages
 .. TODO: how to create default.nix
 
