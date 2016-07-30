@@ -42,6 +42,11 @@ If you also have ``requirements.txt`` file for you python project you can use
     % pypi2nix -V "3.5" -e packageA -e packageB==0.1 \
         -r requirements.txt -r requirements-dev.txt
 
+If your project relies on ``zc.buildout`` you can give ``-b`` option a try.::
+
+    % pypi2nix -V "2.7" -b buildout.cfg
+
+
 What is being generated
 ^^^^^^^^^^^^^^^^^^^^^^^
 
