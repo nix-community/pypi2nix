@@ -11,6 +11,10 @@ import pypi2nix.utils
 
 
 @click.command('pypi2nix')
+@click.option('--version',
+              is_flag=True,
+              help=u'Show version of pypi2nix',
+              )
 @click.option('-I', '--nix-path',
               envvar='NIX_PATH',
               multiple=True,
@@ -44,7 +48,8 @@ import pypi2nix.utils
               help=u'Enable tests in generated packages.'
               )
 @click.option('-V', '--python-version',
-              required=True,
+              required=False,
+              default=None,
               type=click.Choice(pypi2nix.utils.PYTHON_VERSIONS.keys()),
               help=u'Provide which python version we build for.',
               )
@@ -69,7 +74,8 @@ import pypi2nix.utils
               type=str,
               help=u'location/url to editable locations',
               )
-def main(nix_path,
+def main(version,
+         nix_path,
          basename,
          cache_dir,
          extra_build_inputs,
@@ -81,6 +87,17 @@ def main(nix_path,
          ):
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
+
+    if version:
+        with open(os.path.join(os.path.dirname(__file__), 'VERSION')) as f:
+            click.echo(f.read())
+            return
+
+    python_versions = pypi2nix.utils.PYTHON_VERSIONS.keys()
+    if not python_version:
+        raise click.exceptions.UsageError(
+            "Missing option \"-V\" / \"--python-version\".  Choose from " +
+            (", ".join(python_versions)))
 
     # temporary pypi2nix folder and make sure it exists
     tmp_dir = os.path.join(tempfile.gettempdir(), 'pypi2nix')
