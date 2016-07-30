@@ -9,11 +9,7 @@ in stdenv.mkDerivation rec {
   name = "pypi2nix-${version}";
   srcs = with deps; [
     src
-    pip
     click
-    setuptools
-    zcbuildout
-    zcrecipeegg
     requests
   ];  # six attrs effect ];
   buildInputs = [ python zip makeWrapper ];
@@ -22,11 +18,7 @@ in stdenv.mkDerivation rec {
   postUnpack = ''
     mkdir -p $out/pkgs
 
-    mv pip-*/pip                        $out/pkgs/pip
     mv click-*/click                    $out/pkgs/click
-    mv setuptools-*/setuptools          $out/pkgs/setuptools
-    mv zc.buildout-*/src/zc             $out/pkgs/zc
-    mv zc.recipe.egg-*/src/zc/recipe    $out/pkgs/zc/recipe
     # mv six-*/six.py                    $out/pkgs/
     # mv attrs-*/src/attr                $out/pkgs/attrs
     # mv effect-*/effect                 $out/pkgs/effect

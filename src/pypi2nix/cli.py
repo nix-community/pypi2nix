@@ -4,6 +4,7 @@ import os
 import shutil
 import tempfile
 
+import pypi2nix.stage0
 import pypi2nix.stage1
 import pypi2nix.stage2
 import pypi2nix.stage3
@@ -64,7 +65,7 @@ import pypi2nix.utils
 @click.option('-b', '--buildout',
               required=False,
               default=None,
-              type=click.Path(exists=True),
+              type=click.Path(exists=True, resolve_path=True),
               help=u'zc.buildout configuration file',
               )
 @click.option('-e', '--editable',
@@ -104,14 +105,49 @@ def main(version,
     if not os.path.exists(tmp_dir):
         os.makedirs(tmp_dir)
 
-    requirements_files = []
+    project_dir = os.getcwd()
+    requirements_name = os.path.join(project_dir, basename)
 
+    if extra_build_inputs:
+        extra_build_inputs = extra_build_inputs.split(' ')
+
+    if not cache_dir:
+        cache_dir = os.path.join(tmp_dir, 'cache')
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+
+    requirements_files = []
     if requirements:
         requirements_files += requirements
 
+    requirements_hash = ''
+    for requirements_file in requirements_files:
+        requirements_hash += requirements_file
+        with open(requirements_file) as f:
+            requirements_hash += f.read()
+
     if buildout:
-        raise click.exceptions.ClickException(
-            u'Not yet implemented!')
+        requirements_hash += buildout
+        with open(buildout) as f:
+            requirements_hash += f.read()
+
+    project_hash = hashlib.md5(requirements_hash.encode()).hexdigest()
+
+    project_tmp_dir = os.path.join(tmp_dir, project_hash, 'tmp')
+    if os.path.exists(project_tmp_dir):
+        shutil.rmtree(project_tmp_dir)
+    os.makedirs(project_tmp_dir)
+
+    if buildout:
+        buildout_requirements = pypi2nix.stage0.main(
+            buildout_file=buildout,
+            project_tmp_dir=project_tmp_dir,
+            cache_dir=cache_dir,
+            extra_build_inputs=extra_build_inputs,
+            python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
+            nix_path=nix_path,
+        )
+        requirements_files.append(buildout_requirements)
 
     if editable:
         editable_file = os.path.join(tmp_dir, 'editable.txt')
@@ -125,30 +161,6 @@ def main(version,
                     f.write('%s\n' % item)
 
         requirements_files.append(editable_file)
-
-    project_dir = os.getcwd()
-    requirements_name = os.path.join(project_dir, basename)
-
-    if extra_build_inputs:
-        extra_build_inputs = extra_build_inputs.split(' ')
-
-    if not cache_dir:
-        cache_dir = os.path.join(tmp_dir, 'cache')
-        if not os.path.exists(cache_dir):
-            os.makedirs(cache_dir)
-
-    requirements_hash = ''
-    for requirements_file in requirements_files:
-        requirements_hash += requirements_file
-        with open(requirements_file) as f:
-            requirements_hash += f.read()
-
-    project_hash = hashlib.md5(requirements_hash.encode()).hexdigest()
-
-    project_tmp_dir = os.path.join(tmp_dir, project_hash, 'tmp')
-    if os.path.exists(project_tmp_dir):
-        shutil.rmtree(project_tmp_dir)
-    os.makedirs(project_tmp_dir)
 
     wheelhouse_dir = os.path.join(tmp_dir, project_hash, 'wheelhouse')
     if not os.path.exists(wheelhouse_dir):

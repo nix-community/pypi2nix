@@ -1,52 +1,51 @@
-{ input_file 
-, cache ? "$out/cache"
-, extraBuildInputs ? []
+{ buildout_file
+, project_tmp_dir
+, cache_dir
+, python_version
+, extra_build_inputs ? []
 }:
 
 let
-
   pkgs = import <nixpkgs> {};
+  python = builtins.getAttr python_version pkgs;
   pypi2nix_bootstrap = import ./bootstrap.nix {
-    inherit (pkgs) stdenv fetchurl unzip which makeWrapper python;
+    inherit (pkgs) stdenv fetchurl unzip which makeWrapper;
+    inherit python;
   };
-
 in pkgs.stdenv.mkDerivation rec {
   name = "pypi2nix-buildout";
-  __noChroot = true;
 
-  buildInputs = [
-    pypi2nix_bootstrap pkgs.unzip
-  ] ++ (map (name: builtins.getAttr name pkgs) extraBuildInputs);
+  buildInputs = with pkgs; [
+    pypi2nix_bootstrap
+    unzip
+    gitAndTools.git
+  ] ++ (pkgs.lib.optional pkgs.stdenv.isLinux pkgs.glibcLocales)
+    ++ (map (name: pkgs.lib.getAttrFromPath
+          (pkgs.lib.splitString "." name) pkgs) extra_build_inputs);
 
-  buildCommand = ''
-    unset http_proxy
-    unset https_proxy
-    unset ftp_proxy
-
-    mkdir -p $out/cache $out/wheelhouse
-
+  shellHook = ''
+    export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+    export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     export PYTHONPATH=${pypi2nix_bootstrap}/base
+    export LANG=en_US.UTF-8
 
-    mkdir tmp
-    cp -R `dirname ${input_file}`/* tmp
+    mkdir -p ${cache_dir}/buildout_cache ${cache_dir}/buildout_eggs
 
-    cat <<EOF > tmp/.pypi2nix.cfg
+    cat <<EOF > ${project_tmp_dir}/buildout.cfg
     [buildout]
-    extends = ${input_file}
-    download-cache = cache
-    eggs-directory = eggs
+    extends = ${buildout_file}
+    extensions = buildout.requirements
+    dump-requirements-file = ${project_tmp_dir}/buildout_requirements.txt
+    overwrite-requirements-file = true
+    download-cache = ${cache_dir}/buildout_cache
+    eggs-directory = ${cache_dir}/buildout_eggs
     EOF
 
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH buildout -c tmp/.pypi2nix.cfg
+    cp ${project_tmp_dir}/buildout.cfg $PWD/pypi2nix.cfg
 
-    for file in tmp/cache/dist/*; do
-      PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel $file --wheel-dir ${cache} --no-deps
-    done
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH buildout -v -c $PWD/pypi2nix.cfg
 
-    cd $out/wheelhouse
-    for file in ${cache}/*; do
-      unzip -qo $file
-    done
+    rm $PWD/pypi2nix.cfg
   '';
 }
 

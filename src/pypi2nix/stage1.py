@@ -1,21 +1,8 @@
 import click
 import glob
-import hashlib
 import os
-import tempfile
 
 import pypi2nix.utils
-
-
-def create_command_options(options):
-    command_options = []
-    for name, value in options.items():
-        if isinstance(value, str):
-            command_options.append('--argstr {} "{}"'.format(name, value))
-        elif isinstance(value, list) or isinstance(value, tuple):
-            value = "[ %s ]" % (' '.join(['"%s"' % x for x in value]))
-            command_options.append("--arg {} '{}'".format(name, value))
-    return ' '.join(command_options)
 
 
 def main(requirements_files,
@@ -24,15 +11,15 @@ def main(requirements_files,
          wheelhouse_dir,
          extra_build_inputs,
          python_version,
-         nix_path=None
+         nix_path=None,
          ):
     """Create a complete (pip freeze) requirements.txt and a wheelhouse from
        a user provided requirements.txt.
     """
 
-    command = 'nix-shell {pip} {options} {nix_path} --show-trace --pure --run exit'.format(  # noqa
-        pip=os.path.join(os.path.dirname(__file__), 'pip.nix'),
-        options=create_command_options(dict(
+    command = 'nix-shell {nix_file} {options} {nix_path} --show-trace --pure --run exit'.format(  # noqa
+        nix_file=os.path.join(os.path.dirname(__file__), 'pip.nix'),
+        options=pypi2nix.utils.create_command_options(dict(
             requirements_files=requirements_files,
             project_tmp_dir=project_tmp_dir,
             cache_dir=cache_dir,

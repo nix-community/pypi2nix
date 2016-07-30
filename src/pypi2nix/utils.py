@@ -1,5 +1,4 @@
 import click
-import functools
 import shlex
 import subprocess
 
@@ -58,3 +57,14 @@ def cmd(command):
             out.append(line)
 
     return p.returncode
+
+
+def create_command_options(options):
+    command_options = []
+    for name, value in options.items():
+        if isinstance(value, str):
+            command_options.append('--argstr {} "{}"'.format(name, value))
+        elif isinstance(value, list) or isinstance(value, tuple):
+            value = "[ %s ]" % (' '.join(['"%s"' % x for x in value]))
+            command_options.append("--arg {} '{}'".format(name, value))
+    return ' '.join(command_options)
