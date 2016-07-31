@@ -33,6 +33,7 @@ let
       pkgs_top_level = builtins.filter (x: !(builtins.hasAttr "top_level" x.passthru)) (
           builtins.attrValues (builtins.removeAttrs pkgs ["__unfix__"]));
       inherit buildEnv pkgs modules;
+      __old = pythonPackages;
     };
 
   python = buildEnv {};
