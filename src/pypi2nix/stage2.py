@@ -6,6 +6,7 @@ import json
 import os.path
 import requests
 import tempfile
+import itertools
 
 from pypi2nix.utils import TO_IGNORE, safe
 
@@ -90,37 +91,45 @@ def download_file(url, filename, chunk_size=1024):
 
 def find_release(cache_dir, wheel, wheel_data):
 
-    release = None
-    for possible_release in wheel_data['releases'][wheel['version']]:
-        for extension in EXTENSIONS:
-            if possible_release['url'].endswith(extension):
-                release = dict()
-                release['url'] = possible_release['url']
-                digests = possible_release.get('digests')
-                release['hash_type'] = 'sha256'
-                if digests:
-                    release['hash_value'] = possible_release['digests']['sha256']  # noqa
-                else:
-                    # download file if it doens not already exists
-                    filename = os.path.join(
-                        cache_dir, possible_release['filename'])
-                    if not os.path.exists(filename):
-                        download_file(possible_release['url'], filename)
+    wheel_release = None
 
-                    # calculate sha256
-                    with open(filename, 'rb') as f:
-                        hash = hashlib.sha256(f.read())
-                    release['hash_value'] = hash.hexdigest()
+    _releases = wheel_data['releases'].get(wheel['version'])
+    if not _releases:
+        _releases = wheel_data['releases'].values()
+        _releases = list(itertools.chain.from_iterable(_releases))
 
-            if release:
+    for _release in _releases:
+        for _ext in EXTENSIONS:
+            _filename = '{}-{}.{}'.format(
+                wheel['name'], wheel['version'], _ext)
+            if _release['filename'] == _filename:
+                wheel_release = _release
                 break
-        if release:
+        if wheel_release:
             break
 
-    if not release:
+    if not wheel_release:
         raise click.ClickException(
-            "Unable to find source releases for package {name} of version "
+            "Unable to find releases for package {name} of version "
             "{version}".format(**wheel))
+
+    release = dict()
+    release['url'] = wheel_release['url']
+    digests = wheel_release.get('digests')
+    release['hash_type'] = 'sha256'
+    if digests:
+        release['hash_value'] = wheel_release['digests']['sha256']  # noqa
+    else:
+        # download file if it doens not already exists
+        filename = os.path.join(
+            cache_dir, wheel_release['filename'])
+        if not os.path.exists(filename):
+            download_file(wheel_release['url'], filename)
+
+        # calculate sha256
+        with open(filename, 'rb') as f:
+            hash = hashlib.sha256(f.read())
+        release['hash_value'] = hash.hexdigest()
 
     return release
 
@@ -152,14 +161,10 @@ def process_wheel(cache_dir, wheel, sources, index=INDEX_URL):
         r.raise_for_status()  # TODO: handle this nicer
         wheel_data = r.json()
 
+
         if not wheel_data.get('releases'):
             raise click.ClickException(
                 "Unable to find releases for packge {name}".format(**wheel))
-
-        if not wheel_data['releases'].get(wheel['version']):
-            raise click.ClickException(
-                "Unable to find releases for package {name} of version "
-                "{version}".format(**wheel))
 
         release = find_release(cache_dir, wheel, wheel_data)
 
