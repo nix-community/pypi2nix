@@ -100,9 +100,8 @@ def find_release(cache_dir, wheel, wheel_data):
 
     for _release in _releases:
         for _ext in EXTENSIONS:
-            _filename = '{}-{}.{}'.format(
-                wheel['name'], wheel['version'], _ext)
-            if _release['filename'] == _filename:
+            _version_plus_ext = '-{}.{}'.format(wheel['version'], _ext)
+            if _release['filename'].endswith(_version_plus_ext):
                 wheel_release = _release
                 break
         if wheel_release:
