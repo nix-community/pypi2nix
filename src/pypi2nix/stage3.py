@@ -39,7 +39,8 @@ let
   overrides = import %(overrides_file)s { inherit pkgs python; };
 
   python' = buildEnv {
-    pkgs = builtins.filter (x: ! builtins.isFunction x) (fix' (extends overrides generated));
+    pkgs = builtins.removeAttrs (fix' (extends overrides generated)) ["__unfix__"];
+
   };
 
 in python'
