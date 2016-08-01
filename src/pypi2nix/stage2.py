@@ -108,6 +108,8 @@ def find_release(cache_dir, wheel, wheel_data):
             break
 
     if not wheel_release:
+        import pdb
+        pdb.set_trace()
         raise click.ClickException(
             "Unable to find releases for package {name} of version "
             "{version}".format(**wheel))

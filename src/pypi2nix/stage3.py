@@ -30,8 +30,6 @@ let
       mkDerivation = pythonPackages.buildPythonPackage;
       interpreter = if inNixShell then interpreter.env else interpreter;
       overrideDerivation = drv: f: pythonPackages.buildPythonPackage (drv.drvAttrs // f drv.drvAttrs);
-      pkgs_top_level = builtins.filter (x: !(builtins.hasAttr "top_level" x.passthru)) (
-          builtins.attrValues (builtins.removeAttrs pkgs ["__unfix__"]));
       inherit buildEnv pkgs modules;
       __old = pythonPackages;
     };
@@ -41,7 +39,7 @@ let
   overrides = import %(overrides_file)s { inherit pkgs python; };
 
   python' = buildEnv {
-    pkgs = fix' (extends overrides generated);
+    pkgs = builtins.filter (x: ! builtins.isFunction x) (fix' (extends overrides generated));
   };
 
 in python'
@@ -75,7 +73,6 @@ GENERATED_PACKAGE_NIX = '''
       license = %(license)s;
       description = "%(description)s";
     };
-    passthru.top_level = %(top_level)s;
   };
 '''
 
@@ -121,7 +118,6 @@ def main(packages_metadata,
          extra_build_inputs,
          enable_tests,
          python_version,
-         top_level,
          project_dir,
          ):
     '''Create Nix expressions.
@@ -156,7 +152,6 @@ def main(packages_metadata,
             homepage=item.get("homepage", ""),
             license=find_license(item),
             description=item.get("description", ""),
-            top_level=str(item['name'] in top_level).lower(),
         ))
 
     generated = GENERATED_NIX % (
