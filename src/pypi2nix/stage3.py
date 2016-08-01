@@ -17,7 +17,13 @@ let
 
   inherit (pkgs.stdenv.lib) fix' extends inNixShell;
 
-  pythonPackages = pkgs.%(python_version)sPackages;
+  pythonPackages = import <nixpkgs/pkgs/top-level/python-packages.nix> {
+    inherit pkgs;
+    inherit (pkgs) stdenv;
+    python = pkgs.%(python_version)s;
+    self = pythonPackages;
+  };
+
   commonBuildInputs = %(extra_build_inputs)s;
   commonDoCheck = %(enable_tests)s;
 
@@ -92,7 +98,7 @@ def find_license(item):
         license = "licenses.zpt21"
     elif license in ['MIT', 'MIT License']:
         license = "licenses.mit"
-    elif license in ['BSD', 'BSD License', 'BSD-like', 
+    elif license in ['BSD', 'BSD License', 'BSD-like',
                      'BSD or Apache License, Version 2.0'] or \
             license.startswith('BSD -'):
         license = "licenses.bsdOriginal"

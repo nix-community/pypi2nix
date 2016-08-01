@@ -11,8 +11,8 @@ TO_IGNORE = [
 ]
 
 PYTHON_VERSIONS = {
-    "2.6": "python26",
-    "2.7": "python27",
+    "2.6": "python26Full",
+    "2.7": "python27Full",
     "3.2": "python32",
     "3.3": "python33",
     "3.4": "python34",
