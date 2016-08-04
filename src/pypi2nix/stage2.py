@@ -80,8 +80,8 @@ def process_metadata(wheel):
         "Unable to find metadata.json/pydist.json in `%s` folder." % wheel)
 
 
-def download_file(url, filename, chunk_size=1024):
-    r = requests.get(url, stream=True, timeout=3)
+def download_file(url, filename, chunk_size=2048):
+    r = requests.get(url, stream=True, timeout=None)
     r.raise_for_status()  # TODO: handle this nicer
 
     with open(filename, 'wb') as fd:
@@ -135,7 +135,8 @@ def find_release(wheel_cache_dir, wheel, wheel_data):
     return release
 
 
-def process_wheel(wheel_cache_dir, wheel, sources, index=INDEX_URL):
+def process_wheel(wheel_cache_dir, wheel, sources, index=INDEX_URL,
+                  chunk_size=2048):
     """
     """
 
@@ -144,10 +145,9 @@ def process_wheel(wheel_cache_dir, wheel, sources, index=INDEX_URL):
         release['url'] = sources[wheel['name']]
         release['hash_type'] = 'sha256'
 
-        r = requests.get(release['url'], stream=True, timeout=3)
+        r = requests.get(release['url'], stream=True, timeout=None)
         r.raise_for_status()  # TODO: handle this nicer
 
-        chunk_size=1024
         with tempfile.TemporaryFile() as fd:
             for chunk in r.iter_content(chunk_size):
                 fd.write(chunk)
@@ -158,7 +158,7 @@ def process_wheel(wheel_cache_dir, wheel, sources, index=INDEX_URL):
 
     else:
         url = "{}/{}/json".format(index, wheel['name'])
-        r = requests.get(url, timeout=3)
+        r = requests.get(url, timeout=None)
         r.raise_for_status()  # TODO: handle this nicer
         wheel_data = r.json()
 
