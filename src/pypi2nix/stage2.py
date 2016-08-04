@@ -122,7 +122,7 @@ all_classifiers = {
     'License :: OSI Approved :: zlib/libpng License': 'licenses.zlib',
     'License :: OSI Approved :: Zope Public License': 'licenses.zpt21',
     'License :: Other/Proprietary License': None,
-    'License :: Public Domain': 'publicDomain',
+    'License :: Public Domain': 'licenses.publicDomain',
     'License :: Repoze Public License': None,
 }
 
