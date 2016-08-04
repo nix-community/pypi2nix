@@ -6,7 +6,7 @@ import pypi2nix.utils
 
 def main(buildout_file,
          project_tmp_dir,
-         cache_dir,
+         buildout_cache_dir,
          extra_build_inputs,
          python_version,
          nix_path=None,
@@ -19,7 +19,7 @@ def main(buildout_file,
         options=pypi2nix.utils.create_command_options(dict(
             buildout_file=buildout_file,
             project_tmp_dir=project_tmp_dir,
-            cache_dir=cache_dir,
+            buildout_cache_dir=buildout_cache_dir,
             extra_build_inputs=extra_build_inputs,
             python_version=python_version,
         )),

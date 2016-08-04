@@ -3,9 +3,12 @@
 from setuptools import setup
 from setuptools import find_packages
 
+with open('src/pypi2nix/VERSION') as f:
+    version = f.read().strip()
+
 setup(
     name="pypi2nix",
-    version=open("VERSION").read(),
+    version=version,
     author=u"Rok Garbas, Cillian de Róiste, Jaka Hudoklin",
     description=(
         "A tool that generates nix expressions for your python packages, so "

@@ -27,16 +27,17 @@ let
   commonBuildInputs = %(extra_build_inputs)s;
   commonDoCheck = %(enable_tests)s;
 
-  buildEnv = { pkgs ? {}, modules ? {} }:
+  buildEnv = { pkgs ? {} }:
     let
       interpreter = pythonPackages.python.buildEnv.override {
-        extraLibs = (builtins.attrValues pkgs) ++ (builtins.attrValues modules);
+        extraLibs = builtins.attrValues pkgs;
       };
     in {
       mkDerivation = pythonPackages.buildPythonPackage;
       interpreter = if inNixShell then interpreter.env else interpreter;
       overrideDerivation = drv: f: pythonPackages.buildPythonPackage (drv.drvAttrs // f drv.drvAttrs);
-      inherit buildEnv pkgs modules;
+      withPackages = pkgs': buildEnv { pkgs = pkgs'; };
+      inherit buildEnv pkgs;
       __old = pythonPackages;
     };
 
@@ -122,17 +123,19 @@ def find_license(item):
 def main(packages_metadata,
          requirements_name,
          requirements_files,
+         requirements_frozen,
          extra_build_inputs,
          enable_tests,
          python_version,
-         project_dir,
+         current_dir,
          ):
     '''Create Nix expressions.
     '''
 
-    default_file = os.path.join(project_dir, '{}.nix'.format(requirements_name))
-    generated_file = os.path.join(project_dir, '{}_generated.nix'.format(requirements_name))
-    overrides_file = os.path.join(project_dir, '{}_override.nix'.format(requirements_name))
+    default_file = os.path.join(current_dir, '{}.nix'.format(requirements_name))
+    generated_file = os.path.join(current_dir, '{}_generated.nix'.format(requirements_name))
+    overrides_file = os.path.join(current_dir, '{}_override.nix'.format(requirements_name))
+    frozen_file = os.path.join(current_dir, '{}_frozen.txt'.format(requirements_name))
 
     version_file = os.path.join(os.path.dirname(__file__), 'VERSION')
     with open(version_file) as f:
@@ -174,8 +177,8 @@ def main(packages_metadata,
         extra_build_inputs=extra_build_inputs
             and "with pkgs; [ %s ]" % (' '.join(extra_build_inputs))
             or "[]",
-        generated_file='.' + generated_file[len(project_dir):],
-        overrides_file='.' + overrides_file[len(project_dir):],
+        generated_file='.' + generated_file[len(current_dir):],
+        overrides_file='.' + overrides_file[len(current_dir):],
         enable_tests=str(enable_tests).lower(),
     )
 
@@ -190,3 +193,9 @@ def main(packages_metadata,
 
     with open(default_file, 'w+') as f:
         f.write(default.strip())
+
+    with open(requirements_frozen) as f:
+        frozen_content = f.read()
+
+    with open(frozen_file, 'w+') as f:
+        f.write(frozen_content)

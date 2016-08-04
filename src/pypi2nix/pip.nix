@@ -1,7 +1,7 @@
 { requirements_files
-, project_tmp_dir
-, cache_dir
-, wheelhouse_dir
+, project_dir
+, download_cache_dir
+, wheel_cache_dir
 , python_version
 , extra_build_inputs ? []
 }:
@@ -28,17 +28,21 @@ in pkgs.stdenv.mkDerivation rec {
     export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     export PYTHONPATH=${pypi2nix_bootstrap}/base
+    export PIP_DOWNLOAD_CACHE=${download_cache_dir}
     export LANG=en_US.UTF-8
 
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} --no-binary :all: --wheel-dir ${project_tmp_dir} --find-links ${cache_dir}
+    mkdir -p ${project_dir}/wheel ${project_dir}/wheelhouse
 
-    cd ${wheelhouse_dir}
-    for file in ${project_tmp_dir}/*; do
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} --no-binary :all: --wheel-dir ${project_dir}/wheel --find-links ${wheel_cache_dir} --cache-dir ${download_cache_dir}
+
+    cd ${project_dir}/wheelhouse
+    for file in ${project_dir}/wheel/*; do
       unzip -qo $file
     done
 
-    PYTHONPATH=${wheelhouse_dir}:$PYTHONPATH pip freeze > ${project_tmp_dir}/requirements.txt
+    cp -Rf ${project_dir}/wheel/* ${wheel_cache_dir}
 
-    cp -Rf ${project_tmp_dir}/* ${cache_dir}
+    PYTHONPATH=${project_dir}/wheelhouse:$PYTHONPATH pip freeze > ${project_dir}/requirements.txt
+
   '';
 }

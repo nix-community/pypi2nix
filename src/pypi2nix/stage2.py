@@ -89,7 +89,7 @@ def download_file(url, filename, chunk_size=1024):
             fd.write(chunk)
 
 
-def find_release(cache_dir, wheel, wheel_data):
+def find_release(wheel_cache_dir, wheel, wheel_data):
 
     wheel_release = None
 
@@ -123,7 +123,7 @@ def find_release(cache_dir, wheel, wheel_data):
     else:
         # download file if it doens not already exists
         filename = os.path.join(
-            cache_dir, wheel_release['filename'])
+            wheel_cache_dir, wheel_release['filename'])
         if not os.path.exists(filename):
             download_file(wheel_release['url'], filename)
 
@@ -135,7 +135,7 @@ def find_release(cache_dir, wheel, wheel_data):
     return release
 
 
-def process_wheel(cache_dir, wheel, sources, index=INDEX_URL):
+def process_wheel(wheel_cache_dir, wheel, sources, index=INDEX_URL):
     """
     """
 
@@ -167,14 +167,14 @@ def process_wheel(cache_dir, wheel, sources, index=INDEX_URL):
             raise click.ClickException(
                 "Unable to find releases for packge {name}".format(**wheel))
 
-        release = find_release(cache_dir, wheel, wheel_data)
+        release = find_release(wheel_cache_dir, wheel, wheel_data)
 
     wheel.update(release)
 
     return wheel
 
 
-def main(wheels, requirements_files, cache_dir, index=INDEX_URL):
+def main(wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
     """Extract packages metadata from wheels dist-info folders.
     """
 
@@ -200,6 +200,6 @@ def main(wheels, requirements_files, cache_dir, index=INDEX_URL):
             continue
 
         metadata.append(
-            process_wheel(cache_dir, wheel_metadata, sources, index))
+            process_wheel(wheel_cache_dir, wheel_metadata, sources, index))
 
     return metadata

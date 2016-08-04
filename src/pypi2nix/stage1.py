@@ -6,9 +6,9 @@ import pypi2nix.utils
 
 
 def main(requirements_files,
-         project_tmp_dir,
-         cache_dir,
-         wheelhouse_dir,
+         project_dir,
+         download_cache_dir,
+         wheel_cache_dir,
          extra_build_inputs,
          python_version,
          nix_path=None,
@@ -21,9 +21,9 @@ def main(requirements_files,
         nix_file=os.path.join(os.path.dirname(__file__), 'pip.nix'),
         options=pypi2nix.utils.create_command_options(dict(
             requirements_files=requirements_files,
-            project_tmp_dir=project_tmp_dir,
-            cache_dir=cache_dir,
-            wheelhouse_dir=wheelhouse_dir,
+            project_dir=project_dir,
+            download_cache_dir=download_cache_dir,
+            wheel_cache_dir=wheel_cache_dir,
             extra_build_inputs=extra_build_inputs,
             python_version=python_version,
         )),
@@ -37,4 +37,7 @@ def main(requirements_files,
         raise click.ClickException(
             u'While trying to run the command something went wrong.')
 
-    return glob.glob(os.path.join(wheelhouse_dir, '*.dist-info'))
+    return (
+        os.path.join(project_dir, 'requirements.txt'),
+        glob.glob(os.path.join(project_dir, 'wheelhouse', '*.dist-info')),
+    )

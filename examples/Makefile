@@ -36,6 +36,7 @@ sentry-clear:
 	@rm -f sentry.txt
 	@rm -f sentry.nix
 	@rm -f sentry_generated.nix
+	@rm -f sentry_frozen.txt
 
 
 empy: empy.nix
@@ -56,6 +57,7 @@ empy-clear:
 	@rm -f empy.txt
 	@rm -f empy.nix
 	@rm -f empy_generated.nix
+	@rm -f empy_frozen.txt
 
 
 lektor: lektor.nix
@@ -78,6 +80,7 @@ lektor-clear:
 	@rm -f lektor.txt
 	@rm -f lektor.nix
 	@rm -f lektor_generated.nix
+	@rm -f lektor_frozen.txt
 
 
 rss2email: rss2email.nix
@@ -100,6 +103,7 @@ rss2email-clear:
 	@rm -f rss2email.txt
 	@rm -f rss2email.nix
 	@rm -f rss2email_generated.nix
+	@rm -f rss2email_frozen.txt
 
 
 
@@ -126,3 +130,4 @@ awscli_and_requests-clear:
 	@rm -f requests.txt
 	@rm -f awscli_and_requests.nix
 	@rm -f awscli_and_requests_generated.nix
+	@rm -f awscli_and_requests_frozen.txt

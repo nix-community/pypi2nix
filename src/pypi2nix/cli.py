@@ -105,16 +105,27 @@ def main(version,
     if not os.path.exists(tmp_dir):
         os.makedirs(tmp_dir)
 
-    project_dir = os.getcwd()
-    requirements_name = os.path.join(project_dir, basename)
+    current_dir = os.getcwd()
+    requirements_name = os.path.join(current_dir, basename)
 
     if extra_build_inputs:
         extra_build_inputs = extra_build_inputs.split(' ')
 
     if not cache_dir:
         cache_dir = os.path.join(tmp_dir, 'cache')
-        if not os.path.exists(cache_dir):
-            os.makedirs(cache_dir)
+
+        download_cache_dir = os.path.join(cache_dir, 'download')
+        wheel_cache_dir = os.path.join(cache_dir, 'wheel')
+        buildout_cache_dir = os.path.join(cache_dir, 'buildout')
+
+        if not os.path.exists(download_cache_dir):
+            os.makedirs(download_cache_dir)
+
+        if not os.path.exists(wheel_cache_dir):
+            os.makedirs(wheel_cache_dir)
+
+        if not os.path.exists(buildout_cache_dir):
+            os.makedirs(buildout_cache_dir)
 
     requirements_files = []
     if requirements:
@@ -133,16 +144,16 @@ def main(version,
 
     project_hash = hashlib.md5(requirements_hash.encode()).hexdigest()
 
-    project_tmp_dir = os.path.join(tmp_dir, project_hash, 'tmp')
-    if os.path.exists(project_tmp_dir):
-        shutil.rmtree(project_tmp_dir)
-    os.makedirs(project_tmp_dir)
+    project_dir = os.path.join(tmp_dir, project_hash)
+    if os.path.exists(project_dir):
+        shutil.rmtree(project_dir)
+    os.makedirs(project_dir)
 
     if buildout:
         buildout_requirements = pypi2nix.stage0.main(
             buildout_file=buildout,
-            project_tmp_dir=project_tmp_dir,
-            cache_dir=cache_dir,
+            project_dir=project_dir,
+            buildout_cache_dir=buildout_cache_dir,
             extra_build_inputs=extra_build_inputs,
             python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
             nix_path=nix_path,
@@ -162,17 +173,13 @@ def main(version,
 
         requirements_files.append(editable_file)
 
-    wheelhouse_dir = os.path.join(tmp_dir, project_hash, 'wheelhouse')
-    if not os.path.exists(wheelhouse_dir):
-        os.makedirs(wheelhouse_dir)
-
     click.echo('Downloading wheels and creating wheelhouse ...')
 
-    wheels = pypi2nix.stage1.main(
+    requirements_frozen, wheels = pypi2nix.stage1.main(
         requirements_files=requirements_files,
-        project_tmp_dir=project_tmp_dir,
-        cache_dir=cache_dir,
-        wheelhouse_dir=wheelhouse_dir,
+        project_dir=project_dir,
+        download_cache_dir=download_cache_dir,
+        wheel_cache_dir=wheel_cache_dir,
         extra_build_inputs=extra_build_inputs,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
         nix_path=nix_path,
@@ -181,7 +188,7 @@ def main(version,
     click.echo('Extracting metadata ...')
 
     packages_metadata = pypi2nix.stage2.main(
-        wheels, requirements_files, cache_dir)
+        wheels, requirements_files, wheel_cache_dir)
 
     click.echo('Generating Nix expressions ...')
 
@@ -189,8 +196,9 @@ def main(version,
         packages_metadata=packages_metadata,
         requirements_name=requirements_name,
         requirements_files=requirements_files,
+        requirements_frozen=requirements_frozen,
         extra_build_inputs=extra_build_inputs,
         enable_tests=enable_tests,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
-        project_dir=project_dir,
+        current_dir=current_dir,
     )
