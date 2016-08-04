@@ -57,6 +57,38 @@ def extract_deps(metadata):
     return list(set(deps))
 
 
+def find_license(item):
+    license = item.get('license', '')
+    if license in ['LGPL with exceptions or ZPL', 'ZPL 2.1']:
+        license = "licenses.zpt21"
+    elif license in ['MIT', 'MIT License',
+                     'MIT or Apache License, Version 2.0']:
+        license = "licenses.mit"
+    elif license in ['BSD', 'BSD License', 'BSD-like',
+                     'BSD or Apache License, Version 2.0'] or \
+            license.startswith('BSD -'):
+        license = "licenses.bsdOriginal"
+    elif license in ['Apache 2.0', 'Apache License 2.0', 'Apache 2',
+                     'Apache License, Version 2.0']:
+        license = "licenses.asl20"
+    elif license in ['GNU Lesser General Public License (LGPL), Version 3',
+                     'LGPL']:
+        license = "licenses.lgpl3"
+    elif license in ['MPL 2.0', 'MPL 2.0 (Mozilla Public License)']:
+        license = "licenses.mpl20"
+    elif license in ['Python Software Foundation License']:
+        license = "licenses.psfl"
+    elif license is None:
+        license = '""'
+    else:
+        click.echo(
+            "WARNING: Couldn't recognize license `{}` for `{}`".format(
+                license, item.get('name')))
+        license = '"' + safe(license) + '"'
+
+    return license
+
+
 def process_metadata(wheel):
     """Find the actual metadata json file from several possible names.
     """
@@ -73,7 +105,7 @@ def process_metadata(wheel):
                         'version': metadata['version'],
                         'deps': extract_deps(metadata),
                         'homepage': safe(find_homepage(metadata)),
-                        'license': safe(metadata.get('license', '')),
+                        'license': find_license(metadata),
                         'description': safe(metadata.get('summary', '')),
                     }
     raise click.ClickException(

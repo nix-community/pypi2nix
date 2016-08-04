@@ -93,33 +93,6 @@ self: super: {
 '''
 
 
-def find_license(item):
-    license = item.get('license')
-    if license == 'ZPL 2.1':
-        license = "licenses.zpt21"
-    elif license in ['MIT', 'MIT License']:
-        license = "licenses.mit"
-    elif license in ['BSD', 'BSD License', 'BSD-like',
-                     'BSD or Apache License, Version 2.0'] or \
-            license.startswith('BSD -'):
-        license = "licenses.bsdOriginal"
-    elif license in ['Apache 2.0', 'Apache License 2.0']:
-        license = "licenses.asl20"
-    elif license in ['GNU Lesser General Public License (LGPL), Version 3']:
-        license = "licenses.lgpl3"
-    elif license in ['Python Software Foundation License']:
-        license = "licenses.psfl"
-    elif license is None:
-        license = '""'
-    else:
-        click.echo(
-            "WARNING: Couldn't recognize license `{}` for `{}`".format(
-                license, item.get('name')))
-        license = '"' + license + '"'
-
-    return license
-
-
 def main(packages_metadata,
          requirements_name,
          requirements_files,
@@ -160,7 +133,7 @@ def main(packages_metadata,
             hash_value=item['hash_value'],
             propagatedBuildInputs=propagatedBuildInputs,
             homepage=item.get("homepage", ""),
-            license=find_license(item),
+            license=item.get("license", ""),
             description=item.get("description", ""),
         ))
 
