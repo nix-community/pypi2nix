@@ -1,5 +1,5 @@
-pypi2nix - generates nix expressions for PyPI packages
-======================================================
+pypi2nix - generate Nix expressions for Python packages
+=======================================================
 
 ``pypi2nix`` is a command line tool that generates `Nix expressions`_ from
 different python specific sources.
