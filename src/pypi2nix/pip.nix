@@ -33,7 +33,12 @@ in pkgs.stdenv.mkDerivation rec {
 
     mkdir -p ${project_dir}/wheel ${project_dir}/wheelhouse
 
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH pip wheel ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} --no-binary :all: --wheel-dir ${project_dir}/wheel --find-links ${wheel_cache_dir} --cache-dir ${download_cache_dir}
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
+      pip wheel \
+        ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} \
+        --wheel-dir ${project_dir}/wheel \
+        --find-links ${wheel_cache_dir} \
+        --cache-dir ${download_cache_dir}
 
     cd ${project_dir}/wheelhouse
     for file in ${project_dir}/wheel/*; do
