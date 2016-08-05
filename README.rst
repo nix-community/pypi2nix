@@ -198,7 +198,7 @@ Nothing speaks better then an example::
         export PYTHONDONTWRITEBYTECODE=1
 
         flake8 src/
-        py.test --cov=scriptworker --cov-report term-missing
+        py.test --cov=src -cov-report term-missing
         coverage html
       '';
     }
