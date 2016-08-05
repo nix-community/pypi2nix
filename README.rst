@@ -55,6 +55,9 @@ python versions are available consule ``pypi2nix --help``.
 
 Once Nix expressions are generated you should be able to see 3 new files:
 
+- ``requirements_frozen.txt`` - full frozen set for your for you pypi2nix call.
+  This is the output you would expect from `pip freeze`.
+
 - ``requirements_generated.nix`` - this are the generated nix expressions
 
 - ``requirements_override.nix`` - this is an empty file which is ment to
@@ -62,6 +65,7 @@ Once Nix expressions are generated you should be able to see 3 new files:
 
 - ``requirements.nix`` is a file which connects ``requirements_generated.nix``
   and ``requirements_override.nix`` and exposes it for futher usage.
+
 
 Building generated packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -130,8 +134,90 @@ want to depend on *all* packages you can as well do::
 
 
 
-.. TODO: how to override packages
-.. TODO: how to create default.nix
+Using requirements_override.nix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+I hope nobody is expecting ``pypi2nix`` to do always a perfect job. In python
+packaging there are just too many different cases that we will never be able to
+cover. What ``pypi2nix`` tries to do is to get you very close.
+
+When things go not as you expected, ``pypi2nix`` gives you an option to
+override anything that it was generated. Even add new packages this way.
+
+An example how you would override a derivation would be adding extra build time
+dependencies which we can not detect with ``pypi2nix``. As example lets add
+``setuptools-src`` which got generated, but was not detected as build time
+dependency of ``execnet``::
+
+    { pkgs, python }:
+
+    self: super: {
+
+      "execnet" = python.overrideDerivation super."execnet" (old: {
+        buildInputs = old.buildInputs ++ [ self."setuptools-scm" ];
+      });
+
+    }
+
+
+This was you can add or remove any python package.
+
+
+Creating default.nix for you project
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Nothing speaks better then an example::
+
+    { }:
+
+    let
+      pkgs = import <nixpkgs> {};
+      python = import ./requirements.nix { inherit pkgs; };
+    in python.mkDerivation {
+      name = "projectA-1.0.0";
+      src = ./.;
+      buildInputs = [
+        python.pkgs."coverage"
+        python.pkgs."flake8"
+        python.pkgs."mock"
+        python.pkgs."pytest"
+        python.pkgs."pytest-asyncio"
+        python.pkgs."pytest-cov"
+        python.pkgs."pytest-mock"
+        python.pkgs."pytest-xdist"
+      ];
+      propagatedBuildInputs = [
+        python.pkgs."aiohttp"
+        python.pkgs."arrow"
+        python.pkgs."defusedxml"
+        python.pkgs."frozendict"
+        python.pkgs."jsonschema"
+      ];
+      checkPhase = ''
+        export NO_TESTS_OVER_WIRE=1
+        export PYTHONDONTWRITEBYTECODE=1
+
+        flake8 src/
+        py.test --cov=scriptworker --cov-report term-missing
+        coverage html
+      '';
+    }
+
+
+Important to know here is that you instantiate all generated packages as
+``python = import ./requirements.nix { inherit pkgs; };`` which gives you
+a python environment with ``pypi2nix`` generated packages and some common
+utilities.
+
+To create a package you would use ``python.mkDerivation`` as you are used to
+that ``pythonPackages.buildPythonPackage`` function in ``nixpkgs``. All
+generated packages are available as one attribute set under ``python.pkgs``.
+
+.. TODO explain buildEnv and show some example
+
+One of future goals of ``pypi2nix`` project is to also improve the UX of our
+python tooling in nixpkgs. While this is very hard to do within ``nixpkgs`` it
+is almost trivial to experiment with this outside ``nixpkgs``.
 
 
 3. Existing examples
