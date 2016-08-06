@@ -1,4 +1,3 @@
-import click
 import shlex
 import subprocess
 
@@ -40,7 +39,8 @@ def cmd(command):
     if isinstance(command, str):
         command = shlex.split(command)
 
-    click.echo('|-> ' + ' '.join(command))
+    output = '|-> ' + ' '.join(command)
+
     p = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
@@ -53,10 +53,10 @@ def cmd(command):
         if line == '' and p.poll() is not None:
             break
         if line != '':
-            click.echo('    ' + line.rstrip('\n'))
+            output += '    ' + line.rstrip('\n')
             out.append(line)
 
-    return p.returncode
+    return p.returncode, output
 
 
 def create_command_options(options):

@@ -28,8 +28,9 @@ def main(buildout_file,
             or ''
     )
 
-    returncode = pypi2nix.utils.cmd(command)
+    returncode, output = pypi2nix.utils.cmd(command)
     if returncode != 0:
+        click.echo(output)
         raise click.ClickException(
             u'While trying to run the command something went wrong.')
 

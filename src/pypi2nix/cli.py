@@ -89,10 +89,12 @@ def main(version,
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
 
+    with open(os.path.join(os.path.dirname(__file__), 'VERSION')) as f:
+        pypi2nix_version = f.read()
+
     if version:
-        with open(os.path.join(os.path.dirname(__file__), 'VERSION')) as f:
-            click.echo(f.read())
-            return
+        click.echo(pypi2nix_version)
+        return
 
     python_versions = pypi2nix.utils.PYTHON_VERSIONS.keys()
     if not python_version:
@@ -149,7 +151,11 @@ def main(version,
         shutil.rmtree(project_dir)
     os.makedirs(project_dir)
 
+    click.echo('')
+    click.echo('pypi2nix v{} running ...'.format(pypi2nix_version))
+
     if buildout:
+        click.echo('Stage0: Generating requirements.txt from buildout configuration ...')
         buildout_requirements = pypi2nix.stage0.main(
             buildout_file=buildout,
             project_dir=project_dir,
@@ -173,7 +179,7 @@ def main(version,
 
         requirements_files.append(editable_file)
 
-    click.echo('Downloading wheels and creating wheelhouse ...')
+    click.echo('Stage1: Downloading wheels and creating wheelhouse ...')
 
     requirements_frozen, wheels = pypi2nix.stage1.main(
         requirements_files=requirements_files,
@@ -185,12 +191,12 @@ def main(version,
         nix_path=nix_path,
     )
 
-    click.echo('Extracting metadata ...')
+    click.echo('Stage2: Extracting metadata from pypi.python.org ...')
 
     packages_metadata = pypi2nix.stage2.main(
         wheels, requirements_files, wheel_cache_dir)
 
-    click.echo('Generating Nix expressions ...')
+    click.echo('Stage3: Generating Nix expressions ...')
 
     pypi2nix.stage3.main(
         packages_metadata=packages_metadata,
@@ -202,3 +208,14 @@ def main(version,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
         current_dir=current_dir,
     )
+
+
+    click.echo('')
+    click.echo('Nix expressions generated successfully.')
+    click.echo('')
+    click.echo('To start development run:')
+    click.echo('    nix-shell requirements.nix -A interpreter')
+    click.echo('')
+    click.echo('More information you can find at')
+    click.echo('    https://github.com/garbas/pypi2nix')
+    click.echo('')

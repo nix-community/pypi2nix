@@ -314,16 +314,22 @@ def main(wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
                     name = egg.split('egg=')[1]
                     sources[name] = url
 
+    output = ''
     metadata = []
-    for wheel in wheels:
 
-        click.echo('|-> from %s' % os.path.basename(wheel))
+    try:
+        for wheel in wheels:
 
-        wheel_metadata = process_metadata(wheel)
-        if not wheel_metadata:
-            continue
+            output += '|-> from %s' % os.path.basename(wheel)
 
-        metadata.append(
-            process_wheel(wheel_cache_dir, wheel_metadata, sources, index))
+            wheel_metadata = process_metadata(wheel)
+            if not wheel_metadata:
+                continue
+
+            metadata.append(
+                process_wheel(wheel_cache_dir, wheel_metadata, sources, index))
+    except Exception as e:
+        click.echo(output)
+        raise e
 
     return metadata
