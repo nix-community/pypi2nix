@@ -5,7 +5,7 @@ PYPI2NIX=../result/bin/pypi2nix
 
 
 # commented out sentry since it doesn't work on travis
-all: empy lektor rss2email awscli_and_requests
+all: empy lektor rss2email awscli_and_requests vulnix
 
 clear: sentry-clear empy-clear lektor-clear rss2email-clear
 
@@ -83,6 +83,7 @@ lektor-clear:
 	@rm -f lektor_frozen.txt
 
 
+
 rss2email: rss2email.nix
 	@echo "building and testing rss2email ..."
 	@nix-build rss2email.nix -o rss2email -A interpreter --show-trace
@@ -131,3 +132,16 @@ awscli_and_requests-clear:
 	@rm -f awscli_and_requests.nix
 	@rm -f awscli_and_requests_generated.nix
 	@rm -f awscli_and_requests_frozen.txt
+
+
+
+vulnix: vulnix-clear $(PYPI2NIX)
+	@echo "building and testing vulnix..."
+	@git clone https://github.com/flyingcircusio/vulnix vulnix-src
+	@cd vulnix-src && ./../$(PYPI2NIX) -V 3.5 -b buildout.cfg -e pytest-runner -e setuptools-scm -v -I $(NIX_PATH)
+	@nix-build vulnix-src/default.nix -o vulnix
+	@./vulnix/bin/vulnix --help
+
+vulnix-clear:
+	@rm -f vulnix
+	@rm -rf vulnix-src
