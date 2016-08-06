@@ -157,7 +157,8 @@ def find_license(item):
                 license.startswith('BSD -'):
             license = "licenses.bsdOriginal"
         elif license in ['Apache 2.0', 'Apache License 2.0', 'Apache 2',
-                         'Apache License, Version 2.0']:
+                         'Apache License, Version 2.0',
+                         'Apache License Version 2.0']:
             license = "licenses.asl20"
         elif license in ['GNU Lesser General Public License (LGPL), Version 3',
                          'LGPL']:

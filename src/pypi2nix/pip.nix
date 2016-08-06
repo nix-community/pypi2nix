@@ -38,7 +38,8 @@ in pkgs.stdenv.mkDerivation rec {
         ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} \
         --wheel-dir ${project_dir}/wheel \
         --find-links ${wheel_cache_dir} \
-        --cache-dir ${download_cache_dir}
+        --cache-dir ${download_cache_dir} \
+        --no-binary :all: 
 
     cd ${project_dir}/wheelhouse
     for file in ${project_dir}/wheel/*; do
