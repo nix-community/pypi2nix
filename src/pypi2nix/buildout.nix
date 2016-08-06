@@ -1,5 +1,5 @@
 { buildout_file
-, project_tmp_dir
+, project_dir
 , buildout_cache_dir
 , python_version
 , extra_build_inputs ? []
@@ -31,19 +31,26 @@ in pkgs.stdenv.mkDerivation rec {
 
     mkdir -p ${buildout_cache_dir}/download ${buildout_cache_dir}/eggs
 
-    cat <<EOF > ${project_tmp_dir}/buildout.cfg
+    cat <<EOF > ${project_dir}/buildout.cfg
     [buildout]
     extends = ${buildout_file}
     extensions = buildout.requirements
-    dump-requirements-file = ${project_tmp_dir}/buildout_requirements.txt
+    dump-requirements-file = ${project_dir}/buildout_requirements.txt
     overwrite-requirements-file = true
+
     download-cache = ${buildout_cache_dir}/download
     eggs-directory = ${buildout_cache_dir}/eggs
+
+    directory = ${project_dir}
+    parts-directorya = ${project_dir}/parts
+    installed = ${project_dir}/.installed.cfg
+    bin-directory = ${project_dir}/bin
+    develop-eggs-directory = ${project_dir}/develop-eggs
     EOF
 
-    cp ${project_tmp_dir}/buildout.cfg $PWD/pypi2nix.cfg
+    cp ${project_dir}/buildout.cfg $PWD/pypi2nix.cfg
 
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH buildout -v -c $PWD/pypi2nix.cfg
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH buildout -vvv -c $PWD/pypi2nix.cfg
 
     rm $PWD/pypi2nix.cfg
   '';
