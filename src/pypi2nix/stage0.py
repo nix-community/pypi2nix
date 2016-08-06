@@ -4,7 +4,8 @@ import click
 import pypi2nix.utils
 
 
-def main(buildout_file,
+def main(verbose,
+         buildout_file,
          project_dir,
          buildout_cache_dir,
          extra_build_inputs,
@@ -28,10 +29,11 @@ def main(buildout_file,
             or ''
     )
 
-    returncode, output = pypi2nix.utils.cmd(command)
+    returncode, output = pypi2nix.utils.cmd(command, verbose != 0)
     if returncode != 0:
-        click.echo(output)
+        if verbose == 0:
+            click.echo(output)
         raise click.ClickException(
             u'While trying to run the command something went wrong.')
 
-    return os.path.join(project__dir, 'buildout_requirements.txt')
+    return os.path.join(project_dir, 'buildout_requirements.txt')

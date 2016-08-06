@@ -5,7 +5,8 @@ import os
 import pypi2nix.utils
 
 
-def main(requirements_files,
+def main(verbose,
+         requirements_files,
          project_dir,
          download_cache_dir,
          wheel_cache_dir,
@@ -32,9 +33,10 @@ def main(requirements_files,
             or ''
     )
 
-    returncode, output = pypi2nix.utils.cmd(command)
+    returncode, output = pypi2nix.utils.cmd(command, verbose != 0)
     if returncode != 0:
-        click.echo(output)
+        if verbose == 0:
+            click.echo(output)
         raise click.ClickException(
             u'While trying to run the command something went wrong.')
 

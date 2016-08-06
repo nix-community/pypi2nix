@@ -1,3 +1,4 @@
+import click
 import shlex
 import subprocess
 
@@ -34,12 +35,14 @@ def safe(string):
     return string.replace('"', '\\"')
 
 
-def cmd(command):
+def cmd(command, verbose=False):
 
     if isinstance(command, str):
         command = shlex.split(command)
 
     output = '|-> ' + ' '.join(command)
+    if verbose:
+        click.echo('|-> ' + ' '.join(command))
 
     p = subprocess.Popen(
         command,
@@ -54,6 +57,8 @@ def cmd(command):
             break
         if line != '':
             output += '    ' + line.rstrip('\n')
+            if verbose:
+                click.echo('    ' + line.rstrip('\n'))
             out.append(line)
 
     return p.returncode, output

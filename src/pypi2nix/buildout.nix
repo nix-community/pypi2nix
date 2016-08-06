@@ -41,7 +41,6 @@ in pkgs.stdenv.mkDerivation rec {
     download-cache = ${buildout_cache_dir}/download
     eggs-directory = ${buildout_cache_dir}/eggs
 
-    directory = ${project_dir}
     parts-directorya = ${project_dir}/parts
     installed = ${project_dir}/.installed.cfg
     bin-directory = ${project_dir}/bin

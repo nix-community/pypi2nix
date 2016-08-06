@@ -16,6 +16,7 @@ import pypi2nix.utils
               is_flag=True,
               help=u'Show version of pypi2nix',
               )
+@click.option('-v', '--verbose', count=True)
 @click.option('-I', '--nix-path',
               envvar='NIX_PATH',
               multiple=True,
@@ -76,6 +77,7 @@ import pypi2nix.utils
               help=u'location/url to editable locations',
               )
 def main(version,
+         verbose,
          nix_path,
          basename,
          cache_dir,
@@ -151,12 +153,13 @@ def main(version,
         shutil.rmtree(project_dir)
     os.makedirs(project_dir)
 
-    click.echo('')
     click.echo('pypi2nix v{} running ...'.format(pypi2nix_version))
+    click.echo('')
 
     if buildout:
         click.echo('Stage0: Generating requirements.txt from buildout configuration ...')
         buildout_requirements = pypi2nix.stage0.main(
+            verbose=verbose,
             buildout_file=buildout,
             project_dir=project_dir,
             buildout_cache_dir=buildout_cache_dir,
@@ -182,6 +185,7 @@ def main(version,
     click.echo('Stage1: Downloading wheels and creating wheelhouse ...')
 
     requirements_frozen, wheels = pypi2nix.stage1.main(
+        verbose=verbose,
         requirements_files=requirements_files,
         project_dir=project_dir,
         download_cache_dir=download_cache_dir,
@@ -194,7 +198,11 @@ def main(version,
     click.echo('Stage2: Extracting metadata from pypi.python.org ...')
 
     packages_metadata = pypi2nix.stage2.main(
-        wheels, requirements_files, wheel_cache_dir)
+        verbose=verbose,
+        wheels=wheels,
+        requirements_files=requirements_files,
+        wheel_cache_dir=wheel_cache_dir
+    )
 
     click.echo('Stage3: Generating Nix expressions ...')
 

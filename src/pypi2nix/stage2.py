@@ -298,7 +298,7 @@ def process_wheel(wheel_cache_dir, wheel, sources, index=INDEX_URL,
     return wheel
 
 
-def main(wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
+def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
     """Extract packages metadata from wheels dist-info folders.
     """
 
@@ -321,6 +321,8 @@ def main(wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
         for wheel in wheels:
 
             output += '|-> from %s' % os.path.basename(wheel)
+            if verbose != 0:
+                click.echo('|-> from %s' % os.path.basename(wheel))
 
             wheel_metadata = process_metadata(wheel)
             if not wheel_metadata:
@@ -329,7 +331,8 @@ def main(wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
             metadata.append(
                 process_wheel(wheel_cache_dir, wheel_metadata, sources, index))
     except Exception as e:
-        click.echo(output)
+        if verbose == 0:
+            click.echo(output)
         raise e
 
     return metadata
