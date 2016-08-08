@@ -121,7 +121,7 @@ packages as buildInputs as demonstrated here::
         python.pkgs."jsonschema"
         python.pkgs."taskcluster"
         python.pkgs."virtualenv"
-      ] ++ (builtins.attrValues python.modules);
+      ];
       ...
     }
     
