@@ -15,6 +15,7 @@ DEFAULT_NIX = '''# generated using pypi2nix tool (version: %(version)s)
 
 let
 
+  inherit (pkgs) makeWrapper;
   inherit (pkgs.stdenv.lib) fix' extends inNixShell;
 
   pythonPackages = import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
@@ -27,18 +28,33 @@ let
   commonBuildInputs = %(extra_build_inputs)s;
   commonDoCheck = %(enable_tests)s;
 
-  withPackages = pkgs:
+  withPackages = pkgs':
     let
-      pkgs' = builtins.removeAttrs pkgs ["__unfix__"];
+      pkgs = builtins.removeAttrs pkgs' ["__unfix__"];
+      interpreter = pythonPackages.buildPythonPackage {
+        name = "%(python_version)s-interpreter";
+        buildInputs = [ makeWrapper ] ++ (builtins.attrValues pkgs);
+        buildCommand = ''
+          mkdir -p $out/bin
+          ln -s ${pythonPackages.python.interpreter} $out/bin/${pythonPackages.python.executable}
+          for prog in "$out/bin/"*; do
+            wrapProgram "$prog" --prefix PYTHONPATH : "$PYTHONPATH"
+          done
+          pushd $out/bin
+          ln -s ${pythonPackages.python.executable} python
+          popd
+        '';
+        passthru.interpreter = pythonPackages.python;
+      };
     in {
       __old = pythonPackages;
-      interpreter = pythonPackages.python;  # TODO: we should wrap python with PYTHONPATH and forward passthru
+      inherit interpreter;
       mkDerivation = pythonPackages.buildPythonPackage;
-      packages = pkgs';
+      packages = pkgs;
       overrideDerivation = drv: f:
         pythonPackages.buildPythonPackage (drv.drvAttrs // f drv.drvAttrs);
-      withPackages = pkgs:
-        withPackages (pkgs' // pkgs);
+      withPackages = pkgs'':
+        withPackages (pkgs // pkgs'');
     };
 
   python = withPackages {};
