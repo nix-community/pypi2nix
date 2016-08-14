@@ -37,6 +37,13 @@ let
         buildCommand = ''
           mkdir -p $out/bin
           ln -s ${pythonPackages.python.interpreter} $out/bin/${pythonPackages.python.executable}
+          for dep in ${builtins.concatStringsSep " " (builtins.attrValues pkgs)}; do
+            if [ -d "$dep/bin" ]; then
+              for prog in "$dep/bin/"*; do
+                ln -s $prog $out/bin/`basename $prog`
+              done
+            fi
+          done
           for prog in "$out/bin/"*; do
             wrapProgram "$prog" --prefix PYTHONPATH : "$PYTHONPATH"
           done
