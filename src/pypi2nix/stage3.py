@@ -17,7 +17,7 @@ let
 
   inherit (pkgs.stdenv.lib) fix' extends inNixShell;
 
-  pythonPackages = import <nixpkgs/pkgs/top-level/python-packages.nix> {
+  pythonPackages = import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
     inherit pkgs;
     inherit (pkgs) stdenv;
     python = pkgs.%(python_version)s;
@@ -47,7 +47,6 @@ let
 
   python' = buildEnv {
     pkgs = builtins.removeAttrs (fix' (extends overrides generated)) ["__unfix__"];
-
   };
 
 in python'
