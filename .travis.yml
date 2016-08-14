@@ -1,6 +1,13 @@
 language: nix
 addons:
   ssh_known_hosts: garbas.si
+env:
+- EXAMPLE=sentry
+- EXAMPLE=empy
+- EXAMPLE=lektor
+- EXAMPLE=rss2email
+- EXAMPLE=awscli_and_requests
+- EXAMPLE=vulnix
 before_install:
 - echo 'binary-caches = https://cache.nixos.org/ https://travis.garbas.si/pypi2nix/' | sudo tee -a /etc/nix/nix.conf > /dev/null
 - openssl aes-256-cbc -K $encrypted_0cfcc1944c73_key -iv $encrypted_0cfcc1944c73_iv -in deploy_rsa.enc -out deploy_rsa -d
@@ -11,7 +18,7 @@ script:
 - if [ "$TRAVIS_PULL_REQUEST" != "true" -a "$TRAVIS_BRANCH" = "master" ]; then
     cd examples;
     mkdir tmp;
-    make all TMPDIR=$PWD/tmp;
+    make $EXAMPLE TMPDIR=$PWD/tmp;
     cd ..;
     mkdir nars/;
     nix-push --dest "$PWD/nars/" --force ./result-$PKGS_SET;
