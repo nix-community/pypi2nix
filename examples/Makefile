@@ -6,6 +6,7 @@ PYPI2NIX=../result/bin/pypi2nix
 
 # commented out sentry since it doesn't work on travis
 all: \
+	sentry \
 	empy \
 	lektor \
 	rss2email \
@@ -14,6 +15,7 @@ all: \
 
 clear: \
 	pypi2nix-clear \
+	sentry-clear \
 	empy-clear \
 	lektor-clear \
 	rss2email-clear \
