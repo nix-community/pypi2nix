@@ -1,6 +1,5 @@
 { src ? { outPath = ./.; name = "pypi2nix"; }
-, nixpkgs ? builtins.fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/453086a15fc0db0c2bc17d98350b0632551cb0fe.tar.gz"
-
+, nixpkgs ? <nixpkgs>
 , pythonVersion ? "35"
 }:
 
