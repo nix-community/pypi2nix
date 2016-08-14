@@ -8,7 +8,7 @@ import requests
 import tempfile
 import itertools
 
-from pypi2nix.utils import TO_IGNORE, safe
+from pypi2nix.utils import TO_IGNORE, safe, compare_version
 
 
 EXTENSIONS = ['tar.gz', 'tar.bz2', 'tar', 'zip', 'tgz']
@@ -219,21 +219,20 @@ def find_release(wheel_cache_dir, wheel, wheel_data):
 
     _releases = wheel_data['releases'].get(wheel['version'])
     if not _releases:
-        _releases = wheel_data['releases'].values()
-        _releases = list(itertools.chain.from_iterable(_releases))
+        for _version, _releases_tmp in wheel_data['releases'].items():
+            if compare_version(wheel['version'], _version):
+                _releases = _releases_tmp
+                break
 
     for _release in _releases:
         for _ext in EXTENSIONS:
-            _version_plus_ext = '-{}.{}'.format(wheel['version'], _ext)
-            if _release['filename'].endswith(_version_plus_ext):
+            if _release['filename'].endswith(_ext):
                 wheel_release = _release
                 break
         if wheel_release:
             break
 
     if not wheel_release:
-        import pdb
-        pdb.set_trace()
         raise click.ClickException(
             "Unable to find releases for package {name} of version "
             "{version}".format(**wheel))

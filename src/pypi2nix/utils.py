@@ -1,4 +1,5 @@
 import click
+import re
 import shlex
 import subprocess
 
@@ -73,3 +74,11 @@ def create_command_options(options):
             value = "[ %s ]" % (' '.join(['"%s"' % x for x in value]))
             command_options.append("--arg {} '{}'".format(name, value))
     return ' '.join(command_options)
+
+
+def compare_version(version1, version2):
+    def normalize(v):
+        return [int(x) for x in re.sub(r'(\.0+)*$','', v).split(".")]
+    a = normalize(version1)
+    b = normalize(version2)
+    return ((a > b) - (a < b))
