@@ -4,3 +4,4 @@
 !/examples/*_override.nix
 /result*
 /examples/generated*
+/deploy_rsa
