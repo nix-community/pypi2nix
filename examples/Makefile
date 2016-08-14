@@ -1,13 +1,25 @@
 
-SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql freetype libjpeg zlib libtiff libwebp tcl lcms2"
+SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql freetype libjpeg zlib libtiff libwebp tcl lcms2 pkgconfig"
 LEKTOR_BUILD_INPUTS="libffi openssl unzip"
 PYPI2NIX=../result/bin/pypi2nix
 
 
 # commented out sentry since it doesn't work on travis
-all: empy lektor rss2email awscli_and_requests vulnix
+all: \
+	empy \
+	lektor \
+	rss2email \
+	awscli_and_requests \
+	vulnix
 
-clear: sentry-clear empy-clear lektor-clear rss2email-clear
+clear: \
+	pypi2nix-clear \
+	empy-clear \
+	lektor-clear \
+	rss2email-clear \
+	awscli_and_requests-clear \
+	vulnix-clear
+
 
 pypi2nix-clear:
 	@rm -f ../result
@@ -26,7 +38,10 @@ sentry: sentry.nix
 
 sentry.nix: sentry.txt $(PYPI2NIX)
 	@echo "generating sentry nix expressions ..."
-	@$(PYPI2NIX) -v --basename sentry -r sentry.txt -E $(SENTRY_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
+	@$(PYPI2NIX) -v --basename sentry \
+		-e "https://github.com/garbas/Pillow/archive/pkg-config.tar.gz#egg=Pillow" \
+		-e setuptools-scm \
+		-r sentry.txt -E $(SENTRY_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
 
 sentry.txt: sentry-clear
 	@echo "Sentry" > sentry.txt
@@ -87,9 +102,9 @@ lektor-clear:
 rss2email: rss2email.nix
 	@echo "building and testing rss2email ..."
 	@nix-build rss2email.nix -o rss2email -A interpreter --show-trace
-	@./rss2email/bin/python3 -c 'import rss2email'
+	@./rss2email/bin/python -c 'import rss2email'
 	@./rss2email/bin/r2e --help
-	@nix-build rss2email.nix -A interpreter --run "python3 -c 'import rss2email'"
+	@nix-build rss2email.nix -A interpreter --run "python -c 'import rss2email'"
 	@nix-build rss2email.nix -A interpreter --run "r2e --help"
 
 rss2email.nix: rss2email.txt $(PYPI2NIX)
@@ -137,7 +152,7 @@ awscli_and_requests-clear:
 
 vulnix: vulnix-clear $(PYPI2NIX)
 	@echo "building and testing vulnix..."
-	@git clone https://github.com/flyingcircusio/vulnix vulnix-src
+	@git clone https://github.com/garbas/vulnix vulnix-src
 	@cd vulnix-src && ./../$(PYPI2NIX) -V 3.5 -b buildout.cfg -e pytest-runner -e setuptools-scm -v -I $(NIX_PATH)
 	@nix-build vulnix-src/default.nix -o vulnix
 	@./vulnix/bin/vulnix --help
