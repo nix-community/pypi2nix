@@ -27,29 +27,26 @@ let
   commonBuildInputs = %(extra_build_inputs)s;
   commonDoCheck = %(enable_tests)s;
 
-  buildEnv = { pkgs ? {} }:
+  withPackages = pkgs:
     let
-      interpreter = pythonPackages.python.buildEnv.override {
-        extraLibs = builtins.attrValues pkgs;
-      };
+      pkgs' = builtins.removeAttrs pkgs ["__unfix__"];
     in {
-      mkDerivation = pythonPackages.buildPythonPackage;
-      interpreter = if inNixShell then interpreter.env else interpreter;
-      overrideDerivation = drv: f: pythonPackages.buildPythonPackage (drv.drvAttrs // f drv.drvAttrs);
-      withPackages = pkgs': buildEnv { pkgs = pkgs'; };
-      inherit buildEnv pkgs;
       __old = pythonPackages;
+      interpreter = pythonPackages.python;  # TODO: we should wrap python with PYTHONPATH and forward passthru
+      mkDerivation = pythonPackages.buildPythonPackage;
+      packages = pkgs';
+      overrideDerivation = drv: f:
+        pythonPackages.buildPythonPackage (drv.drvAttrs // f drv.drvAttrs);
+      withPackages = pkgs:
+        withPackages (pkgs' // pkgs);
     };
 
-  python = buildEnv {};
+  python = withPackages {};
+
   generated = import %(generated_file)s { inherit pkgs python commonBuildInputs commonDoCheck; };
   overrides = import %(overrides_file)s { inherit pkgs python; };
 
-  python' = buildEnv {
-    pkgs = builtins.removeAttrs (fix' (extends overrides generated)) ["__unfix__"];
-  };
-
-in python'
+in python.withPackages (fix' (extends overrides generated))
 '''
 
 GENERATED_NIX = '''# generated using pypi2nix tool (version: %s)
@@ -70,7 +67,7 @@ GENERATED_PACKAGE_NIX = '''
     name = "%(name)s-%(version)s";
     src = pkgs.fetchurl {
       url = "%(url)s";
-      %(hash_type)s= "%(hash_value)s";
+      %(hash_type)s = "%(hash_value)s";
     };
     doCheck = commonDoCheck;
     buildInputs = commonBuildInputs;
