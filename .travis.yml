@@ -9,7 +9,10 @@ before_install:
 - ssh-add $TRAVIS_BUILD_DIR/deploy_rsa
 script:
 - if [ "$TRAVIS_PULL_REQUEST" != "true" -a "$TRAVIS_BRANCH" = "master" ]; then
-    cd examples && make all TMPDIR=$PWD/tmp;
+    cd examples;
+    mkdir tmp;
+    make all TMPDIR=$PWD/tmp;
+    cd ..;
     mkdir nars/;
     nix-push --dest "$PWD/nars/" --force ./result-$PKGS_SET;
   fi
