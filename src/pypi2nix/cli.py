@@ -180,7 +180,7 @@ def main(version,
                 else:
                     f.write('%s\n' % item)
 
-        requirements_files.append(editable_file)
+        requirements_files = [editable_file] + requirements_files
 
     click.echo('Stage1: Downloading wheels and creating wheelhouse ...')
 
