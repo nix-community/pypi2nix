@@ -34,7 +34,8 @@ def main(verbose,
     )
 
     returncode, output = pypi2nix.utils.cmd(command, verbose != 0)
-    if returncode != 0:
+    if returncode != 0 or \
+           output.endswith('ERROR: Failed to build one or more wheels'):
         if verbose == 0:
             click.echo(output)
         raise click.ClickException(
