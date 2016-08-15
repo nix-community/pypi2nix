@@ -72,11 +72,11 @@ Building generated packages
 
 Build one package::
 
-    % nix-build requirements.nix -A pkgs.empy
+    % nix-build requirements.nix -A packages.empy
 
 Build all packages::
 
-    % nix-build requirements.nix -A pkgs
+    % nix-build requirements.nix -A packages
 
 Build python interpreter with all packages loaded::
 
@@ -103,34 +103,34 @@ packages as buildInputs as demonstrated here::
       name = "ProjectA-1.0.0";
       src = ./.;
       buildInputs = [
-        python.pkgs."coverage"
-        python.pkgs."flake8"
-        python.pkgs."mock"
-        python.pkgs."pytest"
-        python.pkgs."pytest-asyncio"
-        python.pkgs."pytest-cov"
-        python.pkgs."pytest-mock"
-        python.pkgs."pytest-xdist"
-        python.pkgs."virtualenv"
+        python.packages."coverage"
+        python.packages."flake8"
+        python.packages."mock"
+        python.packages."pytest"
+        python.packages."pytest-asyncio"
+        python.packages."pytest-cov"
+        python.packages."pytest-mock"
+        python.packages."pytest-xdist"
+        python.packages."virtualenv"
       ];
       propagatedBuildInputs = [
-        python.pkgs."aiohttp"
-        python.pkgs."arrow"
-        python.pkgs."defusedxml"
-        python.pkgs."frozendict"
-        python.pkgs."jsonschema"
-        python.pkgs."taskcluster"
-        python.pkgs."virtualenv"
+        python.packages."aiohttp"
+        python.packages."arrow"
+        python.packages."defusedxml"
+        python.packages."frozendict"
+        python.packages."jsonschema"
+        python.packages."taskcluster"
+        python.packages."virtualenv"
       ];
       ...
     }
     
 
-As you can see you can access all packages via ``python.pkgs."<name>"``. If you
-want to depend on *all* packages you can as well do::
+As you can see you can access all packages via ``python.packages."<name>"``. If
+you want to depend on *all* packages you can as well do::
 
 
-    propagatedBuildInputs = builtins.attrValues python.pkgs;
+    propagatedBuildInputs = builtins.attrValues python.packages;
 
 
 
@@ -177,21 +177,21 @@ Nothing speaks better then an example::
       name = "projectA-1.0.0";
       src = ./.;
       buildInputs = [
-        python.pkgs."coverage"
-        python.pkgs."flake8"
-        python.pkgs."mock"
-        python.pkgs."pytest"
-        python.pkgs."pytest-asyncio"
-        python.pkgs."pytest-cov"
-        python.pkgs."pytest-mock"
-        python.pkgs."pytest-xdist"
+        python.packages."coverage"
+        python.packages."flake8"
+        python.packages."mock"
+        python.packages."pytest"
+        python.packages."pytest-asyncio"
+        python.packages."pytest-cov"
+        python.packages."pytest-mock"
+        python.packages."pytest-xdist"
       ];
       propagatedBuildInputs = [
-        python.pkgs."aiohttp"
-        python.pkgs."arrow"
-        python.pkgs."defusedxml"
-        python.pkgs."frozendict"
-        python.pkgs."jsonschema"
+        python.packages."aiohttp"
+        python.packages."arrow"
+        python.packages."defusedxml"
+        python.packages."frozendict"
+        python.packages."jsonschema"
       ];
       checkPhase = ''
         export NO_TESTS_OVER_WIRE=1
@@ -211,7 +211,8 @@ utilities.
 
 To create a package you would use ``python.mkDerivation`` as you are used to
 that ``pythonPackages.buildPythonPackage`` function in ``nixpkgs``. All
-generated packages are available as one attribute set under ``python.pkgs``.
+generated packages are available as one attribute set under
+``python.packages``.
 
 .. TODO explain buildEnv and show some example
 
