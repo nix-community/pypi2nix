@@ -6,7 +6,6 @@ import json
 import os.path
 import requests
 import tempfile
-import itertools
 import pkg_resources
 
 from pypi2nix.utils import TO_IGNORE, safe

@@ -214,7 +214,7 @@ that ``pythonPackages.buildPythonPackage`` function in ``nixpkgs``. All
 generated packages are available as one attribute set under
 ``python.packages``.
 
-.. TODO explain buildEnv and show some example
+.. TODO explain withPackages and show some example
 
 One of future goals of ``pypi2nix`` project is to also improve the UX of our
 python tooling in nixpkgs. While this is very hard to do within ``nixpkgs`` it
