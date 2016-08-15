@@ -28,7 +28,7 @@ pypi2nix-clear:
 
 $(PYPI2NIX): pypi2nix-clear
 	@echo "building pypi2nix ..."
-	@cd .. && nix-build release.nix -A build.x86_64-linux &> /dev/null
+	@cd .. && nix-build release.nix -A build.x86_64-linux
 
 sentry: sentry.nix
 	@echo "building and testing sentry ..."
