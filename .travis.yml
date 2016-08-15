@@ -19,7 +19,7 @@ script:
   mkdir -p examples/tmp;
     cd examples && make $EXAMPLE TMPDIR=$PWD/tmp && cd ..;
     mkdir nars/;
-    nix-push --dest "$PWD/nars/" --force ./result-$PKGS_SET;
+    nix-push --dest "$PWD/nars/" --force ./examples/$EXAMPLE;
   fi
 after_success:
 - rsync -avh --ignore-existing $TRAVIS_BUILD_DIR/nars/ travis@garbas.si:/var/travis/pypi2nix/
