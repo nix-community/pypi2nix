@@ -7,8 +7,9 @@ import os.path
 import requests
 import tempfile
 import itertools
+import pkg_resources
 
-from pypi2nix.utils import TO_IGNORE, safe, compare_version
+from pypi2nix.utils import TO_IGNORE, safe
 
 
 EXTENSIONS = ['tar.gz', 'tar.bz2', 'tar', 'zip', 'tgz']
@@ -220,7 +221,8 @@ def find_release(wheel_cache_dir, wheel, wheel_data):
     _releases = wheel_data['releases'].get(wheel['version'])
     if not _releases:
         for _version, _releases_tmp in wheel_data['releases'].items():
-            if compare_version(wheel['version'], _version):
+            if pkg_resources.parse_version(wheel['version']) == \
+                   pkg_resources.parse_version(_version):
                 _releases = _releases_tmp
                 break
 
