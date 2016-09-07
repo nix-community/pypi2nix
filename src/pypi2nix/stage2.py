@@ -217,7 +217,7 @@ def find_release(wheel_cache_dir, wheel, wheel_data):
 
     wheel_release = None
 
-    _releases = wheel_data['releases'].get(wheel['version'])
+    _releases = wheel_data['releases'].get(wheel['version'], [])
     if not _releases:
         for _version, _releases_tmp in wheel_data['releases'].items():
             if pkg_resources.parse_version(wheel['version']) == \
