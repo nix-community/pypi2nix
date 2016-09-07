@@ -118,18 +118,22 @@ def main(version,
     if not cache_dir:
         cache_dir = os.path.join(tmp_dir, 'cache')
 
-        download_cache_dir = os.path.join(cache_dir, 'download')
-        wheel_cache_dir = os.path.join(cache_dir, 'wheel')
-        buildout_cache_dir = os.path.join(cache_dir, 'buildout')
+    download_cache_dir = os.path.join(cache_dir, 'download')
+    wheel_cache_dir = os.path.join(cache_dir, 'wheel')
+    buildout_cache_dir = os.path.join(cache_dir, 'buildout')
+    pip_build_dir = os.path.join(cache_dir, 'pip')
 
-        if not os.path.exists(download_cache_dir):
-            os.makedirs(download_cache_dir)
+    if not os.path.exists(download_cache_dir):
+        os.makedirs(download_cache_dir)
 
-        if not os.path.exists(wheel_cache_dir):
-            os.makedirs(wheel_cache_dir)
+    if not os.path.exists(wheel_cache_dir):
+        os.makedirs(wheel_cache_dir)
 
-        if not os.path.exists(buildout_cache_dir):
-            os.makedirs(buildout_cache_dir)
+    if not os.path.exists(buildout_cache_dir):
+        os.makedirs(buildout_cache_dir)
+
+    if not os.path.exists(pip_build_dir):
+        os.makedirs(pip_build_dir)
 
     requirements_files = []
     if requirements:
@@ -190,6 +194,7 @@ def main(version,
         project_dir=project_dir,
         download_cache_dir=download_cache_dir,
         wheel_cache_dir=wheel_cache_dir,
+        pip_build_dir=pip_build_dir,
         extra_build_inputs=extra_build_inputs,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
         nix_path=nix_path,
