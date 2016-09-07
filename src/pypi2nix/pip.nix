@@ -2,6 +2,7 @@
 , project_dir
 , download_cache_dir
 , wheel_cache_dir
+, pip_build_dir
 , python_version
 , extra_build_inputs ? []
 }:
@@ -39,6 +40,7 @@ in pkgs.stdenv.mkDerivation rec {
         --wheel-dir ${project_dir}/wheel \
         --find-links ${wheel_cache_dir} \
         --cache-dir ${download_cache_dir} \
+        --build ${pip_build_dir} \
         --no-binary :all: 
 
     cd ${project_dir}/wheelhouse
