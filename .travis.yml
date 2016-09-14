@@ -16,8 +16,7 @@ before_install:
 - ssh-add $TRAVIS_BUILD_DIR/deploy_rsa
 script:
 - if [ "$TRAVIS_PULL_REQUEST" != "true" -a "$TRAVIS_BRANCH" = "master" ]; then
-    mkdir -p examples/tmp;
-    cd examples && make $EXAMPLE TMPDIR=$PWD/tmp && cd ..;
+    cd examples && make $EXAMPLE && cd ..;
     mkdir nars/;
     nix-push --dest "$PWD/nars/" --force ./examples/$EXAMPLE;
   fi
