@@ -2,7 +2,7 @@ language: nix
 addons:
   ssh_known_hosts: garbas.si
 env:
-#- EXAMPLE=sentry
+- EXAMPLE=sentry
 - EXAMPLE=empy
 - EXAMPLE=lektor
 - EXAMPLE=rss2email
