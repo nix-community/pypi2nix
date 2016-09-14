@@ -30,7 +30,7 @@ $(PYPI2NIX): pypi2nix-clear
 	@echo "building pypi2nix ..."
 	@cd .. && nix-build release.nix -A build.x86_64-linux
 
-sentry: 
+sentry: sentry.nix
 	@echo "building and testing sentry ..."
 	@nix-build sentry.nix -o sentry -A interpreter --show-trace > /dev/null
 	@./sentry/bin/python -c 'import sentry'
