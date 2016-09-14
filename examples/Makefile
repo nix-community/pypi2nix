@@ -1,5 +1,5 @@
 
-SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql freetype libjpeg zlib libtiff libwebp tcl lcms2 pkgconfig"
+SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql freetype libjpeg openjpeg zlib libtiff libwebp tcl lcms2 pkgconfig"
 LEKTOR_BUILD_INPUTS="libffi openssl unzip"
 PYPI2NIX=../result/bin/pypi2nix
 
@@ -43,6 +43,8 @@ sentry.nix: sentry.txt $(PYPI2NIX)
 	@$(PYPI2NIX) -v --basename sentry \
 		-e "https://github.com/garbas/Pillow/archive/pkg-config.tar.gz#egg=Pillow" \
 		-e setuptools-scm \
+		-e nose \
+		-e pytest-runner \
 		-r sentry.txt -E $(SENTRY_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
 
 sentry.txt: sentry-clear
