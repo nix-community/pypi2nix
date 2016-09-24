@@ -2,6 +2,7 @@
 SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql freetype libjpeg openjpeg zlib libtiff libwebp tcl lcms2 pkgconfig"
 LEKTOR_BUILD_INPUTS="libffi openssl unzip"
 PYPI2NIX=../result/bin/pypi2nix
+NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz
 
 
 # commented out sentry since it doesn't work on travis
