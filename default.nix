@@ -3,15 +3,26 @@
 }:
 
 let
-  deps = import ./src/pypi2nix/deps.nix { inherit fetchurl; };
+
+  click = fetchurl {
+    url = "https://pypi.python.org/packages/7a/00/c14926d8232b36b08218067bcd5853caefb4737cda3f0a47437151344792/click-6.6.tar.gz";
+    sha256 = "1sggipyz52crrybwbr9xvwxd4aqigvplf53k9w3ygxmzivd1jsnc";
+  };
+
+  requests = fetchurl {
+    url = "https://pypi.python.org/packages/49/6f/183063f01aae1e025cf0130772b55848750a2f3a89bfa11b385b35d7329d/requests-2.10.0.tar.gz";
+    sha256 = "0m2vaasjdhrsf9nk05q0bybqw0w4w4p3p4vaw7730w8mi1bq3wb3";
+  };
+
   version = builtins.readFile ./src/pypi2nix/VERSION;
+
 in stdenv.mkDerivation rec {
   name = "pypi2nix-${version}";
-  srcs = with deps; [
+  srcs = [
     src
     click
     requests
-  ];  # six attrs effect ];
+  ];
   buildInputs = [ python zip makeWrapper ];
   sourceRoot = ".";
 
@@ -19,9 +30,6 @@ in stdenv.mkDerivation rec {
     mkdir -p $out/pkgs
 
     mv click-*/click                    $out/pkgs/click
-    # mv six-*/six.py                    $out/pkgs/
-    # mv attrs-*/src/attr                $out/pkgs/attrs
-    # mv effect-*/effect                 $out/pkgs/effect
     mv requests-*/requests              $out/pkgs/
 
     if [ "$IN_NIX_SHELL" != "1" ]; then
