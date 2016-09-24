@@ -10,8 +10,8 @@ let
   };
 
   requests = fetchurl {
-    url = "https://pypi.python.org/packages/49/6f/183063f01aae1e025cf0130772b55848750a2f3a89bfa11b385b35d7329d/requests-2.10.0.tar.gz";
-    sha256 = "0m2vaasjdhrsf9nk05q0bybqw0w4w4p3p4vaw7730w8mi1bq3wb3";
+    url = "https://pypi.python.org/packages/2e/ad/e627446492cc374c284e82381215dcd9a0a87c4f6e90e9789afefe6da0ad/requests-2.11.1.tar.gz";
+    sha256 = "0cx1w7m4cpslxz9jljxv0l9892ygrrckkiwpp2hangr8b01rikss";
   };
 
   version = builtins.readFile ./src/pypi2nix/VERSION;
