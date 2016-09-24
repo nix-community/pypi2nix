@@ -40,8 +40,21 @@ def main(verbose,
            output.endswith('ERROR: Failed to build one or more wheels'):
         if verbose == 0:
             click.echo(output)
-        raise click.ClickException(
-            u'While trying to run the command something went wrong.')
+
+        message = u'While trying to run the command something went wrong.'
+
+        # trying to recognize the problem and provide more meanigful error
+        # message
+        no_matching_dist = "No matching distribution found for "
+        if no_matching_dist in output:
+            dist_name = output[output.find(no_matching_dist) + len(no_matching_dist):]
+            dist_name = dist_name[:dist_name.find(' (from')]
+            message = (
+                "Most likely `%s` package does not have source (zip/tar.bz) "
+                "distribution." % dist_name
+            )
+
+        raise click.ClickException(message)
 
     return (
         os.path.join(project_dir, 'requirements.txt'),
