@@ -56,7 +56,7 @@ def cmd(command, verbose=False):
         if line == '' and p.poll() is not None:
             break
         if line != '':
-            output += '    ' + line.rstrip('\n')
+            output += '    ' + line
             if verbose:
                 click.echo('    ' + line.rstrip('\n'))
             out.append(line)

@@ -42,6 +42,9 @@ in pkgs.stdenv.mkDerivation rec {
         --cache-dir ${download_cache_dir} \
         --build ${pip_build_dir} \
         --no-binary :all: 
+    RETVAL=$?
+    rm -R ${pip_build_dir}/*
+    [ $RETVAL -ne 0 ] && exit $RETVAL
 
     cd ${project_dir}/wheelhouse
     for file in ${project_dir}/wheel/*; do
