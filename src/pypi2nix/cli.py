@@ -157,6 +157,46 @@ def main(version,
         shutil.rmtree(project_dir)
     os.makedirs(project_dir)
 
+    def handle_requirements_file(project_dir, requirements_file):
+
+        # we find new name for our requirements_file
+        new_requirements_file = "%s/%s.txt" % (
+            project_dir,
+            hashlib.md5(requirements_file.encode()).hexdigest(),
+        )
+
+        # we open both files: f1 to read, f2 to write
+        with open(requirements_file) as f1:
+            with open(new_requirements_file, "w+") as f2:
+                for requirements_line in f1.readlines():
+                    if requirements_line.startswith("-e"):
+                        requirements_line = "-e %s" % (
+                            os.path.abspath(os.path.join(
+                                os.path.dirname(requirements_file),
+                                                requirements_line.strip()[3:]
+                            ))
+                        )
+                    elif requirements_line.startswith("-r ./"):
+                        requirements_file2 = os.path.abspath(os.path.join(
+                            os.path.dirname(requirements_file),
+                                            requirements_line.strip()[3:]
+                        ))
+                        new_requirements_file2 = handle_requirements_file(
+                            project_dir, requirements_file2)
+                        requirements_line = "-r " + new_requirements_file2
+                    f2.write(requirements_line)
+
+        return new_requirements_file
+
+    requirements_files_tmp = []
+    for requirements_file in requirements_files:
+        if requirements_file in requirements:
+            requirements_files_tmp.append(
+                handle_requirements_file(project_dir, requirements_file))
+        else:
+            requirements_files_tmp.append(requirements_file)
+    requirements_files = requirements_files_tmp
+
     click.echo('pypi2nix v{} running ...'.format(pypi2nix_version))
     click.echo('')
 
