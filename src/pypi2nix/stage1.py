@@ -6,6 +6,7 @@ import urllib
 
 import pypi2nix.utils
 
+
 HERE = os.path.dirname(__file__)
 
 

@@ -43,7 +43,7 @@ in pkgs.stdenv.mkDerivation rec {
         --build ${pip_build_dir} \
         --no-binary :all: 
     RETVAL=$?
-    rm -R ${pip_build_dir}/*
+    rm -rf ${pip_build_dir}/*
     [ $RETVAL -ne 0 ] && exit $RETVAL
 
     cd ${project_dir}/wheelhouse
