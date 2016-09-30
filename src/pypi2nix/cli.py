@@ -45,6 +45,7 @@ import pypi2nix.utils
               help=u'Cache directory to be used for downloading packages.',
               )
 @click.option('-E', '--extra-build-inputs',
+              multiple=True,
               default=None,
               help=u'Extra build dependencies needed for installation of '
                    u'required python packages.'
@@ -108,6 +109,8 @@ def main(version,
         raise click.exceptions.UsageError(
             "Missing option \"-V\" / \"--python-version\".  Choose from " +
             (", ".join(python_versions)))
+
+    extra_build_inputs = ' '.join(extra_build_inputs)
 
     # temporary pypi2nix folder and make sure it exists
     tmp_dir = os.path.join(tempfile.gettempdir(), 'pypi2nix')
