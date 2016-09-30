@@ -9,7 +9,7 @@ let
   pkgFor = system:
     if builtins.elem system supportedSystems
       then import ./default.nix {
-        inherit (pkgs) stdenv fetchurl zip makeWrapper;
+        inherit (pkgs) stdenv fetchurl zip makeWrapper nix;
         python = pkgs.python35;
         src = pypi2nix;
       }

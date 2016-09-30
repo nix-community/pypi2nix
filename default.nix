@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, python, zip, makeWrapper
+{ stdenv, fetchurl, python, zip, makeWrapper, nix
 , src ? { outPath = ./.; name = "pypi2nix"; }
 }:
 
@@ -23,7 +23,7 @@ in stdenv.mkDerivation rec {
     click
     requests
   ];
-  buildInputs = [ python zip makeWrapper ];
+  buildInputs = [ python zip makeWrapper nix.out ];
   sourceRoot = ".";
 
   postUnpack = ''
@@ -39,6 +39,10 @@ in stdenv.mkDerivation rec {
         mv pypi2nix*/src/pypi2nix       $out/pkgs/pypi2nix
       fi
     fi
+  '';
+
+  patchPhase = ''
+    sed -i -e "s|default='nix-shell',|default='${nix.out}/bin/nix-shell',|" $out/pkgs/pypi2nix/cli.py
   '';
 
   commonPhase = ''

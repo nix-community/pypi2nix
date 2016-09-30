@@ -17,6 +17,10 @@ import pypi2nix.utils
               help=u'Show version of pypi2nix',
               )
 @click.option('-v', '--verbose', count=True)
+@click.option('-N', '--nix-shell',
+              default='nix-shell',
+              help=u'Path to nix-shell executable.',
+              )
 @click.option('-I', '--nix-path',
               envvar='NIX_PATH',
               multiple=True,
@@ -78,6 +82,7 @@ import pypi2nix.utils
               )
 def main(version,
          verbose,
+         nix_shell,
          nix_path,
          basename,
          cache_dir,
@@ -209,6 +214,7 @@ def main(version,
             buildout_cache_dir=buildout_cache_dir,
             extra_build_inputs=extra_build_inputs,
             python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
+            nix_shell=nix_shell,
             nix_path=nix_path,
         )
         requirements_files.append(buildout_requirements)

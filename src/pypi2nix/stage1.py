@@ -19,12 +19,14 @@ def main(verbose,
          extra_build_inputs,
          python_version,
          nix_path=None,
+         nix_shell='nix-shell',
          ):
     """Create a complete (pip freeze) requirements.txt and a wheelhouse from
        a user provided requirements.txt.
     """
 
-    command = 'nix-shell {nix_file} {options} {nix_path} --show-trace --pure --run exit'.format(  # noqa
+    command = '{nix-shell} {nix_file} {options} {nix_path} --show-trace --pure --run exit'.format(  # noqa
+        nix_shell=nix_shell,
         nix_file=os.path.join(os.path.dirname(__file__), 'pip.nix'),
         options=pypi2nix.utils.create_command_options(dict(
             requirements_files=requirements_files,
