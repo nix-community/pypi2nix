@@ -17,10 +17,6 @@ import pypi2nix.utils
               help=u'Show version of pypi2nix',
               )
 @click.option('-v', '--verbose', count=True)
-@click.option('-N', '--nix-shell',
-              default='nix-shell',
-              help=u'Path to nix-shell executable.',
-              )
 @click.option('-I', '--nix-path',
               envvar='NIX_PATH',
               multiple=True,
@@ -30,6 +26,11 @@ import pypi2nix.utils
                    u'environment variable for information on the semantics '
                    u'of the Nix search path. Paths added through -I take '
                    u'precedence over NIX_PATH.',
+              )
+@click.option('--nix-shell',
+              required=False,
+              default='nix-shell',
+              help=u'Path to nix-shell executable.',
               )
 @click.option('--basename',
               required=False,
@@ -75,9 +76,9 @@ import pypi2nix.utils
               help=u'zc.buildout configuration file',
               )
 @click.option('-e', '--editable',
+              multiple=True,
               required=False,
               default=None,
-              multiple=True,
               type=str,
               help=u'location/url to editable locations',
               )
