@@ -76,6 +76,11 @@ import pypi2nix.utils
               type=str,
               help=u'location/url to editable locations',
               )
+@click.option('-s', '--setup-requires',
+              default=None,
+              help=u'Extra Python dependencies needed before the installation'
+                   u'to build wheels.'
+              )
 def main(version,
          verbose,
          nix_path,
@@ -87,6 +92,7 @@ def main(version,
          requirements,
          buildout,
          editable,
+         setup_requires,
          ):
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
@@ -114,6 +120,9 @@ def main(version,
 
     if extra_build_inputs:
         extra_build_inputs = extra_build_inputs.split(' ')
+
+    if setup_requires:
+        setup_requires = setup_requires.split(' ')
 
     if not cache_dir:
         cache_dir = os.path.join(tmp_dir, 'cache')
@@ -200,7 +209,7 @@ def main(version,
     click.echo('pypi2nix v{} running ...'.format(pypi2nix_version))
     click.echo('')
 
-    if buildout:
+    if buildout or setup_requires:
         click.echo('Stage0: Generating requirements.txt from buildout configuration ...')
         buildout_requirements = pypi2nix.stage0.main(
             verbose=verbose,
@@ -210,8 +219,10 @@ def main(version,
             extra_build_inputs=extra_build_inputs,
             python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
             nix_path=nix_path,
+            setup_requires=setup_requires,
         )
-        requirements_files.append(buildout_requirements)
+        if buildout_requirements:
+            requirements_files.append(buildout_requirements)
 
     if editable:
         editable_file = os.path.join(tmp_dir, 'editable.txt')

@@ -10,6 +10,7 @@ def main(verbose,
          buildout_cache_dir,
          extra_build_inputs,
          python_version,
+         setup_requires=None,
          nix_path=None,
          ):
     """ Converts buildout.cfg specifiation into requirements.txt file
@@ -23,6 +24,7 @@ def main(verbose,
             buildout_cache_dir=buildout_cache_dir,
             extra_build_inputs=extra_build_inputs,
             python_version=python_version,
+            setup_requires=setup_requires,
         )),
         nix_path=nix_path \
             and ' '.join('-I {}'.format(i) for i in nix_path) \
@@ -36,4 +38,5 @@ def main(verbose,
         raise click.ClickException(
             u'While trying to run the command something went wrong.')
 
-    return os.path.join(project_dir, 'buildout_requirements.txt')
+
+    return buildout_file and os.path.join(project_dir, 'buildout_requirements.txt') or None

@@ -1,8 +1,9 @@
-{ buildout_file
+{ buildout_file ? ""
 , project_dir
 , buildout_cache_dir
 , python_version
 , extra_build_inputs ? []
+, setup_requires ? []
 }:
 
 let
@@ -12,23 +13,8 @@ let
     inherit (pkgs) stdenv fetchurl unzip which makeWrapper;
     inherit python;
   };
-in pkgs.stdenv.mkDerivation rec {
-  name = "pypi2nix-buildout";
 
-  buildInputs = with pkgs; [
-    pypi2nix_bootstrap
-    unzip
-    gitAndTools.git
-  ] ++ (pkgs.lib.optional pkgs.stdenv.isLinux pkgs.glibcLocales)
-    ++ (map (name: pkgs.lib.getAttrFromPath
-          (pkgs.lib.splitString "." name) pkgs) extra_build_inputs);
-
-  shellHook = ''
-    export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-    export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-    export PYTHONPATH=${pypi2nix_bootstrap}/base
-    export LANG=en_US.UTF-8
-
+  scriptBuildout = (if buildout_file != "" then ''
     mkdir -p ${buildout_cache_dir}/download ${buildout_cache_dir}/eggs
 
     cat <<EOF > ${project_dir}/buildout.cfg
@@ -52,6 +38,33 @@ in pkgs.stdenv.mkDerivation rec {
     PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH buildout -vvv -c $PWD/pypi2nix.cfg
 
     rm $PWD/pypi2nix.cfg
-  '';
-}
+    '' else "");
 
+  scriptRequires = with builtins; (if (length setup_requires) > 0 then
+    ''
+    mkdir -p ${project_dir}/setup_requires
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
+      pip install \
+        ${builtins.concatStringsSep" "(setup_requires)} \
+        --target=${project_dir}/setup_requires
+    '' else "");
+
+in pkgs.stdenv.mkDerivation rec {
+  name = "pypi2nix-buildout";
+
+  buildInputs = with pkgs; [
+    pypi2nix_bootstrap
+    unzip
+    gitAndTools.git
+  ] ++ (pkgs.lib.optional pkgs.stdenv.isLinux pkgs.glibcLocales)
+    ++ (map (name: pkgs.lib.getAttrFromPath
+          (pkgs.lib.splitString "." name) pkgs) extra_build_inputs);
+
+  shellHook = ''
+    export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+    export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+    export PYTHONPATH=${pypi2nix_bootstrap}/base
+    export LANG=en_US.UTF-8
+
+'' + scriptBuildout + scriptRequires;
+}
