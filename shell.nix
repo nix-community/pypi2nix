@@ -8,5 +8,5 @@ let
   python = (builtins.getAttr "python${pythonVersion}Packages" pkgs).python;
 in import ./default.nix {
   inherit src python;
-  inherit (pkgs) stdenv fetchurl zip makeWrapper;
+  inherit (pkgs) stdenv fetchurl zip makeWrapper nix;
 }
