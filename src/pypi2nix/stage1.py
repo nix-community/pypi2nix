@@ -25,7 +25,7 @@ def main(verbose,
        a user provided requirements.txt.
     """
 
-    command = '{nix-shell} {nix_file} {options} {nix_path} --show-trace --pure --run exit'.format(  # noqa
+    command = '{nix_shell} {nix_file} {options} {nix_path} --show-trace --pure --run exit'.format(  # noqa
         nix_shell=nix_shell,
         nix_file=os.path.join(os.path.dirname(__file__), 'pip.nix'),
         options=pypi2nix.utils.create_command_options(dict(
@@ -39,7 +39,7 @@ def main(verbose,
         )),
         nix_path=nix_path \
             and ' '.join('-I {}'.format(i) for i in nix_path) \
-            or ''
+            or '',
     )
 
     returncode, output = pypi2nix.utils.cmd(command, verbose != 0)
