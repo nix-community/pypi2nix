@@ -111,7 +111,8 @@ def main(version,
             "Missing option \"-V\" / \"--python-version\".  Choose from " +
             (", ".join(python_versions)))
 
-    extra_build_inputs = ' '.join(extra_build_inputs)
+    extra_build_inputs = filter(lambda x: x != '',
+                                (' '.join(extra_build_inputs)).split(' '))
 
     # temporary pypi2nix folder and make sure it exists
     tmp_dir = os.path.join(tempfile.gettempdir(), 'pypi2nix')
@@ -121,8 +122,6 @@ def main(version,
     current_dir = os.getcwd()
     requirements_name = os.path.join(current_dir, basename)
 
-    if extra_build_inputs:
-        extra_build_inputs = extra_build_inputs.split(' ')
 
     if not cache_dir:
         cache_dir = os.path.join(tmp_dir, 'cache')
