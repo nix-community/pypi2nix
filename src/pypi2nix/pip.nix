@@ -34,7 +34,7 @@ in pkgs.stdenv.mkDerivation rec {
 
     mkdir -p ${project_dir}/wheel ${project_dir}/wheelhouse
 
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
       pip wheel \
         ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} \
         --wheel-dir ${project_dir}/wheel \
