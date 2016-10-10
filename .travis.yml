@@ -2,11 +2,12 @@ language: nix
 addons:
   ssh_known_hosts: garbas.si
 env:
-#- EXAMPLE=sentry
+- EXAMPLE=awscli_and_requests
 - EXAMPLE=empy
 - EXAMPLE=lektor
 - EXAMPLE=rss2email
-- EXAMPLE=awscli_and_requests
+#- EXAMPLE=scipy
+#- EXAMPLE=sentry
 - EXAMPLE=vulnix
 before_install:
 - echo 'binary-caches = https://cache.nixos.org/ https://travis.garbas.si/pypi2nix/' | sudo tee -a /etc/nix/nix.conf > /dev/null

@@ -5,15 +5,45 @@
 , pip_build_dir
 , python_version
 , extra_build_inputs ? []
+, setup_requires ? []
 }:
 
 let
+
   pkgs = import <nixpkgs> {};
+
   python = builtins.getAttr python_version pkgs;
+
   pypi2nix_bootstrap = import ./bootstrap.nix {
     inherit (pkgs) stdenv fetchurl unzip which makeWrapper;
     inherit python;
   };
+
+  numpySiteCfg = pkgs.lib.optionalString
+    (
+      (builtins.elem "numpy" setup_requires) &&
+      (builtins.elem "blas" extra_build_inputs)
+    )
+    ''
+      cat << EOF > $HOME/.numpy-site.cfg
+      [openblas]
+      include_dirs = ${pkgs.blas}/include
+      library_dirs = ${pkgs.blas}/lib
+      EOF
+    '';
+
+  scriptRequires = pkgs.lib.optionalString ((builtins.length setup_requires) > 0) ''
+      mkdir -p ${project_dir}/setup_requires
+      PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
+        pip install \
+          ${builtins.concatStringsSep" "(setup_requires)} \
+          --target=${project_dir}/setup_requires \
+          --find-links ${wheel_cache_dir} \
+          --cache-dir ${download_cache_dir} \
+          --build ${pip_build_dir} \
+          --no-binary :all: 
+    '';
+
 in pkgs.stdenv.mkDerivation rec {
   name = "pypi2nix-pip";
 
@@ -31,6 +61,10 @@ in pkgs.stdenv.mkDerivation rec {
     export PYTHONPATH=${pypi2nix_bootstrap}/base
     export PIP_DOWNLOAD_CACHE=${download_cache_dir}
     export LANG=en_US.UTF-8
+    export HOME=${project_dir}
+
+    ${numpySiteCfg}
+    ${scriptRequires}
 
     mkdir -p ${project_dir}/wheel ${project_dir}/wheelhouse
 

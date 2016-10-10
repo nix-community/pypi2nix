@@ -73,3 +73,10 @@ def create_command_options(options):
             value = "[ %s ]" % (' '.join(['"%s"' % x for x in value]))
             command_options.append("--arg {} '{}'".format(name, value))
     return ' '.join(command_options)
+
+
+def args_as_list(inputs):
+    return list(filter(
+        lambda x: x != '',
+        (' '.join(inputs)).split(' ')
+    ))

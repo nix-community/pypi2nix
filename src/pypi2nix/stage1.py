@@ -20,6 +20,7 @@ def main(verbose,
          python_version,
          nix_path=None,
          nix_shell='nix-shell',
+         setup_requires=[],
          ):
     """Create a complete (pip freeze) requirements.txt and a wheelhouse from
        a user provided requirements.txt.
@@ -36,6 +37,7 @@ def main(verbose,
             pip_build_dir=pip_build_dir,
             extra_build_inputs=extra_build_inputs,
             python_version=python_version,
+            setup_requires=setup_requires,
         )),
         nix_path=nix_path \
             and ' '.join('-I {}'.format(i) for i in nix_path) \

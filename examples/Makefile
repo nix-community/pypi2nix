@@ -1,5 +1,5 @@
 
-SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql freetype libjpeg openjpeg zlib libtiff libwebp tcl lcms2 pkgconfig"
+SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql freetype libjpeg openjpeg zlib libtiff libwebp tcl lcms2 pkgconfig cmake"
 LEKTOR_BUILD_INPUTS="libffi openssl unzip"
 PYPI2NIX=../result/bin/pypi2nix
 NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz
@@ -7,20 +7,22 @@ NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unsta
 
 # commented out sentry since it doesn't work on travis
 all: \
-	sentry \
+	awscli_and_requests \
 	empy \
 	lektor \
 	rss2email \
-	awscli_and_requests \
-	vulnix
+	scipy \
+	sentry \
+	vulnix 
 
 clear: \
-	pypi2nix-clear \
-	sentry-clear \
+	awscli_and_requests-clear \
 	empy-clear \
 	lektor-clear \
+	pypi2nix-clear \
 	rss2email-clear \
-	awscli_and_requests-clear \
+	scipy-clear \
+	sentry-clear \
 	vulnix-clear
 
 
@@ -165,3 +167,24 @@ vulnix: vulnix-clear $(PYPI2NIX)
 vulnix-clear:
 	@rm -f vulnix
 	@rm -rf vulnix-src
+
+
+scipy: scipy.nix
+	@echo "building and testing scipy..."
+	@nix-build scipy.nix -o scipy-A interpreter --show-trace
+	@./scipy/bin/python -c 'import scipy'
+	@nix-shell scipy.nix -A interpreter --run "python -c 'import scipy'"
+
+scipy.nix: scipy.txt $(PYPI2NIX)
+	@echo "generating scipy.nix expressions ..."
+	@$(PYPI2NIX) -v --basename scipy -r scipy.txt -s numpy -E gfortran -E blas -I $(NIX_PATH) -V "3.5"
+
+scipy.txt: scipy-clear
+	@echo "scipy" > scipy.txt
+
+scipy-clear:
+	@rm -f scipy
+	@rm -f scipy.txt
+	@rm -f scipy.nix
+	@rm -f scipy_generated.nix
+	@rm -f scipy_frozen.txt

@@ -10,9 +10,9 @@ def main(verbose,
          buildout_cache_dir,
          extra_build_inputs,
          python_version,
-         setup_requires=None,
          nix_path=None,
          nix_shell='nix-shell',
+         setup_requires=[],
          ):
     """ Converts buildout.cfg specifiation into requirements.txt file
     """

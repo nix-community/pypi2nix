@@ -83,7 +83,10 @@ import pypi2nix.utils
               help=u'location/url to editable locations',
               )
 @click.option('-s', '--setup-requires',
+              multiple=True,
+              required=False,
               default=None,
+              type=str,
               help=u'Extra Python dependencies needed before the installation'
                    u'to build wheels.'
               )
@@ -117,10 +120,8 @@ def main(version,
             "Missing option \"-V\" / \"--python-version\".  Choose from " +
             (", ".join(python_versions)))
 
-    extra_build_inputs = list(filter(
-        lambda x: x != '',
-        (' '.join(extra_build_inputs)).split(' ')
-    ))
+    extra_build_inputs = pypi2nix.utils.args_as_list(extra_build_inputs)
+    setup_requires = pypi2nix.utils.args_as_list(setup_requires)
 
     # temporary pypi2nix folder and make sure it exists
     tmp_dir = os.path.join(tempfile.gettempdir(), 'pypi2nix')
@@ -129,10 +130,6 @@ def main(version,
 
     current_dir = os.getcwd()
     requirements_name = os.path.join(current_dir, basename)
-
-
-    if setup_requires:
-        setup_requires = setup_requires.split(' ')
 
     if not cache_dir:
         cache_dir = os.path.join(tmp_dir, 'cache')
@@ -219,7 +216,7 @@ def main(version,
     click.echo('pypi2nix v{} running ...'.format(pypi2nix_version))
     click.echo('')
 
-    if buildout or setup_requires:
+    if buildout:
         click.echo('Stage0: Generating requirements.txt from buildout configuration ...')
         buildout_requirements = pypi2nix.stage0.main(
             verbose=verbose,
@@ -260,6 +257,7 @@ def main(version,
         extra_build_inputs=extra_build_inputs,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
         nix_path=nix_path,
+        setup_requires=setup_requires,
     )
 
     click.echo('Stage2: Extracting metadata from pypi.python.org ...')
