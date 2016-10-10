@@ -111,8 +111,10 @@ def main(version,
             "Missing option \"-V\" / \"--python-version\".  Choose from " +
             (", ".join(python_versions)))
 
-    extra_build_inputs = filter(lambda x: x != '',
-                                (' '.join(extra_build_inputs)).split(' '))
+    extra_build_inputs = list(filter(
+        lambda x: x != '',
+        (' '.join(extra_build_inputs)).split(' ')
+    ))
 
     # temporary pypi2nix folder and make sure it exists
     tmp_dir = os.path.join(tempfile.gettempdir(), 'pypi2nix')
