@@ -310,9 +310,16 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
             for line in lines:
                 line = line.strip()
                 if line.startswith('http://') or line.startswith('https://'):
-                    url, egg = line.split('#')
-                    name = egg.split('egg=')[1]
-                    sources[name] = url
+                    try:
+                        url, egg = line.split('#')
+                        name = egg.split('egg=')[1]
+                        sources[name] = url
+                    except:
+                        raise ClickException(
+                            "Requirement starting with http:// or https:// "
+                            "should end with #egg=<name>. Line `%s` does not "
+                            "end with egg=<name>"
+                        )
 
     output = ''
     metadata = []
