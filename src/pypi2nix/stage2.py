@@ -315,7 +315,7 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
                         name = egg.split('egg=')[1]
                         sources[name] = url
                     except:
-                        raise ClickException(
+                        raise click.ClickException(
                             "Requirement starting with http:// or https:// "
                             "should end with #egg=<name>. Line `%s` does not "
                             "end with egg=<name>"
