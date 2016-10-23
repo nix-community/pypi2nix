@@ -13,10 +13,10 @@ rec {
     sha256 = "0cmpsy9lr9diskkypswm9s8glgr7w3crzh1im4zqlqv7z8zv092d";
   };
 
-  setuptoolsVersion = "27.3.0";
+  setuptoolsVersion = "28.6.1";
   setuptoolsWhl = fetchurl {
-    url = "https://pypi.python.org/packages/8d/ae/766f375fc05b3d345b7082333da9f8b49af02d9c5680ff4eb15655fc5ae1/setuptools-${setuptoolsVersion}-py2.py3-none-any.whl";
-    sha256 = "1y32sz8j1ww9v6yn7py8dbsrj6zccjhpai090igrwvac9l4xv9dq";
+    url = "https://pypi.python.org/packages/b5/9a/9ce1a45a076f977cb870bf0c9370347c9371b0e9aa9ca9859196ce58afda/setuptools-${setuptoolsVersion}.tar.gz";
+    sha256 = "0187m4j0a2dgsm4pjqhm579a5lqhdnw4b7gnbjdncj63hnr67370";
   };
 
   zcbuildoutVersion = "2.5.3";
@@ -37,10 +37,10 @@ rec {
     sha256 = "1yvyng2r55mn69n16iln5211fysz519absggn488hf5ky7xmij2q";
   };
 
-  wheelVersion = "0.29.0";
+  wheelVersion = "0.30.0a0";
   wheel = fetchurl {
-    url = "https://pypi.python.org/packages/c9/1d/bd19e691fd4cfe908c76c429fe6e4436c9e83583c4414b54f6c85471954a/wheel-${wheelVersion}.tar.gz";
-    sha256 = "0j0n38hg1jvrmyy68f9ikvzq1gs9g0sx4ws7maf8wi3bwbbqmfqy";
+    url = "https://pypi.python.org/packages/a7/37/947b4329c4a3c72093b6c8e9b4be8c7f10c32dbb78848d3a234ce01c059d/wheel-${wheelVersion}.tar.gz";
+    sha256 = "1nm6mn8isny0hr86rhbfrpfj867c0phf001xgsd69xfp9ady1wwq";
   };
 
 }
