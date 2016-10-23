@@ -15,8 +15,8 @@ rec {
 
   setuptoolsVersion = "28.6.1";
   setuptoolsWhl = fetchurl {
-    url = "https://pypi.python.org/packages/b5/9a/9ce1a45a076f977cb870bf0c9370347c9371b0e9aa9ca9859196ce58afda/setuptools-${setuptoolsVersion}.tar.gz";
-    sha256 = "0187m4j0a2dgsm4pjqhm579a5lqhdnw4b7gnbjdncj63hnr67370";
+    url = "https://pypi.python.org/packages/8a/1f/e2e14f0b98d0b6de6c3fb4e8a3b45d3b8907783937c497cb53539c0d2b19/setuptools-${setuptoolsVersion}-py2.py3-none-any.whl";
+    sha256 = "04g377cbcs9wiw637cl9i41xg8a305m8qrrpqpkavs0l97abb51b";
   };
 
   zcbuildoutVersion = "2.5.3";
