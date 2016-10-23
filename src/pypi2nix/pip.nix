@@ -65,6 +65,7 @@ in pkgs.stdenv.mkDerivation rec {
 
     ${numpySiteCfg}
     ${scriptRequires}
+    export SOURCE_DATE_EPOCH=315532800
 
     mkdir -p ${project_dir}/wheel ${project_dir}/wheelhouse
 
