@@ -4,6 +4,14 @@ addons:
 os:
   - linux
   - osx
+env:
+  - EXAMPLE=awscli_and_requests
+  - EXAMPLE=empy
+  - EXAMPLE=lektor
+  - EXAMPLE=rss2email
+  #- EXAMPLE=scipy
+  #- EXAMPLE=sentry
+  - EXAMPLE=vulnix
 before_install:
   - echo 'binary-caches = https://cache.nixos.org/ https://travis.garbas.si/pypi2nix/' | sudo tee -a /etc/nix/nix.conf > /dev/null
   - openssl aes-256-cbc -K $encrypted_0cfcc1944c73_key -iv $encrypted_0cfcc1944c73_iv -in deploy_rsa.enc -out deploy_rsa -d
