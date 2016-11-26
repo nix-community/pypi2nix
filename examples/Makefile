@@ -19,7 +19,8 @@ all: \
 	rss2email \
 	scipy \
 	sentry \
-	vulnix 
+	vulnix \
+	tornado
 
 clear: \
 	awscli_and_requests-clear \
@@ -29,8 +30,8 @@ clear: \
 	rss2email-clear \
 	scipy-clear \
 	sentry-clear \
-	vulnix-clear
-
+	vulnix-clear \
+	tornado-clear
 
 pypi2nix-clear:
 	@rm -f ../result
@@ -195,3 +196,23 @@ scipy-clear:
 	@rm -f scipy.nix
 	@rm -f scipy_generated.nix
 	@rm -f scipy_frozen.txt
+
+tornado: tornado.nix
+	@echo "building and testing tornado..."
+	@nix-build tornado.nix -o tornado -A interpreter --show-trace
+	@./tornado/bin/python -c 'import tornado'
+	@nix-shell tornado.nix -A interpreter --run "python -c 'import tornado'"
+
+tornado.nix: tornado.txt $(PYPI2NIX)
+	@echo "generating tornado.nix expressions ..."
+	@$(PYPI2NIX) -v --basename tornado -r tornado.txt -I $(NIX_PATH) -V "3.5"
+
+tornado.txt: tornado-clear
+	@echo "-e git+git://github.com/tornadoweb/tornado.git#egg=tornado" > tornado.txt
+
+tornado-clear:
+	@rm -f tornado
+	@rm -f tornado.txt
+	@rm -f tornado.nix
+	@rm -f tornado_generated.nix
+	@rm -f tornado_frozen.txt

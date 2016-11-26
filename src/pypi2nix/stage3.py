@@ -88,10 +88,7 @@ self: {
 GENERATED_PACKAGE_NIX = '''
   "%(name)s" = python.mkDerivation {
     name = "%(name)s-%(version)s";
-    src = pkgs.fetchurl {
-      url = "%(url)s";
-      %(hash_type)s = "%(hash_value)s";
-    };
+    src = %(fetch_expression)s;
     doCheck = commonDoCheck;
     buildInputs = commonBuildInputs;
     propagatedBuildInputs = %(propagatedBuildInputs)s;
@@ -144,12 +141,26 @@ def main(packages_metadata,
                 propagatedBuildInputs = "[\n%s\n    ]" % (
                     '\n'.join(sorted(['      self."%s"' % (
                         metadata_by_name[x.lower()]['name']) for x in deps])))
+        fetch_type = item.get('fetch_type', None)
+        if fetch_type == 'fetchgit':
+            fetch_expression = 'pkgs.fetchgit { url = "%(url)s"; %(hash_type)s = "%(hash_value)s"; rev = "%(rev)s"; }' % dict(
+                url=item['url'],
+                hash_type=item['hash_type'],
+                hash_value=item['hash_value'],
+                rev=item['rev']
+            )
+        else:
+            fetch_expression='pkgs.fetchurl { url = "%(url)s"; %(hash_type)s = "%(hash_value)s"; }' % dict(
+                url=item['url'],
+                hash_type=item['hash_type'],
+                hash_value=item['hash_value'],
+            )
+
+
         generated_packages_metadata.append(dict(
             name=item.get("name", ""),
             version=item.get("version", ""),
-            url=item.get("url", ""),
-            hash_type=item['hash_type'],
-            hash_value=item['hash_value'],
+            fetch_expression=fetch_expression,
             propagatedBuildInputs=propagatedBuildInputs,
             homepage=item.get("homepage", ""),
             license=item.get("license", ""),

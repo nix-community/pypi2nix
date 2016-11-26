@@ -8,7 +8,7 @@ import requests
 import tempfile
 import pkg_resources
 
-from pypi2nix.utils import TO_IGNORE, safe
+from pypi2nix.utils import TO_IGNORE, safe, cmd
 
 
 EXTENSIONS = ['tar.gz', 'tar.bz2', 'tar', 'zip', 'tgz']
@@ -259,7 +259,7 @@ def find_release(wheel_cache_dir, wheel, wheel_data):
     return release
 
 
-def process_wheel(wheel_cache_dir, wheel, sources, index=INDEX_URL,
+def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
                   chunk_size=2048):
     """
     """
@@ -269,16 +269,46 @@ def process_wheel(wheel_cache_dir, wheel, sources, index=INDEX_URL,
         release['url'] = sources[wheel['name']]
         release['hash_type'] = 'sha256'
 
-        r = requests.get(release['url'], stream=True, timeout=None)
-        r.raise_for_status()  # TODO: handle this nicer
+        if release['url'].startswith('http://') or release['url'].startswith('https://'):
+            
+            release['fetch_type'] = 'fetchurl'
 
-        with tempfile.TemporaryFile() as fd:
-            for chunk in r.iter_content(chunk_size):
-                fd.write(chunk)
-            fd.seek(0)
-            hash = hashlib.sha256(fd.read())
+            r = requests.get(release['url'], stream=True, timeout=None)
+            r.raise_for_status()  # TODO: handle this nicer
 
-        release['hash_value'] = hash.hexdigest()
+            with tempfile.TemporaryFile() as fd:
+                for chunk in r.iter_content(chunk_size):
+                    fd.write(chunk)
+                    fd.seek(0)
+                    hash = hashlib.sha256(fd.read())
+
+            release['hash_value'] = hash.hexdigest()
+        elif release['url'].startswith('git'):
+            release['fetch_type'] = 'fetchgit'
+            command = 'nix-prefetch-git {url}'.format(
+                **release
+            )
+            return_code, output = cmd(command, verbose != 0)
+            if return_code != 0:
+                raise click.ClickException("URL {url} for package {name} is not valid.".format(
+                    url=release['url'],
+                    name=wheel['name']
+                ))
+            for output_line in output.split('\n'):
+                output_line = output_line.strip()
+                if output_line.startswith('hash is '):
+                    release['hash_value'] = output_line[len('hash is '):].strip()
+                elif output_line.startswith('git revision is '):
+                    release['rev'] = output_line[len('git revision is '):].strip()
+
+            if release.get('hash_value', None) is None:
+                raise click.ClickException('Could not determine the hash from ouput:\n{output}'.format(
+                    output=output
+                ))
+            if release.get('rev', None) is None:
+                raise click.ClickException('Could not determine the revision from ouput:\n{output}'.format(
+                    output=output
+                ))
 
     else:
         url = "{}/{}/json".format(index, wheel['name'])
@@ -309,11 +339,12 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
             lines = f.readlines()
             for line in lines:
                 line = line.strip()
-                if line.startswith('http://') or line.startswith('https://'):
+                if line.startswith('http://') or line.startswith('https://') or \
+                   line.startswith('-e git+'):
                     try:
                         url, egg = line.split('#')
                         name = egg.split('egg=')[1]
-                        sources[name] = url
+                        sources[name] = url.replace('-e git+','')
                     except:
                         raise click.ClickException(
                             "Requirement starting with http:// or https:// "
@@ -336,7 +367,7 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
                 continue
 
             metadata.append(
-                process_wheel(wheel_cache_dir, wheel_metadata, sources, index))
+                process_wheel(wheel_cache_dir, wheel_metadata, sources, verbose, index))
     except Exception as e:
         if verbose == 0:
             click.echo(output)

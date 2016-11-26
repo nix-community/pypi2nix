@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, python, zip, makeWrapper, nix
+{ stdenv, fetchurl, python, zip, makeWrapper, nix, nix-prefetch-scripts
 , src ? { outPath = ./.; name = "pypi2nix"; }
 }:
 
@@ -23,7 +23,7 @@ in stdenv.mkDerivation rec {
     click
     requests
   ];
-  buildInputs = [ python zip makeWrapper nix.out ];
+  buildInputs = [ python zip makeWrapper nix.out nix-prefetch-scripts ];
   sourceRoot = ".";
 
   postUnpack = ''
@@ -43,6 +43,7 @@ in stdenv.mkDerivation rec {
 
   patchPhase = ''
     sed -i -e "s|default='nix-shell',|default='${nix.out}/bin/nix-shell',|" $out/pkgs/pypi2nix/cli.py
+    sed -i -e "s|nix-prefetch-git|${nix-prefetch-scripts}/bin/nix-prefetch-git|" $out/pkgs/pypi2nix/stage2.py
   '';
 
   commonPhase = ''

@@ -185,7 +185,9 @@ def main(version,
         with open(requirements_file) as f1:
             with open(new_requirements_file, "w+") as f2:
                 for requirements_line in f1.readlines():
-                    if requirements_line.startswith("-e"):
+                    if requirements_line.startswith("-e git+"):
+                        pass
+                    elif requirements_line.startswith("-e"):
                         requirements_line = "-e %s" % (
                             os.path.abspath(os.path.join(
                                 os.path.dirname(requirements_file),

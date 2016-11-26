@@ -10,7 +10,7 @@ env:
   - EXAMPLE=lektor
   - EXAMPLE=rss2email
   - EXAMPLE=scipy
-  #- EXAMPLE=sentry
+  - EXAMPLE=tornado
   - EXAMPLE=vulnix
 matrix:
   exclude:
