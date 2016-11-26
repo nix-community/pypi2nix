@@ -1,8 +1,14 @@
-
-SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql freetype libjpeg openjpeg zlib libtiff libwebp tcl lcms2 pkgconfig cmake"
-LEKTOR_BUILD_INPUTS="libffi openssl unzip"
+OS := $(shell uname)
 PYPI2NIX=../result/bin/pypi2nix
 NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz
+
+
+SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql freetype libjpeg openjpeg zlib libtiff libwebp tcl lcms2 pkgconfig cmake"
+ifeq ($(OS), Darwin)
+LEKTOR_BUILD_INPUTS="libffi openssl unzip darwin.apple_sdk.frameworks.Security"
+else
+LEKTOR_BUILD_INPUTS="libffi openssl unzip"
+endif
 
 
 # commented out sentry since it doesn't work on travis
