@@ -19,17 +19,21 @@ let
     inherit python;
   };
 
+  blas = pkgs.openblasCompat;
+
   numpySiteCfg = pkgs.lib.optionalString
     (
-      (builtins.elem "numpy" setup_requires) &&
-      (builtins.elem "blas" extra_build_inputs)
+      (builtins.elem "numpy" setup_requires)
     )
     ''
       cat << EOF > $HOME/.numpy-site.cfg
       [openblas]
-      include_dirs = ${pkgs.blas}/include
-      library_dirs = ${pkgs.blas}/lib
+      include_dirs = ${blas}/include
+      library_dirs = ${blas}/lib
       EOF
+      echo "----------------------------------------------------------------------------"
+      cat $HOME/.numpy-site.cfg
+      echo "----------------------------------------------------------------------------"
     '';
 
   scriptRequires = pkgs.lib.optionalString ((builtins.length setup_requires) > 0) ''

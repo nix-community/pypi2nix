@@ -177,7 +177,7 @@ vulnix-clear:
 
 scipy: scipy.nix
 	@echo "building and testing scipy..."
-	@nix-build scipy.nix -o scipy-A interpreter --show-trace
+	@nix-build scipy.nix -o scipy -A interpreter --show-trace
 	@./scipy/bin/python -c 'import scipy'
 	@nix-shell scipy.nix -A interpreter --run "python -c 'import scipy'"
 
@@ -187,6 +187,7 @@ scipy.nix: scipy.txt $(PYPI2NIX)
 
 scipy.txt: scipy-clear
 	@echo "scipy" > scipy.txt
+	@echo "numpy" >> scipy.txt
 
 scipy-clear:
 	@rm -f scipy
