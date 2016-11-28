@@ -143,8 +143,7 @@ def main(packages_metadata,
                 propagatedBuildInputs = "[\n%s\n    ]" % (
                     '\n'.join(sorted(
                         ['      self."%s"' % (metadata_by_name[x.lower()]['name'])
-                        for x in deps
-                        if x not in ["setuptools", "pip", item['name']]
+                        for x in deps if x not in [item['name']]
                     ])))
         fetch_type = item.get('fetch_type', None)
         if fetch_type == 'fetchgit':

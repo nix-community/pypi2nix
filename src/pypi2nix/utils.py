@@ -4,6 +4,7 @@ import subprocess
 
 
 TO_IGNORE = [
+    "pip",
     "setuptools",
     "wheel",
     "zc.buildout",

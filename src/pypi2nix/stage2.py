@@ -90,7 +90,7 @@ all_classifiers = {
     'License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)': 'licenses.gpl2Plus',
     'License :: OSI Approved :: GNU General Public License v3 (GPLv3)': 'licenses.gpl3',
     'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)': 'licenses.gpl3Plus',
-    'License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)': 'licenses.lgpk2',
+    'License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)': 'licenses.lgpl2',
     'License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)': 'licenses.lgpl2Plus',
     'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)': 'licenses.lgpl3',
     'License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)': 'licenses.lgpl3Plus',
@@ -395,6 +395,11 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
 
             wheel_metadata = process_metadata(wheel)
             if not wheel_metadata:
+                continue
+
+            if wheel_metadata['name'] in TO_IGNORE:
+                if verbose != 0:
+                    click.echo('    SKIPPING')
                 continue
 
             if verbose > 1:
