@@ -40,7 +40,9 @@ let
           for dep in ${builtins.concatStringsSep " " (builtins.attrValues pkgs)}; do
             if [ -d "$dep/bin" ]; then
               for prog in "$dep/bin/"*; do
-                ln -s $prog $out/bin/`basename $prog`
+                if [ -f $prog ]; then
+                  ln -s $prog $out/bin/`basename $prog`
+                fi
               done
             fi
           done
@@ -139,8 +141,11 @@ def main(packages_metadata,
             deps = [x for x in item['deps'] if x.lower() in metadata_by_name.keys()]
             if deps:
                 propagatedBuildInputs = "[\n%s\n    ]" % (
-                    '\n'.join(sorted(['      self."%s"' % (
-                        metadata_by_name[x.lower()]['name']) for x in deps])))
+                    '\n'.join(sorted(
+                        ['      self."%s"' % (metadata_by_name[x.lower()]['name'])
+                        for x in deps
+                        if x not in ["setuptools", "pip", item['name']]
+                    ])))
         fetch_type = item.get('fetch_type', None)
         if fetch_type == 'fetchgit':
             fetch_expression = 'pkgs.fetchgit { url = "%(url)s"; %(hash_type)s = "%(hash_value)s"; rev = "%(rev)s"; }' % dict(
@@ -155,7 +160,6 @@ def main(packages_metadata,
                 hash_type=item['hash_type'],
                 hash_value=item['hash_value'],
             )
-
 
         generated_packages_metadata.append(dict(
             name=item.get("name", ""),

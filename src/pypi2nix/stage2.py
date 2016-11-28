@@ -11,7 +11,7 @@ import pkg_resources
 from pypi2nix.utils import TO_IGNORE, safe, cmd
 
 
-EXTENSIONS = ['tar.gz', 'tar.bz2', 'tar', 'zip', 'tgz']
+EXTENSIONS = ['.tar.gz', '.tar.bz2', '.tar', '.zip', '.tgz']
 INDEX_URL = "https://pypi.io/pypi"
 INDEX_URL = "https://pypi.python.org/pypi"
 
@@ -217,25 +217,51 @@ def find_release(wheel_cache_dir, wheel, wheel_data):
 
     wheel_release = None
 
+    _release_version = wheel['version']
     _releases = wheel_data['releases'].get(wheel['version'], [])
+
+    # sometimes version in release list is not exact match and we need to use
+    # pkg_resources's parse_version function to detect which release list is
+    # correct
     if not _releases:
         for _version, _releases_tmp in wheel_data['releases'].items():
             if pkg_resources.parse_version(wheel['version']) == \
                    pkg_resources.parse_version(_version):
+                _release_version = _version
                 _releases = _releases_tmp
                 break
 
+    # sometimes for some unknown reason release data is under other version.
+    # example: https://pypi.python.org/pypi/radiotherm/json
+    if not _releases:
+        _base_version = pkg_resources.parse_version(wheel['version']).base_version
+        for _releases_tmp in wheel_data['releases'].values():
+            for _release_tmp in _releases_tmp:
+                for _ext in EXTENSIONS:
+                    if _release_tmp['filename'].endswith(wheel['version'] + _ext):
+                        _release_version = wheel['version']
+                        _releases = [_release_tmp]
+                        break
+                    if _release_tmp['filename'].endswith(_base_version + _ext):
+                        _release_version = _base_version
+                        _releases = [_release_tmp]
+                        break
+
+    # a release can come in different formats. formats we care about are
+    # listed in EXTENSIONS variable
     for _release in _releases:
         for _ext in EXTENSIONS:
-            if _release['filename'].endswith(_ext):
+            if _release['filename'].endswith(_release_version + _ext):
                 wheel_release = _release
                 break
         if wheel_release:
             break
 
     if not wheel_release:
+        import pdb
+        pdb.set_trace()
         raise click.ClickException(
-            "Unable to find releases for package {name} of version "
+            "Unable to find release for package {name} of version "
             "{version}".format(**wheel))
 
     release = dict()
@@ -355,6 +381,11 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
     output = ''
     metadata = []
 
+    if verbose > 1:
+        click.echo("-- sources ---------------------------------------------------------------")
+        click.echo(json.dumps(sources, sort_keys=True, indent=4))
+        click.echo("--------------------------------------------------------------------------")
+
     try:
         for wheel in wheels:
 
@@ -365,6 +396,11 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
             wheel_metadata = process_metadata(wheel)
             if not wheel_metadata:
                 continue
+
+            if verbose > 1:
+                click.echo("-- wheel_metadata --------------------------------------------------------")
+                click.echo(json.dumps(wheel_metadata, sort_keys=True, indent=4))
+                click.echo("--------------------------------------------------------------------------")
 
             metadata.append(
                 process_wheel(wheel_cache_dir, wheel_metadata, sources, verbose, index))
