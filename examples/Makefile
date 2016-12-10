@@ -168,7 +168,7 @@ vulnix: vulnix-clear $(PYPI2NIX)
 	@echo "building and testing vulnix..."
 	@git clone https://github.com/garbas/vulnix vulnix-src
 	@cd vulnix-src && ./../$(PYPI2NIX) -V 3.5 -b buildout.cfg -e pytest-runner -e setuptools-scm -v -I $(NIX_PATH)
-	@nix-build vulnix-src/default.nix -o vulnix
+	@NIX_PATH=$(NIX_PATH) nix-build vulnix-src/default.nix --arg pkgs "import <nixpkgs> {}" -o vulnix
 	@./vulnix/bin/vulnix --help
 
 vulnix-clear:
