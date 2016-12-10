@@ -22,7 +22,6 @@ let
     inherit pkgs;
     inherit (pkgs) stdenv;
     python = pkgs.%(python_version)s;
-    self = pythonPackages;
   };
 
   commonBuildInputs = %(extra_build_inputs)s;
