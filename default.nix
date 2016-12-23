@@ -4,17 +4,17 @@
 
 let
 
+  version = builtins.readFile ./src/pypi2nix/VERSION;
+
   click = fetchurl {
     url = "https://pypi.python.org/packages/7a/00/c14926d8232b36b08218067bcd5853caefb4737cda3f0a47437151344792/click-6.6.tar.gz";
     sha256 = "1sggipyz52crrybwbr9xvwxd4aqigvplf53k9w3ygxmzivd1jsnc";
   };
 
   requests = fetchurl {
-    url = "https://pypi.python.org/packages/2e/ad/e627446492cc374c284e82381215dcd9a0a87c4f6e90e9789afefe6da0ad/requests-2.11.1.tar.gz";
-    sha256 = "0cx1w7m4cpslxz9jljxv0l9892ygrrckkiwpp2hangr8b01rikss";
+    url = "https://pypi.python.org/packages/5b/0b/34be574b1ec997247796e5d516f3a6b6509c4e064f2885a96ed885ce7579/requests-2.12.4.tar.gz";
+    sha256 = "0d5fwxmw4ibynk3imph3n4n84m0n3ib1vj339fxhkqri0qd4767d";
   };
-
-  version = builtins.readFile ./src/pypi2nix/VERSION;
 
 in stdenv.mkDerivation rec {
   name = "pypi2nix-${version}";

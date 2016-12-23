@@ -13,10 +13,10 @@ rec {
     sha256 = "03clr9c1dih5n9c00c592zzvf6r1ffimywkaq9agcqdllzhl7wh9";
   };
 
-  setuptoolsVersion = "29.0.0";
+  setuptoolsVersion = "32.2.0";
   setuptoolsWhl = fetchurl {
-    url = "https://pypi.python.org/packages/5b/22/ee2f999f9fc1ce934b523852bd7c1ea12e0f0fa1de19317135a0d1159507/setuptools-29.0.0-py2.py3-none-any.whl";
-    sha256 = "15bs20dxcigj2jqngp6kjpicr8w6f2xb81qa36wxprznsfk8j251";
+    url = "https://pypi.python.org/packages/3a/fb/570e51a1a4b0de85eb6ec36a6c47bd5fd7a55128a1391a15b6e21d290a87/setuptools-32.2.0-py2.py3-none-any.whl";
+    sha256 = "1pyszj1bzp73dj2anpr37106bimpwyj6kqgigw0gahl7dgyzk3p1";
   };
 
   zcbuildoutVersion = "2.5.3";
