@@ -2,11 +2,12 @@ pypi2nix - generate Nix expressions for Python packages
 =======================================================
 
 ``pypi2nix`` is a command line tool that generates `Nix expressions`_ from
-different python specific sources.
+different python specific sources (``requirements.txt``, ``buildout.cfg``,
+...).
 
-TODO: report bugs
+    The only way I can fix bugs with pypi2nix is if you report them. Ping me
+    `@garbas`_ if you get stuck.
 
-Ping me `@garbas`_ if you get stuck.
 
 .. contents::
 
@@ -65,6 +66,22 @@ Once Nix expressions are generated you should be able to see 3 new files:
 
 - ``requirements.nix`` is a file which connects ``requirements_generated.nix``
   and ``requirements_override.nix`` and exposes it for futher usage.
+
+
+Non-python/system dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Quite few python package require non-python dependencies to be present at
+installation time. For this purpose ``pypi2nix`` has ``-E`` options which can
+be used to define this extra non-python dependencies.
+
+``psycopg2`` requires ``pg_config`` binary to be present at installation time::
+
+    % pypi2nix -v -V 2.7 -e psycopg2 -E postgresql
+
+``lxml`` requires ``libxml2`` and ``libxslt`` system package::
+
+    % pypi2nix -v -V 2.7 -e lxml -E libxml2 -E libxslt
 
 
 Building generated packages
