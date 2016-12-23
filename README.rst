@@ -8,6 +8,9 @@ different python specific sources (``requirements.txt``, ``buildout.cfg``,
     The only way I can fix bugs with pypi2nix is if you report them. Ping me
     `@garbas`_ if you get stuck.
 
+``pypi2nix`` will (until further notice) only work with latest *unstable*
+channel. This is due to ongoing change in python infrastructure happening this
+year.
 
 .. contents::
 
