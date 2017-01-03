@@ -296,7 +296,7 @@ def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
         release['hash_type'] = 'sha256'
 
         if release['url'].startswith('http://') or release['url'].startswith('https://'):
-            
+
             release['fetch_type'] = 'fetchurl'
 
             r = requests.get(release['url'], stream=True, timeout=None)
@@ -310,9 +310,15 @@ def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
 
             release['hash_value'] = hash.hexdigest()
         elif release['url'].startswith('git'):
+            revision = ''
+            if release['url'].startswith('git+'):
+                release['url'] = release['url'][4:]
+            if '@' in release['url']:
+                release['url'], revision = release['url'].split('@')
             release['fetch_type'] = 'fetchgit'
-            command = 'nix-prefetch-git {url}'.format(
-                **release
+            command = 'nix-prefetch-git {url} {revision}'.format(
+                url=release['url'],
+                revision=revision
             )
             return_code, output = cmd(command, verbose != 0)
             if return_code != 0:
@@ -365,12 +371,14 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
             lines = f.readlines()
             for line in lines:
                 line = line.strip()
+                if line.startswith('-e '):
+                    line = line[3:]
                 if line.startswith('http://') or line.startswith('https://') or \
-                   line.startswith('-e git+'):
+                   line.startswith('git+'):
                     try:
                         url, egg = line.split('#')
                         name = egg.split('egg=')[1]
-                        sources[name] = url.replace('-e git+','')
+                        sources[name] = url
                     except:
                         raise click.ClickException(
                             "Requirement starting with http:// or https:// "
