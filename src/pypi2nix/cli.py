@@ -51,6 +51,12 @@ import pypi2nix.utils
               help=u'Extra build dependencies needed for installation of '
                    u'required python packages.'
               )
+@click.option('-N', '--extra-env',
+              default='',
+              help=u'Extra environment variables needed for installation of'
+              u'required python pakcages.'
+              u'Example: "LANG=en_US.UTF-8 FOO_OPTS=xyz"'
+              )
 @click.option('-T', '--enable-tests',
               is_flag=True,
               help=u'Enable tests in generated packages.'
@@ -97,6 +103,7 @@ def main(version,
          basename,
          cache_dir,
          extra_build_inputs,
+         extra_env,
          enable_tests,
          python_version,
          requirements,
@@ -260,6 +267,7 @@ def main(version,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
         nix_path=nix_path,
         setup_requires=setup_requires,
+        extra_env=extra_env,
     )
 
     click.echo('Stage2: Extracting metadata from pypi.python.org ...')

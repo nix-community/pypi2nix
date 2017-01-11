@@ -5,6 +5,7 @@
 , pip_build_dir
 , python_version
 , extra_build_inputs ? []
+, extra_env ? ""
 , setup_requires ? []
 }:
 
@@ -45,7 +46,7 @@ let
           --find-links ${wheel_cache_dir} \
           --cache-dir ${download_cache_dir} \
           --build ${pip_build_dir} \
-          --no-binary :all: 
+          --no-binary :all:
     '';
 
 in pkgs.stdenv.mkDerivation rec {
@@ -74,7 +75,7 @@ in pkgs.stdenv.mkDerivation rec {
     mkdir -p ${project_dir}/wheel ${project_dir}/wheelhouse
 
     PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
-      pip wheel \
+      ${extra_env} pip wheel \
         ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} \
         --wheel-dir ${project_dir}/wheel \
         --find-links ${wheel_cache_dir} \
