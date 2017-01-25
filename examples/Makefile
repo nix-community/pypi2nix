@@ -50,12 +50,17 @@ sentry: sentry.nix
 
 sentry.nix: sentry.txt $(PYPI2NIX)
 	@echo "generating sentry nix expressions ..."
-	@$(PYPI2NIX) -v --basename sentry \
+	@$(PYPI2NIX) \
+		-v \
+		-V "2.7"
+		--basename sentry \
 		-e "https://github.com/garbas/Pillow/archive/pkg-config.tar.gz#egg=Pillow" \
 		-e setuptools-scm \
 		-e nose \
 		-e pytest-runner \
-		-r sentry.txt -E $(SENTRY_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
+		-r sentry.txt \
+		-E $(SENTRY_BUILD_INPUTS) \
+		-I $(NIX_PATH) \
 
 sentry.txt: sentry-clear
 	@echo "Sentry" > sentry.txt
@@ -76,7 +81,12 @@ empy: empy.nix
 
 empy.nix: empy.txt $(PYPI2NIX)
 	@echo "generating empy nix expressions ..."
-	@$(PYPI2NIX) -v --basename empy -r empy.txt -I $(NIX_PATH) -V "2.7"
+	@$(PYPI2NIX) \
+		-v \
+		-V "2.7" \
+		--basename empy \
+		-r empy.txt \
+		-I $(NIX_PATH) \
 
 empy.txt: empy-clear
 	@echo "empy" > empy.txt
@@ -99,7 +109,14 @@ lektor: lektor.nix
 
 lektor.nix: lektor.txt $(PYPI2NIX)
 	@echo "generating lektor nix expressions ..."
-	@$(PYPI2NIX) -v --basename lektor -r lektor.txt -E $(LEKTOR_BUILD_INPUTS) -I $(NIX_PATH) -V "2.7"
+	@$(PYPI2NIX) \
+		-v \
+		-V "2.7" \
+		--basename lektor \
+		--setup-requires "six packaging appdirs" \
+		-r lektor.txt \
+		-E $(LEKTOR_BUILD_INPUTS) \
+		-I $(NIX_PATH)
 
 lektor.txt: lektor-clear
 	@echo "Lektor" > lektor.txt
@@ -123,7 +140,12 @@ rss2email: rss2email.nix
 
 rss2email.nix: rss2email.txt $(PYPI2NIX)
 	@echo "generating rss2email nix expressions ..."
-	@$(PYPI2NIX) -v --basename rss2email -r rss2email.txt -V "3.4" -I $(NIX_PATH)
+	@$(PYPI2NIX) \
+		-v \
+		--setup-requires "six packaging appdirs" \
+		--basename rss2email \
+		-r rss2email.txt -V "3.4" \
+		-I $(NIX_PATH)
 
 rss2email.txt: rss2email-clear
 	@echo "https://github.com/wking/rss2email/archive/master.zip#egg=rss2email" > rss2email.txt
