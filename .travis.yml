@@ -11,7 +11,7 @@ env:
   - EXAMPLE=rss2email
   - EXAMPLE=scipy
   - EXAMPLE=tornado
-  - EXAMPLE=vulnix
+#  - EXAMPLE=vulnix
 matrix:
   exclude:
     - os: osx
