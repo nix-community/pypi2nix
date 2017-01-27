@@ -285,17 +285,19 @@ def find_release(wheel_cache_dir, wheel, wheel_data):
     return release
 
 
-def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
+def process_wheel(wheel_cache_dir, wheel, sources, repo_types, verbose, index=INDEX_URL,
                   chunk_size=2048):
     """
     """
 
+    repo_type = repo_types.get(wheel['name'], None)
     if wheel['name'] in sources:
         release = dict()
         release['url'] = sources[wheel['name']]
         release['hash_type'] = 'sha256'
 
-        if release['url'].startswith('http://') or release['url'].startswith('https://'):
+        if (release['url'].startswith('http://') or release['url'].startswith('https://')) and \
+           repo_type == None:
             
             release['fetch_type'] = 'fetchurl'
 
@@ -309,7 +311,7 @@ def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
                     hash = hashlib.sha256(fd.read())
 
             release['hash_value'] = hash.hexdigest()
-        elif release['url'].startswith('git'):
+        elif repo_type == 'git':
             release['fetch_type'] = 'fetchgit'
             command = 'nix-prefetch-git {url}'.format(
                 **release
@@ -326,6 +328,35 @@ def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
                     release['hash_value'] = output_line[len('hash is '):].strip()
                 elif output_line.startswith('git revision is '):
                     release['rev'] = output_line[len('git revision is '):].strip()
+
+            if release.get('hash_value', None) is None:
+                raise click.ClickException('Could not determine the hash from ouput:\n{output}'.format(
+                    output=output
+                ))
+            if release.get('rev', None) is None:
+                raise click.ClickException('Could not determine the revision from ouput:\n{output}'.format(
+                    output=output
+                ))
+        elif repo_type == 'hg':
+            release['fetch_type'] = 'fetchhg'
+            command = 'nix-prefetch-hg {url}'.format(
+                **release
+            )
+            return_code, output = cmd(command, verbose != 0)
+            if return_code != 0:
+                raise click.ClickException("URL {url} for package {name} is not valid.".format(
+                    url=release['url'],
+                    name=wheel['name']
+                ))
+            HASH_PREFIX = 'hash is '
+            REV_PREFIX = 'hg revision is '
+            for output_line in output.split('\n'):
+                print(output_line)
+                output_line = output_line.strip()
+                if output_line.startswith(HASH_PREFIX):
+                    release['hash_value'] = output_line[len(HASH_PREFIX):].strip()
+                elif output_line.startswith(REV_PREFIX):
+                    release['rev'] = output_line[len(REV_PREFIX):].strip()
 
             if release.get('hash_value', None) is None:
                 raise click.ClickException('Could not determine the hash from ouput:\n{output}'.format(
@@ -360,17 +391,22 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
 
     # get url's from requirements_files
     sources = dict()
+    repo_types = dict()
     for requirements_file in requirements_files:
         with open(requirements_file) as f:
             lines = f.readlines()
             for line in lines:
                 line = line.strip()
                 if line.startswith('http://') or line.startswith('https://') or \
-                   line.startswith('-e git+'):
+                   line.startswith('-e git+') or line.startswith('-e hg+'):
                     try:
                         url, egg = line.split('#')
                         name = egg.split('egg=')[1]
-                        sources[name] = url.replace('-e git+','')
+                        sources[name] = url.replace('-e git+','').replace('-e hg+','')
+                        if line.startswith('-e git+'):
+                            repo_types[name] = 'git'
+                        elif line.startswith('-e hg+'):
+                            repo_types[name] = 'hg'
                     except:
                         raise click.ClickException(
                             "Requirement starting with http:// or https:// "
@@ -408,7 +444,7 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
                 click.echo("--------------------------------------------------------------------------")
 
             metadata.append(
-                process_wheel(wheel_cache_dir, wheel_metadata, sources, verbose, index))
+                process_wheel(wheel_cache_dir, wheel_metadata, sources, repo_types, verbose, index))
     except Exception as e:
         if verbose == 0:
             click.echo(output)

@@ -187,6 +187,8 @@ def main(version,
                 for requirements_line in f1.readlines():
                     if requirements_line.startswith("-e git+"):
                         pass
+                    elif requirements_line.startswith("-e hg+"):
+                        pass
                     elif requirements_line.startswith("-e"):
                         requirements_line = "-e %s" % (
                             os.path.abspath(os.path.join(
