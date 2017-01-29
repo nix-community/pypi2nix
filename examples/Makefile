@@ -15,23 +15,26 @@ endif
 all: \
 	awscli_and_requests \
 	empy \
+	ldap \
 	lektor \
 	rss2email \
 	scipy \
 	sentry \
-	vulnix \
-	tornado
+	tornado \
+	vulnix
 
 clear: \
 	awscli_and_requests-clear \
 	empy-clear \
+	ldap_clear \
 	lektor-clear \
 	pypi2nix-clear \
 	rss2email-clear \
 	scipy-clear \
 	sentry-clear \
-	vulnix-clear \
-	tornado-clear
+	tornado-clear \
+	vulnix-clear
+
 
 pypi2nix-clear:
 	@rm -f ../result
@@ -238,3 +241,32 @@ tornado-clear:
 	@rm -f tornado.nix
 	@rm -f tornado_generated.nix
 	@rm -f tornado_frozen.txt
+
+
+ldap: ldap.nix
+	@echo "building and testing ldap..."
+	@nix-build ldap.nix -o ldap -A interpreter --show-trace
+	@./ldap/bin/python -c 'import ldap'
+	@nix-shell ldap.nix -A interpreter --run "python -c 'import ldap'"
+
+ldap.nix: ldap.txt $(PYPI2NIX)
+	@echo "generating ldap.nix expressions ..."
+	@$(PYPI2NIX) \
+		-v \
+		--basename ldap \
+		-N "NIX_CFLAGS_COMPILE=\"-I\$${pkgs.cyrus_sasl.dev}/include/sasl \$$NIX_CFLAGS_COMPILE\"" \
+		-E "openldap cyrus_sasl openssl" \
+		--setup-requires "six packaging appdirs" \
+		-r ldap.txt \
+		-I $(NIX_PATH) \
+		-V "2.7"
+
+ldap.txt: ldap-clear
+	@echo "python-ldap" > ldap.txt
+
+ldap-clear:
+	@rm -f ldap
+	@rm -f ldap.txt
+	@rm -f ldap.nix
+	@rm -f ldap_generated.nix
+	@rm -f ldap_frozen.txt
