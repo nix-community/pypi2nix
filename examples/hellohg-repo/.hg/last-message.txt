@@ -1,0 +1,2 @@
+Include simplistic example for cloning from mercurial repos
+

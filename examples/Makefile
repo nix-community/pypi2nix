@@ -238,3 +238,23 @@ tornado-clear:
 	@rm -f tornado.nix
 	@rm -f tornado_generated.nix
 	@rm -f tornado_frozen.txt
+
+hellohg: hellohg.nix
+	@echo "building and testing hellohg..."
+	@nix-build hellohg.nix -o hellohg -A interpreter --show-trace
+	@./hellohg/bin/python -c 'import hellohg'
+	@nix-shell hellohg.nix -A interpreter --run "python -c 'import hellohg'"
+
+hellohg.nix: hellohg.txt $(PYPI2NIX) hellohg-repo
+	@echo "generating hellohg.nix expressions ..."
+	@$(PYPI2NIX) -v --basename hellohg -r hellohg.txt -I $(NIX_PATH) -V "3.5" -E "mercurial"
+
+hellohg.txt: hellohg-clear
+	@echo "-e hg+file://$(PWD)/hellohg-repo#egg=hellohg" > hellohg.txt
+
+hellohg-clear:
+	@rm -f hellohg
+	@rm -f hellohg.txt
+	@rm -f hellohg.nix
+	@rm -f hellohg_generated.nix
+	@rm -f hellohg_frozen.txt
