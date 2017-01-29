@@ -10,13 +10,24 @@ else
 LEKTOR_BUILD_INPUTS="libffi openssl unzip"
 endif
 
+.PHONY: \
+	awscli_and_requests \
+	empy \
+	ldap \
+	lektor \
+	mercurial \
+	rss2email \
+	scipy \
+	sentry \
+	tornado \
+	vulnix
 
-# commented out sentry since it doesn't work on travis
 all: \
 	awscli_and_requests \
 	empy \
 	ldap \
 	lektor \
+	mercurial \
 	rss2email \
 	scipy \
 	sentry \
@@ -26,8 +37,9 @@ all: \
 clear: \
 	awscli_and_requests-clear \
 	empy-clear \
-	ldap_clear \
+	ldap-clear \
 	lektor-clear \
+	mercurial-clear \
 	pypi2nix-clear \
 	rss2email-clear \
 	scipy-clear \
@@ -227,6 +239,10 @@ tornado: tornado.nix
 	@nix-build tornado.nix -o tornado -A interpreter --show-trace
 	@./tornado/bin/python -c 'import tornado'
 	@nix-shell tornado.nix -A interpreter --run "python -c 'import tornado'"
+	@if [ `cat tornado_generated.nix | grep "69253c820df473407c562a227d0ba36df25018ab" | wc -l` != "1" ]; then \
+			echo "ERROR: Revision '69253c820df473407c562a227d0ba36df25018ab' not found in tornado_generated.nix!"; \
+			exit 123; \
+		fi
 
 tornado.nix: tornado.txt $(PYPI2NIX)
 	@echo "generating tornado.nix expressions ..."
@@ -270,3 +286,31 @@ ldap-clear:
 	@rm -f ldap.nix
 	@rm -f ldap_generated.nix
 	@rm -f ldap_frozen.txt
+
+
+mercurial: mercurial.nix
+	@echo "building and testing mercurial..."
+	@nix-build mercurial.nix -o mercurial -A interpreter --show-trace -j 1
+	@./mercurial/bin/python -c 'import flake8'
+	@nix-shell mercurial.nix -A interpreter --run "python -c 'import flake8'"
+	@if [ `cat mercurial_generated.nix | grep "a209fb6" | wc -l` != "1" ]; then \
+			echo "ERROR: Revision 'a209fb6' not found in tornado_generated.nix!"; \
+			exit 123; \
+		fi
+
+mercurial.nix: mercurial.txt $(PYPI2NIX)
+	@echo "generating mercurial.nix expressions ..."
+	@$(PYPI2NIX) -v --basename mercurial -r mercurial.txt -I $(NIX_PATH) -V "2.7" -E "mercurial"
+
+
+mercurial.txt: mercurial-clear
+	@echo "-e hg+https://bitbucket.org/tarek/flake8@a209fb6#egg=flake8" > mercurial.txt
+	@echo "pytest-runner" >> mercurial.txt
+	@echo "setuptools-scm" >> mercurial.txt
+
+mercurial-clear:
+	@rm -f mercurial
+	@rm -f mercurial.txt
+	@rm -f mercurial.nix
+	@rm -f mercurial_generated.nix
+	@rm -f mercurial_frozen.txt

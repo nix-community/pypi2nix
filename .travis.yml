@@ -9,6 +9,7 @@ env:
   - EXAMPLE=empy
   - EXAMPLE=ldap
   - EXAMPLE=lektor
+  - EXAMPLE=mercurial
   - EXAMPLE=rss2email
   - EXAMPLE=scipy
   - EXAMPLE=tornado
@@ -20,6 +21,9 @@ matrix:
     - os: osx
       env: EXAMPLE=scipy
 before_install:
+  - nix-env -iA nixpkgs.cacert -p result-cacert
+  - export SSL_CERT_FILE=$PWD/result-cacert/etc/ssl/certs/ca-bundle.crt
+  - sudo mkdir -p /etc/ssl/certs/ && sudo rm -f /etc/ssl/certs/ca-certificates.crt && sudo ln -s $PWD/result-cacert/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-certificates.crt
   - echo 'binary-caches = https://cache.nixos.org/ https://travis.garbas.si/pypi2nix/' | sudo tee -a /etc/nix/nix.conf > /dev/null
   - openssl aes-256-cbc -K $encrypted_0cfcc1944c73_key -iv $encrypted_0cfcc1944c73_iv -in deploy_rsa.enc -out deploy_rsa -d
   - eval "$(ssh-agent -s)"

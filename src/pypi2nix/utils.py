@@ -41,7 +41,6 @@ def cmd(command, verbose=False):
     if isinstance(command, str):
         command = shlex.split(command)
 
-    output = '|-> ' + ' '.join(command)
     if verbose:
         click.echo('|-> ' + ' '.join(command))
 
@@ -57,12 +56,11 @@ def cmd(command, verbose=False):
         if line == '' and p.poll() is not None:
             break
         if line != '':
-            output += '    ' + line
             if verbose:
                 click.echo('    ' + line.rstrip('\n'))
             out.append(line)
 
-    return p.returncode, output
+    return p.returncode, '\n'.join(out)
 
 
 def create_command_options(options):

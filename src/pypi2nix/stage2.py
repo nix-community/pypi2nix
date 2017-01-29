@@ -258,8 +258,6 @@ def find_release(wheel_cache_dir, wheel, wheel_data):
             break
 
     if not wheel_release:
-        import pdb
-        pdb.set_trace()
         raise click.ClickException(
             "Unable to find release for package {name} of version "
             "{version}".format(**wheel))
@@ -285,17 +283,20 @@ def find_release(wheel_cache_dir, wheel, wheel_data):
     return release
 
 
-def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
-                  chunk_size=2048):
+def process_wheel(wheel_cache_dir, wheel, sources, repo_types, verbose,
+                  index=INDEX_URL, chunk_size=2048):
     """
     """
 
+    repo_type = repo_types.get(wheel['name'], None)
     if wheel['name'] in sources:
         release = dict()
         release['url'] = sources[wheel['name']]
         release['hash_type'] = 'sha256'
 
-        if release['url'].startswith('http://') or release['url'].startswith('https://'):
+        if repo_type is None and \
+               (release['url'].startswith('http://') or \
+                release['url'].startswith('https://')):
 
             release['fetch_type'] = 'fetchurl'
 
@@ -309,16 +310,18 @@ def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
                     hash = hashlib.sha256(fd.read())
 
             release['hash_value'] = hash.hexdigest()
-        elif release['url'].startswith('git'):
+
+        elif repo_type == 'git':
             revision = ''
             if release['url'].startswith('git+'):
                 release['url'] = release['url'][4:]
             if '@' in release['url']:
                 release['url'], revision = release['url'].split('@')
+
             release['fetch_type'] = 'fetchgit'
             command = 'nix-prefetch-git {url} {revision}'.format(
                 url=release['url'],
-                revision=revision
+                revision=revision,
             )
             return_code, output = cmd(command, verbose != 0)
             if return_code != 0:
@@ -332,6 +335,43 @@ def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
                     release['hash_value'] = output_line[len('hash is '):].strip()
                 elif output_line.startswith('git revision is '):
                     release['rev'] = output_line[len('git revision is '):].strip()
+
+            if release.get('hash_value', None) is None:
+                raise click.ClickException('Could not determine the hash from ouput:\n{output}'.format(
+                    output=output
+                ))
+            if release.get('rev', None) is None:
+                raise click.ClickException('Could not determine the revision from ouput:\n{output}'.format(
+                    output=output
+                ))
+
+        elif repo_type == 'hg':
+            revision = ''
+            if release['url'].startswith('hg+'):
+                release['url'] = release['url'][3:]
+            if '@' in release['url']:
+                release['url'], revision = release['url'].split('@')
+
+            release['fetch_type'] = 'fetchhg'
+            command = 'nix-prefetch-hg {url} {revision}'.format(
+                url=release['url'],
+                revision=revision,
+            )
+            return_code, output = cmd(command, verbose != 0)
+            if return_code != 0:
+                raise click.ClickException("URL {url} for package {name} is not valid.".format(
+                    url=release['url'],
+                    name=wheel['name']
+                ))
+            HASH_PREFIX = 'hash is '
+            REV_PREFIX = 'hg revision is '
+            for output_line in output.split('\n'):
+                print(output_line)
+                output_line = output_line.strip()
+                if output_line.startswith(HASH_PREFIX):
+                    release['hash_value'] = output_line[len(HASH_PREFIX):].strip()
+                elif output_line.startswith(REV_PREFIX):
+                    release['rev'] = output_line[len(REV_PREFIX):].strip()
 
             if release.get('hash_value', None) is None:
                 raise click.ClickException('Could not determine the hash from ouput:\n{output}'.format(
@@ -366,6 +406,7 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
 
     # get url's from requirements_files
     sources = dict()
+    repo_types = dict()
     for requirements_file in requirements_files:
         with open(requirements_file) as f:
             lines = f.readlines()
@@ -374,11 +415,15 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
                 if line.startswith('-e '):
                     line = line[3:]
                 if line.startswith('http://') or line.startswith('https://') or \
-                   line.startswith('git+'):
+                   line.startswith('git+') or line.startswith('hg+'):
                     try:
                         url, egg = line.split('#')
                         name = egg.split('egg=')[1]
-                        sources[name] = url
+                        sources[name] = url.replace('-e git+','').replace('-e hg+','')
+                        if line.startswith('git+'):
+                            repo_types[name] = 'git'
+                        elif line.startswith('hg+'):
+                            repo_types[name] = 'hg'
                     except:
                         raise click.ClickException(
                             "Requirement starting with http:// or https:// "
@@ -416,7 +461,8 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
                 click.echo("--------------------------------------------------------------------------")
 
             metadata.append(
-                process_wheel(wheel_cache_dir, wheel_metadata, sources, verbose, index))
+                process_wheel(wheel_cache_dir, wheel_metadata, sources,
+                              repo_types, verbose, index))
     except Exception as e:
         if verbose == 0:
             click.echo(output)
