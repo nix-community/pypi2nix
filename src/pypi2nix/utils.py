@@ -41,7 +41,7 @@ def cmd(command, verbose=False):
     if isinstance(command, str):
         command = shlex.split(command)
 
-    output = '|-> ' + ' '.join(command)
+    output = '|-> ' + ' '.join(command) + '\n'
     if verbose:
         click.echo('|-> ' + ' '.join(command))
 

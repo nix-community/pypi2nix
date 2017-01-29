@@ -152,6 +152,13 @@ def main(packages_metadata,
                 hash_value=item['hash_value'],
                 rev=item['rev']
             )
+        elif fetch_type == 'fetchhg':
+            fetch_expression = 'pkgs.fetchhg { url = "%(url)s"; %(hash_type)s = "%(hash_value)s"; rev = "%(rev)s"; }' % dict(
+                url=item['url'],
+                hash_type=item['hash_type'],
+                hash_value=item['hash_value'],
+                rev=item['rev']
+            )
         else:
             fetch_expression='pkgs.fetchurl { url = "%(url)s"; %(hash_type)s = "%(hash_value)s"; }' % dict(
                 url=item['url'],
