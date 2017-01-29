@@ -230,7 +230,7 @@ tornado.nix: tornado.txt $(PYPI2NIX)
 	@$(PYPI2NIX) -v --basename tornado -r tornado.txt -I $(NIX_PATH) -V "3.5"
 
 tornado.txt: tornado-clear
-	@echo "-e git+git://github.com/tornadoweb/tornado.git#egg=tornado" > tornado.txt
+	@echo "-e git+git://github.com/tornadoweb/tornado.git@69253c820df473407c562a227d0ba36df25018ab#egg=tornado" > tornado.txt
 
 tornado-clear:
 	@rm -f tornado
