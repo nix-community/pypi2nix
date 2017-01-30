@@ -13,6 +13,10 @@ in
 
       mkdir index/
       cp ${deps.pipWhl} index/pip-${deps.pipVersion}-py2.py3-none-any.whl
+      cp ${deps.sixWhl} index/six-${deps.sixVersion}-py2.py3-none-any.whl
+      cp ${deps.appdirsWhl} index/appdirs-${deps.appdirsVersion}-py2.py3-none-any.whl
+      cp ${deps.packagingWhl} index/packaging-${deps.packagingVersion}-py2.py3-none-any.whl
+      cp ${deps.pyparsingWhl} index/pyparsing-${deps.pyparsingVersion}-py2.py3-none-any.whl
       cp ${deps.setuptoolsWhl} index/setuptools-${deps.setuptoolsVersion}-py2.py3-none-any.whl
       cp ${deps.wheel} index/wheel-${deps.wheelVersion}.tar.gz
       cp ${deps.zcbuildout} index/zc.buildout-${deps.zcbuildoutVersion}.tar.gz
