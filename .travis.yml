@@ -10,6 +10,7 @@ env:
   - EXAMPLE=ldap
   - EXAMPLE=lektor
   - EXAMPLE=mercurial
+  - EXAMPLE=pillow
   - EXAMPLE=rss2email
   - EXAMPLE=scipy
   - EXAMPLE=tornado
@@ -18,6 +19,8 @@ matrix:
   exclude:
     - os: osx
       env: EXAMPLE=lektor
+    - os: osx
+      env: EXAMPLE=pillow
     - os: osx
       env: EXAMPLE=scipy
 before_install:

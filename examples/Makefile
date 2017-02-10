@@ -3,7 +3,6 @@ PYPI2NIX=../result/bin/pypi2nix
 NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz
 
 
-SENTRY_BUILD_INPUTS="libxslt libxml2 zlib libffi openssl postgresql freetype libjpeg openjpeg zlib libtiff libwebp tcl lcms2 pkgconfig cmake"
 ifeq ($(OS), Darwin)
 LEKTOR_BUILD_INPUTS="libffi openssl unzip darwin.apple_sdk.frameworks.Security darwin.apple_sdk.frameworks.CoreServices darwin.cf-private"
 else
@@ -18,7 +17,7 @@ endif
 	mercurial \
 	rss2email \
 	scipy \
-	sentry \
+	pillow \
 	tornado \
 	vulnix
 
@@ -30,7 +29,7 @@ all: \
 	mercurial \
 	rss2email \
 	scipy \
-	sentry \
+	pillow \
 	tornado \
 	vulnix
 
@@ -43,7 +42,7 @@ clear: \
 	pypi2nix-clear \
 	rss2email-clear \
 	scipy-clear \
-	sentry-clear \
+	pillow-clear \
 	tornado-clear \
 	vulnix-clear
 
@@ -55,37 +54,31 @@ $(PYPI2NIX): pypi2nix-clear
 	@echo "building pypi2nix ..."
 	@cd .. && nix-build release.nix -A build.x86_64-linux
 
-sentry: sentry.nix
-	@echo "building and testing sentry ..."
-	@nix-build sentry.nix -o sentry -A interpreter --show-trace &> /dev/null
-	@./sentry/bin/python -c 'import sentry'
-	@./sentry/bin/sentry --help
-	@nix-shell sentry.nix -A interpreter --run "python -c 'import sentry'" 
-	@nix-shell sentry.nix -A interpreter --run "sentry --help"
+pillow: pillow.nix
+	@echo "building and testing pillow..."
+	@nix-build pillow.nix -o pillow -A interpreter --show-trace &> /dev/null
+	@./pillow/bin/python -c 'import PIL'
+	@nix-shell pillow.nix -A interpreter --run "python -c 'import PIL'" 
 
-sentry.nix: sentry.txt $(PYPI2NIX)
-	@echo "generating sentry nix expressions ..."
+pillow.nix: pillow.txt $(PYPI2NIX)
+	@echo "generating pillownix expressions ..."
 	@$(PYPI2NIX) \
 		-v \
-		-V "2.7"
-		--basename sentry \
-		-e "https://github.com/garbas/Pillow/archive/pkg-config.tar.gz#egg=Pillow" \
-		-e setuptools-scm \
-		-e nose \
-		-e pytest-runner \
-		-r sentry.txt \
-		-E $(SENTRY_BUILD_INPUTS) \
-		-I $(NIX_PATH) \
+		-V "3.5" \
+		--basename pillow \
+		-r pillow.txt \
+		-E "pkgconfig zlib libjpeg openjpeg libtiff freetype lcms2 libwebp tcl" \
+		-I $(NIX_PATH)
 
-sentry.txt: sentry-clear
-	@echo "Sentry" > sentry.txt
+pillow.txt: pillow-clear
+	@echo "Pillow" > pillow.txt
 
-sentry-clear:
-	@rm -f sentry
-	@rm -f sentry.txt
-	@rm -f sentry.nix
-	@rm -f sentry_generated.nix
-	@rm -f sentry_frozen.txt
+pillow-clear:
+	@rm -f pillow
+	@rm -f pillow.txt
+	@rm -f pillow.nix
+	@rm -f pillow_generated.nix
+	@rm -f pillow_frozen.txt
 
 
 empy: empy.nix
