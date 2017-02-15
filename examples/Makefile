@@ -1,5 +1,5 @@
 OS := $(shell uname)
-PYPI2NIX=../result/bin/pypi2nix
+PYPI2NIX=./pypi2nix/bin/pypi2nix
 NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz
 
 
@@ -48,11 +48,11 @@ clear: \
 
 
 pypi2nix-clear:
-	rm -f ../result
+	rm -f pypi2nix
 
 $(PYPI2NIX): pypi2nix-clear
 	echo "building pypi2nix ..."
-	cd .. && nix-build release.nix -A build.x86_64-linux
+	nix-build ../release.nix -A build.x86_64-linux -o pypi2nix
 
 pillow: pillow.nix
 	echo "building and testing pillow..."
