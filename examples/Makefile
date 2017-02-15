@@ -56,7 +56,7 @@ $(PYPI2NIX): pypi2nix-clear
 
 pillow: pillow.nix
 	echo "building and testing pillow..."
-	nix-build pillow.nix -o pillow -A interpreter --show-trace &> /dev/null
+	nix-build pillow.nix -o pillow -A interpreter --show-trace
 	./pillow/bin/python -c 'import PIL'
 	nix-shell pillow.nix -A interpreter --run "python -c 'import PIL'" 
 
