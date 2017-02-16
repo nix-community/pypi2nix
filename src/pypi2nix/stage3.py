@@ -145,7 +145,9 @@ def main(packages_metadata,
                         for x in deps if x not in [item['name']]
                     ])))
         fetch_type = item.get('fetch_type', None)
-        if fetch_type == 'fetchgit':
+        if fetch_type == 'path':
+            fetch_expression =  './' + os.path.relpath(item['url'], current_dir)
+        elif fetch_type == 'fetchgit':
             fetch_expression = 'pkgs.fetchgit { url = "%(url)s"; %(hash_type)s = "%(hash_value)s"; rev = "%(rev)s"; }' % dict(
                 url=item['url'],
                 hash_type=item['hash_type'],

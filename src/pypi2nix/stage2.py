@@ -283,17 +283,17 @@ def find_release(wheel_cache_dir, wheel, wheel_data):
     return release
 
 
-def process_wheel(wheel_cache_dir, wheel, sources, repo_types, verbose,
-                  index=INDEX_URL, chunk_size=2048):
+def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
+                  chunk_size=2048):
     """
     """
 
-    repo_type = repo_types.get(wheel['name'], None)
     if wheel['name'] in sources:
         release = dict()
-        release['url'] = sources[wheel['name']]
+        release['url'] = sources[wheel['name']]['url']
         release['hash_type'] = 'sha256'
 
+        repo_type = sources[wheel['name']]['type']
         if repo_type is None and \
                (release['url'].startswith('http://') or \
                 release['url'].startswith('https://')):
@@ -382,6 +382,13 @@ def process_wheel(wheel_cache_dir, wheel, sources, repo_types, verbose,
                     output=output
                 ))
 
+        elif repo_type == 'path':
+            release['fetch_type'] = 'path'
+
+        else:
+            raise click.ClickException('Source type `{}` not implemented'.format(repo_type))
+
+
     else:
         url = "{}/{}/json".format(index, wheel['name'])
         r = requests.get(url, timeout=None)
@@ -400,13 +407,13 @@ def process_wheel(wheel_cache_dir, wheel, sources, repo_types, verbose,
     return wheel
 
 
-def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
+def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL,
+         sources=dict()):
     """Extract packages metadata from wheels dist-info folders.
     """
 
     # get url's from requirements_files
-    sources = dict()
-    repo_types = dict()
+    sources_urls = [i['url'] for i in sources.values()]
     for requirements_file in requirements_files:
         with open(requirements_file) as f:
             lines = f.readlines()
@@ -414,21 +421,26 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
                 line = line.strip()
                 if line.startswith('-e '):
                     line = line[3:]
-                if line.startswith('http://') or line.startswith('https://') or \
-                   line.startswith('git+') or line.startswith('hg+'):
+
+                if os.path.isdir(line) and line not in sources_urls:
+                    raise click.ClickException(
+                        "Source for path `%s` does not exists." % line
+                    )
+
+                elif line.startswith('http://') or line.startswith('https://') or \
+                     line.startswith('git+') or line.startswith('hg+'):
                     try:
                         url, egg = line.split('#')
                         name = egg.split('egg=')[1]
-                        sources[name] = url.replace('-e git+','').replace('-e hg+','')
                         if line.startswith('git+'):
-                            repo_types[name] = 'git'
+                            sources[name] = dict(url=url, type='git')
                         elif line.startswith('hg+'):
-                            repo_types[name] = 'hg'
+                            sources[name] = dict(url=url, type='hg')
                     except:
                         raise click.ClickException(
                             "Requirement starting with http:// or https:// "
-                            "should end with #egg=<name>. Line `%s` does not "
-                            "end with egg=<name>" % line
+                            "should end with #egg=<name>. Line `-e %s` does "
+                            "not end with egg=<name>" % line
                         )
 
     output = ''
@@ -462,7 +474,7 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL):
 
             metadata.append(
                 process_wheel(wheel_cache_dir, wheel_metadata, sources,
-                              repo_types, verbose, index))
+                              verbose, index))
     except Exception as e:
         if verbose == 0:
             click.echo(output)

@@ -180,6 +180,8 @@ def main(version,
         shutil.rmtree(project_dir)
     os.makedirs(project_dir)
 
+    sources = dict()
+
     def handle_requirements_file(project_dir, requirements_file):
 
         # we find new name for our requirements_file
@@ -196,12 +198,26 @@ def main(version,
                            requirements_line.startswith("-e hg+"):
                         pass
                     elif requirements_line.startswith("-e"):
-                        requirements_line = "-e %s" % (
+                        try:
+                            tmp_path, egg = requirements_line.strip().split('#')
+                            tmp_name = egg.split('egg=')[1]
+                        except:
+                            raise click.ClickException(
+                                "Requirement starting with `.` "
+                                "should end with #egg=<name>. Line `%s` does "
+                                "not end with egg=<name>" % requirements_line
+                            )
+
+                        tmp_path = os.path.abspath(os.path.join(
+                            os.path.dirname(requirements_file),
                             os.path.abspath(os.path.join(
-                                os.path.dirname(requirements_file),
-                                                requirements_line.strip()[3:]
-                            ))
-                        )
+                                current_dir, tmp_path.strip()[3:]
+                            )),
+                        ))
+
+                        requirements_line = "-e %s" % tmp_path
+                        sources[tmp_name] = dict(url=tmp_path, type='path')
+
                     elif requirements_line.startswith("-r ./"):
                         requirements_file2 = os.path.abspath(os.path.join(
                             os.path.dirname(requirements_file),
@@ -243,17 +259,18 @@ def main(version,
             requirements_files.append(buildout_requirements)
 
     if editable:
-        editable_file = os.path.join(tmp_dir, 'editable.txt')
+        editable_file = os.path.join(project_dir, 'editable.txt')
         with open(editable_file, 'w+') as f:
             for item in editable:
-                if os.path.isdir(item):
+                item_path = item.split('#')[0]
+                if item_path.startswith('.'):
+                    item_path = os.path.abspath(os.path.join(current_dir, item_path))  # noqa
+                if os.path.isdir(item_path):
                     f.write('-e %s\n' % item)
-                elif os.path.isfile(item):
-                    f.write('-e %s\n' % os.path.dirname(item))
                 else:
                     f.write('%s\n' % item)
 
-        requirements_files = [editable_file] + requirements_files
+        requirements_files = [handle_requirements_file(project_dir, editable_file)] + requirements_files  # noqa
 
     click.echo('Stage1: Downloading wheels and creating wheelhouse ...')
 
@@ -277,7 +294,8 @@ def main(version,
         verbose=verbose,
         wheels=wheels,
         requirements_files=requirements_files,
-        wheel_cache_dir=wheel_cache_dir
+        wheel_cache_dir=wheel_cache_dir,
+        sources=sources,
     )
 
     click.echo('Stage3: Generating Nix expressions ...')
