@@ -27,6 +27,10 @@ def main(verbose,
        a user provided requirements.txt.
     """
 
+    if nix_path:
+        nix_path = ' '.join('-I {}'.format(i) for i in nix_path)
+    else:
+        nix_path = ''
 
     if extra_env:
         nix_instantiate = 'nix-instantiate'
@@ -36,9 +40,9 @@ def main(verbose,
                     os.path.dirname(nix_path),
                     nix_instantiate
                 ))
-        command_env = '%s --eval --expr \'let pkgs = import <nixpkgs> {}; in "%s"\'' % (
-
+        command_env = '%s %s --eval --expr \'let pkgs = import <nixpkgs> {}; in "%s"\'' % (  # noqa
             nix_instantiate,
+            nix_path,
             extra_env.replace('"', '\\"')
         )
         returncode, output = pypi2nix.utils.cmd(command_env, verbose != 0)
@@ -48,10 +52,10 @@ def main(verbose,
             raise click.ClickException('Failed to interpret extra_env')
         extra_env = output.split('\n')[-2].strip()[1:-1]
 
-    command = '{nix_shell} {nix_file} {options} {nix_path} --show-trace --pure --run exit'.format(  # noqa
+    command = '{nix_shell} {nix_file} {nix_options} {nix_path} --show-trace --pure --run exit'.format(  # noqa
         nix_shell=nix_shell,
         nix_file=os.path.join(os.path.dirname(__file__), 'pip.nix'),
-        options=pypi2nix.utils.create_command_options(dict(
+        nix_options=pypi2nix.utils.create_command_options(dict(
             requirements_files=requirements_files,
             project_dir=project_dir,
             download_cache_dir=download_cache_dir,
@@ -62,9 +66,7 @@ def main(verbose,
             python_version=python_version,
             setup_requires=setup_requires,
         )),
-        nix_path=nix_path \
-            and ' '.join('-I {}'.format(i) for i in nix_path) \
-            or '',
+        nix_path=nix_path,
     )
 
     returncode, output = pypi2nix.utils.cmd(command, verbose != 0)
