@@ -198,9 +198,17 @@ def main(version,
                            requirements_line.startswith("-e hg+"):
                         pass
                     elif requirements_line.startswith("-e"):
+                        requirements_line = requirements_line.strip()[3:]
                         try:
                             tmp_path, egg = requirements_line.strip().split('#')
                             tmp_name = egg.split('egg=')[1]
+                            _tmp = tmp_path.split('[')
+                            if len(_tmp) > 1:
+                                tmp_path = _tmp[0]
+                                tmp_other = '[' + _tmp[1]
+                            else:
+                                tmp_path = _tmp
+                                tmp_other = ''
                         except:
                             raise click.ClickException(
                                 "Requirement starting with `.` "
@@ -211,11 +219,11 @@ def main(version,
                         tmp_path = os.path.abspath(os.path.join(
                             os.path.dirname(requirements_file),
                             os.path.abspath(os.path.join(
-                                current_dir, tmp_path.strip()[3:]
+                                current_dir, tmp_path
                             )),
                         ))
 
-                        requirements_line = "-e %s" % tmp_path
+                        requirements_line = "-e %s%s" % (tmp_path, tmp_other)
                         sources[tmp_name] = dict(url=tmp_path, type='path')
 
                     elif requirements_line.startswith("-r ./"):
@@ -262,7 +270,7 @@ def main(version,
         editable_file = os.path.join(project_dir, 'editable.txt')
         with open(editable_file, 'w+') as f:
             for item in editable:
-                item_path = item.split('#')[0]
+                item_path = item.split('[')[0].split('#')[0]
                 if item_path.startswith('.'):
                     item_path = os.path.abspath(os.path.join(current_dir, item_path))  # noqa
                 if os.path.isdir(item_path):
