@@ -121,7 +121,6 @@ lektor.nix: lektor.txt $(PYPI2NIX)
 		-v \
 		-V "2.7" \
 		--basename lektor \
-		--setup-requires "six packaging appdirs" \
 		-r lektor.txt \
 		-E $(LEKTOR_BUILD_INPUTS) \
 		-I $(NIX_PATH)
@@ -150,7 +149,6 @@ rss2email.nix: rss2email.txt $(PYPI2NIX)
 	echo "generating rss2email nix expressions ..."
 	$(PYPI2NIX) \
 		-v \
-		--setup-requires "six packaging appdirs" \
 		--basename rss2email \
 		-r rss2email.txt -V "3.4" \
 		-I $(NIX_PATH)
@@ -265,7 +263,6 @@ ldap.nix: ldap.txt $(PYPI2NIX)
 		--basename ldap \
 		-N "NIX_CFLAGS_COMPILE=\"-I\$${pkgs.cyrus_sasl.dev}/include/sasl \$$NIX_CFLAGS_COMPILE\"" \
 		-E "openldap cyrus_sasl openssl" \
-		--setup-requires "six packaging appdirs" \
 		-r ldap.txt \
 		-I $(NIX_PATH) \
 		-V "2.7"
