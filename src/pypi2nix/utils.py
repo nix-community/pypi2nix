@@ -18,6 +18,7 @@ PYTHON_VERSIONS = {
     "3.3": "python33",
     "3.4": "python34",
     "3.5": "python35",
+    "3.6": "python36",
     "3": "python3",
     "pypy": "pypy",
 }
