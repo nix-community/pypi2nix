@@ -40,5 +40,7 @@ def main(verbose,
         raise click.ClickException(
             u'While trying to run the command something went wrong.')
 
-
-    return buildout_file and os.path.join(project_dir, 'buildout_requirements.txt') or None
+    return buildout_file and \
+        os.path.join(project_dir,
+                     'buildout_requirements.txt') \
+        or None

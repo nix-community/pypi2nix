@@ -71,7 +71,7 @@ def main(verbose,
 
     returncode, output = pypi2nix.utils.cmd(command, verbose != 0)
     if returncode != 0 or \
-           output.endswith('ERROR: Failed to build one or more wheels'):
+       output.endswith('ERROR: Failed to build one or more wheels'):
         if verbose == 0:
             click.echo(output)
 
@@ -80,9 +80,10 @@ def main(verbose,
         # trying to recognize the problem and provide more meanigful error
         # message
         no_matching_dist = "No matching distribution found for "
-        no_pg_config = "Error: pg_config executable not found."
         if no_matching_dist in output:
-            dist_name = output[output.find(no_matching_dist) + len(no_matching_dist):]
+            dist_name = output[
+                output.find(no_matching_dist) + len(no_matching_dist):
+            ]
             dist_name = dist_name[:dist_name.find(' (from')]
             message = (
                 "Most likely `%s` package does not have source (zip/tar.bz) "
@@ -94,7 +95,8 @@ def main(verbose,
             if click.confirm('Do you want to report above issue (a browser '
                              'will open with prefilled details of issue)?'):
                 title = "Error when running pypi2nix command"
-                body = "# Description\n\n<detailed description of error here>\n\n"
+                body = "# Description\n\n<detailed description of error "
+                "here>\n\n"
                 body += "# Traceback \n\n```bash\n"
                 body += "% pypi2nix --version\n"
                 with open(os.path.join(HERE, 'VERSION')) as f:

@@ -18,7 +18,8 @@ let
   inherit (pkgs) makeWrapper;
   inherit (pkgs.stdenv.lib) fix' extends inNixShell;
 
-  pythonPackages = import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
+  pythonPackages =
+  import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
     inherit pkgs;
     inherit (pkgs) stdenv;
     python = pkgs.%(python_version)s;
@@ -35,8 +36,10 @@ let
         buildInputs = [ makeWrapper ] ++ (builtins.attrValues pkgs);
         buildCommand = ''
           mkdir -p $out/bin
-          ln -s ${pythonPackages.python.interpreter} $out/bin/${pythonPackages.python.executable}
-          for dep in ${builtins.concatStringsSep " " (builtins.attrValues pkgs)}; do
+          ln -s ${pythonPackages.python.interpreter} \
+              $out/bin/${pythonPackages.python.executable}
+          for dep in ${builtins.concatStringsSep " " \
+              (builtins.attrValues pkgs)}; do
             if [ -d "$dep/bin" ]; then
               for prog in "$dep/bin/"*; do
                 if [ -f $prog ]; then
@@ -67,7 +70,8 @@ let
 
   python = withPackages {};
 
-  generated = import %(generated_file)s { inherit pkgs python commonBuildInputs commonDoCheck; };
+  generated = import %(generated_file)s
+      { inherit pkgs python commonBuildInputs commonDoCheck; };
   overrides = import %(overrides_file)s { inherit pkgs python; };
 
 in python.withPackages (fix' (extends overrides generated))
@@ -122,10 +126,18 @@ def main(packages_metadata,
     '''Create Nix expressions.
     '''
 
-    default_file = os.path.join(current_dir, '{}.nix'.format(requirements_name))
-    generated_file = os.path.join(current_dir, '{}_generated.nix'.format(requirements_name))
-    overrides_file = os.path.join(current_dir, '{}_override.nix'.format(requirements_name))
-    frozen_file = os.path.join(current_dir, '{}_frozen.txt'.format(requirements_name))
+    default_file = os.path.join(
+        current_dir, '{}.nix'.format(requirements_name)
+    )
+    generated_file = os.path.join(
+        current_dir, '{}_generated.nix'.format(requirements_name)
+    )
+    overrides_file = os.path.join(
+        current_dir, '{}_override.nix'.format(requirements_name)
+    )
+    frozen_file = os.path.join(
+        current_dir, '{}_frozen.txt'.format(requirements_name)
+    )
 
     version_file = os.path.join(os.path.dirname(__file__), 'VERSION')
     with open(version_file) as f:
@@ -137,36 +149,41 @@ def main(packages_metadata,
     for item in sorted(packages_metadata, key=lambda x: x['name']):
         propagatedBuildInputs = '[ ]'
         if item.get('deps'):
-            deps = [x for x in item['deps'] if x.lower() in metadata_by_name.keys()]
+            deps = [x for x in item['deps']
+                    if x.lower() in metadata_by_name.keys()]
             if deps:
                 propagatedBuildInputs = "[\n%s\n    ]" % (
                     '\n'.join(sorted(
-                        ['      self."%s"' % (metadata_by_name[x.lower()]['name'])
-                        for x in deps if x not in [item['name']]
-                    ])))
+                        ['      self."%s"' %
+                         (metadata_by_name[x.lower()]['name'])
+                         for x in deps if x not in [item['name']]]
+                    )))
         fetch_type = item.get('fetch_type', None)
         if fetch_type == 'path':
-            fetch_expression =  './' + os.path.relpath(item['url'], current_dir)
+            fetch_expression = './' + os.path.relpath(item['url'], current_dir)
         elif fetch_type == 'fetchgit':
-            fetch_expression = 'pkgs.fetchgit { url = "%(url)s"; %(hash_type)s = "%(hash_value)s"; rev = "%(rev)s"; }' % dict(
-                url=item['url'],
-                hash_type=item['hash_type'],
-                hash_value=item['hash_value'],
-                rev=item['rev']
-            )
+            fetch_expression = 'pkgs.fetchgit { url = "%(url)s"; '\
+                '%(hash_type)s = "%(hash_value)s"; rev = "%(rev)s"; }' % dict(
+                    url=item['url'],
+                    hash_type=item['hash_type'],
+                    hash_value=item['hash_value'],
+                    rev=item['rev']
+                )
         elif fetch_type == 'fetchhg':
-            fetch_expression = 'pkgs.fetchhg { url = "%(url)s"; %(hash_type)s = "%(hash_value)s"; rev = "%(rev)s"; }' % dict(
-                url=item['url'],
-                hash_type=item['hash_type'],
-                hash_value=item['hash_value'],
-                rev=item['rev']
-            )
+            fetch_expression = 'pkgs.fetchhg { url = "%(url)s"; '\
+                '%(hash_type)s = "%(hash_value)s"; rev = "%(rev)s"; }' % dict(
+                    url=item['url'],
+                    hash_type=item['hash_type'],
+                    hash_value=item['hash_value'],
+                    rev=item['rev']
+                )
         else:
-            fetch_expression='pkgs.fetchurl { url = "%(url)s"; %(hash_type)s = "%(hash_value)s"; }' % dict(
-                url=item['url'],
-                hash_type=item['hash_type'],
-                hash_value=item['hash_value'],
-            )
+            fetch_expression = 'pkgs.fetchurl { url = "%(url)s"; '\
+                '%(hash_type)s = "%(hash_value)s"; }' % dict(
+                    url=item['url'],
+                    hash_type=item['hash_type'],
+                    hash_value=item['hash_value'],
+                )
 
         generated_packages_metadata.append(dict(
             name=item.get("name", ""),
@@ -188,9 +205,11 @@ def main(packages_metadata,
         version=version,
         command_arguments=' '.join(sys.argv[1:]),
         python_version=python_version,
-        extra_build_inputs=extra_build_inputs
-            and "with pkgs; [ %s ]" % (' '.join(extra_build_inputs))
-            or "[]",
+        extra_build_inputs=(
+            extra_build_inputs and
+            "with pkgs; [ %s ]" % (' '.join(extra_build_inputs)) or
+            "[]"
+        ),
         generated_file='.' + generated_file[len(current_dir):],
         overrides_file='.' + overrides_file[len(current_dir):],
         enable_tests=str(enable_tests).lower(),

@@ -29,9 +29,10 @@ def pretty_option(option):
         return ''
     else:
         return ' [value: {}]'.format(
-            type(option) in [list, tuple]
-            and ' '.join(option)
-            or option)
+            type(option) in [list, tuple] and
+            ' '.join(option) or
+            option)
+
 
 def safe(string):
     return string.replace('"', '\\"')
@@ -49,7 +50,7 @@ def cmd(command, verbose=False):
         command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        )
+    )
 
     out = []
     while True:

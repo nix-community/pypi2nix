@@ -195,12 +195,13 @@ def main(version,
             with open(new_requirements_file, "w+") as f2:
                 for requirements_line in f1.readlines():
                     if requirements_line.startswith("-e git+") or \
-                           requirements_line.startswith("-e hg+"):
+                       requirements_line.startswith("-e hg+"):
                         pass
                     elif requirements_line.startswith("-e"):
                         requirements_line = requirements_line.strip()[3:]
                         try:
-                            tmp_path, egg = requirements_line.strip().split('#')
+                            tmp_path, egg = requirements_line.strip() \
+                                                             .split('#')
                             tmp_name = egg.split('egg=')[1]
                             _tmp = tmp_path.split('[')
                             if len(_tmp) > 1:
@@ -229,7 +230,7 @@ def main(version,
                     elif requirements_line.startswith("-r ./"):
                         requirements_file2 = os.path.abspath(os.path.join(
                             os.path.dirname(requirements_file),
-                                            requirements_line.strip()[3:]
+                            requirements_line.strip()[3:]
                         ))
                         new_requirements_file2 = handle_requirements_file(
                             project_dir, requirements_file2)
@@ -251,7 +252,8 @@ def main(version,
     click.echo('')
 
     if buildout:
-        click.echo('Stage0: Generating requirements.txt from buildout configuration ...')
+        click.echo('Stage0: Generating requirements.txt from buildout '
+                   'configuration ...')
         buildout_requirements = pypi2nix.stage0.main(
             verbose=verbose,
             buildout_file=buildout,
@@ -318,7 +320,6 @@ def main(version,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
         current_dir=current_dir,
     )
-
 
     click.echo('')
     click.echo('Nix expressions generated successfully.')
