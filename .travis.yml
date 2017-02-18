@@ -35,10 +35,13 @@ before_install:
       ssh-add $TRAVIS_BUILD_DIR/deploy_rsa;
     fi
 script:
+  - cd examples && make $EXAMPLE && cd ..
   - if [ "$TRAVIS_PULL_REQUEST" != "true" -a "$TRAVIS_BRANCH" = "master" ]; then
-      cd examples && make $EXAMPLE && cd ..;
       mkdir nars/;
       nix-push --dest "$PWD/nars/" --force ./examples/$EXAMPLE;
     fi
 after_success:
-  - rsync -avh --ignore-existing $TRAVIS_BUILD_DIR/nars/ travis@garbas.si:/var/travis/pypi2nix/
+  - if [ "$TRAVIS_PULL_REQUEST" != "true" -a "$TRAVIS_BRANCH" = "master" ]; then
+      rsync -avh --ignore-existing $TRAVIS_BUILD_DIR/nars/ travis@garbas.si:/var/travis/pypi2nix/;
+    fi
+
