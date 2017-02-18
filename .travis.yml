@@ -28,7 +28,7 @@ before_install:
   - export SSL_CERT_FILE=$PWD/result-cacert/etc/ssl/certs/ca-bundle.crt
   - sudo mkdir -p /etc/ssl/certs/ && sudo rm -f /etc/ssl/certs/ca-certificates.crt && sudo ln -s $PWD/result-cacert/etc/ssl/certs/ca-bundle.crt /etc/ssl/certs/ca-certificates.crt
   - echo 'binary-caches = https://cache.nixos.org/ https://travis.garbas.si/pypi2nix/' | sudo tee -a /etc/nix/nix.conf > /dev/null
-  - if [ "$TRAVIS_PULL_REQUEST" != "true" -a "$TRAVIS_BRANCH" = "master" ]; then
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" -a "$TRAVIS_BRANCH" = "master" ]; then
       openssl aes-256-cbc -K $encrypted_0cfcc1944c73_key -iv $encrypted_0cfcc1944c73_iv -in deploy_rsa.enc -out deploy_rsa -d;
       eval "$(ssh-agent -s)";
       chmod 600 $TRAVIS_BUILD_DIR/deploy_rsa;
@@ -36,12 +36,12 @@ before_install:
     fi
 script:
   - cd examples && make $EXAMPLE && cd ..
-  - if [ "$TRAVIS_PULL_REQUEST" != "true" -a "$TRAVIS_BRANCH" = "master" ]; then
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" -a "$TRAVIS_BRANCH" = "master" ]; then
       mkdir nars/;
       nix-push --dest "$PWD/nars/" --force ./examples/$EXAMPLE;
     fi
 after_success:
-  - if [ "$TRAVIS_PULL_REQUEST" != "true" -a "$TRAVIS_BRANCH" = "master" ]; then
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" -a "$TRAVIS_BRANCH" = "master" ]; then
       rsync -avh --ignore-existing $TRAVIS_BUILD_DIR/nars/ travis@garbas.si:/var/travis/pypi2nix/;
     fi
 

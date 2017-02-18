@@ -1,4 +1,5 @@
-{ stdenv, fetchurl, python, zip, makeWrapper, nix, nix-prefetch-scripts
+{ stdenv, fetchurl, zip, makeWrapper, nix, nix-prefetch-scripts
+, pythonPackages
 , src ? { outPath = ./.; name = "pypi2nix"; }
 }:
 
@@ -23,7 +24,11 @@ in stdenv.mkDerivation rec {
     click
     requests
   ];
-  buildInputs = [ python zip makeWrapper nix.out nix-prefetch-scripts ];
+  buildInputs = [
+    pythonPackages.python pythonPackages.flake8
+    zip makeWrapper nix.out nix-prefetch-scripts
+  ];
+  doCheck = true;
   sourceRoot = ".";
 
   postUnpack = ''
@@ -50,13 +55,17 @@ in stdenv.mkDerivation rec {
   commonPhase = ''
     mkdir -p $out/bin
 
-    echo "#!${python.interpreter}" >  $out/bin/pypi2nix
+    echo "#!${pythonPackages.python.interpreter}" >  $out/bin/pypi2nix
     echo "import pypi2nix.cli" >> $out/bin/pypi2nix
     echo "pypi2nix.cli.main()" >> $out/bin/pypi2nix
 
     chmod +x $out/bin/pypi2nix
 
     export PYTHONPATH=$out/pkgs:$PYTHONPATH
+  '';
+
+  checkPhase = ''
+    flake8 ${src}/src
   '';
 
   installPhase = commonPhase + ''

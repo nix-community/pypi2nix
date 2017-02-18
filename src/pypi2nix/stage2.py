@@ -1,4 +1,5 @@
 """Parse metadata from .dist-info directories in a wheelhouse."""
+# flake8: noqa: E501
 
 import click
 import hashlib
@@ -55,7 +56,6 @@ def extract_deps(metadata):
                         deps.append(dep)
 
     return list(set(deps))
-
 
 all_classifiers = {
     'License :: Aladdin Free Public License (AFPL)': None,
@@ -226,7 +226,7 @@ def find_release(wheel_cache_dir, wheel, wheel_data):
     if not _releases:
         for _version, _releases_tmp in wheel_data['releases'].items():
             if pkg_resources.parse_version(wheel['version']) == \
-                   pkg_resources.parse_version(_version):
+               pkg_resources.parse_version(_version):
                 _release_version = _version
                 _releases = _releases_tmp
                 break
@@ -294,9 +294,8 @@ def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
         release['hash_type'] = 'sha256'
 
         repo_type = sources[wheel['name']]['type']
-        if repo_type is None and \
-               (release['url'].startswith('http://') or \
-                release['url'].startswith('https://')):
+        if repo_type is None and (release['url'].startswith('http://') or
+                                  release['url'].startswith('https://')):
 
             release['fetch_type'] = 'fetchurl'
 
@@ -388,13 +387,11 @@ def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
         else:
             raise click.ClickException('Source type `{}` not implemented'.format(repo_type))
 
-
     else:
         url = "{}/{}/json".format(index, wheel['name'])
         r = requests.get(url, timeout=None)
         r.raise_for_status()  # TODO: handle this nicer
         wheel_data = r.json()
-
 
         if not wheel_data.get('releases'):
             raise click.ClickException(
@@ -427,8 +424,10 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL,
                         "Source for path `%s` does not exists." % line
                     )
 
-                elif line.startswith('http://') or line.startswith('https://') or \
-                     line.startswith('git+') or line.startswith('hg+'):
+                elif (line.startswith('http://') or
+                      line.startswith('https://') or
+                      line.startswith('git+') or
+                      line.startswith('hg+')):
                     try:
                         url, egg = line.split('#')
                         name = egg.split('egg=')[1]

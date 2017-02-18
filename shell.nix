@@ -5,8 +5,8 @@
 
 let
   pkgs = import nixpkgs {};
-  python = (builtins.getAttr "python${pythonVersion}Packages" pkgs).python;
+  pythonPackages = builtins.getAttr "python${pythonVersion}Packages" pkgs;
 in import ./default.nix {
-  inherit src python;
+  inherit src pythonPackages;
   inherit (pkgs) stdenv fetchurl zip makeWrapper nix nix-prefetch-scripts;
 }
