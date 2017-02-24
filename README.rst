@@ -62,13 +62,11 @@ Once Nix expressions are generated you should be able to see 3 new files:
 - ``requirements_frozen.txt`` - full frozen set for your for you pypi2nix call.
   This is the output you would expect from `pip freeze`.
 
-- ``requirements_generated.nix`` - this are the generated nix expressions
+- ``requirements.nix`` is a file which contains a nix expression to for the package set that was built.
 
 - ``requirements_override.nix`` - this is an empty file which is ment to
   override generated nix expressions.
 
-- ``requirements.nix`` is a file which connects ``requirements_generated.nix``
-  and ``requirements_override.nix`` and exposes it for futher usage.
 
 
 Non-python/system dependencies

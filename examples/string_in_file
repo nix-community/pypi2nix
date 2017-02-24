@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+exec grep "$1" "$2" > /dev/null

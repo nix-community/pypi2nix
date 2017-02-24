@@ -70,8 +70,9 @@ let
 
   python = withPackages {};
 
-  generated = import %(generated_file)s
-      { inherit pkgs python commonBuildInputs commonDoCheck; };
+  generated = self: {
+%(generated_package_nix)s
+  };
   overrides = import %(overrides_file)s { inherit pkgs python; };
 
 in python.withPackages (fix' (extends overrides generated))
@@ -91,18 +92,18 @@ self: {
 '''
 
 GENERATED_PACKAGE_NIX = '''
-  "%(name)s" = python.mkDerivation {
-    name = "%(name)s-%(version)s";
-    src = %(fetch_expression)s;
-    doCheck = commonDoCheck;
-    buildInputs = commonBuildInputs;
-    propagatedBuildInputs = %(propagatedBuildInputs)s;
-    meta = with pkgs.stdenv.lib; {
-      homepage = "%(homepage)s";
-      license = %(license)s;
-      description = "%(description)s";
+    "%(name)s" = python.mkDerivation {
+      name = "%(name)s-%(version)s";
+      src = %(fetch_expression)s;
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = %(propagatedBuildInputs)s;
+      meta = with pkgs.stdenv.lib; {
+        homepage = "%(homepage)s";
+        license = %(license)s;
+        description = "%(description)s";
+      };
     };
-  };
 '''
 
 OVERRIDES_NIX = '''
@@ -128,9 +129,6 @@ def main(packages_metadata,
 
     default_file = os.path.join(
         current_dir, '{}.nix'.format(requirements_name)
-    )
-    generated_file = os.path.join(
-        current_dir, '{}_generated.nix'.format(requirements_name)
     )
     overrides_file = os.path.join(
         current_dir, '{}_override.nix'.format(requirements_name)
@@ -195,9 +193,9 @@ def main(packages_metadata,
             description=item.get("description", ""),
         ))
 
-    generated = GENERATED_NIX % (
-        version, ' '.join(sys.argv[1:]), '\n\n'.join(
-            GENERATED_PACKAGE_NIX % x for x in generated_packages_metadata))
+    generated = '\n\n'.join(
+        GENERATED_PACKAGE_NIX % x for x in generated_packages_metadata
+    )
 
     overrides = OVERRIDES_NIX % ""
 
@@ -210,14 +208,10 @@ def main(packages_metadata,
             "with pkgs; [ %s ]" % (' '.join(extra_build_inputs)) or
             "[]"
         ),
-        generated_file='.' + generated_file[len(current_dir):],
         overrides_file='.' + overrides_file[len(current_dir):],
         enable_tests=str(enable_tests).lower(),
+        generated_package_nix=generated,
     )
-
-    with open(generated_file, 'w+') as f:
-        f.write(generated.strip())
-        click.echo('|-> writing %s' % generated_file)
 
     if not os.path.exists(overrides_file):
         with open(overrides_file, 'w+') as f:
