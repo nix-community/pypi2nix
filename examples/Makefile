@@ -77,7 +77,6 @@ pillow-clear:
 	rm -f pillow
 	rm -f pillow.txt
 	rm -f pillow.nix
-	rm -f pillow_generated.nix
 	rm -f pillow_frozen.txt
 
 
@@ -103,7 +102,6 @@ empy-clear:
 	rm -f empy
 	rm -f empy.txt
 	rm -f empy.nix
-	rm -f empy_generated.nix
 	rm -f empy_frozen.txt
 
 
@@ -132,7 +130,6 @@ lektor-clear:
 	rm -f lektor
 	rm -f lektor.txt
 	rm -f lektor.nix
-	rm -f lektor_generated.nix
 	rm -f lektor_frozen.txt
 
 
@@ -160,7 +157,6 @@ rss2email-clear:
 	rm -f rss2email
 	rm -f rss2email.txt
 	rm -f rss2email.nix
-	rm -f rss2email_generated.nix
 	rm -f rss2email_frozen.txt
 
 
@@ -187,7 +183,6 @@ awscli_and_requests-clear:
 	rm -f awscli.txt
 	rm -f requests.txt
 	rm -f awscli_and_requests.nix
-	rm -f awscli_and_requests_generated.nix
 	rm -f awscli_and_requests_frozen.txt
 
 
@@ -222,7 +217,6 @@ scipy-clear:
 	rm -f scipy
 	rm -f scipy.txt
 	rm -f scipy.nix
-	rm -f scipy_generated.nix
 	rm -f scipy_frozen.txt
 
 tornado: tornado.nix
@@ -230,10 +224,7 @@ tornado: tornado.nix
 	nix-build tornado.nix -o tornado -A interpreter --show-trace
 	./tornado/bin/python -c 'import tornado'
 	nix-shell tornado.nix -A interpreter --run "python -c 'import tornado'"
-	if [ `cat tornado_generated.nix | grep "69253c820df473407c562a227d0ba36df25018ab" | wc -l` != "1" ]; then \
-			echo "ERROR: Revision '69253c820df473407c562a227d0ba36df25018ab' not found in tornado_generated.nix!"; \
-			exit 123; \
-		fi
+	if ./string_in_file "69253c820df473407c562a227d0ba36df25018ab" tornado.nix ; then true ; else echo "ERROR: Revision '69253c820df473407c562a227d0ba36df25018ab' not found in tornado.nix!" ; exit 123 ; fi
 
 tornado.nix: tornado.txt $(PYPI2NIX)
 	echo "generating tornado.nix expressions ..."
@@ -246,7 +237,6 @@ tornado-clear:
 	rm -f tornado
 	rm -f tornado.txt
 	rm -f tornado.nix
-	rm -f tornado_generated.nix
 	rm -f tornado_frozen.txt
 
 
@@ -274,7 +264,6 @@ ldap-clear:
 	rm -f ldap
 	rm -f ldap.txt
 	rm -f ldap.nix
-	rm -f ldap_generated.nix
 	rm -f ldap_frozen.txt
 
 
@@ -283,10 +272,7 @@ mercurial: mercurial.nix
 	nix-build mercurial.nix -o mercurial -A interpreter --show-trace -j 1
 	./mercurial/bin/python -c 'import flake8'
 	nix-shell mercurial.nix -A interpreter --run "python -c 'import flake8'"
-	if [ `cat mercurial_generated.nix | grep "a209fb6" | wc -l` != "1" ]; then \
-			echo "ERROR: Revision 'a209fb6' not found in tornado_generated.nix!"; \
-			exit 123; \
-		fi
+	if ./string_in_file "a209fb6" mercurial.nix ; then true ; else echo "ERROR: Revision 'a209fb6' not found in tornado_generated.nix!"; exit 123; fi
 
 mercurial.nix: mercurial.txt $(PYPI2NIX)
 	echo "generating mercurial.nix expressions ..."
@@ -302,5 +288,4 @@ mercurial-clear:
 	rm -f mercurial
 	rm -f mercurial.txt
 	rm -f mercurial.nix
-	rm -f mercurial_generated.nix
 	rm -f mercurial_frozen.txt
