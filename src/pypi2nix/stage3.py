@@ -1,5 +1,6 @@
-import sys
 import os
+import sys
+
 import click
 
 
@@ -74,8 +75,17 @@ let
 %(generated_package_nix)s
   };
   overrides = import %(overrides_file)s { inherit pkgs python; };
+  commonOverrides = [
+%(common_overrides)s
+  ];
 
-in python.withPackages (fix' (extends overrides generated))
+in python.withPackages
+   (fix' (pkgs.lib.fold
+            extends
+            generated
+            ([overrides] ++ commonOverrides)
+         )
+   )
 '''
 
 GENERATED_NIX = '''# generated using pypi2nix tool (version: %s)
@@ -123,6 +133,7 @@ def main(packages_metadata,
          enable_tests,
          python_version,
          current_dir,
+         common_overrides=[],
          ):
     '''Create Nix expressions.
     '''
@@ -199,6 +210,11 @@ def main(packages_metadata,
 
     overrides = OVERRIDES_NIX % ""
 
+    common_overrides_expressions = [
+        '    (' + override.nix_expression() + ')'
+        for override in common_overrides
+    ]
+
     default = DEFAULT_NIX % dict(
         version=version,
         command_arguments=' '.join(sys.argv[1:]),
@@ -211,6 +227,7 @@ def main(packages_metadata,
         overrides_file='.' + overrides_file[len(current_dir):],
         enable_tests=str(enable_tests).lower(),
         generated_package_nix=generated,
+        common_overrides='\n'.join(common_overrides_expressions),
     )
 
     if not os.path.exists(overrides_file):
