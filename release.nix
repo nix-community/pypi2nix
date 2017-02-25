@@ -8,8 +8,7 @@ let
 
   pkgFor = system:
     if builtins.elem system supportedSystems
-      then import ./default.nix {
-        inherit (pkgs) stdenv fetchurl zip makeWrapper nix nix-prefetch-scripts;
+      then pkgs.callPackage ./default.nix {
         src = pypi2nix;
         pythonPackages = pkgs.python3Packages;
       }
