@@ -38,7 +38,7 @@ def safe(string):
     return string.replace('"', '\\"')
 
 
-def cmd(command, verbose=False):
+def cmd(command, verbose=False, stderr=subprocess.STDOUT):
 
     if isinstance(command, str):
         command = shlex.split(command)
@@ -49,7 +49,7 @@ def cmd(command, verbose=False):
     p = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+        stderr=stderr,
     )
 
     out = []

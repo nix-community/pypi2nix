@@ -4,6 +4,7 @@ import os
 import shutil
 import tempfile
 
+import pypi2nix.overrides
 import pypi2nix.stage0
 import pypi2nix.stage1
 import pypi2nix.stage2
@@ -96,6 +97,13 @@ import pypi2nix.utils
               help=u'Extra Python dependencies needed before the installation'
                    u'to build wheels.'
               )
+@click.option('-O', '--overrides',
+              multiple=True,
+              required=False,
+              type=pypi2nix.overrides.OVERRIDES_URL,
+              help=u'Extra expressions that override generated expressions ' +
+                   u'for specific packages',
+              )
 def main(version,
          verbose,
          nix_shell,
@@ -110,6 +118,7 @@ def main(version,
          buildout,
          editable,
          setup_requires,
+         overrides
          ):
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
@@ -319,6 +328,7 @@ def main(version,
         enable_tests=enable_tests,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
         current_dir=current_dir,
+        common_overrides=overrides,
     )
 
     click.echo('')
