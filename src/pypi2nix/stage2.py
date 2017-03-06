@@ -294,8 +294,7 @@ def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
         release['hash_type'] = 'sha256'
 
         repo_type = sources[wheel['name']]['type']
-        if repo_type is None and (release['url'].startswith('http://') or
-                                  release['url'].startswith('https://')):
+        if repo_type == 'url':
 
             release['fetch_type'] = 'fetchurl'
 
@@ -435,6 +434,8 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL,
                             sources[name] = dict(url=url, type='git')
                         elif line.startswith('hg+'):
                             sources[name] = dict(url=url, type='hg')
+                        else:
+                            sources[name] = dict(url=url, type='url')
                     except:
                         raise click.ClickException(
                             "Requirement starting with http:// or https:// "
