@@ -194,14 +194,14 @@ def main(version,
         with open(requirements_file) as f1:
             with open(new_requirements_file, "w+") as f2:
                 for requirements_line in f1.readlines():
+                    requirements_line = requirements_line.strip()
                     if requirements_line.startswith("-e git+") or \
                        requirements_line.startswith("-e hg+"):
                         pass
-                    elif requirements_line.startswith("-e"):
-                        requirements_line = requirements_line.strip()[3:]
+                    elif requirements_line.startswith("-e "):
+                        requirements_line = requirements_line[3:]
                         try:
-                            tmp_path, egg = requirements_line.strip() \
-                                                             .split('#')
+                            tmp_path, egg = requirements_line.split('#')
                             tmp_name = egg.split('egg=')[1]
                             _tmp = tmp_path.split('[')
                             if len(_tmp) > 1:
@@ -227,15 +227,15 @@ def main(version,
                         requirements_line = "-e %s%s" % (tmp_path, tmp_other)
                         sources[tmp_name] = dict(url=tmp_path, type='path')
 
-                    elif requirements_line.startswith("-r ./"):
+                    elif requirements_line.startswith("-r ."):
                         requirements_file2 = os.path.abspath(os.path.join(
                             os.path.dirname(requirements_file),
-                            requirements_line.strip()[3:]
+                            requirements_line[3:]
                         ))
                         new_requirements_file2 = handle_requirements_file(
                             project_dir, requirements_file2)
                         requirements_line = "-r " + new_requirements_file2
-                    f2.write(requirements_line)
+                    f2.write(requirements_line + "\n")
 
         return new_requirements_file
 
