@@ -29,6 +29,7 @@ in pkgs.stdenv.mkDerivation rec {
     export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     export PYTHONPATH=${pypi2nix_bootstrap}/base
     export LANG=en_US.UTF-8
+    export HOME=${project_dir}
 
     mkdir -p ${buildout_cache_dir}/download ${buildout_cache_dir}/eggs
 

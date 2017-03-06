@@ -1,4 +1,5 @@
-{ stdenv, fetchurl, unzip, which, makeWrapper, python }:
+{ stdenv, fetchurl, unzip, which, makeWrapper, python
+}:
 
 let
   deps = import ./deps.nix { inherit fetchurl; };
@@ -31,8 +32,9 @@ in
       PYTHONPATH=$out/base ${python.interpreter} -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'wheel', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
       PYTHONPATH=$out/base ${python.interpreter} -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'zc.buildout', 'zc.recipe.egg', 'buildout.requirements', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
 
-      touch $out/extra/zc/__init__.py
       touch $out/extra/buildout/__init__.py
+      touch $out/extra/zc/__init__.py
+      touch $out/extra/zc/recipe/__init__.py
 
       echo -e "#!${python.interpreter}\nimport sys, pip; sys.exit(pip.main())" > $out/bin/pip
       echo -e "#!${python.interpreter}\nimport sys, zc.buildout.buildout\nsys.exit(zc.buildout.buildout.main())" > $out/bin/buildout
