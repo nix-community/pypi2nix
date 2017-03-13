@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, zip, makeWrapper, nix, nix-prefetch-scripts
+{ stdenv, fetchurl, zip, makeWrapper, nix, nix-prefetch-git, nix-prefetch-hg
 , pythonPackages
 , src ? { outPath = ./.; name = "pypi2nix"; }
 }:
@@ -26,7 +26,7 @@ in stdenv.mkDerivation rec {
   ];
   buildInputs = [
     pythonPackages.python pythonPackages.flake8
-    zip makeWrapper nix.out nix-prefetch-scripts
+    zip makeWrapper nix.out nix-prefetch-git nix-prefetch-hg
   ];
   doCheck = true;
   sourceRoot = ".";
@@ -48,8 +48,8 @@ in stdenv.mkDerivation rec {
 
   patchPhase = ''
     sed -i -e "s|default='nix-shell',|default='${nix.out}/bin/nix-shell',|" $out/pkgs/pypi2nix/cli.py
-    sed -i -e "s|nix-prefetch-git|${nix-prefetch-scripts}/bin/nix-prefetch-git|" $out/pkgs/pypi2nix/stage2.py
-    sed -i -e "s|nix-prefetch-hg|${nix-prefetch-scripts}/bin/nix-prefetch-hg|" $out/pkgs/pypi2nix/stage2.py
+    sed -i -e "s|nix-prefetch-git|${nix-prefetch-git}/bin/nix-prefetch-git|" $out/pkgs/pypi2nix/stage2.py
+    sed -i -e "s|nix-prefetch-hg|${nix-prefetch-hg}/bin/nix-prefetch-hg|" $out/pkgs/pypi2nix/stage2.py
   '';
 
   commonPhase = ''
