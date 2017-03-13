@@ -69,7 +69,9 @@ in stdenv.mkDerivation rec {
   '';
 
   installPhase = commonPhase + ''
-    wrapProgram $out/bin/pypi2nix --prefix PYTHONPATH : "$PYTHONPATH"
+    wrapProgram $out/bin/pypi2nix \
+        --prefix PYTHONPATH : "$PYTHONPATH" \
+        --prefix PATH : "${nix-prefetch-git}/bin:${nix-prefetch-hg}/bin"
   '';
 
   shellHook = ''
