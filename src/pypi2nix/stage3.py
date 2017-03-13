@@ -78,16 +78,26 @@ let
 in python.withPackages (fix' (extends overrides generated))
 '''
 
-GENERATED_NIX = '''# generated using pypi2nix tool (version: %s)
+OVERLAY_NIX = '''
+# generated using pypi2nix tool (version: %(version)s)
+# See more at: https://github.com/garbas/pypi2nix
 #
 # COMMAND:
-#   pypi2nix %s
+#   pypi2nix %(command_arguments)s
 #
 
-{ pkgs, python, commonBuildInputs ? [], commonDoCheck ? false }:
+self: pkgs:
+let
+  python.mkDerivation = (import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
+    inherit pkgs;
+    inherit (pkgs) stdenv;
+    python = pkgs.%(python_version)s;
+  }).buildPythonPackage;
 
-self: {
-%s
+  commonBuildInputs = %(extra_build_inputs)s;
+  commonDoCheck = %(enable_tests)s;
+in {
+%(generated_package_nix)s
 }
 '''
 
@@ -123,6 +133,7 @@ def main(packages_metadata,
          enable_tests,
          python_version,
          current_dir,
+         generate_overlay,
          ):
     '''Create Nix expressions.
     '''
@@ -199,7 +210,7 @@ def main(packages_metadata,
 
     overrides = OVERRIDES_NIX % ""
 
-    default = DEFAULT_NIX % dict(
+    whole_metadata = dict(
         version=version,
         command_arguments=' '.join(sys.argv[1:]),
         python_version=python_version,
@@ -212,6 +223,11 @@ def main(packages_metadata,
         enable_tests=str(enable_tests).lower(),
         generated_package_nix=generated,
     )
+
+    if generate_overlay:
+        default = OVERLAY_NIX % whole_metadata
+    else:
+        default = DEFAULT_NIX % whole_metadata
 
     if not os.path.exists(overrides_file):
         with open(overrides_file, 'w+') as f:

@@ -96,6 +96,10 @@ import pypi2nix.utils
               help=u'Extra Python dependencies needed before the installation'
                    u'to build wheels.'
               )
+@click.option('--generate-overlay',
+              is_flag=True,
+              help=u'If we should generate an overlay file, instead of the classic expression.'
+              )
 def main(version,
          verbose,
          nix_shell,
@@ -110,6 +114,7 @@ def main(version,
          buildout,
          editable,
          setup_requires,
+         generate_overlay,
          ):
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
@@ -319,6 +324,7 @@ def main(version,
         enable_tests=enable_tests,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
         current_dir=current_dir,
+        generate_overlay=generate_overlay,
     )
 
     click.echo('')
