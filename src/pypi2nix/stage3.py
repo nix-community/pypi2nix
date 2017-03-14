@@ -88,7 +88,8 @@ OVERLAY_NIX = '''
 
 self: pkgs:
 let
-  python.mkDerivation = (import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
+  python.mkDerivation =
+  (import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
     inherit pkgs;
     inherit (pkgs) stdenv;
     python = pkgs.%(python_version)s;

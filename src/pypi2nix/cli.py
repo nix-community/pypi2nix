@@ -98,7 +98,8 @@ import pypi2nix.utils
               )
 @click.option('--generate-overlay',
               is_flag=True,
-              help=u'If we should generate an overlay file, instead of the classic expression.'
+              help=u'If we should generate an overlay file, instead of'
+                   u'the classic expression.'
               )
 def main(version,
          verbose,
