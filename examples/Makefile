@@ -233,7 +233,7 @@ tornado: tornado.nix
 
 tornado.nix: tornado.txt $(PYPI2NIX)
 	echo "generating tornado.nix expressions ..."
-	$(PYPI2NIX) -v --basename tornado -r tornado.txt -I $(NIX_PATH) -V "3.5" -O 'https://raw.githubusercontent.com/garbas/nixpkgs-python/master/overrides.nix' -O 'git+https://github.com/garbas/nixpkgs-python.git#path=overrides.nix&rev=28ecf4bc8cf5e718862159eb1f324ddcf227dfef'
+	$(PYPI2NIX) -v --basename tornado -r tornado.txt -I $(NIX_PATH) -V "3.5" -O 'https://raw.githubusercontent.com/garbas/nixpkgs-python/master/overrides.nix' -O 'git+https://github.com/garbas/nixpkgs-python.git#path=overrides.nix&rev=28ecf4bc8cf5e718862159eb1f324ddcf227dfef' -O './tornado-override/empty.nix'
 
 tornado.txt: tornado-clear
 	echo "-e git+git://github.com/tornadoweb/tornado.git@69253c820df473407c562a227d0ba36df25018ab#egg=tornado" > tornado.txt
