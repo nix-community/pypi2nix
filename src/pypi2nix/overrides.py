@@ -96,7 +96,9 @@ class OverridesGit(object):
 
 def url_to_overrides(url_string):
     url = urlparse(url_string)
-    if url.scheme == 'file' or '':
+    if url.scheme == '':
+        return OverridesFile(url.path)
+    elif url.scheme == 'file':
         return OverridesFile(url.path)
     elif url.scheme == 'http' or url.scheme == 'https':
         return OverridesUrl(url.geturl())
