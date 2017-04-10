@@ -15,6 +15,7 @@ env:
   - EXAMPLE=scipy
   - EXAMPLE=tornado
   - EXAMPLE=connexion
+  - EXAMPLE=aiohttp
 #  - EXAMPLE=vulnix
 matrix:
   exclude:

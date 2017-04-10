@@ -13,10 +13,10 @@ rec {
     sha256 = "03clr9c1dih5n9c00c592zzvf6r1ffimywkaq9agcqdllzhl7wh9";
   };
 
-  setuptoolsVersion = "34.1.0";
+  setuptoolsVersion = "34.4.1";
   setuptoolsWhl = fetchurl {
-    url = "https://pypi.python.org/packages/a7/62/3995dc3067cbf8d4a13ddac0f87417b9a08799c586b3faa77d62ad9085de/setuptools-34.1.0-py2.py3-none-any.whl";
-    sha256 = "1fmpshqr8lfcrnn6d4njrf9qfj86vxpjwaq06g2vjf7yhabx7ngd";
+    url = "https://pypi.python.org/packages/61/da/d37d49dc549683b7a5f1074641c6f42b4c0093dc7085bc680485ad160ef8/setuptools-34.4.1-py2.py3-none-any.whl";
+    sha256 = "1l3rl0hqq5kh3cxzvwiqbs9yfxdk0n9wrmfwqmp40il4fy5sqyhz";
   };
 
   sixVersion = "1.10.0";
@@ -25,10 +25,10 @@ rec {
     sha256 = "1cay6fbjmwz2lxrjbp543k1g2ivbm891mlx64njgbk4v7m08rxqg";
   };
 
-  appdirsVersion = "1.4.0";
+  appdirsVersion = "1.4.3";
   appdirsWhl = fetchurl {
-    url = "https://pypi.python.org/packages/7b/8b/eebc6e2002a1e0383f1c7108d0111d4d33ea93bf417d7e19e43ec9b87b2b/appdirs-1.4.0-py2.py3-none-any.whl";
-    sha256 = "0dkpa5aynxz75ydhv2f9rlpllld5q9815h89667m6acgvdw8brc5";
+    url = "https://pypi.python.org/packages/56/eb/810e700ed1349edde4cbdc1b2a21e28cdf115f9faf263f6bbf8447c1abf3/appdirs-1.4.3-py2.py3-none-any.whl";
+    sha256 = "0vhnw9ihh67n7n7zdsn355pflz1da1nn6m7czbfk838xarj4dcnq";
   };
 
   packagingVersion = "16.8";
@@ -37,21 +37,21 @@ rec {
     sha256 = "1273rw8ihdbshvm95c4ih0a7rxykbh4z2s3s08r1z1d7wg36s9wr";
   };
 
-  pyparsingVersion = "2.1.10";
+  pyparsingVersion = "2.2.0";
   pyparsingWhl = fetchurl {
-    url = "https://pypi.python.org/packages/2b/f7/e5a178fc3ea4118a0edce2a8d51fc14e680c745cf4162e4285b437c43c94/pyparsing-2.1.10-py2.py3-none-any.whl";
-    sha256 = "117ys98ssg9asm4gz6dav4nm7zvrw3fbac6x6cprd4p6rrx1s437";
+    url = "https://pypi.python.org/packages/6a/8a/718fd7d3458f9fab8e67186b00abdd345b639976bc7fb3ae722e1b026a50/pyparsing-2.2.0-py2.py3-none-any.whl";
+    sha256 = "046h5fmjyaainvksvmvpx70p6qack7gxcnv0s5z7w264m4bkzr7y";
   };
 
-  zcbuildoutVersion = "2.6.0";
+  zcbuildoutVersion = "2.9.3";
   zcbuildout = fetchurl {
-    url = "https://pypi.python.org/packages/7f/ce/a714ab788754373a55c1f110eff61d49ca1e7b41bcec505189fedce39794/zc.buildout-2.6.0.tar.gz";
-    sha256 = "0j4bfq8x2x8gp2csykh6g9sg3mazn4fzh13qcs0qvax8sh6i66rr";
+    url = "https://pypi.python.org/packages/f8/bc/9784f749395bfdcb66817527cdfed111b67f8ce23997b0702cfeb8ab0e82/zc.buildout-2.9.3.tar.gz";
+    sha256 = "0vrq7ccj4v828my1h5f13gr514jcj29l0wd15fkw5rp4gr4jxfn8";
   };
 
   zcrecipeeggVersion = "2.0.3";
   zcrecipeegg = fetchurl {
-    url = "https://pypi.python.org/packages/08/5e/ade683d229d77ed457017145672f1be4fd98be60f1a5344109a4e66a7d54/zc.recipe.egg-${zcrecipeeggVersion}.tar.gz";
+    url = "https://pypi.python.org/packages/08/5e/ade683d229d77ed457017145672f1be4fd98be60f1a5344109a4e66a7d54/zc.recipe.egg-2.0.3.tar.gz";
     sha256 = "0d7xkxxhm5bwrscchjzc88559njirqxishdwl2qjx3gij3s12l5s";
   };
 
@@ -63,7 +63,7 @@ rec {
 
   wheelVersion = "0.30.0a0";
   wheel = fetchurl {
-    url = "https://pypi.python.org/packages/a7/37/947b4329c4a3c72093b6c8e9b4be8c7f10c32dbb78848d3a234ce01c059d/wheel-${wheelVersion}.tar.gz";
+    url = "https://pypi.python.org/packages/a7/37/947b4329c4a3c72093b6c8e9b4be8c7f10c32dbb78848d3a234ce01c059d/wheel-0.30.0a0.tar.gz";
     sha256 = "1nm6mn8isny0hr86rhbfrpfj867c0phf001xgsd69xfp9ady1wwq";
   };
 
