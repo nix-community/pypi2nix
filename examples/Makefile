@@ -22,7 +22,8 @@ endif
 	pillow \
 	tornado \
 	vulnix \
-	connexion
+	connexion \
+	aiohttp
 
 all: \
 	awscli_and_requests \
@@ -35,7 +36,8 @@ all: \
 	pillow \
 	tornado \
 	vulnix \
-	connexion
+	connexion \
+	aiohttp
 
 clear: \
 	awscli_and_requests-clear \
@@ -49,7 +51,8 @@ clear: \
 	pillow-clear \
 	tornado-clear \
 	vulnix-clear \
-	connexion-clear
+	connexion-clear \
+	aiohttp-clear
 
 
 pypi2nix-clear:
@@ -314,3 +317,26 @@ connexion-clear:
 	rm -f connexion.txt
 	rm -f connexion.nix
 	rm -f connexion_frozen.txt
+
+
+aiohttp: aiohttp.nix
+	echo "building and testing aiohttp..."
+	$(NIX_BUILD) aiohttp.nix -o aiohttp -A interpreter --show-trace -j 1
+	./aiohttp/bin/python -c 'import aiohttp'
+	$(NIX_SHELL) aiohttp.nix -A interpreter --run "python -c 'import aiohttp'"
+
+aiohttp.nix: aiohttp.txt $(PYPI2NIX)
+	echo "generating aiohttp.nix expressions ..."
+	$(PYPI2NIX) -v --basename aiohttp -r aiohttp.txt -I $(NIX_PATH) -V "3.5"
+
+
+aiohttp.txt: aiohttp-clear
+	echo "aiohttp==2.0.6.post1" > aiohttp.txt
+	echo "pytest-runner" >> aiohttp.txt
+	echo "setuptools-scm" >> aiohttp.txt
+
+aiohttp-clear:
+	rm -f aiohttp
+	rm -f aiohttp.txt
+	rm -f aiohttp.nix
+	rm -f aiohttp_frozen.txt

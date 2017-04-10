@@ -251,7 +251,7 @@ def find_release(wheel_cache_dir, wheel, wheel_data):
     # listed in EXTENSIONS variable
     for _release in _releases:
         for _ext in EXTENSIONS:
-            if _release['filename'].endswith(_release_version + _ext):
+            if _release['filename'].endswith(_ext):
                 wheel_release = _release
                 break
         if wheel_release:
