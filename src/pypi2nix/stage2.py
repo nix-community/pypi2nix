@@ -22,7 +22,7 @@ def find_homepage(item):
     if 'extensions' in item and \
             'python.details' in item['extensions'] and \
             'project_urls' in item['extensions']['python.details']:
-        homepage = item['extensions']['python.details'].get('Home', '')
+        homepage = item['extensions']['python.details']['project_urls'].get('Home', '')
     return homepage
 
 
