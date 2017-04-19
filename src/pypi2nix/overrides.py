@@ -105,8 +105,8 @@ def url_to_overrides(url_string):
     elif url.scheme.startswith('git+'):
         if not url.fragment:
             raise UnsupportedUrlError(
-                ('Cannot handle overrides with no path given, offeding url was '
-                 '{url}.')
+                ('Cannot handle overrides with no path given, offeding url was'
+                 ' {url}.')
                 .format(
                     url=url_string
                 )
