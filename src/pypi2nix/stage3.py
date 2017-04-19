@@ -187,9 +187,12 @@ def main(packages_metadata,
                     rev=item['rev']
                 )
         else:
-            fetch_expression = 'pkgs.fetchurl { url = "%(url)s"; '\
+            fetch_expression = 'pkgs.pythonPackages.fetchPypi { '\
+                'pname = "%(pname)s"; '\
+                'version = "%(version)s"; '\
                 '%(hash_type)s = "%(hash_value)s"; }' % dict(
-                    url=item['url'],
+                    pname=item['name'],
+                    version=item['version'],
                     hash_type=item['hash_type'],
                     hash_value=item['hash_value'],
                 )
