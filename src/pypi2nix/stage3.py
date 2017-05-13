@@ -30,8 +30,8 @@ let
         bootstrapped-pip = super.bootstrapped-pip.overrideDerivation (old: {
           patchPhase = old.patchPhase + ''
             sed -i \
-              -e "s|{paths_to_remove}|#{paths_to_remove}|"  \
-              -e "s|{self_uninstalled}|#{self_uninstalled}|"  \
+              -e "s|%(paths_to_remove)s|#%(paths_to_remove)s|"  \
+              -e "s|%(self_uninstalled)s|#%(self_uninstalled)s|"  \
                 $out/${pkgs.python35.sitePackages}/pip/req/req_install.py
           '';
         });
@@ -98,10 +98,7 @@ in python.withPackages
             ([overrides] ++ commonOverrides)
          )
    )
-'''.format(
-    paths_to_remove="paths_to_remove.remove(auto_confirm)",
-    self_uninstalled="self.uninstalled = paths_to_remove",
-)
+'''
 
 GENERATED_NIX = '''# generated using pypi2nix tool (version: %s)
 #
@@ -243,6 +240,8 @@ def main(packages_metadata,
         enable_tests=str(enable_tests).lower(),
         generated_package_nix=generated,
         common_overrides='\n'.join(common_overrides_expressions),
+        paths_to_remove="paths_to_remove.remove(auto_confirm)",
+        self_uninstalled="self.uninstalled = paths_to_remove",
     )
 
     if not os.path.exists(overrides_file):
