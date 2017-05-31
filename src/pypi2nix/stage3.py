@@ -83,9 +83,11 @@ let
 
   python = withPackages {};
 
-  generated = self: {
-%(generated_package_nix)s
+  generated = import %(generated_file)s {
+    inherit pkgs commonDoCheck commonBuildInputs;
+    mkDerivation = python.mkDerivation;
   };
+
   overrides = import %(overrides_file)s { inherit pkgs python; };
   commonOverrides = [
 %(common_overrides)s
@@ -100,13 +102,13 @@ in python.withPackages
    )
 '''
 
-GENERATED_NIX = '''# generated using pypi2nix tool (version: %s)
+REQUIREMENTS_NIX = '''# generated using pypi2nix tool (version: %s)
 #
 # COMMAND:
 #   pypi2nix %s
 #
 
-{ pkgs, python, commonBuildInputs ? [], commonDoCheck ? false }:
+{ pkgs, mkDerivation, commonBuildInputs ? [], commonDoCheck ? false }:
 
 self: {
 %s
@@ -114,7 +116,7 @@ self: {
 '''
 
 GENERATED_PACKAGE_NIX = '''
-    "%(name)s" = python.mkDerivation {
+    "%(name)s" = mkDerivation {
       name = "%(name)s-%(version)s";
       src = %(fetch_expression)s;
       doCheck = commonDoCheck;
@@ -158,6 +160,9 @@ def main(packages_metadata,
     )
     frozen_file = os.path.join(
         current_dir, '{}_frozen.txt'.format(requirements_name)
+    )
+    generated_file = os.path.join(
+        current_dir, '{}_generated.nix'.format(requirements_name)
     )
 
     version_file = os.path.join(os.path.dirname(__file__), 'VERSION')
@@ -220,6 +225,9 @@ def main(packages_metadata,
         GENERATED_PACKAGE_NIX % x for x in generated_packages_metadata
     )
 
+    generated_expressions = REQUIREMENTS_NIX % (
+        version, ' '.join(sys.argv[1:]), generated)
+
     overrides = OVERRIDES_NIX % ""
 
     common_overrides_expressions = [
@@ -238,7 +246,7 @@ def main(packages_metadata,
         ),
         overrides_file='.' + overrides_file[len(current_dir):],
         enable_tests=str(enable_tests).lower(),
-        generated_package_nix=generated,
+        generated_file='.' + generated_file[len(current_dir):],
         common_overrides='\n'.join(common_overrides_expressions),
         paths_to_remove="paths_to_remove.remove(auto_confirm)",
         self_uninstalled="self.uninstalled = paths_to_remove",
@@ -257,3 +265,6 @@ def main(packages_metadata,
 
     with open(frozen_file, 'w+') as f:
         f.write(frozen_content)
+
+    with open(generated_file, 'w+') as f:
+        f.write(generated_expressions)

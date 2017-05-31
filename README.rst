@@ -67,7 +67,9 @@ Once Nix expressions are generated you should be able to see 3 new files:
 - ``requirements_override.nix`` - this is an empty file which is ment to
   override generated nix expressions.
 
-
+- ``requirements_generated.nix`` - is a file which contains the nix
+  expressions generated of all packages. This file can be used outside
+  of pypi2nix, for instance in ``nixpkgs``.
 
 Non-python/system dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
