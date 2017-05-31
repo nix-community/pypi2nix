@@ -212,6 +212,7 @@ def main(version,
                         try:
                             tmp_path, egg = requirements_line.split('#')
                             tmp_name = egg.split('egg=')[1]
+                            tmp_path = tmp_path.strip()
                             _tmp = tmp_path.split('[')
                             if len(_tmp) > 1:
                                 tmp_path = _tmp[0]
