@@ -280,7 +280,7 @@ mercurial: mercurial.nix
 	$(NIX_BUILD) mercurial.nix -o mercurial -A interpreter --show-trace -j 1
 	./mercurial/bin/python -c 'import flake8'
 	$(NIX_SHELL) mercurial.nix -A interpreter --run "python -c 'import flake8'"
-	if ./string_in_file "a209fb6" mercurial.nix ; then true ; else echo "ERROR: Revision 'a209fb6' not found in tornado_generated.nix!"; exit 123; fi
+	if ./string_in_file "a209fb6" mercurial.nix ; then true ; else echo "ERROR: Revision 'a209fb6' not found in tornado.nix!"; exit 123; fi
 
 mercurial.nix: mercurial.txt $(PYPI2NIX)
 	echo "generating mercurial.nix expressions ..."

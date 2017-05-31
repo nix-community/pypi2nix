@@ -217,7 +217,6 @@ def main(version,
                                 tmp_path = _tmp[0]
                                 tmp_other = '[' + _tmp[1]
                             else:
-                                tmp_path = _tmp
                                 tmp_other = ''
                         except:
                             raise click.ClickException(
