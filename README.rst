@@ -265,6 +265,21 @@ python tooling in nixpkgs. While this is very hard to do within ``nixpkgs`` it
 is almost trivial to experiment with this outside ``nixpkgs``.
 
 
+Convert generated requirements.nix into nixpkgs overlay
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A working example tells more then 1000 words::
+
+    { pkgs ? import <nixpkgs> {}
+    }:
+    let
+      projectOverlay = self: super: {
+        customPythonPackages = (import ./requirements.nix { inherit pkgs; }).packages;
+      };
+    in
+      import pkgs.path { overlays = [ projectAOverlay ]; }
+
+
 3. Existing examples
 --------------------
 
