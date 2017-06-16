@@ -66,6 +66,8 @@ let
           done
           pushd $out/bin
           ln -s ${pythonPackages.python.executable} python
+          ln -s ${pythonPackages.python.executable} \
+              python%(python_major_version)s
           popd
         '';
         passthru.interpreter = pythonPackages.python;
@@ -243,6 +245,7 @@ def main(packages_metadata,
         common_overrides='\n'.join(common_overrides_expressions),
         paths_to_remove="paths_to_remove.remove(auto_confirm)",
         self_uninstalled="self.uninstalled = paths_to_remove",
+        python_major_version=python_version.replace("python", "")[0],
     )
 
     if not os.path.exists(overrides_file):
