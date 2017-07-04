@@ -340,3 +340,22 @@ aiohttp-clear:
 	rm -f aiohttp.txt
 	rm -f aiohttp.nix
 	rm -f aiohttp_frozen.txt
+
+flake8: flake8.nix
+	echo "building and testing flake8..."
+	$(NIX_BUILD) flake8.nix -o flake8 -A interpreter --show-trace --fallback
+	./flake8/bin/python -c 'import flake8'
+	$(NIX_SHELL) flake8.nix -A interpreter --run "python -c 'import flake8'"
+
+flake8.nix: flake8.txt $(PYPI2NIX)
+	echo "generating flake8.nix expressions ..."
+	$(PYPI2NIX) -v --basename flake8 -r flake8.txt -I $(NIX_PATH) -V "3.5" --default-overrides
+
+flake8.txt: flake8-clear
+	echo "flake8" > flake8.txt
+
+flake8-clear:
+	rm -f flake8
+	rm -f flake8.txt
+	rm -f flake8.nix
+	rm -f flake8_frozen.txt

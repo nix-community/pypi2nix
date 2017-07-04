@@ -104,6 +104,10 @@ import pypi2nix.utils
               help=u'Extra expressions that override generated expressions ' +
                    u'for specific packages',
               )
+@click.option('--default-overrides/--no-default-overrides',
+              default=False,
+              help=u'Apply overrides from "nixpkgs-python" (https://github.com/garbas/nixpkgs-python)', # noqa
+              )
 def main(version,
          verbose,
          nix_shell,
@@ -118,10 +122,19 @@ def main(version,
          buildout,
          editable,
          setup_requires,
-         overrides
+         overrides,
+         default_overrides,
          ):
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
+
+    if default_overrides:
+        overrides += tuple([
+            pypi2nix.overrides.OverridesGit(
+                repo_url='https://github.com/garbas/nixpkgs-python.git',
+                path='overrides.nix',
+            )
+        ])
 
     with open(os.path.join(os.path.dirname(__file__), 'VERSION')) as f:
         pypi2nix_version = f.read()
