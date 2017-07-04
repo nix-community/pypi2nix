@@ -16,6 +16,7 @@ env:
   - EXAMPLE=tornado
   - EXAMPLE=connexion
   - EXAMPLE=aiohttp
+  - EXAMPLE=flake8
 #  - EXAMPLE=vulnix
 matrix:
   exclude:
