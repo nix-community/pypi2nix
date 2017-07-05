@@ -54,8 +54,8 @@ import pypi2nix.utils
               )
 @click.option('-N', '--extra-env',
               default='',
-              help=u'Extra environment variables needed for installation of'
-              u'required python pakcages.'
+              help=u'Extra environment variables needed for installation of '
+              u'required python packages.'
               u'Example: "LANG=en_US.UTF-8 FOO_OPTS=xyz"'
               )
 @click.option('-T', '--enable-tests',
