@@ -89,16 +89,20 @@ let
   generated = self: {
 %(generated_package_nix)s
   };
-  overrides = import %(overrides_file)s { inherit pkgs python; };
+  localOverridesFile = %(overrides_file)s;
+  overrides = import localOverridesFile { inherit pkgs python; };
   commonOverrides = [
 %(common_overrides)s
   ];
+  allOverrides =
+    (if (builtins.pathExists localOverridesFile)
+     then [overrides] else [] ) ++ commonOverrides;
 
 in python.withPackages
    (fix' (pkgs.lib.fold
             extends
             generated
-            ([overrides] ++ commonOverrides)
+            allOverrides
          )
    )
 '''
