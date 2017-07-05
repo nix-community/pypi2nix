@@ -94,7 +94,7 @@ import pypi2nix.utils
               required=False,
               default=None,
               type=str,
-              help=u'Extra Python dependencies needed before the installation'
+              help=u'Extra Python dependencies needed before the installation '
                    u'to build wheels.'
               )
 @click.option('-O', '--overrides',
