@@ -3,7 +3,7 @@ addons:
   ssh_known_hosts: garbas.si
 os:
   - linux
-#  - osx
+  - osx
 env:
   - EXAMPLE=awscli_and_requests
   - EXAMPLE=empy
@@ -28,6 +28,10 @@ matrix:
       env: EXAMPLE=scipy
 before_install:
   - nix-env -iA nixpkgs.cacert -p result-cacert
+  - >
+    if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
+      nix-env -iA nixpkgs.bash;
+    fi
   - export SSL_CERT_FILE=$PWD/result-cacert/etc/ssl/certs/ca-bundle.crt
   - >
     sudo mkdir -p /etc/ssl/certs/ /etc/nix &&
