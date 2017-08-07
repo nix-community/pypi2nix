@@ -1,11 +1,12 @@
-import click
 import glob
 import os
 import sys
 import urllib
+import urllib.parse
+from typing import List, Tuple
 
+import click
 import pypi2nix.utils
-
 
 HERE = os.path.dirname(__file__)
 
@@ -22,9 +23,9 @@ def main(verbose,
          nix_shell='nix-shell',
          setup_requires=[],
          extra_env='',
-         ):
+         ) -> Tuple[str, List[str]]:
     """Create a complete (pip freeze) requirements.txt and a wheelhouse from
-       a user provided requirements.txt.
+    a user provided requirements.txt.
     """
 
     if nix_path:
