@@ -1,7 +1,8 @@
-import click
+import json
 import shlex
 import subprocess
 
+import click
 
 TO_IGNORE = [
     "pip",
@@ -81,3 +82,38 @@ def args_as_list(inputs):
         lambda x: x != '',
         (' '.join(inputs)).split(' ')
     ))
+
+
+def prefetch_git(url, rev=None):
+    command = ['nix-prefetch-git', url]
+
+    if rev is not None:
+        command += ['--rev', rev]
+    try:
+        completed_proc = subprocess.run(
+            command,
+            universal_newlines=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except FileNotFoundError:
+        raise click.ClickException(
+            'Could not find executable `nix-prefetch-git`.  '
+            'Make sure it is installed correctly and available in '
+            '$PATH.'
+        )
+
+    returncode = completed_proc.returncode
+
+    if returncode != 0:
+        raise click.ClickException(
+            ('Could not fetch git repository at {url}, git returncode was '
+             '{code}. stdout:\n{stdout}\nstderr:\n{stderr}').format(
+                 url=url,
+                 code=returncode,
+                 stdout=completed_proc.stdout,
+                 stderr=completed_proc.stderr,
+            )
+        )
+    repo_data = json.loads(completed_proc.stdout)
+    return repo_data
