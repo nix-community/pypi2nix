@@ -3,7 +3,7 @@ addons:
   ssh_known_hosts: garbas.si
 os:
   - linux
-  - osx
+  # - osx
 env:
   - EXAMPLE=awscli_and_requests
   - EXAMPLE=empy
@@ -17,7 +17,7 @@ env:
   - EXAMPLE=connexion
   - EXAMPLE=aiohttp
   - EXAMPLE=flake8
-#  - EXAMPLE=vulnix
+  # - EXAMPLE=vulnix
 matrix:
   exclude:
     - os: osx

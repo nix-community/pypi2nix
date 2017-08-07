@@ -1,10 +1,9 @@
-import json
 import subprocess
 from urllib.parse import urldefrag, urlparse
 
 import click
 
-from .utils import cmd
+from .utils import cmd, prefetch_git
 
 
 class UnsupportedUrlError(Exception):
@@ -68,24 +67,7 @@ class OverridesGit(object):
     )
 
     def nix_expression(self):
-        command = 'nix-prefetch-git %(url)s' % dict(
-            url=self.repo_url
-        )
-
-        if self.rev is not None:
-            command += ' --rev %(rev)s' % dict(rev=self.rev)
-
-        return_code, output = cmd(
-            command, verbose=False, stderr=subprocess.DEVNULL
-        )
-
-        if return_code != 0:
-            raise click.ClickException(
-                'Could not fetch git repository at %(url)s' % dict(
-                    url=self.repo_url
-                )
-            )
-        repo_data = json.loads(output)
+        repo_data = prefetch_git(self.repo_url, self.rev)
         return self.expression_template % dict(
             url=repo_data['url'],
             sha256=repo_data['sha256'],
