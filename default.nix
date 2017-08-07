@@ -1,5 +1,5 @@
 { stdenv, fetchurl, zip, makeWrapper, nix, nix-prefetch-git, nix-prefetch-hg
-, pythonPackages, nixpkgs
+, pythonPackages, mypy, nixpkgs
 , src ? { outPath = ./.; name = "pypi2nix"; }
 }:
 
@@ -15,6 +15,7 @@ in stdenv.mkDerivation rec {
   buildInputs = [
     pythonPackages.python pythonPackages.flake8
     zip makeWrapper nix.out nix-prefetch-git nix-prefetch-hg
+    mypy
   ];
   doCheck = true;
   postUnpack = ''
@@ -52,6 +53,7 @@ in stdenv.mkDerivation rec {
   '';
 
   checkPhase = ''
+    mypy ${src}/src --python-version 3.6
     flake8 ${src}/src
   '';
 

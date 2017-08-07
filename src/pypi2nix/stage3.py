@@ -39,8 +39,8 @@ def main(packages_metadata,
     generated_packages_metadata = []
     for item in sorted(packages_metadata, key=lambda x: x['name']):
         propagatedBuildInputs = '[ ]'
-        if item.get('deps'):
-            deps = [x for x in item['deps']
+        if item.get('dependencies'):
+            deps = [x for x in item['dependencies']
                     if x.lower() in metadata_by_name.keys()]
             if deps:
                 propagatedBuildInputs = "[\n%s\n    ]" % (

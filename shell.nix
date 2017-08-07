@@ -9,6 +9,6 @@ let
 in import ./default.nix {
   inherit src pythonPackages;
   inherit (pkgs) stdenv fetchurl zip makeWrapper nix
-    nix-prefetch-git nix-prefetch-hg;
+  nix-prefetch-git nix-prefetch-hg mypy;
   nixpkgs = pkgs;
 }

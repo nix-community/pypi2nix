@@ -42,7 +42,7 @@ class OverridesUrl(object):
         sha_sum = output.strip()
         if len(sha_sum) != 52 or return_code != 0:
             raise click.ClickException(
-                'Could not determin hash for url %{url}s' % dict(
+                'Could not determin hash for url {url}'.format(
                     url=self.url
                 )
             )

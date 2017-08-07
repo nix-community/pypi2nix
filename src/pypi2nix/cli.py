@@ -10,6 +10,7 @@ import pypi2nix.stage1
 import pypi2nix.stage2
 import pypi2nix.stage3
 import pypi2nix.utils
+from pypi2nix.requirement import Requirement
 
 
 @click.command('pypi2nix')
@@ -29,18 +30,15 @@ import pypi2nix.utils
                    u'precedence over NIX_PATH.',
               )
 @click.option('--nix-shell',
-              required=False,
               default='nix-shell',
               help=u'Path to nix-shell executable.',
               )
 @click.option('--basename',
-              required=False,
               default='requirements',
               help=u'Basename which is used to generate files. By default '
                    u'it uses basename of provided file.',
               )
 @click.option('-C', '--cache-dir',
-              required=False,
               default=None,
               type=click.Path(exists=True, file_okay=True, writable=True,
                               resolve_path=True),
@@ -63,13 +61,11 @@ import pypi2nix.utils
               help=u'Enable tests in generated packages.'
               )
 @click.option('-V', '--python-version',
-              required=False,
               default=None,
               type=click.Choice(pypi2nix.utils.PYTHON_VERSIONS.keys()),
               help=u'Provide which python version we build for.',
               )
 @click.option('-r', '--requirements',
-              required=False,
               default=None,
               multiple=True,
               type=click.Path(exists=True, file_okay=True, dir_okay=False,
@@ -77,21 +73,18 @@ import pypi2nix.utils
               help=u'pip requirements.txt file',
               )
 @click.option('-b', '--buildout',
-              required=False,
               default=None,
               type=click.Path(exists=True, resolve_path=True),
               help=u'zc.buildout configuration file',
               )
 @click.option('-e', '--editable',
               multiple=True,
-              required=False,
               default=None,
               type=str,
               help=u'location/url to editable locations',
               )
 @click.option('-s', '--setup-requires',
               multiple=True,
-              required=False,
               default=None,
               type=str,
               help=u'Extra Python dependencies needed before the installation '
@@ -99,7 +92,6 @@ import pypi2nix.utils
               )
 @click.option('-O', '--overrides',
               multiple=True,
-              required=False,
               type=pypi2nix.overrides.OVERRIDES_URL,
               help=u'Extra expressions that override generated expressions ' +
                    u'for specific packages',
@@ -252,7 +244,11 @@ def main(version,
                         ))
 
                         requirements_line = "-e %s%s" % (tmp_path, tmp_other)
-                        sources[tmp_name] = dict(url=tmp_path, type='path')
+                        sources[tmp_name] = Requirement(
+                            name=tmp_name,
+                            url=tmp_path,
+                            req_type='path'
+                        )
 
                     elif requirements_line.startswith("-r ."):
                         requirements_file2 = os.path.abspath(os.path.join(
@@ -332,7 +328,7 @@ def main(version,
         wheels=wheels,
         requirements_files=requirements_files,
         wheel_cache_dir=wheel_cache_dir,
-        sources=sources,
+        extra_sources=sources,
     )
 
     click.echo('Stage3: Generating Nix expressions ...')

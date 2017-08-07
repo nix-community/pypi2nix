@@ -193,3 +193,10 @@ def prefetch_github(owner, repo, rev=None):
                 'in github repo {owner}/{repo}.\n\noutput was: {output}'
             ).format(owner=owner, repo=repo, output=output)
         )
+
+
+def starts_with_any(s, prefixes):
+    for prefix in prefixes:
+        if s.startswith(prefix):
+            return True
+    return False
