@@ -10,7 +10,7 @@ import pypi2nix.stage1
 import pypi2nix.stage2
 import pypi2nix.stage3
 import pypi2nix.utils
-from pypi2nix.requirement import Requirement
+from pypi2nix.requirement import PathRequirement
 
 
 @click.command('pypi2nix')
@@ -239,10 +239,9 @@ def main(version,
                         ))
 
                         requirements_line = "-e %s%s" % (tmp_path, tmp_other)
-                        sources[tmp_name] = Requirement(
+                        sources[tmp_name] = PathRequirement(
                             name=tmp_name,
                             url=tmp_path,
-                            req_type='path'
                         )
 
                     elif requirements_line.startswith("-r ."):
