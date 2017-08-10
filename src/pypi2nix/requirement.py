@@ -6,7 +6,7 @@ from typing import Callable, Dict, List
 
 import click
 import requests
-from pypi2nix.utils import cmd, concat
+from pypi2nix.utils import cmd, concat, prefetch_git
 
 
 class Requirement(object):
@@ -35,40 +35,15 @@ class GitRequirement(Requirement):
         release['name'] = self.get_name()
         release['url'] = self.url
         release['hash_type'] = 'sha256'
-        revision = ''
+        revision = None
         if release['url'].startswith('git+'):
             release['url'] = release['url'][4:]
         if '@' in release['url']:
             release['url'], revision = release['url'].split('@')
-
         release['fetch_type'] = 'fetchgit'
-        command = 'nix-prefetch-git {url} {revision}'.format(
-            url=release['url'],
-            revision=revision,
-        )
-        return_code, output = cmd(command, self.verbose != 0)
-        if return_code != 0:
-            raise click.ClickException(
-                "URL {url} for package {name} is not valid.".format(
-                    url=release['url'],
-                    name=self.get_name()
-                )
-            )
-        for output_line in output.split('\n'):
-            output_line = output_line.strip()
-            if output_line.startswith('hash is '):
-                release['hash_value'] = output_line[len('hash is '):].strip()
-            elif output_line.startswith('git revision is '):
-                release['rev'] = output_line[len('git revision is '):].strip()
-
-        if release.get('hash_value', None) is None:
-            raise click.ClickException('Could not determine the hash from ouput:\n{output}'.format(  # noqa: E501
-                output=output
-            ))
-        if release.get('rev', None) is None:
-            raise click.ClickException('Could not determine the revision from ouput:\n{output}'.format(  # noqa: E501
-                output=output
-            ))
+        repo_data = prefetch_git(release['url'], revision)
+        release['hash_value'] = repo_data['sha256']
+        release['rev'] = repo_data['rev']
         return release
 
 
