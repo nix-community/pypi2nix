@@ -1,9 +1,11 @@
-import click
 import hashlib
 import os
 import shutil
 import tempfile
+import urllib
+import urllib.parse
 
+import click
 import pypi2nix.overrides
 import pypi2nix.stage0
 import pypi2nix.stage1
@@ -204,15 +206,45 @@ def main(version,
             hashlib.md5(requirements_file.encode()).hexdigest(),
         )
 
+        def is_editable_vc_line(line):
+            return (
+                line.startswith("-e git+") or
+                line.startswith("-e hg+")
+            )
+
+        def is_editable_line(line):
+            return line.startswith("-e ")
+
+        def handle_include_line(requirements_file_dir, line):
+            include_location = line[2:].strip()
+            if os.path.isfile(include_location):
+                if os.path.isabs(include_location):
+                    return '-r ' + include_location
+                else:
+                    return '-r ' + os.path.abspath(
+                        os.path.join(
+                            requirements_file_dir, include_location
+                        )
+                    )
+            elif pypi2nix.utils.is_url(include_location):
+                remote_requirements_file = urllib.urlretrieve(
+                    include_location
+                )
+                new_requirements_file = handle_requirements_file(
+                    project_dir,
+                    remote_requirements_file
+                )
+
+                return '-r ' + new_requirements_file
+
         # we open both files: f1 to read, f2 to write
         with open(requirements_file) as f1:
             with open(new_requirements_file, "w+") as f2:
                 for requirements_line in f1.readlines():
                     requirements_line = requirements_line.strip()
-                    if requirements_line.startswith("-e git+") or \
-                       requirements_line.startswith("-e hg+"):
+                    if is_editable_vc_line(requirements_line):
                         pass
-                    elif requirements_line.startswith("-e "):
+                    elif is_editable_line(requirements_line):
                         requirements_line = requirements_line[3:]
                         try:
                             tmp_path, egg = requirements_line.split('#')
@@ -244,14 +276,11 @@ def main(version,
                             url=tmp_path,
                         )
 
-                    elif requirements_line.startswith("-r ."):
-                        requirements_file2 = os.path.abspath(os.path.join(
-                            os.path.dirname(requirements_file),
-                            requirements_line[3:]
-                        ))
-                        new_requirements_file2 = handle_requirements_file(
-                            project_dir, requirements_file2)
-                        requirements_line = "-r " + new_requirements_file2
+                    elif requirements_line.startswith('-r '):
+                        requirements_line = handle_include_line(
+                            current_dir,
+                            requirements_line
+                        )
                     f2.write(requirements_line + "\n")
 
         return new_requirements_file

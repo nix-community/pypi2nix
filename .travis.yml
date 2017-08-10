@@ -18,6 +18,7 @@ env:
   - EXAMPLE=rss2email
   - EXAMPLE=scipy
   - EXAMPLE=tornado
+  - EXAMPLE=virtualenv
   # - EXAMPLE=vulnix
 matrix:
   exclude:

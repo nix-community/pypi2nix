@@ -1,6 +1,7 @@
 import json
 import shlex
 import subprocess
+import urllib.parse
 
 import click
 
@@ -124,3 +125,13 @@ def starts_with_any(s, prefixes):
         if s.startswith(prefix):
             return True
     return False
+
+
+def is_url(s):
+    return urllib.parse.urlparse(s).scheme != ''
+
+
+def concat(outer_iterator):
+    for inner_iterator in outer_iterator:
+        for i in inner_iterator:
+            yield i

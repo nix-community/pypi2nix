@@ -58,10 +58,11 @@ def main(verbose, wheels: List[str], requirements_files, wheel_cache_dir, index=
         with open(requirements_file) as f:
             lines = f.readlines()
             for line in lines:
-                req = process_requirement_line(line, sources_urls, verbose)
-                if req is None:
-                    continue
-                else:
+                for req in process_requirement_line(
+                        line,
+                        sources_urls,
+                        verbose
+                ):
                     sources[req.get_name()] = req
     outputs: List[str] = []
     metadata = []

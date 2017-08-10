@@ -254,6 +254,33 @@ tornado-clear:
 	rm -f tornado_frozen.txt
 
 
+virtualenv: virtualenv.nix
+	echo "building and testing virtualenv..."
+	$(NIX_BUILD) virtualenv.nix -o virtualenv -A interpreter --show-trace
+	./virtualenv/bin/python -c 'import virtualenv'
+	$(NIX_SHELL) virtualenv.nix -A interpreter --run "python -c 'import virtualenv'"
+
+virtualenv.nix: virtualenv.txt $(PYPI2NIX)
+	echo "generating virtualenv.nix expressions ..."
+	$(PYPI2NIX) \
+		-v \
+		--basename virtualenv \
+		-r virtualenv.txt \
+		-I $(NIX_PATH) \
+		-V "2.7"
+
+virtualenv.txt virtualenv-include.txt: virtualenv-clear
+	echo "-r virtualenv-include.txt" > virtualenv.txt
+	echo "https://github.com/pypa/virtualenv/archive/6d8a4ed81f40223a3f9ea1ba5d11be500d9f667a.zip#egg=virtualenv" > virtualenv-include.txt
+
+virtualenv-clear:
+	rm -f virtualenv
+	rm -f virtualenv.txt
+	rm -f virtualenv-include.txt
+	rm -f virtualenv.nix
+	rm -f virtualenv_frozen.txt
+
+
 ldap: ldap.nix
 	echo "building and testing ldap..."
 	$(NIX_BUILD) ldap.nix -o ldap -A interpreter --show-trace
