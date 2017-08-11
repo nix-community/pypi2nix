@@ -15,10 +15,9 @@ let
 
   python = builtins.getAttr python_version pkgs;
 
-  pypi2nix_bootstrap = import ./bootstrap.nix {
-    inherit (pkgs) stdenv fetchurl unzip which makeWrapper;
-    inherit python;
-  };
+  packages = import nix/pkgs.nix { inherit pkgs; python = python; };
+
+  pypi2nix_bootstrap = packages.pypiEnv;
 
   blas = pkgs.openblasCompat;
 
@@ -58,7 +57,7 @@ in pkgs.stdenv.mkDerivation rec {
     gitAndTools.git
   ] ++ (pkgs.lib.optional pkgs.stdenv.isLinux pkgs.glibcLocales)
     ++ (map (name: pkgs.lib.getAttrFromPath
-          (pkgs.lib.splitString "." name) pkgs) extra_build_inputs);
+         (pkgs.lib.splitString "." name) pkgs) extra_build_inputs);
 
   shellHook = ''
     export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
@@ -81,7 +80,7 @@ in pkgs.stdenv.mkDerivation rec {
         --find-links ${wheel_cache_dir} \
         --cache-dir ${download_cache_dir} \
         --build ${pip_build_dir} \
-        --no-binary :all: 
+        --no-binary :all:
     RETVAL=$?
     rm -rf ${pip_build_dir}/*
     [ $RETVAL -ne 0 ] && exit $RETVAL
