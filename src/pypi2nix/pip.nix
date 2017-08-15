@@ -45,7 +45,7 @@ let
           --find-links ${wheel_cache_dir} \
           --cache-dir ${download_cache_dir} \
           --build ${pip_build_dir} \
-          --no-binary :all:
+          --no-binary :allow-local:
     '';
 
 in pkgs.stdenv.mkDerivation rec {
@@ -80,7 +80,7 @@ in pkgs.stdenv.mkDerivation rec {
         --find-links ${wheel_cache_dir} \
         --cache-dir ${download_cache_dir} \
         --build ${pip_build_dir} \
-        --no-binary :all:
+        --no-binary :allow-local:
     RETVAL=$?
     rm -rf ${pip_build_dir}/*
     [ $RETVAL -ne 0 ] && exit $RETVAL

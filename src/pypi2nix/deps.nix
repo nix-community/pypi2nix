@@ -7,9 +7,9 @@ rec {
   pip = {
     version = "9.0.1";
     src = fetchgit {
-      url = "https://github.com/pypa/pip.git";
-      sha256 = "1zj4x89h3fypgm4czdqlr96n386ydcdlmlkyx13b5c42y3byfppd";
-      rev = "d5402d33e110f0b18e628ab8cab028a0a219773c";
+      url = "https://github.com/seppeljordan/pip.git";
+      sha256 = "1fl1bxilnynkl7gxiz7pdd36c8abbxhm255sas5cracjg7mnkhl6";
+      rev = "8ebba2cbba1fb0ecb69137f4163b3a370dead2f4";
     };
     format = "setuptools";
   };
