@@ -4,7 +4,7 @@
 let
   otherInputs = {
     inherit (pkgs) ensureNewerSourcesHook lib fetchurl unzip
-      makeSetupHook fetchgit stdenv makeWrapper buildEnv;
+      makeSetupHook fetchgit stdenv makeWrapper buildEnv writeText;
   };
   base = self: {
     python = python;
