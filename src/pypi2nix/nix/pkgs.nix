@@ -6,8 +6,14 @@ let
     inherit (pkgs) ensureNewerSourcesHook lib fetchurl unzip
       makeSetupHook fetchgit stdenv makeWrapper buildEnv writeText;
   };
+  removePipSymlink = old: {
+      postInstall = builtins.replaceStrings
+        [''ln -s "$out/bin/pip3" "$out/bin/pip"''] [""] old.postInstall;
+    };
   base = self: {
-    python = python;
+    # TODO: Remove this hack when nixpkgs python does not produce dead
+    # symlinks anymore
+    python = python.overrideDerivation( removePipSymlink );
     deps = self.callPackage ../deps.nix {};
     callPackage = pkgs.lib.callPackageWith (otherInputs // self);
     pythonPackages = self.callPackage ./python-packages.nix {};
