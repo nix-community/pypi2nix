@@ -18,6 +18,7 @@ let
   packages = import nix/pkgs.nix { inherit pkgs; python = python; };
 
   pypi2nix_bootstrap = packages.pypiEnv;
+  bootstrapped-pip = packages.pythonPackages.bootstrapped-pip;
 
   blas = pkgs.openblasCompat;
 
@@ -92,7 +93,6 @@ in pkgs.stdenv.mkDerivation rec {
 
     cp -Rf ${project_dir}/wheel/* ${wheel_cache_dir}
 
-    PYTHONPATH=${project_dir}/wheelhouse:$PYTHONPATH pip freeze > ${project_dir}/requirements.txt
-
+    PYTHONPATH=${project_dir}/wheelhouse PATH=${bootstrapped-pip}/bin pip freeze -v > ${project_dir}/requirements.txt
   '';
 }
