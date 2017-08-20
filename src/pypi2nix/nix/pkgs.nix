@@ -27,6 +27,20 @@ let
         zc_buildout
         zc_recipe_egg
       ]);
+    # we need to wrap python so that we can avoid leakage of python
+    # environement into mercurial
+    mercurial-wrapped = pkgs.stdenv.mkDerivation {
+        name = "wrapped-mercurial";
+        phases = [ "installPhase" ];
+        buildInputs = [ pkgs.makeWrapper ];
+        installPhase = ''
+          mkdir $out/bin -p
+          ln -s ${pkgs.mercurial}/bin/hg $out/bin/hg
+          wrapProgram $out/bin/hg \
+              --unset PYTHONPATH \
+              --unset PYTHONHOME
+        '';
+      };
   };
 in
 pkgs.lib.fix' base

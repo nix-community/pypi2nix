@@ -54,6 +54,7 @@ in pkgs.stdenv.mkDerivation rec {
 
   buildInputs = with pkgs; [
     pypi2nix_bootstrap
+    packages.mercurial-wrapped
     unzip
     gitAndTools.git
   ] ++ (pkgs.lib.optional pkgs.stdenv.isLinux pkgs.glibcLocales)
