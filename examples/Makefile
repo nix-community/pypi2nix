@@ -17,13 +17,15 @@ endif
 	ldap \
 	lektor \
 	mercurial \
+	mercurial-with-python3 \
 	rss2email \
 	scipy \
 	pillow \
 	tornado \
 	vulnix \
 	connexion \
-	aiohttp
+	aiohttp \
+	flake8
 
 all: \
 	awscli_and_requests \
@@ -31,13 +33,15 @@ all: \
 	ldap \
 	lektor \
 	mercurial \
+	mercurial-with-python3 \
 	rss2email \
 	scipy \
 	pillow \
 	tornado \
 	vulnix \
 	connexion \
-	aiohttp
+	aiohttp \
+	flake8
 
 clear: \
 	awscli_and_requests-clear \
@@ -45,6 +49,7 @@ clear: \
 	ldap-clear \
 	lektor-clear \
 	mercurial-clear \
+	mercurial-with-python3 \
 	pypi2nix-clear \
 	rss2email-clear \
 	scipy-clear \
@@ -52,7 +57,8 @@ clear: \
 	tornado-clear \
 	vulnix-clear \
 	connexion-clear \
-	aiohttp-clear
+	aiohttp-clear \
+	flake8-clear
 
 
 pypi2nix-clear:
@@ -280,11 +286,11 @@ mercurial: mercurial.nix
 	$(NIX_BUILD) mercurial.nix -o mercurial -A interpreter --show-trace -j 1
 	./mercurial/bin/python -c 'import flake8'
 	$(NIX_SHELL) mercurial.nix -A interpreter --run "python -c 'import flake8'"
-	if ./string_in_file "a209fb6" mercurial.nix ; then true ; else echo "ERROR: Revision 'a209fb6' not found in tornado.nix!"; exit 123; fi
+	if ./string_in_file "a209fb6" mercurial.nix ; then true ; else echo "ERROR: Revision 'a209fb6' not found in mercurial.nix!"; exit 123; fi
 
 mercurial.nix: mercurial.txt $(PYPI2NIX)
 	echo "generating mercurial.nix expressions ..."
-	$(PYPI2NIX) -v --basename mercurial -r mercurial.txt -I $(NIX_PATH) -V "2.7" -E "mercurial"
+	$(PYPI2NIX) -v --basename mercurial -r mercurial.txt -I $(NIX_PATH) -V "2.7"
 
 
 mercurial.txt: mercurial-clear
@@ -297,6 +303,29 @@ mercurial-clear:
 	rm -f mercurial.txt
 	rm -f mercurial.nix
 	rm -f mercurial_frozen.txt
+
+mercurial-with-python3: mercurial-with-python3.nix
+	echo "building and testing mercurial-with-python3..."
+	$(NIX_BUILD) mercurial-with-python3.nix -o mercurial-with-python3 -A interpreter --show-trace -j 1
+	./mercurial-with-python3/bin/python -c 'import flake8'
+	$(NIX_SHELL) mercurial-with-python3.nix -A interpreter --run "python -c 'import flake8'"
+	if ./string_in_file "a209fb6" mercurial-with-python3.nix ; then true ; else echo "ERROR: Revision 'a209fb6' not found in mercurial-with-python3.nix!"; exit 123; fi
+
+mercurial-with-python3.nix: mercurial-with-python3.txt $(PYPI2NIX)
+	echo "generating mercurial-with-python3.nix expressions ..."
+	$(PYPI2NIX) -v --basename mercurial-with-python3 -r mercurial-with-python3.txt -I $(NIX_PATH) -V 3
+
+
+mercurial-with-python3.txt: mercurial-with-python3-clear
+	echo "-e hg+https://bitbucket.org/tarek/flake8@a209fb6#egg=flake8" > mercurial-with-python3.txt
+	echo "pytest-runner" >> mercurial-with-python3.txt
+	echo "setuptools-scm" >> mercurial-with-python3.txt
+
+mercurial-with-python3-clear:
+	rm -f mercurial-with-python3
+	rm -f mercurial-with-python3.txt
+	rm -f mercurial-with-python3.nix
+	rm -f mercurial-with-python3_frozen.txt
 
 connexion: connexion.nix
 	echo "building and testing connexion..."
