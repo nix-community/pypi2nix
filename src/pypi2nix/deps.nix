@@ -15,12 +15,13 @@ rec {
   };
 
   setuptools = {
-    src = fetchurl {
-      url = "https://github.com/pypa/setuptools/archive/aa41a7a58d0e1cd0dd6715b2d4057666410114c7.tar.gz";
-      sha256 = "1zqashf1sjnnrrr1aiydigd1fjhgx0yjzf8cgakqajn0gzg7q7pz";
+    src = fetchgit {
+      url = "https://github.com/pypa/setuptools.git";
+      rev = "1b192005562d5cf0de30c02154c58fd1dca577c8";
+      sha256 = "1fflgfxqcp3nazl8bsc07gj6l0786852bcr93i426wwf13kd6bfl";
     };
     format = "setuptools";
-    version = "34.4.1";
+    version = "36.4.0";
   };
 
   six = {
