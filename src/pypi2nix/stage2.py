@@ -10,6 +10,7 @@ from typing import Dict, List
 import click
 import pkg_resources
 import requests
+from pypi2nix.json import RequirementEncoder
 from pypi2nix.requirement import Requirement, process_requirement_line
 from pypi2nix.utils import TO_IGNORE, cmd, safe
 from pypi2nix.wheel import (INDEX_URL, WheelMetadata, find_release,
@@ -69,7 +70,12 @@ def main(verbose, wheels: List[str], requirements_files, wheel_cache_dir, index=
 
     if verbose > 1:
         click.echo("-- sources ---------------------------------------------------------------")
-        click.echo(json.dumps(sources, sort_keys=True, indent=4))
+        click.echo(json.dumps(
+            sources,
+            sort_keys=True,
+            indent=4,
+            cls=RequirementEncoder
+        ))
         click.echo("--------------------------------------------------------------------------")
 
     try:
@@ -89,7 +95,11 @@ def main(verbose, wheels: List[str], requirements_files, wheel_cache_dir, index=
 
             if verbose > 1:
                 click.echo("-- wheel_metadata --------------------------------------------------------")
-                click.echo(json.dumps(wheel_metadata, sort_keys=True, indent=4))
+                click.echo(json.dumps(
+                    wheel_metadata,
+                    sort_keys=True,
+                    indent=4
+                ))
                 click.echo("--------------------------------------------------------------------------")
             return wheel_metadata
 
