@@ -120,7 +120,7 @@ all_classifiers = {
     'License :: OSI Approved :: W3C License': 'licenses.w3c',
     'License :: OSI Approved :: X.Net License': None,
     'License :: OSI Approved :: zlib/libpng License': 'licenses.zlib',
-    'License :: OSI Approved :: Zope Public License': 'licenses.zpt21',
+    'License :: OSI Approved :: Zope Public License': 'licenses.zpl21',
     'License :: Other/Proprietary License': None,
     'License :: Public Domain': 'licenses.publicDomain',
     'License :: Repoze Public License': None,
@@ -148,7 +148,7 @@ def find_license(item):
         license = item.get('license', '')
 
         if license in ['LGPL with exceptions or ZPL', 'ZPL 2.1']:
-            license = "licenses.zpt21"
+            license = "licenses.zpl21"
         elif license in ['MIT', 'MIT License',
                          'MIT or Apache License, Version 2.0']:
             license = "licenses.mit"
