@@ -69,7 +69,7 @@ def find_license(item):
         license = item.get('license', '')
 
         if license in ['LGPL with exceptions or ZPL', 'ZPL 2.1']:
-            license = "licenses.zpt21"
+            license = "licenses.zpl21"
         elif license in ['MIT', 'MIT License',
                          'MIT or Apache License, Version 2.0',
                          'The MIT License'

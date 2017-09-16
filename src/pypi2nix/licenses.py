@@ -63,7 +63,7 @@ all_classifiers = {
     'License :: OSI Approved :: W3C License': 'licenses.w3c',
     'License :: OSI Approved :: X.Net License': None,
     'License :: OSI Approved :: zlib/libpng License': 'licenses.zlib',
-    'License :: OSI Approved :: Zope Public License': 'licenses.zpt21',
+    'License :: OSI Approved :: Zope Public License': 'licenses.zpl21',
     'License :: Other/Proprietary License': None,
     'License :: Public Domain': 'licenses.publicDomain',
     'License :: Repoze Public License': None,
