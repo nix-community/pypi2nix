@@ -26,5 +26,11 @@ setup(
             'pypi2nix = pypi2nix.cli:main',
         ],
     },
-    packages = find_packages('src'),
+    packages = ['pypi2nix'],
+    package_dir={'': 'src'},
+    include_package_data=True,
+    install_requires = [
+        'click',
+        'requests',
+    ]
 )

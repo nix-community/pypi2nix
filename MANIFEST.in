@@ -1,0 +1,2 @@
+include src/pypi2nix/*.nix
+include src/pypi2nix/VERSION
