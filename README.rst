@@ -268,16 +268,20 @@ is almost trivial to experiment with this outside ``nixpkgs``.
 Convert generated requirements.nix into nixpkgs overlay
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A working example tells more then 1000 words::
+A working example tells more then 1000 words
 
-    { pkgs ? import <nixpkgs> {}
-    }:
-    let
-      projectOverlay = self: super: {
-        customPythonPackages = (import ./requirements.nix { inherit pkgs; }).packages;
-      };
-    in
-      import pkgs.path { overlays = [ projectAOverlay ]; }
+overlay.nix::
+
+    self: super:
+    {
+      customPython =
+          (import ./requirements.nix { pkgs = self; });
+    }
+
+shell.nix::
+
+    with (import <nixpkgs> { overlays = [ (import ./overlay.nix) ]; });
+    customPython.interpreter
 
 
 3. Existing examples
