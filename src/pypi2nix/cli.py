@@ -232,7 +232,7 @@ def main(version,
                                 tmp_other = '[' + _tmp[1]
                             else:
                                 tmp_other = ''
-                        except:
+                        except Exception:
                             raise click.ClickException(
                                 "Requirement starting with `.` "
                                 "should end with #egg=<name>. Line `%s` does "
