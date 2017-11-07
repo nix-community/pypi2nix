@@ -1,6 +1,6 @@
 { src ? { outPath = ./.; name = "pypi2nix"; }
 , nixpkgs ? <nixpkgs>
-, pythonVersion ? "35"
+, pythonVersion ? "36"
 }:
 
 let
