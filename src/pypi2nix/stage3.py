@@ -188,7 +188,8 @@ def main(packages_metadata,
                     )))
         fetch_type = item.get('fetch_type', None)
         if fetch_type == 'path':
-            fetch_expression = './' + os.path.relpath(item['url'], current_dir)
+            fetch_expression = ('pkgs.lib.cleanSource ./' +
+                                os.path.relpath(item['url'], current_dir))
         elif fetch_type == 'fetchgit':
             fetch_expression = 'pkgs.fetchgit { url = "%(url)s"; '\
                 '%(hash_type)s = "%(hash_value)s"; rev = "%(rev)s"; }' % dict(
