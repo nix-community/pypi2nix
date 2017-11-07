@@ -61,10 +61,10 @@ rec {
   };
 
   zc_buildout = {
-    version = "2.9.3";
+    version = "2.9.5";
     src = fetchurl {
-      url = "https://github.com/buildout/buildout/archive/dec1baa53fd8e9f4a4bdf98f7cd45ef2d2aee809.tar.gz";
-      sha256 = "1nkw756f95a2b36z4whc8fl5hkhhn02vh08lm533i4c7b1jq1sjc";
+      url = "https://github.com/buildout/buildout/archive/2.9.5.tar.gz";
+      sha256 = "1xhyyqdn2sdpr5s25qnpkrizzvyc2p24n0x90jckv176dcqr2cjb";
     };
     format = "setuptools";
   };
