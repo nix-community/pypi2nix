@@ -1,0 +1,12 @@
+    "{{ name }}" = python.mkDerivation {
+      name = "{{ name }}-{{ version }}";
+      src = {{ fetch_expression }};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs;
+      propagatedBuildInputs = {{ propagatedBuildInputs }};
+      meta = with pkgs.stdenv.lib; {
+        homepage = "{{ homepage }}";
+        license = {{ license }};
+        description = "{{ description }}";
+      };
+    };

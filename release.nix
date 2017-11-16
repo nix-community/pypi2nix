@@ -11,6 +11,7 @@ let
       then pkgs.callPackage ./default.nix {
         src = pypi2nix;
         pythonPackages = pkgs.python3Packages;
+        nixpkgs = pkgs;
       }
       else abort "Unsupported system type: ${system}";
 

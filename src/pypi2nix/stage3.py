@@ -2,146 +2,9 @@ import os
 import sys
 
 import click
+import jinja2
 
-
-DEFAULT_NIX = '''# generated using pypi2nix tool (version: %(version)s)
-# See more at: https://github.com/garbas/pypi2nix
-#
-# COMMAND:
-#   pypi2nix %(command_arguments)s
-#
-
-{ pkgs ? import <nixpkgs> {}
-}:
-
-let
-
-  inherit (pkgs) makeWrapper;
-  inherit (pkgs.stdenv.lib) fix' extends inNixShell;
-
-  pythonPackages =
-  import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
-    inherit pkgs;
-    inherit (pkgs) stdenv;
-    python = pkgs.%(python_version)s;
-    # patching pip so it does not try to remove files when running nix-shell
-    overrides =
-      self: super: {
-        bootstrapped-pip = super.bootstrapped-pip.overrideDerivation (old: {
-          patchPhase = old.patchPhase + ''
-            sed -i \
-              -e "s|%(paths_to_remove)s|#%(paths_to_remove)s|"  \
-              -e "s|%(self_uninstalled)s|#%(self_uninstalled)s|"  \
-                $out/${pkgs.python35.sitePackages}/pip/req/req_install.py
-          '';
-        });
-      };
-  };
-
-  commonBuildInputs = %(extra_build_inputs)s;
-  commonDoCheck = %(enable_tests)s;
-
-  withPackages = pkgs':
-    let
-      pkgs = builtins.removeAttrs pkgs' ["__unfix__"];
-      interpreter = pythonPackages.buildPythonPackage {
-        name = "%(python_version)s-interpreter";
-        buildInputs = [ makeWrapper ] ++ (builtins.attrValues pkgs);
-        buildCommand = ''
-          mkdir -p $out/bin
-          ln -s ${pythonPackages.python.interpreter} \
-              $out/bin/${pythonPackages.python.executable}
-          for dep in ${builtins.concatStringsSep " " \
-              (builtins.attrValues pkgs)}; do
-            if [ -d "$dep/bin" ]; then
-              for prog in "$dep/bin/"*; do
-                if [ -f $prog ]; then
-                  ln -s $prog $out/bin/`basename $prog`
-                fi
-              done
-            fi
-          done
-          for prog in "$out/bin/"*; do
-            wrapProgram "$prog" --prefix PYTHONPATH : "$PYTHONPATH"
-          done
-          pushd $out/bin
-          ln -s ${pythonPackages.python.executable} python
-          ln -s ${pythonPackages.python.executable} \
-              python%(python_major_version)s
-          popd
-        '';
-        passthru.interpreter = pythonPackages.python;
-      };
-    in {
-      __old = pythonPackages;
-      inherit interpreter;
-      mkDerivation = pythonPackages.buildPythonPackage;
-      packages = pkgs;
-      overrideDerivation = drv: f:
-        pythonPackages.buildPythonPackage (drv.drvAttrs // f drv.drvAttrs // \
-                                           { meta = drv.meta; });
-      withPackages = pkgs'':
-        withPackages (pkgs // pkgs'');
-    };
-
-  python = withPackages {};
-
-  generated = self: {
-%(generated_package_nix)s
-  };
-  localOverridesFile = %(overrides_file)s;
-  overrides = import localOverridesFile { inherit pkgs python; };
-  commonOverrides = [
-%(common_overrides)s
-  ];
-  allOverrides =
-    (if (builtins.pathExists localOverridesFile)
-     then [overrides] else [] ) ++ commonOverrides;
-
-in python.withPackages
-   (fix' (pkgs.lib.fold
-            extends
-            generated
-            allOverrides
-         )
-   )
-'''
-
-GENERATED_NIX = '''# generated using pypi2nix tool (version: %s)
-#
-# COMMAND:
-#   pypi2nix %s
-#
-
-{ pkgs, python, commonBuildInputs ? [], commonDoCheck ? false }:
-
-self: {
-%s
-}
-'''
-
-GENERATED_PACKAGE_NIX = '''
-    "%(name)s" = python.mkDerivation {
-      name = "%(name)s-%(version)s";
-      src = %(fetch_expression)s;
-      doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs;
-      propagatedBuildInputs = %(propagatedBuildInputs)s;
-      meta = with pkgs.stdenv.lib; {
-        homepage = "%(homepage)s";
-        license = %(license)s;
-        description = "%(description)s";
-      };
-    };
-'''
-
-OVERRIDES_NIX = '''
-{ pkgs, python }:
-
-self: super: {
-%s
-}
-'''
+HERE = os.path.dirname(__file__)
 
 
 def main(packages_metadata,
@@ -224,18 +87,24 @@ def main(packages_metadata,
             description=item.get("description", ""),
         ))
 
-    generated = '\n\n'.join(
-        GENERATED_PACKAGE_NIX % x for x in generated_packages_metadata
+    templates = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(HERE + '/templates'),
     )
 
-    overrides = OVERRIDES_NIX % ""
+    generated_template = templates.get_template('generated.nix.j2')
+    generated = '\n\n'.join(
+        generated_template.render(**x) for x in generated_packages_metadata
+    )
+
+    overrides = templates.get_template('overrides.nix.j2').render()
 
     common_overrides_expressions = [
         '    (' + override.nix_expression() + ')'
         for override in common_overrides
     ]
 
-    default = DEFAULT_NIX % dict(
+    default_template = templates.get_template('requirements.nix.j2')
+    default = default_template.render(
         version=version,
         command_arguments=' '.join(sys.argv[1:]),
         python_version=python_version,
