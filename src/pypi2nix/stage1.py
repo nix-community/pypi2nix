@@ -1,11 +1,12 @@
-import click
 import glob
 import os
 import sys
 import urllib
+import urllib.parse
+from typing import List, Tuple
 
+import click
 import pypi2nix.utils
-
 
 HERE = os.path.dirname(__file__)
 
@@ -22,9 +23,9 @@ def main(verbose,
          nix_shell='nix-shell',
          setup_requires=[],
          extra_env='',
-         ):
+         ) -> Tuple[str, List[str]]:
     """Create a complete (pip freeze) requirements.txt and a wheelhouse from
-       a user provided requirements.txt.
+    a user provided requirements.txt.
     """
 
     if nix_path:
@@ -52,7 +53,7 @@ def main(verbose,
             raise click.ClickException('Failed to interpret extra_env')
         extra_env = output.split('\n')[-2].strip()[1:-1]
 
-    command = '{nix_shell} {nix_file} {nix_options} {nix_path} --show-trace --pure --run exit'.format(  # noqa
+    command = '{nix_shell} {nix_file} {nix_options} {nix_path} {no_build_output} --show-trace --pure --run exit'.format(  # noqa
         nix_shell=nix_shell,
         nix_file=os.path.join(os.path.dirname(__file__), 'pip.nix'),
         nix_options=pypi2nix.utils.create_command_options(dict(
@@ -67,6 +68,7 @@ def main(verbose,
             setup_requires=setup_requires,
         )),
         nix_path=nix_path,
+        no_build_output='--no-build-output' if verbose < 2 else '',
     )
 
     returncode, output = pypi2nix.utils.cmd(command, verbose != 0)

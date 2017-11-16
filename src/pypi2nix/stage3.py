@@ -55,7 +55,7 @@ let
               (builtins.attrValues pkgs)}; do
             if [ -d "$dep/bin" ]; then
               for prog in "$dep/bin/"*; do
-                if [ -f $prog ]; then
+                if [ -x "$prog" ] && [ -f "$prog" ]; then
                   ln -s $prog $out/bin/`basename $prog`
                 fi
               done
@@ -176,8 +176,8 @@ def main(packages_metadata,
     generated_packages_metadata = []
     for item in sorted(packages_metadata, key=lambda x: x['name']):
         propagatedBuildInputs = '[ ]'
-        if item.get('deps'):
-            deps = [x for x in item['deps']
+        if item.get('dependencies'):
+            deps = [x for x in item['dependencies']
                     if x.lower() in metadata_by_name.keys()]
             if deps:
                 propagatedBuildInputs = "[\n%s\n    ]" % (

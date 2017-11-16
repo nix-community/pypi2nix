@@ -1,6 +1,7 @@
 import json
 import shlex
 import subprocess
+import urllib.parse
 
 import click
 
@@ -117,3 +118,20 @@ def prefetch_git(url, rev=None):
         )
     repo_data = json.loads(completed_proc.stdout)
     return repo_data
+
+
+def starts_with_any(s, prefixes):
+    for prefix in prefixes:
+        if s.startswith(prefix):
+            return True
+    return False
+
+
+def is_url(s):
+    return urllib.parse.urlparse(s).scheme != ''
+
+
+def concat(outer_iterator):
+    for inner_iterator in outer_iterator:
+        for i in inner_iterator:
+            yield i

@@ -1,15 +1,18 @@
-import click
 import hashlib
 import os
 import shutil
 import tempfile
+import urllib
+import urllib.parse
 
+import click
 import pypi2nix.overrides
 import pypi2nix.stage0
 import pypi2nix.stage1
 import pypi2nix.stage2
 import pypi2nix.stage3
 import pypi2nix.utils
+from pypi2nix.requirement import PathRequirement
 
 
 @click.command('pypi2nix')
@@ -29,18 +32,15 @@ import pypi2nix.utils
                    u'precedence over NIX_PATH.',
               )
 @click.option('--nix-shell',
-              required=False,
               default='nix-shell',
               help=u'Path to nix-shell executable.',
               )
 @click.option('--basename',
-              required=False,
               default='requirements',
               help=u'Basename which is used to generate files. By default '
                    u'it uses basename of provided file.',
               )
 @click.option('-C', '--cache-dir',
-              required=False,
               default=None,
               type=click.Path(exists=True, file_okay=True, writable=True,
                               resolve_path=True),
@@ -63,13 +63,11 @@ import pypi2nix.utils
               help=u'Enable tests in generated packages.'
               )
 @click.option('-V', '--python-version',
-              required=False,
               default=None,
               type=click.Choice(pypi2nix.utils.PYTHON_VERSIONS.keys()),
               help=u'Provide which python version we build for.',
               )
 @click.option('-r', '--requirements',
-              required=False,
               default=None,
               multiple=True,
               type=click.Path(exists=True, file_okay=True, dir_okay=False,
@@ -77,21 +75,18 @@ import pypi2nix.utils
               help=u'pip requirements.txt file',
               )
 @click.option('-b', '--buildout',
-              required=False,
               default=None,
               type=click.Path(exists=True, resolve_path=True),
               help=u'zc.buildout configuration file',
               )
 @click.option('-e', '--editable',
               multiple=True,
-              required=False,
               default=None,
               type=str,
               help=u'location/url to editable locations',
               )
 @click.option('-s', '--setup-requires',
               multiple=True,
-              required=False,
               default=None,
               type=str,
               help=u'Extra Python dependencies needed before the installation '
@@ -99,7 +94,6 @@ import pypi2nix.utils
               )
 @click.option('-O', '--overrides',
               multiple=True,
-              required=False,
               type=pypi2nix.overrides.OVERRIDES_URL,
               help=u'Extra expressions that override generated expressions ' +
                    u'for specific packages',
@@ -212,15 +206,45 @@ def main(version,
             hashlib.md5(requirements_file.encode()).hexdigest(),
         )
 
+        def is_editable_vc_line(line):
+            return (
+                line.startswith("-e git+") or
+                line.startswith("-e hg+")
+            )
+
+        def is_editable_line(line):
+            return line.startswith("-e ")
+
+        def handle_include_line(requirements_file_dir, line):
+            include_location = line[2:].strip()
+            if os.path.isfile(include_location):
+                if os.path.isabs(include_location):
+                    return '-r ' + include_location
+                else:
+                    return '-r ' + os.path.abspath(
+                        os.path.join(
+                            requirements_file_dir, include_location
+                        )
+                    )
+            elif pypi2nix.utils.is_url(include_location):
+                remote_requirements_file = urllib.urlretrieve(
+                    include_location
+                )
+                new_requirements_file = handle_requirements_file(
+                    project_dir,
+                    remote_requirements_file
+                )
+
+                return '-r ' + new_requirements_file
+
         # we open both files: f1 to read, f2 to write
         with open(requirements_file) as f1:
             with open(new_requirements_file, "w+") as f2:
                 for requirements_line in f1.readlines():
                     requirements_line = requirements_line.strip()
-                    if requirements_line.startswith("-e git+") or \
-                       requirements_line.startswith("-e hg+"):
+                    if is_editable_vc_line(requirements_line):
                         pass
-                    elif requirements_line.startswith("-e "):
+                    elif is_editable_line(requirements_line):
                         requirements_line = requirements_line[3:]
                         try:
                             tmp_path, egg = requirements_line.split('#')
@@ -247,16 +271,16 @@ def main(version,
                         ))
 
                         requirements_line = "-e %s%s" % (tmp_path, tmp_other)
-                        sources[tmp_name] = dict(url=tmp_path, type='path')
+                        sources[tmp_name] = PathRequirement(
+                            name=tmp_name,
+                            url=tmp_path,
+                        )
 
-                    elif requirements_line.startswith("-r ."):
-                        requirements_file2 = os.path.abspath(os.path.join(
-                            os.path.dirname(requirements_file),
-                            requirements_line[3:]
-                        ))
-                        new_requirements_file2 = handle_requirements_file(
-                            project_dir, requirements_file2)
-                        requirements_line = "-r " + new_requirements_file2
+                    elif requirements_line.startswith('-r '):
+                        requirements_line = handle_include_line(
+                            current_dir,
+                            requirements_line
+                        )
                     f2.write(requirements_line + "\n")
 
         return new_requirements_file
@@ -327,7 +351,7 @@ def main(version,
         wheels=wheels,
         requirements_files=requirements_files,
         wheel_cache_dir=wheel_cache_dir,
-        sources=sources,
+        extra_sources=sources,
     )
 
     click.echo('Stage3: Generating Nix expressions ...')
