@@ -43,10 +43,10 @@ rec {
     sha256 = "046h5fmjyaainvksvmvpx70p6qack7gxcnv0s5z7w264m4bkzr7y";
   };
 
-  zcbuildoutVersion = "2.9.3";
+  zcbuildoutVersion = "2.9.5";
   zcbuildout = fetchurl {
-    url = "https://pypi.python.org/packages/f8/bc/9784f749395bfdcb66817527cdfed111b67f8ce23997b0702cfeb8ab0e82/zc.buildout-2.9.3.tar.gz";
-    sha256 = "0vrq7ccj4v828my1h5f13gr514jcj29l0wd15fkw5rp4gr4jxfn8";
+    url = "https://pypi.python.org/packages/47/f9/dadef69567929386c9e65eaa90fd60f42920c008b070f8b4234ce9ef9a7d/zc.buildout-2.9.5.tar.gz";
+    sha256 = "1ykw4yqgaqbrdkmr5pkw52jf0147f1w5fii7mq5z2bwy6zm41s6w";
   };
 
   zcrecipeeggVersion = "2.0.3";
