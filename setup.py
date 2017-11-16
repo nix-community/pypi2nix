@@ -31,6 +31,7 @@ setup(
     include_package_data=True,
     install_requires = [
         'click',
+        'jinja2',
         'requests',
     ]
 )

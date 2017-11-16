@@ -6,3 +6,4 @@
 /examples/generated*
 /deploy_rsa
 *~
+/requirements_override.nix
