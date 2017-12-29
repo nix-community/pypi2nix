@@ -1,7 +1,7 @@
 OS := $(shell uname)
 PYPI2NIX=./pypi2nix/bin/pypi2nix
 NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz
-NIX_BUILD=nix-build
+NIX_BUILD=nix-build -Q
 NIX_SHELL=nix-shell
 
 
