@@ -114,7 +114,6 @@ awscli_and_requests.nix: awscli_and_requests.txt $(PYPI2NIX)
 		-I $(NIX_PATH) \
 		-V "2.7" \
 		--default-overrides \
-		-O ./awscli_and_requests_override.nix \
 		--basename awscli_and_requests \
 		-r awscli_and_requests.txt
 
@@ -124,8 +123,7 @@ awscli_and_requests.txt: awscli_and_requests-clear
 
 awscli_and_requests-clear:
 	rm -f awscli_and_requests
-	rm -f awscli.txt
-	rm -f requests.txt
+	rm -f awscli_and_requests.txt
 	rm -f awscli_and_requests.nix
 	rm -f awscli_and_requests_frozen.txt
 
@@ -454,4 +452,9 @@ vulnix.txt: vulnix-clear
 
 
 vulnix-clear:
-	rm -rf vulnix*
+	rm -f vulnix
+	rm -f vulnix.txt
+	rm -f vulnix.nix
+	rm -f vulnix_frozen.txt
+	rm -rf vulnix-src
+
