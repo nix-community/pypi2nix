@@ -5,8 +5,11 @@ os:
   - linux
   # - osx
 env:
+  - EXAMPLE=aiohttp
   - EXAMPLE=awscli_and_requests
+  - EXAMPLE=connexion
   - EXAMPLE=empy
+  - EXAMPLE=flake8
   - EXAMPLE=ldap
   - EXAMPLE=lektor
   - EXAMPLE=mercurial
@@ -14,10 +17,7 @@ env:
   - EXAMPLE=rss2email
   - EXAMPLE=scipy
   - EXAMPLE=tornado
-  - EXAMPLE=connexion
-  - EXAMPLE=aiohttp
-  - EXAMPLE=flake8
-  # - EXAMPLE=vulnix
+  - EXAMPLE=vulnix
 matrix:
   exclude:
     - os: osx

@@ -3,7 +3,6 @@
 /examples/*
 !/examples/*_override.nix
 /result*
-/examples/generated*
 /deploy_rsa
 *~
 /requirements_override.nix
