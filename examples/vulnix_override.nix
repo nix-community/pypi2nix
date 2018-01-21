@@ -7,10 +7,10 @@ self: super: {
   });
 
   "BTrees" = python.overrideDerivation super."BTrees" (old: {
-    propagatedNativeBuildInputs =
+    propagatedBuildInputs =
       builtins.filter
         (x: (builtins.parseDrvName x.name).name != "${python.__old.python.libPrefix}-${python.__old.python.libPrefix}-ZODB")
-        old.propagatedNativeBuildInputs;
+        old.propagatedeBuildInputs;
   });
 
 }

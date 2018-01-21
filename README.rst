@@ -5,12 +5,12 @@ pypi2nix - generate Nix expressions for Python packages
 different python specific sources (``requirements.txt``, ``buildout.cfg``,
 ...).
 
-    The only way I can fix bugs with pypi2nix is if you report them. Ping me
-    `@garbas`_ if you get stuck.
+    The only way we can fix bugs with pypi2nix is if you report them. Please
+    create an issue if you discover problems.
 
 ``pypi2nix`` will (until further notice) only work with latest *unstable*
-channel. This is due to ongoing change in python infrastructure happening this
-year.
+channel. This is due to ongoing changes in python infrastructure happening in
+nixpkgs.
 
 .. contents::
 
@@ -305,7 +305,6 @@ Code is located in ``src/pypi2nix``.
 
 
 .. _`Nix expressions`: http://nixos.org/nix/manual/#chap-writing-nix-expressions
-.. _`@garbas`: https://twitter.com/garbas
 .. _`pypi2nix repository`: https://github.com/garbas/pypi2nix
 .. _`examples/Makefile`: https://github.com/garbas/pypi2nix/blob/master/examples/Makefile
 .. _`nix-shell`: http://nixos.org/nix/manual/#sec-nix-shell
