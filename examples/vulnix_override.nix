@@ -10,7 +10,7 @@ self: super: {
     propagatedBuildInputs =
       builtins.filter
         (x: (builtins.parseDrvName x.name).name != "${python.__old.python.libPrefix}-${python.__old.python.libPrefix}-ZODB")
-        old.propagatedeBuildInputs;
+        old.propagatedBuildInputs;
   });
 
 }
