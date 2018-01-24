@@ -77,6 +77,24 @@ class OverridesGit(object):
         )
 
 
+class OverridesGithub(object):
+    def __init__(self, owner, repo, path, rev=None):
+        self.owner = owner
+        self.repo = repo
+        self.path = path
+        self.rev = rev
+
+    def nix_expression(self):
+        return OverridesGit(
+            repo_url='https://github.com/{owner}/{repo}.git'.format(
+                owner=self.owner,
+                repo=self.repo,
+            ),
+            path=self.path,
+            rev=self.rev
+        ).nix_expression()
+
+
 def url_to_overrides(url_string):
     url = urlparse(url_string)
     if url.scheme == '':

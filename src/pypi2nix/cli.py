@@ -130,8 +130,9 @@ def main(version,
 
     if default_overrides:
         overrides += tuple([
-            pypi2nix.overrides.OverridesGit(
-                repo_url='https://github.com/garbas/nixpkgs-python.git',
+            pypi2nix.overrides.OverridesGithub(
+                owner='garbas',
+                repo='nixpkgs-python',
                 path='overrides.nix',
             )
         ])
