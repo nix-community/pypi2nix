@@ -63,6 +63,7 @@ class OverridesGit(object):
         'url = "%(url)s"; ' +
         'sha256 = "%(sha256)s"; ' +
         'rev = "%(rev)s"; ' +
+        'fetchSubmodules = false; ' +
         '} ; in import "${src}/%(path)s" { inherit pkgs python; }'
     )
 
