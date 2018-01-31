@@ -430,25 +430,22 @@ tornado-clear:
 
 vulnix: vulnix.nix
 	echo "building and testing vulnix..."
-	$(NIX_BUILD) vulnix.nix -o vulnix -A interpreter --show-trace
-	./vulnix/bin/python -c 'import vulnix'
+	$(NIX_BUILD) vulnix-src/default.nix -o vulnix --show-trace
 	./vulnix/bin/vulnix --help
-	$(NIX_SHELL) vulnix.nix -A interpreter --run "python -c 'import vulnix'"
-	$(NIX_SHELL) vulnix.nix -A interpreter --run "vulnix --help"
 
 vulnix.nix: vulnix.txt $(PYPI2NIX)
-	$(PYPI2NIX) -v \
-		-I $(NIX_PATH) \
-		-V "3.5" \
-		--default-overrides \
-		--basename vulnix \
-		 -E libxml2 \
-		 -E libxslt \
-		 -r vulnix.txt
+	cp vulnix_override.nix vulnix-src/requirements_override.nix
+	cd vulnix-src && \
+		./../$(PYPI2NIX) -v \
+			-I $(NIX_PATH) \
+			-V "3.5" \
+			--default-overrides \
+			 -E libxml2 \
+			 -E libxslt \
+			 -r requirements.txt
 
 vulnix.txt: vulnix-clear
 	git clone https://github.com/flyingcircusio/vulnix vulnix-src --depth 1
-	cp vulnix-src/requirements.txt vulnix.txt
 
 
 vulnix-clear:
