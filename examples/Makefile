@@ -64,7 +64,7 @@ pypi2nix-clear:
 
 $(PYPI2NIX): pypi2nix-clear
 	echo "building pypi2nix ..."
-	$(NIX_BUILD) ../release.nix -A build.x86_64-linux -o pypi2nix &> /dev/null
+	$(NIX_BUILD) ../release.nix -A build.x86_64-linux -o pypi2nix
 
 
 
