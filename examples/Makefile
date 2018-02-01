@@ -79,7 +79,7 @@ aiohttp: aiohttp.nix
 
 aiohttp.nix: aiohttp.txt $(PYPI2NIX)
 	echo "generating aiohttp.nix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "3.5" \
 		--default-overrides \
@@ -110,7 +110,7 @@ awscli_and_requests: awscli_and_requests.nix
 
 awscli_and_requests.nix: awscli_and_requests.txt $(PYPI2NIX)
 	echo "generating awscli and requests nix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "2.7" \
 		--default-overrides \
@@ -139,7 +139,7 @@ connexion: connexion.nix
 
 connexion.nix: connexion.txt $(PYPI2NIX)
 	echo "generating connexion.nix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "2.7" \
 		--default-overrides \
@@ -168,7 +168,7 @@ empy: empy.nix
 
 empy.nix: empy.txt $(PYPI2NIX)
 	echo "generating empy nix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "2.7" \
 		--default-overrides \
@@ -196,7 +196,7 @@ flake8: flake8.nix
 
 flake8.nix: flake8.txt $(PYPI2NIX)
 	echo "generating flake8.nix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "3.5" \
 		--default-overrides \
@@ -224,7 +224,7 @@ ldap: ldap.nix
 
 ldap.nix: ldap.txt $(PYPI2NIX)
 	echo "generating ldap.nix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "2.7" \
 		--default-overrides \
@@ -256,7 +256,7 @@ lektor: lektor.nix
 
 lektor.nix: lektor.txt $(PYPI2NIX)
 	echo "generating lektor nix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "2.7" \
 		--default-overrides \
@@ -286,7 +286,7 @@ mercurial: mercurial.nix
 
 mercurial.nix: mercurial.txt $(PYPI2NIX)
 	echo "generating mercurial.nix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "2.7" \
 		--default-overrides \
@@ -316,7 +316,7 @@ pillow: pillow.nix
 
 pillow.nix: pillow.txt $(PYPI2NIX)
 	echo "generating pillownix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "3.5" \
 		--default-overrides \
@@ -347,7 +347,7 @@ rss2email: rss2email.nix
 
 rss2email.nix: rss2email.txt $(PYPI2NIX)
 	echo "generating rss2email nix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "3.4" \
 		--default-overrides \
@@ -375,7 +375,7 @@ scipy: scipy.nix
 
 scipy.nix: scipy.txt $(PYPI2NIX)
 	echo "generating scipy.nix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "3.5" \
 		--default-overrides \
@@ -408,7 +408,7 @@ tornado: tornado.nix
 
 tornado.nix: tornado.txt $(PYPI2NIX)
 	echo "generating tornado.nix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "3.5" \
 		--default-overrides \
@@ -436,7 +436,7 @@ vulnix: vulnix.nix
 vulnix.nix: vulnix.txt $(PYPI2NIX)
 	cp vulnix_override.nix vulnix-src/requirements_override.nix
 	cd vulnix-src && \
-		./../$(PYPI2NIX) -v \
+		./../$(PYPI2NIX) \
 			-I $(NIX_PATH) \
 			-V "3.5" \
 			--default-overrides \
