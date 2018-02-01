@@ -5,6 +5,8 @@ os:
   - linux
   # - osx
 env:
+  # scipy needs to be at the top since it take the most time (20-25min)
+  - EXAMPLE=scipy
   - EXAMPLE=aiohttp
   - EXAMPLE=awscli_and_requests
   - EXAMPLE=connexion
@@ -15,7 +17,6 @@ env:
   - EXAMPLE=mercurial
   - EXAMPLE=pillow
   - EXAMPLE=rss2email
-  - EXAMPLE=scipy
   - EXAMPLE=tornado
   - EXAMPLE=vulnix
 matrix:
