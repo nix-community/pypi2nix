@@ -1,3 +1,6 @@
+branches:
+  only:
+    - master
 language: nix
 addons:
   ssh_known_hosts: garbas.si
