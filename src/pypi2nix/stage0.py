@@ -17,7 +17,7 @@ def main(verbose,
     """ Converts buildout.cfg specifiation into requirements.txt file
     """
 
-    command = '{nix_shell} {nix_file} {options} {nix_path} -Q --show-trace --pure --run exit'.format(  # noqa
+    command = '{nix_shell} {nix_file} {options} {nix_path} -K --show-trace --pure --run exit'.format(  # noqa
         nix_shell=nix_shell,
         nix_file=os.path.join(os.path.dirname(__file__), 'buildout.nix'),
         options=pypi2nix.utils.create_command_options(dict(

@@ -52,7 +52,7 @@ def main(verbose,
             raise click.ClickException('Failed to interpret extra_env')
         extra_env = output.split('\n')[-2].strip()[1:-1]
 
-    command = '{nix_shell} {nix_file} {nix_options} {nix_path} -Q --show-trace --pure --run exit'.format(  # noqa
+    command = '{nix_shell} {nix_file} {nix_options} {nix_path} --show-trace --pure --run exit'.format(  # noqa
         nix_shell=nix_shell,
         nix_file=os.path.join(os.path.dirname(__file__), 'pip.nix'),
         nix_options=pypi2nix.utils.create_command_options(dict(
