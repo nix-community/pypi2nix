@@ -57,7 +57,7 @@ before_install:
       ssh-add $TRAVIS_BUILD_DIR/deploy_rsa;
     fi
 script:
-  - cd examples && travis_wait 60 make $EXAMPLE && cd ..
+  - cd examples && make $EXAMPLE && cd ..
   - if [ "$TRAVIS_PULL_REQUEST" = "false" -a
          "$TRAVIS_BRANCH" = "master" ]; then
       mkdir nars/;
