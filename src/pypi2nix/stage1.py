@@ -52,6 +52,9 @@ def main(verbose,
             raise click.ClickException('Failed to interpret extra_env')
         extra_env = output.split('\n')[-2].strip()[1:-1]
 
+    # TODO: split pip.nix into:
+    #  - pip download -r req.txt --no-binary :all: --dest ./tmp-download -vvvv 
+    #  - pip wheel --no-index --wheel-dir=./tmp-wheels -r req.txt --find-links=./tmp-wheels --find-links=./tmp-download
     command = '{nix_shell} {nix_file} {nix_options} {nix_path} --show-trace --pure --run exit'.format(  # noqa
         nix_shell=nix_shell,
         nix_file=os.path.join(os.path.dirname(__file__), 'pip.nix'),
