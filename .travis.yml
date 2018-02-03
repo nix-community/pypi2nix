@@ -1,3 +1,6 @@
+branches:
+  only:
+    - master
 language: nix
 addons:
   ssh_known_hosts: garbas.si
@@ -5,19 +8,20 @@ os:
   - linux
   # - osx
 env:
+  # scipy needs to be at the top since it take the most time (20-25min)
+  - EXAMPLE=scipy
+  - EXAMPLE=aiohttp
   - EXAMPLE=awscli_and_requests
+  - EXAMPLE=connexion
   - EXAMPLE=empy
+  - EXAMPLE=flake8
   - EXAMPLE=ldap
   - EXAMPLE=lektor
   - EXAMPLE=mercurial
   - EXAMPLE=pillow
   - EXAMPLE=rss2email
-  - EXAMPLE=scipy
   - EXAMPLE=tornado
-  - EXAMPLE=connexion
-  - EXAMPLE=aiohttp
-  - EXAMPLE=flake8
-  # - EXAMPLE=vulnix
+  - EXAMPLE=vulnix
 matrix:
   exclude:
     - os: osx
