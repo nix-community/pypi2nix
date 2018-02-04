@@ -1,8 +1,16 @@
+import os
 import json
+import re
 import shlex
 import subprocess
+from tempfile import TemporaryDirectory
 
 import click
+import jinja2
+import requests
+
+
+HERE = os.path.dirname(__file__)
 
 TO_IGNORE = [
     "pip",
@@ -84,6 +92,14 @@ def args_as_list(inputs):
     ))
 
 
+def prefetch_url(url):
+    output = cmd(
+        ['nix-prefetch-url', url],
+        stderr=None,
+    )
+    return output[-1][:-1]
+
+
 def prefetch_git(url, rev=None):
     command = ['nix-prefetch-git', url]
 
@@ -117,3 +133,51 @@ def prefetch_git(url, rev=None):
         )
     repo_data = json.loads(completed_proc.stdout)
     return repo_data
+
+
+def get_latest_commit_from_github(owner, repo):
+    url_template = 'https://api.github.com/repos/{owner}/{repo}/commits/master'
+    request_url = url_template.format(
+        owner=owner,
+        repo=repo,
+    )
+    response = requests.get(request_url)
+    return response.json()['sha']
+
+
+def prefetch_github(owner, repo, rev=None):
+    calculated_rev = get_latest_commit_from_github(owner, repo)
+    actual_rev = rev or calculated_rev
+    templates_env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(HERE + '/templates'),
+    )
+    template = templates_env.get_template('prefetch-github.nix.j2')
+    nix_prefetch_code = template.render(
+        owner=owner,
+        repo=repo,
+        rev=actual_rev,
+        fake_hash='1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv',
+    )
+    with TemporaryDirectory() as temp_dir_name:
+        nix_filename = temp_dir_name + '/prefetch-github.nix'
+        with open(nix_filename, 'w') as f:
+            f.write(nix_prefetch_code)
+        returncode, output = cmd(['nix-build', nix_filename])
+    r = re.compile(
+        "output path .* has .* hash (.*) when .*"
+    )
+    calculated_hash = None
+    for line in output.splitlines():
+        re_match = r.match(line)
+        if re_match:
+            calculated_hash = re_match.group(1)[1:-1]
+            break
+    if calculated_hash:
+        return actual_rev, calculated_hash
+    else:
+        raise click.ClickException(
+            (
+                'Internal Error: Calculate hash value for sources '
+                'in github repo {owner}/{repo}.\n\noutput was: {output}'
+            ).format(owner=owner, repo=repo, output=output)
+        )

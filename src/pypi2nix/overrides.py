@@ -3,7 +3,7 @@ from urllib.parse import urldefrag, urlparse
 
 import click
 
-from .utils import cmd, prefetch_git
+from .utils import cmd, prefetch_git, prefetch_github
 
 
 class UnsupportedUrlError(Exception):
@@ -85,14 +85,25 @@ class OverridesGithub(object):
         self.rev = rev
 
     def nix_expression(self):
-        return OverridesGit(
-            repo_url='https://github.com/{owner}/{repo}.git'.format(
-                owner=self.owner,
-                repo=self.repo,
-            ),
+        rev, sha256 = prefetch_github(self.owner, self.repo, self.rev)
+        template = ' '.join([
+            'let src = pkgs.fetchFromGitHub {{',
+            'owner = "{owner}";',
+            'repo = "{repo}";',
+            'rev = "{rev}";',
+            'sha256 = "{sha256}";',
+            '}} ;',
+            'in import "${{src}}/{path}" {{',
+            'inherit pkgs python;',
+            '}}'
+        ])
+        return template.format(
+            owner=self.owner,
+            repo=self.repo,
+            rev=rev,
+            sha256=sha256,
             path=self.path,
-            rev=self.rev
-        ).nix_expression()
+        )
 
 
 def url_to_overrides(url_string):
