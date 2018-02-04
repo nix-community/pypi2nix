@@ -1,0 +1,10 @@
+let
+  pkgs = import <nixpkgs> {};
+  src = pkgs.fetchFromGitHub {
+    owner = "{{ owner }}";
+    repo = "{{ repo }}";
+    rev = "{{ rev }}";
+    sha256 = "{{ fake_hash }}";
+  };
+in
+  import "${src}/overrides.nix" { inherit pkgs; python = pkgs.python3; }
