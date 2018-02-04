@@ -39,14 +39,32 @@ let
 
   scriptRequires = pkgs.lib.optionalString ((builtins.length setup_requires) > 0) ''
       mkdir -p ${project_dir}/setup_requires
+
+      # download source distributions to "download_cache_dir"
+      PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
+        ${extra_env} pip download \
+          ${builtins.concatStringsSep" "(setup_requires)} \
+          --dest ${download_cache_dir} \
+          --find-links ${download_cache_dir} \
+          --no-binary :all:
+
+      # create wheels from source distributions without going online
+      PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
+        ${extra_env} pip wheel \
+          ${builtins.concatStringsSep" "(setup_requires)} \
+          --wheel-dir ${project_dir}/wheel \
+          --find-links ${wheel_cache_dir} \
+          --find-links ${download_cache_dir} \
+          --no-index
+
+      # install setup_requires from wheels
       PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
         pip install \
           ${builtins.concatStringsSep" "(setup_requires)} \
           --target=${project_dir}/setup_requires \
           --find-links ${wheel_cache_dir} \
-          --cache-dir ${download_cache_dir} \
           --build ${pip_build_dir} \
-          --no-binary :all:
+          --no-index
     '';
 
 in pkgs.stdenv.mkDerivation rec {
@@ -72,28 +90,33 @@ in pkgs.stdenv.mkDerivation rec {
     ${scriptRequires}
     export SOURCE_DATE_EPOCH=315532800
 
-    mkdir -p ${project_dir}/wheel ${project_dir}/wheelhouse
+    # download source distributions to "download_cache_dir"
+    PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
+      ${extra_env} pip download \
+        ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} \
+        --dest ${download_cache_dir} \
+        --find-links ${download_cache_dir} \
+        --no-binary :all:
 
+    # create wheels from source distributions without going online
     PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
       ${extra_env} pip wheel \
         ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} \
         --wheel-dir ${project_dir}/wheel \
         --find-links ${wheel_cache_dir} \
-        --cache-dir ${download_cache_dir} \
-        --build ${pip_build_dir} \
-        --no-binary :all: 
+        --find-links ${download_cache_dir} \
+        --no-index
+
     RETVAL=$?
     rm -rf ${pip_build_dir}/*
     [ $RETVAL -ne 0 ] && exit $RETVAL
 
     cd ${project_dir}/wheelhouse
     for file in ${project_dir}/wheel/*; do
+      cp -f $file ${wheel_cache_dir}
       unzip -qo $file
     done
 
-    cp -Rf ${project_dir}/wheel/* ${wheel_cache_dir}
-
     PYTHONPATH=${project_dir}/wheelhouse:$PYTHONPATH pip freeze > ${project_dir}/requirements.txt
-
   '';
 }
