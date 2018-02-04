@@ -90,6 +90,10 @@ in pkgs.stdenv.mkDerivation rec {
     ${scriptRequires}
     export SOURCE_DATE_EPOCH=315532800
 
+    mkdir -p \
+      ${project_dir}/wheel \
+      ${project_dir}/wheelhouse
+
     # download source distributions to "download_cache_dir"
     PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
       ${extra_env} pip download \
@@ -111,11 +115,12 @@ in pkgs.stdenv.mkDerivation rec {
     rm -rf ${pip_build_dir}/*
     [ $RETVAL -ne 0 ] && exit $RETVAL
 
-    cd ${project_dir}/wheelhouse
+    pushd ${project_dir}/wheelhouse
     for file in ${project_dir}/wheel/*; do
       cp -f $file ${wheel_cache_dir}
       unzip -qo $file
     done
+    popd
 
     PYTHONPATH=${project_dir}/wheelhouse:$PYTHONPATH pip freeze > ${project_dir}/requirements.txt
   '';
