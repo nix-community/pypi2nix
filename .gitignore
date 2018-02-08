@@ -6,3 +6,6 @@
 /deploy_rsa
 *~
 /requirements_override.nix
+/examples/aiohttp_override.nix
+/examples/empy_override.nix
+/examples/mercurial_override.nix
