@@ -13,16 +13,16 @@ rec {
     sha256 = "03clr9c1dih5n9c00c592zzvf6r1ffimywkaq9agcqdllzhl7wh9";
   };
 
-  setuptoolsVersion = "38.2.5";
+  setuptoolsVersion = "38.5.1";
   setuptoolsWhl = fetchurl {
-    url = "https://pypi.python.org/packages/4c/00/19ad1da0869e6699577d90ea843325036952015f924fc8488d181c140729/setuptools-38.2.5-py2.py3-none-any.whl";
-    sha256 = "1rl7pd4yk8x6snkz5qm00nwzzbs3hs5j27miimjhx2gpwbrx9w5w";
+    url = "https://pypi.python.org/packages/43/41/033a273f9a25cb63050a390ee8397acbc7eae2159195d85f06f17e7be45a/setuptools-38.5.1-py2.py3-none-any.whl";
+    sha256 = "0dga9rlrbm0vgbngwkgy1gqmlnwk3jv00d7r0k8ryhdfpwd7gzkz";
   };
 
-  sixVersion = "1.10.0";
+  sixVersion = "1.12.0";
   sixWhl = fetchurl {
-    url = "https://pypi.python.org/packages/c8/0a/b6723e1bc4c516cb687841499455a8505b44607ab535be01091c0f24f079/six-1.10.0-py2.py3-none-any.whl";
-    sha256 = "1cay6fbjmwz2lxrjbp543k1g2ivbm891mlx64njgbk4v7m08rxqg";
+    url = "https://pypi.python.org/packages/67/4b/141a581104b1f6397bfa78ac9d43d8ad29a7ca43ea90a2d863fe3056e86a/six-1.11.0-py2.py3-none-any.whl";
+    sha256 = "1sx003ds51xwi826kbv1kddydizib2vdnmycip3a46pb1zhw0bc3";
   };
 
   appdirsVersion = "1.4.3";
@@ -43,16 +43,16 @@ rec {
     sha256 = "046h5fmjyaainvksvmvpx70p6qack7gxcnv0s5z7w264m4bkzr7y";
   };
 
-  zcbuildoutVersion = "2.9.5";
+  zcbuildoutVersion = "2.11.0";
   zcbuildout = fetchurl {
-    url = "https://pypi.python.org/packages/47/f9/dadef69567929386c9e65eaa90fd60f42920c008b070f8b4234ce9ef9a7d/zc.buildout-2.9.5.tar.gz";
-    sha256 = "1ykw4yqgaqbrdkmr5pkw52jf0147f1w5fii7mq5z2bwy6zm41s6w";
+    url = "https://pypi.python.org/packages/0e/78/c473fd84c4ed95be658ab05b9819d35a699484e34c8897f9e9e53b4e96b3/zc.buildout-2.11.0.tar.gz";
+    sha256 = "10pa4w5qvwzpwkwm8f262kkkhmzqf1andpmgw2gfgd2zgla0laq9";
   };
 
-  zcrecipeeggVersion = "2.0.3";
+  zcrecipeeggVersion = "2.0.5";
   zcrecipeegg = fetchurl {
-    url = "https://pypi.python.org/packages/08/5e/ade683d229d77ed457017145672f1be4fd98be60f1a5344109a4e66a7d54/zc.recipe.egg-2.0.3.tar.gz";
-    sha256 = "0d7xkxxhm5bwrscchjzc88559njirqxishdwl2qjx3gij3s12l5s";
+    url = "https://pypi.python.org/packages/a2/a3/4f985e57b6f8bb71b334976e02bef8a2c5e630131b3e03c27d00923e34d3/zc.recipe.egg-2.0.5.tar.gz";
+    sha256 = "1h29jh5c4l74zh4j53l36z5fb9k8b9wl8l4kynih6f0jj14aqi8j";
   };
 
   buildoutrequirementsVersion = "0.2.2";
