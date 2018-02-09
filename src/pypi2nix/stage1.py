@@ -21,6 +21,7 @@ def main(verbose,
          nix_shell='nix-shell',
          setup_requires=[],
          extra_env='',
+         wheels_cache=[],
          ):
     """Create a complete (pip freeze) requirements.txt and a wheelhouse from
        a user provided requirements.txt.
@@ -63,6 +64,7 @@ def main(verbose,
             extra_env=extra_env,
             python_version=python_version,
             setup_requires=setup_requires,
+            wheels_cache=wheels_cache,
         )),
         nix_path=nix_path,
     )

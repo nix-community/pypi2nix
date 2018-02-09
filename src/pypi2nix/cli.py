@@ -108,6 +108,13 @@ import pypi2nix.utils
               default=False,
               help=u'Apply overrides from "nixpkgs-python" (https://github.com/garbas/nixpkgs-python)', # noqa
               )
+@click.option('-W', '--wheels-cache',
+              multiple=True,
+              required=False,
+              default=[],
+              type=str,
+              help=u'An url where trusted wheels are located. eg. https://travis.garbas.si/wheels-cache', # noqa
+              )
 def main(version,
          verbose,
          nix_shell,
@@ -124,6 +131,7 @@ def main(version,
          setup_requires,
          overrides,
          default_overrides,
+         wheels_cache,
          ):
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
@@ -314,6 +322,7 @@ def main(version,
         nix_path=nix_path,
         setup_requires=setup_requires,
         extra_env=extra_env,
+        wheels_cache=wheels_cache,
     )
 
     click.echo('Stage2: Extracting metadata from pypi.python.org ...')

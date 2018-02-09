@@ -6,6 +6,7 @@
 , extra_build_inputs ? []
 , extra_env ? ""
 , setup_requires ? []
+, wheels_cache ? []
 }:
 
 let
@@ -50,7 +51,7 @@ let
       echo ""
       PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
         ${extra_env} pip download \
-          ${builtins.concatStringsSep" "(setup_requires)} \
+          ${builtins.concatStringsSep " " setup_requires} \
           --dest ${download_cache_dir} \
           --src ${project_dir}/src-download \
           --build ${project_dir}/build \
@@ -64,10 +65,11 @@ let
       echo ""
       PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
         ${extra_env} pip wheel \
-          ${builtins.concatStringsSep" "(setup_requires)} \
+          ${builtins.concatStringsSep " " setup_requires} \
           --src ${project_dir}/src-wheel \
           --build ${project_dir}/build \
           --wheel-dir ${project_dir}/wheel \
+          ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
           --find-links ${wheel_cache_dir} \
           --find-links ${download_cache_dir} \
           --no-index
@@ -83,7 +85,7 @@ let
       echo ""
       PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
         pip install \
-          ${builtins.concatStringsSep" "(setup_requires)} \
+          ${builtins.concatStringsSep " " setup_requires} \
           --target=${project_dir}/setup_requires \
           --find-links ${wheel_cache_dir} \
           --no-index
@@ -126,7 +128,7 @@ in pkgs.stdenv.mkDerivation rec {
     echo ""
     PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
       ${extra_env} pip download \
-        ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} \
+        ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
         --dest ${download_cache_dir} \
         --src ${project_dir}/src-download \
         --build ${project_dir}/build \
@@ -140,10 +142,11 @@ in pkgs.stdenv.mkDerivation rec {
     echo ""
     PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
       ${extra_env} pip wheel \
-        ${builtins.concatStringsSep" "(map (x: "-r ${x} ") requirements_files)} \
+        ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
         --wheel-dir ${project_dir}/wheel \
         --src ${project_dir}/src-wheel \
         --build ${project_dir}/build \
+        ${builtins.concatstringssep " " (map (x: "--find-links ${x} ") wheels_cache)} \
         --find-links ${wheel_cache_dir} \
         --find-links ${download_cache_dir} \
         --no-index
