@@ -146,7 +146,7 @@ in pkgs.stdenv.mkDerivation rec {
         --wheel-dir ${project_dir}/wheel \
         --src ${project_dir}/src-wheel \
         --build ${project_dir}/build \
-        ${builtins.concatstringssep " " (map (x: "--find-links ${x} ") wheels_cache)} \
+        ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
         --find-links ${wheel_cache_dir} \
         --find-links ${download_cache_dir} \
         --no-index
