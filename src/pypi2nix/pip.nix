@@ -2,7 +2,6 @@
 , project_dir
 , download_cache_dir
 , wheel_cache_dir
-, pip_build_dir
 , python_version
 , extra_build_inputs ? []
 , extra_env ? ""
@@ -150,7 +149,6 @@ in pkgs.stdenv.mkDerivation rec {
         --no-index
 
     RETVAL=$?
-    rm -rf ${pip_build_dir}/*
     [ $RETVAL -ne 0 ] && exit $RETVAL
 
     pushd ${project_dir}/wheelhouse
