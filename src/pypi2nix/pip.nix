@@ -32,16 +32,24 @@ let
       include_dirs = ${blas}/include
       library_dirs = ${blas}/lib
       EOF
-      echo "----------------------------------------------------------------------------"
+      echo ""
+      echo "==================================================================="
+      echo "content of ~/.numpy-site.cfg"
+      echo "-------------------------------------------------------------------"
       cat $HOME/.numpy-site.cfg
-      echo "----------------------------------------------------------------------------"
+      echo "==================================================================="
+      echo ""
     '';
 
   scriptRequires = pkgs.lib.optionalString ((builtins.length setup_requires) > 0) ''
       mkdir -p ${project_dir}/setup_requires
 
-      # download source distributions to "download_cache_dir"
-      PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
+      echo ""
+      echo "==================================================================="
+      echo "(setup_requires) download source distributions to: ${download_cache_dir}"
+      echo "==================================================================="
+      echo ""
+      PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
         ${extra_env} pip download \
           ${builtins.concatStringsSep" "(setup_requires)} \
           --dest ${download_cache_dir} \
@@ -50,8 +58,12 @@ let
           --find-links ${download_cache_dir} \
           --no-binary :all:
 
-      # create wheels from source distributions without going online
-      PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
+      echo ""
+      echo "==================================================================="
+      echo "(setup_requires) create wheels from source distributions without going online"
+      echo "==================================================================="
+      echo ""
+      PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
         ${extra_env} pip wheel \
           ${builtins.concatStringsSep" "(setup_requires)} \
           --src ${project_dir}/src-wheel \
@@ -61,7 +73,15 @@ let
           --find-links ${download_cache_dir} \
           --no-index
 
-      # install setup_requires from wheels
+      for file in ${project_dir}/wheel/*; do
+        cp -f $file ${wheel_cache_dir}
+      done
+
+      echo ""
+      echo "==================================================================="
+      echo "(setup_requires) install setup_requires from wheels"
+      echo "==================================================================="
+      echo ""
       PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
         pip install \
           ${builtins.concatStringsSep" "(setup_requires)} \
