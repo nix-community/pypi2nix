@@ -108,6 +108,13 @@ import pypi2nix.utils
               default=False,
               help=u'Apply overrides from "nixpkgs-python" (https://github.com/garbas/nixpkgs-python)', # noqa
               )
+@click.option('-W', '--wheels-cache',
+              multiple=True,
+              required=False,
+              default=[],
+              type=str,
+              help=u'An url where trusted wheels are located. eg. https://travis.garbas.si/wheels-cache', # noqa
+              )
 def main(version,
          verbose,
          nix_shell,
@@ -124,6 +131,7 @@ def main(version,
          setup_requires,
          overrides,
          default_overrides,
+         wheels_cache,
          ):
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
@@ -167,7 +175,6 @@ def main(version,
     download_cache_dir = os.path.join(cache_dir, 'download')
     wheel_cache_dir = os.path.join(cache_dir, 'wheel')
     buildout_cache_dir = os.path.join(cache_dir, 'buildout')
-    pip_build_dir = os.path.join(cache_dir, 'pip')
 
     if not os.path.exists(download_cache_dir):
         os.makedirs(download_cache_dir)
@@ -177,9 +184,6 @@ def main(version,
 
     if not os.path.exists(buildout_cache_dir):
         os.makedirs(buildout_cache_dir)
-
-    if not os.path.exists(pip_build_dir):
-        os.makedirs(pip_build_dir)
 
     requirements_files = []
     if requirements:
@@ -313,12 +317,12 @@ def main(version,
         project_dir=project_dir,
         download_cache_dir=download_cache_dir,
         wheel_cache_dir=wheel_cache_dir,
-        pip_build_dir=pip_build_dir,
         extra_build_inputs=extra_build_inputs,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
         nix_path=nix_path,
         setup_requires=setup_requires,
         extra_env=extra_env,
+        wheels_cache=wheels_cache,
     )
 
     click.echo('Stage2: Extracting metadata from pypi.python.org ...')
