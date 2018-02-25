@@ -133,7 +133,8 @@ in pkgs.stdenv.mkDerivation rec {
         --src ${project_dir}/src-download \
         --build ${project_dir}/build \
         --find-links ${download_cache_dir} \
-        --no-binary :all:
+        --no-binary :all: \
+        --exists-action w
 
     echo ""
     echo "==================================================================="
