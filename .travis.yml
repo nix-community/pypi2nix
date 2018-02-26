@@ -69,7 +69,7 @@ script:
   - if [ "$TRAVIS_PULL_REQUEST" = "false" -a
          "$TRAVIS_BRANCH" = "master" ]; then
       mkdir nars/;
-      nix-push --dest "$PWD/nars/" --force ./examples/$EXAMPLE;
+      nix copy --to file://./nars/ ./examples/$EXAMPLE;
     fi
 after_success:
   - >
