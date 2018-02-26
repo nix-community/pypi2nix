@@ -146,6 +146,13 @@ def get_latest_commit_from_github(owner, repo):
 
 
 def prefetch_github(owner, repo, rev=None):
+    def select_hash_from_match(match):
+        hash_untrimmed = match.group(1) or match.group(2)
+        if hash_untrimmed:
+            return hash_untrimmed[1:-1]
+        else:
+            return None
+
     calculated_rev = get_latest_commit_from_github(owner, repo)
     actual_rev = rev or calculated_rev
     templates_env = jinja2.Environment(
@@ -164,14 +171,19 @@ def prefetch_github(owner, repo, rev=None):
             f.write(nix_prefetch_code)
         returncode, output = cmd(['nix-build', nix_filename])
     r = re.compile(
-        "output path .* has .* hash (.*) when .*"
+        "|".join(
+            ["output path .* has .* hash (.*) when .*",
+             "fixed\-output derivation produced path .* with sha256 hash (.*) instead of the expected hash .*", # flake8: noqa: E501
+            ]
+        )
     )
     calculated_hash = None
     for line in output.splitlines():
         re_match = r.match(line)
-        if re_match:
-            calculated_hash = re_match.group(1)[1:-1]
-            break
+        if not re_match:
+            continue
+        calculated_hash = select_hash_from_match(re_match)
+        break
     if calculated_hash:
         return actual_rev, calculated_hash
     else:
