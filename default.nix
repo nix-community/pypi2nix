@@ -25,6 +25,8 @@ in stdenv.mkDerivation rec {
     if [ "$IN_NIX_SHELL" != "1" ]; then
       if [ -e git-export ]; then
         mv git-export/src/pypi2nix      $out/pkgs/pypi2nix
+      else if [ -e src ]; then
+        mv src/pypi2nix                 $out/pkgs/pypi2nix
       else
         mv pypi2nix*/src/pypi2nix       $out/pkgs/pypi2nix
       fi
