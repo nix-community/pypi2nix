@@ -21,6 +21,8 @@ in stdenv.mkDerivation rec {
 
   postUnpack = ''
     mkdir -p $out/pkgs
+    ls -la
+    pwd
     if [ -e git-export/src/pypi2nix ]; then
       mv git-export/src/pypi2nix      $out/pkgs/pypi2nix;
     elif [ -e src/pypi2nix ]; then
