@@ -47,8 +47,9 @@ before_install:
     echo 'binary-caches = https://cache.nixos.org/ https://travis.garbas.si/pypi2nix/' |
     sudo tee -a /etc/nix/nix.conf > /dev/null
   - >
-    if [ "$TRAVIS_PULL_REQUEST" = "false" -a
-         "$TRAVIS_BRANCH" = "master" ]; then
+    if [ "$TRAVIS_PULL_REQUEST" = "false" -a \
+         "$TRAVIS_BRANCH" = "master" -a \
+         "$TRAVIS_REPO_SLUG" = "garbas/pypi2nix" ]; then
       openssl aes-256-cbc
         -K $encrypted_0cfcc1944c73_key
         -iv $encrypted_0cfcc1944c73_iv
@@ -66,15 +67,17 @@ before_script:
 script:
   #- cd examples && make $EXAMPLE && cd ..
   - cd examples && travis_wait 60 make $EXAMPLE && cd ..
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" -a
-         "$TRAVIS_BRANCH" = "master" ]; then
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" -a \
+         "$TRAVIS_BRANCH" = "master" -a \
+         "$TRAVIS_REPO_SLUG" = "garbas/pypi2nix" ]; then
       mkdir nars/;
       nix copy --to file://./nars/ ./examples/$EXAMPLE;
     fi
 after_success:
   - >
-    if [ "$TRAVIS_PULL_REQUEST" = "false" -a
-         "$TRAVIS_BRANCH" = "master" ]; then
+    if [ "$TRAVIS_PULL_REQUEST" = "false" -a \
+         "$TRAVIS_BRANCH" = "master" -a \
+         "$TRAVIS_REPO_SLUG" = "garbas/pypi2nix" ]; then
       rsync
         -avh
         --ignore-existing
