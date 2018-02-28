@@ -2,8 +2,6 @@ branches:
   only:
     - master
 language: nix
-addons:
-  ssh_known_hosts: garbas.si
 os:
   - linux
   # - osx
@@ -59,6 +57,8 @@ before_install:
       chmod 600 $TRAVIS_BUILD_DIR/deploy_rsa;
       ssh-add $TRAVIS_BUILD_DIR/deploy_rsa;
     fi
+install:
+  - echo 'garbas.si ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPNIqf3Qgnwr/CMslsEK7qIFHOcWWdxvzJIZwBQPjulZ' >> $HOME/.ssh/known_hosts
 before_script:
   # Make sure stdout is in blocking mode. Otherwise builds will fail due to large writes to stdout
   # See https://github.com/travis-ci/travis-ci/issues/4704. If this gets fixed, this line can also be removed.
