@@ -21,15 +21,15 @@ in stdenv.mkDerivation rec {
 
   postUnpack = ''
     mkdir -p $out/pkgs
-
-    if [ "$IN_NIX_SHELL" != "1" ]; then
-      if [ -e git-export ]; then
-        mv git-export/src/pypi2nix      $out/pkgs/pypi2nix
-      else if [ -e src ]; then
-        mv src/pypi2nix                 $out/pkgs/pypi2nix
-      else
-        mv pypi2nix*/src/pypi2nix       $out/pkgs/pypi2nix
-      fi
+    if [ -e git-export/src/pypi2nix ]; then
+      mv git-export/src/pypi2nix      $out/pkgs/pypi2nix
+    else if [ -e src/pypi2nix ]; then
+      mv src/pypi2nix                 $out/pkgs/pypi2nix
+    else if [ -e pypi2nix*/src/pypi2nix ]; then
+      mv pypi2nix*/src/pypi2nix       $out/pkgs/pypi2nix
+    else
+      echo "!!! Could not find source for pypi2nix !!!"
+      exit 123
     fi
   '';
 
