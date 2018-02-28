@@ -22,14 +22,14 @@ in stdenv.mkDerivation rec {
   postUnpack = ''
     mkdir -p $out/pkgs
     if [ -e git-export/src/pypi2nix ]; then
-      mv git-export/src/pypi2nix      $out/pkgs/pypi2nix
-    else if [ -e src/pypi2nix ]; then
-      mv src/pypi2nix                 $out/pkgs/pypi2nix
-    else if [ -e pypi2nix*/src/pypi2nix ]; then
-      mv pypi2nix*/src/pypi2nix       $out/pkgs/pypi2nix
+      mv git-export/src/pypi2nix      $out/pkgs/pypi2nix;
+    elif [ -e src/pypi2nix ]; then
+      mv src/pypi2nix                 $out/pkgs/pypi2nix;
+    elif [ -e pypi2nix*/src/pypi2nix ]; then
+      mv pypi2nix*/src/pypi2nix       $out/pkgs/pypi2nix;
     else
-      echo "!!! Could not find source for pypi2nix !!!"
-      exit 123
+      echo "!!! Could not find source for pypi2nix !!!";
+      exit 123;
     fi
   '';
 
