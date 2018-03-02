@@ -104,6 +104,13 @@ def main(packages_metadata,
     ]
 
     default_template = templates.get_template('requirements.nix.j2')
+    overrides_file_nix_path = \
+        os.path.join(
+            '.',
+            os.path.split(
+                overrides_file
+            )[1]
+        )
     default = default_template.render(
         version=version,
         command_arguments=' '.join(sys.argv[1:]),
@@ -113,7 +120,7 @@ def main(packages_metadata,
             "with pkgs; [ %s ]" % (' '.join(extra_build_inputs)) or
             "[]"
         ),
-        overrides_file='.' + overrides_file[len(current_dir):],
+        overrides_file=overrides_file_nix_path,
         enable_tests=str(enable_tests).lower(),
         generated_package_nix=generated,
         common_overrides='\n'.join(common_overrides_expressions),
