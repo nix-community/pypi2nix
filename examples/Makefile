@@ -171,17 +171,12 @@ empy.nix: empy.txt $(PYPI2NIX)
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "2.7" \
-		--setup-requires "traceback2" \
-		--setup-requires "six" \
-		--setup-requires "pbr" \
-		--setup-requires "argparse" \
 		--default-overrides \
 		--basename empy \
 		-r empy.txt
 
 empy.txt: empy-clear
-	#echo "empy" > empy.txt
-	echo "https://github.com/garbas/unittest2/archive/b70f4cddd32a03fc96f816c9d7faa91f3fcf661f.zip#egg=unittest2" > empy.txt
+	echo "empy" > empy.txt
 
 empy-clear:
 	rm -f empy
