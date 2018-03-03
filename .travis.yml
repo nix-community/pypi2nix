@@ -48,11 +48,11 @@ before_install:
     if [ "$TRAVIS_PULL_REQUEST" = "false" -a \
          "$TRAVIS_BRANCH" = "master" -a \
          "$TRAVIS_REPO_SLUG" = "garbas/pypi2nix" ]; then
-      openssl aes-256-cbc
-        -K $encrypted_0cfcc1944c73_key
-        -iv $encrypted_0cfcc1944c73_iv
-        -in deploy_rsa.enc
-        -out deploy_rsa
+      openssl aes-256-cbc \
+        -K $encrypted_0cfcc1944c73_key \
+        -iv $encrypted_0cfcc1944c73_iv \
+        -in deploy_rsa.enc \
+        -out deploy_rsa \
         -d;
       eval "$(ssh-agent -s)";
       chmod 600 $TRAVIS_BUILD_DIR/deploy_rsa;
