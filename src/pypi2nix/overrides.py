@@ -85,7 +85,7 @@ class OverridesGithub(object):
         self.rev = rev
 
     def nix_expression(self):
-        rev, sha256 = prefetch_github(self.owner, self.repo, self.rev)
+        prefetch_data = prefetch_github(self.owner, self.repo, self.rev)
         template = ' '.join([
             'let src = pkgs.fetchFromGitHub {{',
             'owner = "{owner}";',
@@ -100,8 +100,8 @@ class OverridesGithub(object):
         return template.format(
             owner=self.owner,
             repo=self.repo,
-            rev=rev,
-            sha256=sha256,
+            rev=prefetch_data['rev'],
+            sha256=prefetch_data['sha256'],
             path=self.path,
         )
 
