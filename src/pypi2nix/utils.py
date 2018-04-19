@@ -1,14 +1,10 @@
-import os
 import json
-import re
+import os
 import shlex
 import subprocess
-from tempfile import TemporaryDirectory
 
 import click
-import jinja2
-import requests
-
+from nix_prefetch_github import nix_prefetch_github
 
 HERE = os.path.dirname(__file__)
 
@@ -135,61 +131,5 @@ def prefetch_git(url, rev=None):
     return repo_data
 
 
-def get_latest_commit_from_github(owner, repo):
-    url_template = 'https://api.github.com/repos/{owner}/{repo}/commits/master'
-    request_url = url_template.format(
-        owner=owner,
-        repo=repo,
-    )
-    response = requests.get(request_url)
-    return response.json()['sha']
-
-
 def prefetch_github(owner, repo, rev=None):
-    def select_hash_from_match(match):
-        hash_untrimmed = match.group(1) or match.group(2)
-        if hash_untrimmed:
-            return hash_untrimmed[1:-1]
-        else:
-            return None
-
-    calculated_rev = get_latest_commit_from_github(owner, repo)
-    actual_rev = rev or calculated_rev
-    templates_env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(HERE + '/templates'),
-    )
-    template = templates_env.get_template('prefetch-github.nix.j2')
-    nix_prefetch_code = template.render(
-        owner=owner,
-        repo=repo,
-        rev=actual_rev,
-        fake_hash='1y4ly7lgqm03wap4mh01yzcmvryp29w739fy07zzvz15h2z9x3dv',
-    )
-    with TemporaryDirectory() as temp_dir_name:
-        nix_filename = temp_dir_name + '/prefetch-github.nix'
-        with open(nix_filename, 'w') as f:
-            f.write(nix_prefetch_code)
-        returncode, output = cmd(['nix-build', nix_filename])
-    r = re.compile(
-        "|".join(
-            ["output path .* has .* hash (.*) when .*",
-             "fixed\-output derivation produced path .* with sha256 hash (.*) instead of the expected hash .*", # flake8: noqa: E501
-            ]
-        )
-    )
-    calculated_hash = None
-    for line in output.splitlines():
-        re_match = r.match(line)
-        if not re_match:
-            continue
-        calculated_hash = select_hash_from_match(re_match)
-        break
-    if calculated_hash:
-        return actual_rev, calculated_hash
-    else:
-        raise click.ClickException(
-            (
-                'Internal Error: Calculate hash value for sources '
-                'in github repo {owner}/{repo}.\n\noutput was: {output}'
-            ).format(owner=owner, repo=repo, output=output)
-        )
+    return nix_prefetch_github(owner, repo, rev=rev)

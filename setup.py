@@ -33,5 +33,6 @@ setup(
         'click',
         'jinja2',
         'requests',
+        'nix-prefetch-github',
     ]
 )
