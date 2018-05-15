@@ -5,7 +5,8 @@
 #   pypi2nix {{ command_arguments }}
 #
 
-{ pkgs ? import <nixpkgs> {}
+{ pkgs ? import <nixpkgs> {},
+  overrides ? ({ pkgs, python }: self: super: {})
 }:
 
 let
@@ -85,13 +86,16 @@ let
 {{ generated_package_nix }}
   };
   localOverridesFile = {{ overrides_file }};
-  overrides = import localOverridesFile { inherit pkgs python; };
+  localOverrides = import localOverridesFile { inherit pkgs python; };
   commonOverrides = [
     {{ common_overrides }}
   ];
+  paramOverrides = [
+    (overrides { inherit pkgs python; })
+  ];
   allOverrides =
     (if (builtins.pathExists localOverridesFile)
-     then [overrides] else [] ) ++ commonOverrides;
+     then [localOverrides] else [] ) ++ commonOverrides ++ paramOverrides;
 
 in python.withPackages
    (fix' (pkgs.lib.fold
