@@ -24,7 +24,8 @@ endif
 	pillow \
 	rss2email \
 	scipy \
-	tornado
+	tornado \
+	packages_with
 
 all: \
 	aiohttp \
@@ -38,7 +39,8 @@ all: \
 	pillow \
 	rss2email \
 	scipy \
-	tornado
+	tornado \
+	packages_with
 
 clear: \
 	aiohttp-clear \
@@ -53,7 +55,8 @@ clear: \
 	pypi2nix-clear \
 	rss2email-clear \
 	scipy-clear \
-	tornado-clear
+	tornado-clear \
+	packages_with-clear
 
 
 pypi2nix-clear:
@@ -420,3 +423,31 @@ tornado-clear:
 	rm -f tornado.txt
 	rm -f tornado.nix
 	rm -f tornado_frozen.txt
+
+
+#------------------------------------------------------------------------------
+
+
+packages_with: packages_with.nix
+	echo "building and testing packages_with..."
+	$(NIX_BUILD) packages_with.nix -o packages_with -A interpreter --show-trace --fallback
+	sh test_with_packages.sh
+
+packages_with.nix: packages_with.txt $(PYPI2NIX)
+	echo "generating packages_with.nix expressions ..."
+	$(PYPI2NIX) -v \
+		-I $(NIX_PATH) \
+		-V "3.6" \
+		--default-overrides \
+		--basename packages_with \
+		-r packages_with.txt
+
+packages_with.txt: packages_with-clear
+	echo "tornado" > packages_with.txt
+	echo "flake8" >> packages_with.txt
+
+packages_with-clear:
+	rm -f packages_with
+	rm -f packages_with.txt
+	rm -f packages_with.nix
+	rm -f packages_with_frozen.txt

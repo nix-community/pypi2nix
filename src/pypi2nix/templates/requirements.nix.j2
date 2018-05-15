@@ -40,15 +40,15 @@ let
   withPackages = pkgs':
     let
       pkgs = builtins.removeAttrs pkgs' ["__unfix__"];
-      interpreter = pythonPackages.buildPythonPackage {
+      interpreterWithPackages = selectPkgsFn: pythonPackages.buildPythonPackage {
         name = "{{ python_version }}-interpreter";
-        buildInputs = [ makeWrapper ] ++ (builtins.attrValues pkgs);
+        buildInputs = [ makeWrapper ] ++ (selectPkgsFn pkgs);
         buildCommand = ''
           mkdir -p $out/bin
           ln -s ${pythonPackages.python.interpreter} \
               $out/bin/${pythonPackages.python.executable}
           for dep in ${builtins.concatStringsSep " "
-              (builtins.attrValues pkgs)}; do
+              (selectPkgsFn pkgs)}; do
             if [ -d "$dep/bin" ]; then
               for prog in "$dep/bin/"*; do
                 if [ -x "$prog" ] && [ -f "$prog" ]; then
@@ -68,9 +68,12 @@ let
         '';
         passthru.interpreter = pythonPackages.python;
       };
+
+      interpreter = interpreterWithPackages builtins.attrValues;
     in {
       __old = pythonPackages;
       inherit interpreter;
+      inherit interpreterWithPackages;
       mkDerivation = pythonPackages.buildPythonPackage;
       packages = pkgs;
       overrideDerivation = drv: f:
