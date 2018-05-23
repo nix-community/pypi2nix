@@ -19,6 +19,7 @@ endif
 	connexion \
 	empy \
 	flake8 \
+	flake8-includes
 	ldap \
 	lektor \
 	mercurial \
@@ -34,6 +35,7 @@ all: \
 	connexion \
 	empy \
 	flake8 \
+	flake8-includes \
 	ldap \
 	lektor \
 	mercurial \
@@ -49,6 +51,7 @@ clear: \
 	connexion-clear \
 	empy-clear \
 	flake8-clear \
+	flake8-includes-clear \
 	ldap-clear \
 	lektor-clear \
 	mercurial-clear \
@@ -213,6 +216,28 @@ flake8-clear:
 	rm -f flake8.txt
 	rm -f flake8.nix
 	rm -f flake8_frozen.txt
+
+
+#------------------------------------------------------------------------------
+
+
+flake8-includes: flake8-includes.nix
+	echo "building and testing flake8-includes..."
+	$(NIX_BUILD) flake8-includes.nix -o flake8-includes -A interpreter --show-trace --fallback
+	./flake8-includes/bin/python -c 'import flake8'
+	$(NIX_SHELL) flake8-includes.nix -A interpreter --run "python -c 'import flake8'"
+
+flake8-includes.nix: flake8-includes.txt $(PYPI2NIX)
+	echo "generating flake8-includes.nix expressions ..."
+	$(PYPI2NIX) -v \
+		-I $(NIX_PATH) \
+		-V "3.5" \
+		-r flake8-includes.txt
+flake8-includes.txt: flake8-includes-clear flake8.txt
+	echo "-r flake8.txt" > flake8-includes.txt
+
+flake8-includes-clear:
+	rm -f flake8-includes.txt
 
 
 #------------------------------------------------------------------------------
