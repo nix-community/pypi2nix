@@ -55,8 +55,9 @@ let
           --dest ${download_cache_dir} \
           --src ${project_dir}/src-download \
           --build ${project_dir}/build \
-          --find-links ${download_cache_dir} \
-          --no-binary :all:
+          --find-links file://${download_cache_dir} \
+          --no-binary :all: \
+          --exists-action w
 
       echo ""
       echo "==================================================================="
@@ -70,8 +71,8 @@ let
           --build ${project_dir}/build \
           --wheel-dir ${project_dir}/wheel \
           ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
-          --find-links ${wheel_cache_dir} \
-          --find-links ${download_cache_dir} \
+          --find-links file://${wheel_cache_dir} \
+          --find-links file://${download_cache_dir} \
           --no-index
 
       for file in ${project_dir}/wheel/*; do
@@ -87,7 +88,7 @@ let
         pip install \
           ${builtins.concatStringsSep " " setup_requires} \
           --target=${project_dir}/setup_requires \
-          --find-links ${wheel_cache_dir} \
+          --find-links file://${wheel_cache_dir} \
           --no-index
     '';
 
@@ -132,7 +133,7 @@ in pkgs.stdenv.mkDerivation rec {
         --dest ${download_cache_dir} \
         --src ${project_dir}/src-download \
         --build ${project_dir}/build \
-        --find-links ${download_cache_dir} \
+        --find-links file://${download_cache_dir} \
         --no-binary :all: \
         --exists-action w
 
@@ -148,8 +149,8 @@ in pkgs.stdenv.mkDerivation rec {
         --src ${project_dir}/src-wheel \
         --build ${project_dir}/build \
         ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
-        --find-links ${wheel_cache_dir} \
-        --find-links ${download_cache_dir} \
+        --find-links file://${wheel_cache_dir} \
+        --find-links file://${download_cache_dir} \
         --no-index
 
     RETVAL=$?
