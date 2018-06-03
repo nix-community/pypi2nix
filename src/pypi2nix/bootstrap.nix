@@ -25,18 +25,18 @@ in
       cp ${deps.buildoutrequirements} index/buildout.requirements-${deps.buildoutrequirementsVersion}.tar.gz
 
       mkdir tmp
-      mv pip tmp/
+      mv src/pip tmp/
       cd tmp
 
-      ${python.interpreter} -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'pip', 'setuptools', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/base']))"
-      PYTHONPATH=$out/base ${python.interpreter} -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'wheel', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
-      PYTHONPATH=$out/base ${python.interpreter} -c "import sys, pip; sys.exit(pip.main(['install', '--force-reinstall', '--upgrade', 'zc.buildout', 'zc.recipe.egg', 'buildout.requirements', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
+      ${python.interpreter} -c "import sys, pip._internal; sys.exit(pip._internal.main(['install', '--force-reinstall', '--upgrade', 'pip', 'setuptools', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/base']))"
+      PYTHONPATH=$out/base ${python.interpreter} -c "import sys, pip._internal; sys.exit(pip._internal.main(['install', '--force-reinstall', '--upgrade', 'wheel', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
+      PYTHONPATH=$out/base ${python.interpreter} -c "import sys, pip._internal; sys.exit(pip._internal.main(['install', '--force-reinstall', '--upgrade', 'zc.buildout', 'zc.recipe.egg', 'buildout.requirements', '--no-index', '--find-links=file://$PWD/../index', '-v', '--target', '$out/extra']))"
 
       touch $out/extra/buildout/__init__.py
       touch $out/extra/zc/__init__.py
       touch $out/extra/zc/recipe/__init__.py
 
-      echo -e "#!${python.interpreter}\nimport sys, pip; sys.exit(pip.main())" > $out/bin/pip
+      echo -e "#!${python.interpreter}\nimport sys, pip._internal; sys.exit(pip._internal.main())" > $out/bin/pip
       echo -e "#!${python.interpreter}\nimport sys, zc.buildout.buildout\nsys.exit(zc.buildout.buildout.main())" > $out/bin/buildout
 
       sed -i -e "s|zinfo = zipfile.ZipInfo(path, date_time)|zinfo = zipfile.ZipInfo(path, (1980,1,1,0,0,0))|" $out/extra/wheel/archive.py

@@ -3,68 +3,68 @@
 
 rec {
 
-  pipVersion = "9.0.1";
+  pipVersion = "10.0.1";
   pipWhl = fetchurl {
-    url = "https://pypi.python.org/packages/b6/ac/7015eb97dc749283ffdec1c3a88ddb8ae03b8fad0f0e611408f196358da3/pip-9.0.1-py2.py3-none-any.whl";
-    sha256 = "1c7g5xa1yhj0bxbdynxpl9g5mcag0fzd1mc9q01w6q4418n7c2v9";
+    url = "https://files.pythonhosted.org/packages/0f/74/ecd13431bcc456ed390b44c8a6e917c1820365cbebcb6a8974d1cd045ab4/pip-10.0.1-py2.py3-none-any.whl";
+    sha256 = "717cdffb2833be8409433a93746744b59505f42146e8d37de6c62b430e25d6d7";
   };
   pip = fetchurl {
-    url = "https://pypi.python.org/packages/11/b6/abcb525026a4be042b486df43905d6893fb04f05aac21c32c638e939e447/pip-9.0.1.tar.gz";
-    sha256 = "03clr9c1dih5n9c00c592zzvf6r1ffimywkaq9agcqdllzhl7wh9";
+    url = "https://files.pythonhosted.org/packages/ae/e8/2340d46ecadb1692a1e455f13f75e596d4eab3d11a57446f08259dee8f02/pip-10.0.1.tar.gz";
+    sha256 = "f2bd08e0cd1b06e10218feaf6fef299f473ba706582eb3bd9d52203fdbd7ee68";
   };
 
-  setuptoolsVersion = "38.5.1";
+  setuptoolsVersion = "39.2.0";
   setuptoolsWhl = fetchurl {
-    url = "https://pypi.python.org/packages/43/41/033a273f9a25cb63050a390ee8397acbc7eae2159195d85f06f17e7be45a/setuptools-38.5.1-py2.py3-none-any.whl";
-    sha256 = "0dga9rlrbm0vgbngwkgy1gqmlnwk3jv00d7r0k8ryhdfpwd7gzkz";
+    url = "https://files.pythonhosted.org/packages/7f/e1/820d941153923aac1d49d7fc37e17b6e73bfbd2904959fffbad77900cf92/setuptools-39.2.0-py2.py3-none-any.whl";
+    sha256 = "8fca9275c89964f13da985c3656cb00ba029d7f3916b37990927ffdf264e7926";
   };
 
-  sixVersion = "1.12.0";
+  sixVersion = "1.11.0";
   sixWhl = fetchurl {
-    url = "https://pypi.python.org/packages/67/4b/141a581104b1f6397bfa78ac9d43d8ad29a7ca43ea90a2d863fe3056e86a/six-1.11.0-py2.py3-none-any.whl";
-    sha256 = "1sx003ds51xwi826kbv1kddydizib2vdnmycip3a46pb1zhw0bc3";
+    url = "https://files.pythonhosted.org/packages/67/4b/141a581104b1f6397bfa78ac9d43d8ad29a7ca43ea90a2d863fe3056e86a/six-1.11.0-py2.py3-none-any.whl";
+    sha256 = "832dc0e10feb1aa2c68dcc57dbb658f1c7e65b9b61af69048abc87a2db00a0eb";
   };
 
   appdirsVersion = "1.4.3";
   appdirsWhl = fetchurl {
-    url = "https://pypi.python.org/packages/56/eb/810e700ed1349edde4cbdc1b2a21e28cdf115f9faf263f6bbf8447c1abf3/appdirs-1.4.3-py2.py3-none-any.whl";
-    sha256 = "0vhnw9ihh67n7n7zdsn355pflz1da1nn6m7czbfk838xarj4dcnq";
+    url = "https://files.pythonhosted.org/packages/56/eb/810e700ed1349edde4cbdc1b2a21e28cdf115f9faf263f6bbf8447c1abf3/appdirs-1.4.3-py2.py3-none-any.whl";
+    sha256 = "d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e";
   };
 
-  packagingVersion = "16.8";
+  packagingVersion = "17.1";
   packagingWhl = fetchurl {
-    url = "https://pypi.python.org/packages/87/1b/c39b7c65b5612812b83d6cab7ef2885eac9f6beb0b7b8a7071a186aea3b1/packaging-16.8-py2.py3-none-any.whl";
-    sha256 = "1273rw8ihdbshvm95c4ih0a7rxykbh4z2s3s08r1z1d7wg36s9wr";
+    url = "https://files.pythonhosted.org/packages/ad/c2/b500ea05d5f9f361a562f089fc91f77ed3b4783e13a08a3daf82069b1224/packaging-17.1-py2.py3-none-any.whl";
+    sha256 = "e9215d2d2535d3ae866c3d6efc77d5b24a0192cce0ff20e42896cc0664f889c0";
   };
 
   pyparsingVersion = "2.2.0";
   pyparsingWhl = fetchurl {
-    url = "https://pypi.python.org/packages/6a/8a/718fd7d3458f9fab8e67186b00abdd345b639976bc7fb3ae722e1b026a50/pyparsing-2.2.0-py2.py3-none-any.whl";
-    sha256 = "046h5fmjyaainvksvmvpx70p6qack7gxcnv0s5z7w264m4bkzr7y";
+    url = "https://files.pythonhosted.org/packages/6a/8a/718fd7d3458f9fab8e67186b00abdd345b639976bc7fb3ae722e1b026a50/pyparsing-2.2.0-py2.py3-none-any.whl";
+    sha256 = "fee43f17a9c4087e7ed1605bd6df994c6173c1e977d7ade7b651292fab2bd010";
   };
 
-  zcbuildoutVersion = "2.11.0";
+  zcbuildoutVersion = "2.11.4";
   zcbuildout = fetchurl {
-    url = "https://pypi.python.org/packages/0e/78/c473fd84c4ed95be658ab05b9819d35a699484e34c8897f9e9e53b4e96b3/zc.buildout-2.11.0.tar.gz";
-    sha256 = "10pa4w5qvwzpwkwm8f262kkkhmzqf1andpmgw2gfgd2zgla0laq9";
+    url = "https://files.pythonhosted.org/packages/9c/ff/565ad4e39310910ce437656fc2eafa8a1991fda39b732afe7d6b82352aad/zc.buildout-2.11.4.tar.gz";
+    sha256 = "20b22d9c99c99909b6b2dc679e8acd9e1fcf9f58e23f336d8b2c5be70617fbb2";
   };
 
   zcrecipeeggVersion = "2.0.5";
   zcrecipeegg = fetchurl {
-    url = "https://pypi.python.org/packages/a2/a3/4f985e57b6f8bb71b334976e02bef8a2c5e630131b3e03c27d00923e34d3/zc.recipe.egg-2.0.5.tar.gz";
-    sha256 = "1h29jh5c4l74zh4j53l36z5fb9k8b9wl8l4kynih6f0jj14aqi8j";
+    url = "https://files.pythonhosted.org/packages/a2/a3/4f985e57b6f8bb71b334976e02bef8a2c5e630131b3e03c27d00923e34d3/zc.recipe.egg-2.0.5.tar.gz";
+    sha256 = "1245ac4890123803a3f5935044795a68a6e5ca37838e2209fce450c20a9449c0";
   };
 
   buildoutrequirementsVersion = "0.2.2";
   buildoutrequirements = fetchurl {
-    url = "https://github.com/garbas/buildout.requirements/archive/1e2977e2d254184399401746736d2b17c912b350.tar.gz";
-    sha256 = "1yvyng2r55mn69n16iln5211fysz519absggn488hf5ky7xmij2q";
+    url = "https://files.pythonhosted.org/packages/c1/28/2b3103f6d8f3145f310337fd9ec286724878332020c06da34a8c2de3c71d/buildout.requirements-0.2.2.tar.gz";
+    sha256 = "12612822bb24979bb65df8a420e52b6acadf5b875653b67843faed850f659bec";
   };
 
-  wheelVersion = "0.30.0a0";
+  wheelVersion = "0.31.1";
   wheel = fetchurl {
-    url = "https://pypi.python.org/packages/a7/37/947b4329c4a3c72093b6c8e9b4be8c7f10c32dbb78848d3a234ce01c059d/wheel-0.30.0a0.tar.gz";
-    sha256 = "1nm6mn8isny0hr86rhbfrpfj867c0phf001xgsd69xfp9ady1wwq";
+    url = "https://files.pythonhosted.org/packages/2a/fb/aefe5d5dbc3f4fe1e815bcdb05cbaab19744d201bbc9b59cfa06ec7fc789/wheel-0.31.1.tar.gz";
+    sha256 = "0a2e54558a0628f2145d2fc822137e322412115173e8a2ddbe1c9024338ae83c";
   };
 
 }
