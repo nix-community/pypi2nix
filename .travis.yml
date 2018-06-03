@@ -19,7 +19,6 @@ env:
   - EXAMPLE=pillow
   - EXAMPLE=rss2email
   - EXAMPLE=tornado
-  - EXAMPLE=vulnix
 matrix:
   exclude:
     - os: osx
