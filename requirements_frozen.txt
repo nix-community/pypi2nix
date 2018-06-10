@@ -1,8 +1,9 @@
-certifi==2017.11.5
+certifi==2018.4.16
 chardet==3.0.4
 click==6.7
 idna==2.6
 Jinja2==2.10
 MarkupSafe==1.0
+pypi2nix==1.8.1
 requests==2.18.4
 urllib3==1.22

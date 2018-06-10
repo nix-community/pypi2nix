@@ -11,3 +11,4 @@
 /requirements_override.nix
 /result*
 /src/pypi2nix.egg-info/
+/build
