@@ -2,6 +2,8 @@
       name = "{{ name }}-{{ version }}";
       src = {{ fetch_expression }};
       doCheck = commonDoCheck;
+      checkPhase = "";
+      installCheckPhase = "";
       buildInputs = commonBuildInputs;
       propagatedBuildInputs = {{ propagatedBuildInputs }};
       meta = with pkgs.stdenv.lib; {
