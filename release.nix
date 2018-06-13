@@ -1,11 +1,26 @@
-{ pypi2nix ? { outPath = ./.; name = "pypi2nix"; }
+let
+  pkgs = import <nixpkgs> {};
+  lib = pkgs.lib;
+  sourceFilter = name: type:
+    let
+      baseName = builtins.baseNameOf (builtins.toString name);
+    in
+      lib.cleanSourceFilter name type &&
+      !(
+        (type == "directory" && baseName == "examples") ||
+        (type == "directory" && baseName == "pypi2nix.egg-info")
+      );
+  defaultSrc = lib.cleanSourceWith {
+    src = ./.;
+    filter = sourceFilter;
+  };
+  defaultOutPath = defaultSrc.outPath;
+in
+{ pypi2nix ? { outPath = defaultOutPath; name = "pypi2nix"; }
 , supportedSystems ? [ "x86_64-linux" "x86_64-darwin" ]
 }:
 
 let
-
-  pkgs = import <nixpkgs> {};
-
   pkgFor = system:
     if builtins.elem system supportedSystems
       then pkgs.callPackage ./default.nix {
