@@ -8,6 +8,7 @@ import os.path
 import requests
 import tempfile
 import pkg_resources
+import wheel.pkginfo
 
 from pypi2nix.utils import TO_IGNORE, safe, cmd, prefetch_git
 
@@ -23,6 +24,8 @@ def find_homepage(item):
             'python.details' in item['extensions'] and \
             'project_urls' in item['extensions']['python.details']:
         homepage = item['extensions']['python.details']['project_urls'].get('Home', '')
+    elif 'home-page' in item:
+        homepage = item['home-page']
     return homepage
 
 
@@ -183,11 +186,11 @@ def find_license(item):
     return license
 
 
-def process_metadata(wheel):
+def process_metadata(wheel_dir):
     """Find the actual metadata json file from several possible names.
     """
     for _file in ('metadata.json', 'pydist.json'):
-        wheel_file = os.path.join(wheel, _file)
+        wheel_file = os.path.join(wheel_dir, _file)
         if os.path.exists(wheel_file):
             with open(wheel_file) as f:
                 metadata = json.load(f)
@@ -202,8 +205,21 @@ def process_metadata(wheel):
                         'license': find_license(metadata),
                         'description': safe(metadata.get('summary', '')),
                     }
+
+    metadata_file = os.path.join(wheel_dir, 'METADATA')
+    if os.path.exists(metadata_file):
+        metadata = wheel.pkginfo.read_pkg_info(metadata_file)
+        return {
+            'name': metadata['name'],
+            'version': metadata['version'],
+            'deps': extract_deps(metadata),
+            'homepage': safe(find_homepage(metadata)),
+            'license': find_license(metadata),
+            'description': safe(metadata.get('summary', '')),
+        }
+
     raise click.ClickException(
-        "Unable to find metadata.json/pydist.json in `%s` folder." % wheel)
+        "Unable to find metadata.json/pydist.json/METADATA in `%s` folder." % wheel)
 
 
 def download_file(url, filename, chunk_size=2048):
