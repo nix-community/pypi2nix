@@ -34,9 +34,6 @@ let
       };
   };
 
-  commonBuildInputs = {{ extra_build_inputs }};
-  commonDoCheck = {{ enable_tests }};
-
   withPackages = pkgs':
     let
       pkgs = builtins.removeAttrs pkgs' ["__unfix__"];
@@ -78,7 +75,13 @@ let
       packages = pkgs;
       overrideDerivation = drv: f:
         pythonPackages.buildPythonPackage (
-          drv.drvAttrs // f drv.drvAttrs // { meta = drv.meta; }
+          drv.drvAttrs //
+          f drv.drvAttrs //
+          { meta = drv.meta;
+            doCheck = {{ enable_tests }};
+            buildInputs = {{ extra_build_inputs }};
+            propagatedBuildInputs = {{ propagatedBuildInputs }}
+          }
         );
       withPackages = pkgs'':
         withPackages (pkgs // pkgs'');
