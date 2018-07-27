@@ -458,6 +458,6 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL,
     except Exception as e:
         if verbose == 0:
             click.echo(output)
-        raise e
+        raise
 
     return metadata
