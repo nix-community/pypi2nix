@@ -59,6 +59,8 @@ let
           --no-binary :all: \
           --exists-action w
 
+      rm -rf ${project_dir}/build
+
       echo ""
       echo "==================================================================="
       echo "(setup_requires) create wheels from source distributions without going online"
@@ -111,16 +113,16 @@ in pkgs.stdenv.mkDerivation rec {
     export LANG=en_US.UTF-8
     export HOME=${project_dir}
 
-    ${numpySiteCfg}
-    ${scriptRequires}
-    export SOURCE_DATE_EPOCH=315532800
-
     mkdir -p \
       ${project_dir}/build \
       ${project_dir}/src-download \
       ${project_dir}/src-wheel \
       ${project_dir}/wheel \
       ${project_dir}/wheelhouse
+
+    ${numpySiteCfg}
+    ${scriptRequires}
+    export SOURCE_DATE_EPOCH=315532800
 
     echo ""
     echo "==================================================================="
@@ -136,6 +138,8 @@ in pkgs.stdenv.mkDerivation rec {
         --find-links file://${download_cache_dir} \
         --no-binary :all: \
         --exists-action w
+
+    rm -rf ${project_dir}/build
 
     echo ""
     echo "==================================================================="
