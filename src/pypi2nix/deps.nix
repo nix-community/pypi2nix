@@ -3,20 +3,20 @@
 
 rec {
 
-  pipVersion = "10.0.1";
+  pipVersion = "18.0";
   pipWhl = fetchurl {
-    url = "https://files.pythonhosted.org/packages/0f/74/ecd13431bcc456ed390b44c8a6e917c1820365cbebcb6a8974d1cd045ab4/pip-10.0.1-py2.py3-none-any.whl";
-    sha256 = "717cdffb2833be8409433a93746744b59505f42146e8d37de6c62b430e25d6d7";
+    url = "https://files.pythonhosted.org/packages/5f/25/e52d3f31441505a5f3af41213346e5b6c221c9e086a166f3703d2ddaf940/pip-18.0-py2.py3-none-any.whl";
+    sha256 = "070e4bf493c7c2c9f6a08dd797dd3c066d64074c38e9e8a0fb4e6541f266d96c";
   };
   pip = fetchurl {
-    url = "https://files.pythonhosted.org/packages/ae/e8/2340d46ecadb1692a1e455f13f75e596d4eab3d11a57446f08259dee8f02/pip-10.0.1.tar.gz";
-    sha256 = "f2bd08e0cd1b06e10218feaf6fef299f473ba706582eb3bd9d52203fdbd7ee68";
+    url = "https://files.pythonhosted.org/packages/69/81/52b68d0a4de760a2f1979b0931ba7889202f302072cc7a0d614211bc7579/pip-18.0.tar.gz";
+    sha256 = "a0e11645ee37c90b40c46d607070c4fd583e2cd46231b1c06e389c5e814eed76";
   };
 
-  setuptoolsVersion = "39.2.0";
+  setuptoolsVersion = "40.0.0";
   setuptoolsWhl = fetchurl {
-    url = "https://files.pythonhosted.org/packages/7f/e1/820d941153923aac1d49d7fc37e17b6e73bfbd2904959fffbad77900cf92/setuptools-39.2.0-py2.py3-none-any.whl";
-    sha256 = "8fca9275c89964f13da985c3656cb00ba029d7f3916b37990927ffdf264e7926";
+    url = "https://files.pythonhosted.org/packages/ff/f4/385715ccc461885f3cedf57a41ae3c12b5fec3f35cce4c8706b1a112a133/setuptools-40.0.0-py2.py3-none-any.whl";
+    sha256 = "d68abee4eed409fbe8c302ac4d8429a1ffef912cd047a903b5701c024048dd49";
   };
 
   sixVersion = "1.11.0";
@@ -43,10 +43,10 @@ rec {
     sha256 = "fee43f17a9c4087e7ed1605bd6df994c6173c1e977d7ade7b651292fab2bd010";
   };
 
-  zcbuildoutVersion = "2.11.4";
+  zcbuildoutVersion = "2.12.1";
   zcbuildout = fetchurl {
-    url = "https://files.pythonhosted.org/packages/9c/ff/565ad4e39310910ce437656fc2eafa8a1991fda39b732afe7d6b82352aad/zc.buildout-2.11.4.tar.gz";
-    sha256 = "20b22d9c99c99909b6b2dc679e8acd9e1fcf9f58e23f336d8b2c5be70617fbb2";
+    url = "https://files.pythonhosted.org/packages/b3/a3/5cd8f26a5ec757b803dfd3b8559371dd32736cafedbcfb5b8597bcc7e2bb/zc.buildout-2.12.1.tar.gz";
+    sha256 = "1e180b62fd129a68cb3a9ec8eb0ef457e18921269a93e87ef2cc34519415332d";
   };
 
   zcrecipeeggVersion = "2.0.5";
