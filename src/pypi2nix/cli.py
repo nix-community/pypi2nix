@@ -254,14 +254,14 @@ def main(version,
                         requirements_line = "-e %s%s" % (tmp_path, tmp_other)
                         sources[tmp_name] = dict(url=tmp_path, type='path')
 
-                    elif requirements_line.startswith("-r ."):
+                    elif requirements_line.startswith("-r ") or requirements_line.startswith("-c "):  # noqa
                         requirements_file2 = os.path.abspath(os.path.join(
                             os.path.dirname(requirements_file),
                             requirements_line[3:]
                         ))
                         new_requirements_file2 = handle_requirements_file(
                             project_dir, requirements_file2)
-                        requirements_line = "-r " + new_requirements_file2
+                        requirements_line = requirements_line[0:3] + new_requirements_file2  # noqa
                     f2.write(requirements_line + "\n")
 
         return new_requirements_file
