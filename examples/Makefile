@@ -232,6 +232,8 @@ flake8-includes.nix: flake8-includes.txt $(PYPI2NIX)
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "3.5" \
+		--default-overrides \
+		--basename flake8-includes \
 		-r flake8-includes.txt
 flake8-includes.txt: flake8-includes-clear flake8.txt
 	echo "-r flake8.txt" > flake8-includes.txt
