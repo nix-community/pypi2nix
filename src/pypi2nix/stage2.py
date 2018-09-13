@@ -2,6 +2,7 @@
 # flake8: noqa: E501
 
 import click
+import email
 import hashlib
 import json
 import os.path
@@ -26,7 +27,26 @@ def find_homepage(item):
     return homepage
 
 
-def extract_deps(metadata):
+def extract_dep(dep):
+    dep = dep.split("==")[0]
+    dep = dep.split(">=")[0]
+    dep = dep.split("<=")[0]
+    dep = dep.split("<")[0]
+    dep = dep.split(">")[0]
+    dep = dep.split('[')[0]
+    return dep
+
+def extract_deps_email(metadata):
+    deps = []
+    for dep in metadata.get_all('requires-dist', []):
+        dep = extract_dep(dep)
+        if dep.lower() in TO_IGNORE:
+            continue
+
+        deps.append(dep)
+    return deps
+
+def extract_deps_wheel(metadata):
     """Get dependent packages from metadata.
 
     Note that this is currently very rough stuff. I consider only the
@@ -40,20 +60,12 @@ def extract_deps(metadata):
                 for line in item['requires']:
                     components = line.split()
 
-                    dep = components[0]
-                    dep = dep.split("==")[0]
-                    dep = dep.split(">=")[0]
-                    dep = dep.split("<=")[0]
-                    dep = dep.split("<")[0]
-                    dep = dep.split(">")[0]
+                    dep = extract_dep(components[0])
 
                     if dep.lower() in TO_IGNORE:
                         continue
 
-                    if '[' in dep:
-                        deps.append(dep.split('[')[0])
-                    else:
-                        deps.append(dep)
+                    deps.append(dep)
 
     return list(set(deps))
 
@@ -130,7 +142,10 @@ all_classifiers = {
 def find_license(item):
     license = None
 
-    classifiers = item.get('classifiers', [])
+    if isinstance(item, email.message.Message):
+        classifiers = item.get_all('classifier', [])
+    else:
+        classifiers = item.get('classifiers', [])
 
     # find first license classifier
     all_classifiers_keys = all_classifiers.keys()
@@ -186,6 +201,24 @@ def find_license(item):
 def process_metadata(wheel):
     """Find the actual metadata json file from several possible names.
     """
+    for _file in ('METADATA',):
+        metadata_file = os.path.join(wheel, _file)
+        if os.path.exists(metadata_file):
+            with open(metadata_file) as f:
+                metadata = email.message_from_string(f.read())
+                name = metadata.get('Name')
+                if name.lower() in TO_IGNORE:
+                    return
+                else:
+                    return {
+                        'name': name,
+                        'version': metadata['version'],
+                        'deps': extract_deps_email(metadata),
+                        'homepage': safe(find_homepage(metadata)),
+                        'license': find_license(metadata),
+                        'description': safe(metadata.get('summary', '')),
+                    }
+
     for _file in ('metadata.json', 'pydist.json'):
         wheel_file = os.path.join(wheel, _file)
         if os.path.exists(wheel_file):
@@ -197,11 +230,12 @@ def process_metadata(wheel):
                     return {
                         'name': metadata['name'],
                         'version': metadata['version'],
-                        'deps': extract_deps(metadata),
-                        'homepage': safe(find_homepage(metadata)),
+                        'deps': extract_deps_wheel(metadata),
+                        'homepage': safe(metadata.get('home-page')),
                         'license': find_license(metadata),
                         'description': safe(metadata.get('summary', '')),
                     }
+
     raise click.ClickException(
         "Unable to find metadata.json/pydist.json in `%s` folder." % wheel)
 
