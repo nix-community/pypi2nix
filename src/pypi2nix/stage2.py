@@ -165,7 +165,7 @@ def find_license(item):
         elif license in ['GNU Lesser General Public License (LGPL), Version 3',
                          'LGPL']:
             license = "licenses.lgpl3"
-        elif license in ['LGPLv3+']
+        elif license in ['LGPLv3+']:
             license = "licenses.lgpl3Plus"
         elif license in ['MPL2', 'MPL 2.0', 'MPL 2.0 (Mozilla Public License)', 'MPL-2.0']:
             license = "licenses.mpl20"
