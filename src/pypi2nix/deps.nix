@@ -19,10 +19,10 @@ rec {
     sha256 = "e329a5c458c6acb5edc2b5c4ad44280c053ba827dc82fd5e84a83e22bb05460d";
   };
 
-  zcbuildoutVersion = "2.12.2";
-  zcbuildout = fetchurl {
-    url = "https://files.pythonhosted.org/packages/d7/02/ad9b098ba8f77715ca2beb66fda9c1b674c8bcbc26e94b56ba392349fe69/zc.buildout-2.12.2.tar.gz";
-    sha256 = "ff5d7e8a1361da8dfe1025d35ef6ce55e929dd8518d2a811a1cf2c948950a043";
+  wheelVersion = "0.32.2";
+  wheel = fetchurl {
+    url = "https://files.pythonhosted.org/packages/c2/00/21e3ecc8a9d484f9de995471c061aa3d8f02ae54bdfd9cbdddb59138c809/wheel-0.32.2.tar.gz";
+    sha256 = "196c9842d79262bb66fcf59faa4bd0deb27da911dbc7c6cdca931080eb1f0783";
   };
 
 }
