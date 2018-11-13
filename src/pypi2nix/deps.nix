@@ -25,22 +25,4 @@ rec {
     sha256 = "ff5d7e8a1361da8dfe1025d35ef6ce55e929dd8518d2a811a1cf2c948950a043";
   };
 
-  zcrecipeeggVersion = "2.0.7";
-  zcrecipeegg = fetchurl {
-    url = "https://files.pythonhosted.org/packages/7a/6f/c6871e8490a153c3b44ac43e4a6552d802561a12b4780c7ea088a7ec5ff0/zc.recipe.egg-2.0.7.tar.gz";
-    sha256 = "b89eb00979614e3584bb4e8431172b2345d00b983a04ebf00a401fb695f4e6d3";
-  };
-
-  buildoutrequirementsVersion = "0.2.2";
-  buildoutrequirements = fetchurl {
-    url = "https://files.pythonhosted.org/packages/c1/28/2b3103f6d8f3145f310337fd9ec286724878332020c06da34a8c2de3c71d/buildout.requirements-0.2.2.tar.gz";
-    sha256 = "12612822bb24979bb65df8a420e52b6acadf5b875653b67843faed850f659bec";
-  };
-
-  wheelVersion = "0.32.2";
-  wheel = fetchurl {
-    url = "https://files.pythonhosted.org/packages/c2/00/21e3ecc8a9d484f9de995471c061aa3d8f02ae54bdfd9cbdddb59138c809/wheel-0.32.2.tar.gz";
-    sha256 = "196c9842d79262bb66fcf59faa4bd0deb27da911dbc7c6cdca931080eb1f0783";
-  };
-
 }
