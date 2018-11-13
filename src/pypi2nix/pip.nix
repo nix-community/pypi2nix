@@ -75,6 +75,7 @@ let
           ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
           --find-links file://${wheel_cache_dir} \
           --find-links file://${download_cache_dir} \
+          --find-links file://${pypi2nix_bootstrap}/index \
           --no-index
 
       for file in ${project_dir}/wheel/*; do
@@ -91,6 +92,7 @@ let
           ${builtins.concatStringsSep " " setup_requires} \
           --target=${project_dir}/setup_requires \
           --find-links file://${wheel_cache_dir} \
+          --find-links file://${pypi2nix_bootstrap}/index \
           --no-index
     '';
 
@@ -98,6 +100,7 @@ in pkgs.stdenv.mkDerivation rec {
   name = "pypi2nix-pip";
 
   buildInputs = with pkgs; [
+    python
     pypi2nix_bootstrap
     unzip
     gitAndTools.git
@@ -136,6 +139,7 @@ in pkgs.stdenv.mkDerivation rec {
         --src ${project_dir}/src-download \
         --build ${project_dir}/build \
         --find-links file://${download_cache_dir} \
+        --find-links file://${pypi2nix_bootstrap}/index \
         --no-binary :all: \
         --exists-action w
 
@@ -155,6 +159,7 @@ in pkgs.stdenv.mkDerivation rec {
         ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
         --find-links file://${wheel_cache_dir} \
         --find-links file://${download_cache_dir} \
+        --find-links file://${pypi2nix_bootstrap}/index \
         --no-index
 
     RETVAL=$?
@@ -168,5 +173,7 @@ in pkgs.stdenv.mkDerivation rec {
     popd
 
     PYTHONPATH=${project_dir}/wheelhouse:$PYTHONPATH pip freeze > ${project_dir}/requirements.txt
+
+    python -c "import json; from setuptools._vendor.packaging.markers import default_environment; print(json.dumps(default_environment(), indent=2, sort_keys=True))" > ${project_dir}/default_environment.json
   '';
 }

@@ -1,9 +1,10 @@
-import click
 import glob
+import json
 import os
 import sys
 import urllib
 
+import click
 import pypi2nix.utils
 
 
@@ -111,7 +112,11 @@ def main(verbose,
 
         raise click.ClickException(message)
 
+    with open(os.path.join(project_dir, 'default_environment.json')) as f:
+        default_environment = json.load(f)
+
     return (
         os.path.join(project_dir, 'requirements.txt'),
         glob.glob(os.path.join(project_dir, 'wheelhouse', '*.dist-info')),
+        default_environment,
     )

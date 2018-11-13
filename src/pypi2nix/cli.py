@@ -311,7 +311,7 @@ def main(version,
 
     click.echo('Stage1: Downloading wheels and creating wheelhouse ...')
 
-    requirements_frozen, wheels = pypi2nix.stage1.main(
+    requirements_frozen, wheels, default_environment = pypi2nix.stage1.main(
         verbose=verbose,
         requirements_files=requirements_files,
         project_dir=project_dir,
@@ -330,6 +330,7 @@ def main(version,
     packages_metadata = pypi2nix.stage2.main(
         verbose=verbose,
         wheels=wheels,
+        default_environment=default_environment,
         requirements_files=requirements_files,
         wheel_cache_dir=wheel_cache_dir,
         sources=sources,
