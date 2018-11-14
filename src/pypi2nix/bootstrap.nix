@@ -26,6 +26,8 @@ in
       echo -e "#!${python.interpreter}\nimport sys, pip._internal; sys.exit(pip._internal.main())" > $out/bin/pip
 
       sed -i -e "s|\[egg_info.writers\]|\[egg_info.writers\]\nsetup_requires.txt = setuptools.command.egg_info:write_setup_requirements|" $out/base/setuptools-${deps.setuptoolsVersion}.dist-info/entry_points.txt
+      sed -i -e "s|data = io.StringIO()|data = six.StringIO()|" $out/base/setuptools/command/egg_info.py
+      python -m compileall -f $out/base/setuptools/command/egg_info.py
 
       chmod +x $out/bin/*
     '';
