@@ -26,8 +26,12 @@ in
       echo -e "#!${python.interpreter}\nimport sys, pip._internal; sys.exit(pip._internal.main())" > $out/bin/pip
 
       sed -i -e "s|\[egg_info.writers\]|\[egg_info.writers\]\nsetup_requires.txt = setuptools.command.egg_info:write_setup_requirements|" $out/base/setuptools-${deps.setuptoolsVersion}.dist-info/entry_points.txt
+
       sed -i -e "s|data = io.StringIO()|data = six.StringIO()|" $out/base/setuptools/command/egg_info.py
       python -m compileall -f $out/base/setuptools/command/egg_info.py
+
+      sed -i -e "s|zinfo = ZipInfo(arcname or filename, date_time=get_zipinfo_datetime(st.st_mtime))|zinfo = ZipInfo(arcname or filename, date_time=(1980,1,1,0,0,0))|" $out/base/wheel/wheelfile.py
+      python -m compileall -f $out/base/wheel/wheelfile.py
 
       chmod +x $out/bin/*
     '';

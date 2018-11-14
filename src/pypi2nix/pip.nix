@@ -49,15 +49,14 @@ let
       echo "(setup_requires) download source distributions to: ${download_cache_dir}"
       echo "==================================================================="
       echo ""
-      PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
-        ${extra_env} pip download \
-          ${builtins.concatStringsSep " " setup_requires} \
-          --dest ${download_cache_dir} \
-          --src ${project_dir}/src-download \
-          --build ${project_dir}/build \
-          --find-links file://${download_cache_dir} \
-          --no-binary :all: \
-          --exists-action w
+      ${extra_env} pip download \
+        ${builtins.concatStringsSep " " setup_requires} \
+        --dest ${download_cache_dir} \
+        --src ${project_dir}/src-download \
+        --build ${project_dir}/build \
+        --find-links file://${download_cache_dir} \
+        --no-binary :all: \
+        --exists-action w
 
       rm -rf ${project_dir}/build
 
@@ -66,17 +65,16 @@ let
       echo "(setup_requires) create wheels from source distributions without going online"
       echo "==================================================================="
       echo ""
-      PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
-        ${extra_env} pip wheel \
-          ${builtins.concatStringsSep " " setup_requires} \
-          --src ${project_dir}/src-wheel \
-          --build ${project_dir}/build \
-          --wheel-dir ${project_dir}/wheel \
-          ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
-          --find-links file://${wheel_cache_dir} \
-          --find-links file://${download_cache_dir} \
-          --find-links file://${pypi2nix_bootstrap}/index \
-          --no-index
+      ${extra_env} pip wheel \
+        ${builtins.concatStringsSep " " setup_requires} \
+        --src ${project_dir}/src-wheel \
+        --build ${project_dir}/build \
+        --wheel-dir ${project_dir}/wheel \
+        ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
+        --find-links file://${wheel_cache_dir} \
+        --find-links file://${download_cache_dir} \
+        --find-links file://${pypi2nix_bootstrap}/index \
+        --no-index
 
       for file in ${project_dir}/wheel/*; do
         cp -f $file ${wheel_cache_dir}
@@ -87,13 +85,12 @@ let
       echo "(setup_requires) install setup_requires from wheels"
       echo "==================================================================="
       echo ""
-      PYTHONPATH=${pypi2nix_bootstrap}/extra:$PYTHONPATH \
-        pip install \
-          ${builtins.concatStringsSep " " setup_requires} \
-          --target=${project_dir}/setup_requires \
-          --find-links file://${wheel_cache_dir} \
-          --find-links file://${pypi2nix_bootstrap}/index \
-          --no-index
+      pip install \
+        ${builtins.concatStringsSep " " setup_requires} \
+        --target=${project_dir}/setup_requires \
+        --find-links file://${wheel_cache_dir} \
+        --find-links file://${pypi2nix_bootstrap}/index \
+        --no-index
     '';
 
 in pkgs.stdenv.mkDerivation rec {
@@ -115,6 +112,7 @@ in pkgs.stdenv.mkDerivation rec {
     export PIP_DOWNLOAD_CACHE=${download_cache_dir}
     export LANG=en_US.UTF-8
     export HOME=${project_dir}
+    export SOURCE_DATE_EPOCH=315532800
 
     mkdir -p \
       ${project_dir}/build \
@@ -125,14 +123,13 @@ in pkgs.stdenv.mkDerivation rec {
 
     ${numpySiteCfg}
     ${scriptRequires}
-    export SOURCE_DATE_EPOCH=315532800
 
     echo ""
     echo "==================================================================="
     echo "download source distributions to: ${download_cache_dir}"
     echo "==================================================================="
     echo ""
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
+    PYTHONPATH=${project_dir}/setup_requires:$PYTHONPATH \
       ${extra_env} pip download \
         ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
         --dest ${download_cache_dir} \
@@ -150,7 +147,7 @@ in pkgs.stdenv.mkDerivation rec {
     echo "create wheels from source distributions without going online"
     echo "==================================================================="
     echo ""
-    PYTHONPATH=${pypi2nix_bootstrap}/extra:${project_dir}/setup_requires:$PYTHONPATH \
+    PYTHONPATH=${project_dir}/setup_requires:$PYTHONPATH \
       ${extra_env} pip wheel \
         ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
         --wheel-dir ${project_dir}/wheel \
