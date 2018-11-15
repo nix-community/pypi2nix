@@ -349,7 +349,7 @@ rss2email.nix: rss2email.txt $(PYPI2NIX)
 	echo "generating rss2email nix expressions ..."
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
-		-V "3.4" \
+		-V "3.6" \
 		--default-overrides \
 		--basename rss2email \
 		-r rss2email.txt 

@@ -76,12 +76,6 @@ import pypi2nix.utils
                               resolve_path=True),
               help=u'pip requirements.txt file',
               )
-@click.option('-b', '--buildout',
-              required=False,
-              default=None,
-              type=click.Path(exists=True, resolve_path=True),
-              help=u'zc.buildout configuration file',
-              )
 @click.option('-e', '--editable',
               multiple=True,
               required=False,
@@ -126,7 +120,6 @@ def main(version,
          enable_tests,
          python_version,
          requirements,
-         buildout,
          editable,
          setup_requires,
          overrides,
@@ -174,16 +167,12 @@ def main(version,
 
     download_cache_dir = os.path.join(cache_dir, 'download')
     wheel_cache_dir = os.path.join(cache_dir, 'wheel')
-    buildout_cache_dir = os.path.join(cache_dir, 'buildout')
 
     if not os.path.exists(download_cache_dir):
         os.makedirs(download_cache_dir)
 
     if not os.path.exists(wheel_cache_dir):
         os.makedirs(wheel_cache_dir)
-
-    if not os.path.exists(buildout_cache_dir):
-        os.makedirs(buildout_cache_dir)
 
     requirements_files = []
     if requirements:
@@ -193,11 +182,6 @@ def main(version,
     for requirements_file in requirements_files:
         requirements_hash += requirements_file
         with open(requirements_file) as f:
-            requirements_hash += f.read()
-
-    if buildout:
-        requirements_hash += buildout
-        with open(buildout) as f:
             requirements_hash += f.read()
 
     project_hash = hashlib.md5(requirements_hash.encode()).hexdigest()
@@ -278,23 +262,6 @@ def main(version,
     click.echo('pypi2nix v{} running ...'.format(pypi2nix_version))
     click.echo('')
 
-    if buildout:
-        click.echo('Stage0: Generating requirements.txt from buildout '
-                   'configuration ...')
-        buildout_requirements = pypi2nix.stage0.main(
-            verbose=verbose,
-            buildout_file=buildout,
-            project_dir=project_dir,
-            buildout_cache_dir=buildout_cache_dir,
-            extra_build_inputs=extra_build_inputs,
-            python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
-            nix_shell=nix_shell,
-            nix_path=nix_path,
-            setup_requires=setup_requires,
-        )
-        if buildout_requirements:
-            requirements_files.append(buildout_requirements)
-
     if editable:
         editable_file = os.path.join(project_dir, 'editable.txt')
         with open(editable_file, 'w+') as f:
@@ -311,7 +278,7 @@ def main(version,
 
     click.echo('Stage1: Downloading wheels and creating wheelhouse ...')
 
-    requirements_frozen, wheels = pypi2nix.stage1.main(
+    requirements_frozen, wheels, default_environment = pypi2nix.stage1.main(
         verbose=verbose,
         requirements_files=requirements_files,
         project_dir=project_dir,
@@ -330,6 +297,7 @@ def main(version,
     packages_metadata = pypi2nix.stage2.main(
         verbose=verbose,
         wheels=wheels,
+        default_environment=default_environment,
         requirements_files=requirements_files,
         wheel_cache_dir=wheel_cache_dir,
         sources=sources,

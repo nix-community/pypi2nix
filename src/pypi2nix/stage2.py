@@ -2,12 +2,15 @@
 # flake8: noqa: E501
 
 import click
+import email
 import hashlib
 import json
 import os.path
 import requests
 import tempfile
 import pkg_resources
+import setuptools._vendor.packaging.requirements
+import wheel.pkginfo
 
 from pypi2nix.utils import TO_IGNORE, safe, cmd, prefetch_git
 
@@ -23,10 +26,12 @@ def find_homepage(item):
             'python.details' in item['extensions'] and \
             'project_urls' in item['extensions']['python.details']:
         homepage = item['extensions']['python.details']['project_urls'].get('Home', '')
+    elif 'home-page' in item:
+        homepage = item['home-page']
     return homepage
 
 
-def extract_deps(metadata):
+def extract_deps(metadata, default_environment):
     """Get dependent packages from metadata.
 
     Note that this is currently very rough stuff. I consider only the
@@ -34,26 +39,16 @@ def extract_deps(metadata):
     like 'test_requires' are completely ignored.
     """
     deps = []
-    if 'run_requires' in metadata:
-        for item in metadata['run_requires']:
-            if 'requires' in item:
-                for line in item['requires']:
-                    components = line.split()
+    for dep in metadata.get_all('requires-dist', []):
+        req = setuptools._vendor.packaging.requirements.Requirement(dep)
 
-                    dep = components[0]
-                    dep = dep.split("==")[0]
-                    dep = dep.split(">=")[0]
-                    dep = dep.split("<=")[0]
-                    dep = dep.split("<")[0]
-                    dep = dep.split(">")[0]
+        if req.name.lower() in TO_IGNORE:
+            continue
 
-                    if dep.lower() in TO_IGNORE:
-                        continue
+        if req.marker and not req.marker.evaluate(dict(**default_environment, **dict(extra="???"))):
+            continue
 
-                    if '[' in dep:
-                        deps.append(dep.split('[')[0])
-                    else:
-                        deps.append(dep)
+        deps.append(req.name)
 
     return list(set(deps))
 
@@ -185,27 +180,23 @@ def find_license(item):
     return license
 
 
-def process_metadata(wheel):
-    """Find the actual metadata json file from several possible names.
+def process_metadata(wheel_dir, default_environment):
+    """process METADATA file
     """
-    for _file in ('metadata.json', 'pydist.json'):
-        wheel_file = os.path.join(wheel, _file)
-        if os.path.exists(wheel_file):
-            with open(wheel_file) as f:
-                metadata = json.load(f)
-                if metadata['name'].lower() in TO_IGNORE:
-                    return
-                else:
-                    return {
-                        'name': metadata['name'],
-                        'version': metadata['version'],
-                        'deps': extract_deps(metadata),
-                        'homepage': safe(find_homepage(metadata)),
-                        'license': find_license(metadata),
-                        'description': safe(metadata.get('summary', '')),
-                    }
+    metadata_file = os.path.join(wheel_dir, 'METADATA')
+    if os.path.exists(metadata_file):
+        metadata = wheel.pkginfo.read_pkg_info(metadata_file)
+        return {
+            'name': metadata['name'],
+            'version': metadata['version'],
+            'deps': extract_deps(metadata, default_environment),
+            'homepage': safe(find_homepage(metadata)),
+            'license': find_license(metadata),
+            'description': safe(metadata.get('summary', '')),
+        }
+
     raise click.ClickException(
-        "Unable to find metadata.json/pydist.json in `%s` folder." % wheel)
+        "Unable to find METADATA in `%s` folder." % wheel_dir)
 
 
 def download_file(url, filename, chunk_size=2048):
@@ -385,8 +376,8 @@ def process_wheel(wheel_cache_dir, wheel, sources, verbose, index=INDEX_URL,
     return wheel
 
 
-def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL,
-         sources=dict()):
+def main(verbose, wheels, default_environment, requirements_files,
+         wheel_cache_dir, index=INDEX_URL, sources=dict()):
     """Extract packages metadata from wheels dist-info folders.
     """
 
@@ -440,7 +431,7 @@ def main(verbose, wheels, requirements_files, wheel_cache_dir, index=INDEX_URL,
             if verbose != 0:
                 click.echo('|-> from %s' % os.path.basename(wheel))
 
-            wheel_metadata = process_metadata(wheel)
+            wheel_metadata = process_metadata(wheel, default_environment)
             if not wheel_metadata:
                 continue
 
