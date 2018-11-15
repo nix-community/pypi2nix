@@ -33,6 +33,7 @@ def main(packages_metadata,
     version_file = os.path.join(os.path.dirname(__file__), 'VERSION')
     with open(version_file) as f:
         version = f.read()
+    version = version.strip()
 
     metadata_by_name = {x['name'].lower(): x for x in packages_metadata}
 
