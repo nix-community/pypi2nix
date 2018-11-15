@@ -5,7 +5,7 @@
 
 let
 
-  version = builtins.readFile ./src/pypi2nix/VERSION;
+  version = stdenv.lib.fileContents ./src/pypi2nix/VERSION;
 
   pythonEnv = import ./requirements.nix { pkgs = nixpkgs; };
 
