@@ -83,6 +83,14 @@ be used to define this extra non-python dependencies.
 ``lxml`` requires ``libxml2`` and ``libxslt`` system package::
 
     % pypi2nix -v -V 2.7 -e lxml -E libxml2 -E libxslt
+    
+    
+Additional environment variables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some packages expect additional environment variables to be set::
+
+  % pypi2nix -v -V 2.7 -e bsddb3 -N 'BERKELEYDB_DIR=${pkgs.db.dev}'
 
 
 Building generated packages
