@@ -1,0 +1,19 @@
+# linting
+black
+flake8
+flake8-debugger
+flake8-isort
+flake8-mypy
+flake8-quotes
+
+# testing
+#codecov
+#pytest
+#pytest-cov
+
+# develop
+#ipdb
+
+# setup requires
+pytest-runner
+setuptools-scm

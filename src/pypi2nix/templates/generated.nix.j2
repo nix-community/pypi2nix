@@ -4,7 +4,7 @@
       doCheck = commonDoCheck;
       checkPhase = "";
       installCheckPhase = "";
-      buildInputs = commonBuildInputs;
+      buildInputs = commonBuildInputs ++ {{ buildInputs }};
       propagatedBuildInputs = {{ propagatedBuildInputs }};
       meta = with pkgs.stdenv.lib; {
         homepage = "{{ homepage }}";

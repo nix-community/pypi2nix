@@ -3,7 +3,7 @@
 from setuptools import setup
 from setuptools import find_packages
 
-with open('src/pypi2nix/VERSION') as f:
+with open("src/pypi2nix/VERSION") as f:
     version = f.read().strip()
 
 setup(
@@ -18,21 +18,12 @@ setup(
     keywords="nixos nix packaging",
     url="https://github.com/NixOS/pypi2nix",
     classifiers=[
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: BSD License",
     ],
-    entry_points = {
-        'console_scripts': [
-            'pypi2nix = pypi2nix.cli:main',
-        ],
-    },
-    packages = ['pypi2nix'],
-    package_dir={'': 'src'},
+    entry_points={"console_scripts": ["pypi2nix = pypi2nix.cli:main"]},
+    packages=["pypi2nix"],
+    package_dir={"": "src"},
     include_package_data=True,
-    install_requires = [
-        'click',
-        'jinja2',
-        'requests',
-        'nix-prefetch-github',
-    ]
+    install_requires=["click", "jinja2", "requests", "nix-prefetch-github"],
 )
