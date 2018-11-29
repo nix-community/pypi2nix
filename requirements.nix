@@ -1,8 +1,8 @@
-# generated using pypi2nix tool (version: 1.8.1)
+# generated using pypi2nix tool (version: 2.0.0)
 # See more at: https://github.com/garbas/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -vvv -V 3 -r requirements.txt
+#   pypi2nix -vvv -V 3.7 -r requirements.txt
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -18,17 +18,17 @@ let
   import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
     inherit pkgs;
     inherit (pkgs) stdenv;
-    python = pkgs.python3;
+    python = pkgs.python37;
     # patching pip so it does not try to remove files when running nix-shell
     overrides =
       self: super: {
         bootstrapped-pip = super.bootstrapped-pip.overrideDerivation (old: {
           patchPhase = old.patchPhase + ''
-            if [ -e $out/${pkgs.python3.sitePackages}/pip/req/req_install.py ]; then
+            if [ -e $out/${pkgs.python37.sitePackages}/pip/req/req_install.py ]; then
               sed -i \
                 -e "s|paths_to_remove.remove(auto_confirm)|#paths_to_remove.remove(auto_confirm)|"  \
                 -e "s|self.uninstalled = paths_to_remove|#self.uninstalled = paths_to_remove|"  \
-                $out/${pkgs.python3.sitePackages}/pip/req/req_install.py
+                $out/${pkgs.python37.sitePackages}/pip/req/req_install.py
             fi
           '';
         });
@@ -42,7 +42,7 @@ let
     let
       pkgs = builtins.removeAttrs pkgs' ["__unfix__"];
       interpreterWithPackages = selectPkgsFn: pythonPackages.buildPythonPackage {
-        name = "python3-interpreter";
+        name = "python37-interpreter";
         buildInputs = [ makeWrapper ] ++ (selectPkgsFn pkgs);
         buildCommand = ''
           mkdir -p $out/bin

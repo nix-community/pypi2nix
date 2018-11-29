@@ -6,11 +6,10 @@ import email
 import hashlib
 import json
 import os.path
-import requests
-import tempfile
 import pkg_resources
+import requests
 import setuptools._vendor.packaging.requirements
-import wheel.pkginfo
+import tempfile
 
 from pypi2nix.utils import TO_IGNORE, safe, cmd, prefetch_git
 
@@ -185,7 +184,8 @@ def process_metadata(wheel_dir, default_environment):
     """
     metadata_file = os.path.join(wheel_dir, 'METADATA')
     if os.path.exists(metadata_file):
-        metadata = wheel.pkginfo.read_pkg_info(metadata_file)
+        with open(metadata_file, "r", encoding="ascii", errors="surrogateescape") as headers:
+            metadata = email.parser.Parser().parse(headers)
         return {
             'name': metadata['name'],
             'version': metadata['version'],

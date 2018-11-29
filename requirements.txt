@@ -1,5 +1,4 @@
-click
-jinja2
+Click
+Jinja2
 requests
 nix-prefetch-github
-
