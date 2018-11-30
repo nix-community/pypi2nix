@@ -1,8 +1,8 @@
 OS := $(shell uname)
 PYPI2NIX=./pypi2nix/bin/pypi2nix
 NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz
-NIX_BUILD=nix-build -Q
-NIX_SHELL=nix-shell
+NIX_BUILD=nix build -f
+NIX_SHELL=nix run -f
 
 
 ifeq ($(OS), Darwin)
@@ -73,16 +73,15 @@ $(PYPI2NIX): pypi2nix-clear
 
 aiohttp: aiohttp.nix
 	echo "building and testing aiohttp..."
-	$(NIX_BUILD) aiohttp.nix -o aiohttp -A interpreter --show-trace -j 1
+	$(NIX_BUILD) aiohttp.nix -o aiohttp interpreter
 	./aiohttp/bin/python -c 'import aiohttp'
-	$(NIX_SHELL) aiohttp.nix -A interpreter --run "python -c 'import aiohttp'"
+	$(NIX_SHELL) aiohttp.nix interpreter --command python -c 'import aiohttp'
 
 aiohttp.nix: aiohttp.txt $(PYPI2NIX)
 	echo "generating aiohttp.nix expressions ..."
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "3.5" \
-		--default-overrides \
 		--basename aiohttp \
 		-r aiohttp.txt
 
@@ -101,19 +100,19 @@ aiohttp-clear:
 
 awscli_and_requests: awscli_and_requests.nix
 	echo "building and testing awscli and requests library ..."
-	$(NIX_BUILD) awscli_and_requests.nix -o awscli_and_requests -A interpreter --show-trace
+	$(NIX_BUILD) awscli_and_requests.nix -o awscli_and_requests interpreter
 	./awscli_and_requests/bin/python -c 'import awscli; import requests'
 	PAGER=none ./awscli_and_requests/bin/aws help
-	$(NIX_SHELL) awscli_and_requests.nix -A interpreter --run "python -c 'import awscli'"
-	$(NIX_SHELL) awscli_and_requests.nix -A interpreter --run "python -c 'import awscli; import requests'"
-	$(NIX_SHELL) awscli_and_requests.nix -A interpreter --run "PAGER=none aws help"
+	$(NIX_SHELL) awscli_and_requests.nix interpreter --command python -c 'import awscli'
+	$(NIX_SHELL) awscli_and_requests.nix interpreter --command python -c 'import awscli; import requests'
+	PAGER=none $(NIX_SHELL) awscli_and_requests.nix interpreter --command aws help
 
 awscli_and_requests.nix: awscli_and_requests.txt $(PYPI2NIX)
 	echo "generating awscli and requests nix expressions ..."
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "2.7" \
-		--default-overrides \
+    -e setuptools-scm \
 		--basename awscli_and_requests \
 		-r awscli_and_requests.txt
 
@@ -133,16 +132,18 @@ awscli_and_requests-clear:
 
 connexion: connexion.nix
 	echo "building and testing connexion..."
-	$(NIX_BUILD) connexion.nix -o connexion -A interpreter --show-trace -j 1
+	$(NIX_BUILD) connexion.nix -o connexion interpreter
 	./connexion/bin/python -c 'import connexion'
-	$(NIX_SHELL) connexion.nix -A interpreter --run "python -c 'import connexion'"
+	$(NIX_SHELL) connexion.nix interpreter --command python -c 'import connexion'
 
 connexion.nix: connexion.txt $(PYPI2NIX)
 	echo "generating connexion.nix expressions ..."
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
-		-V "2.7" \
-		--default-overrides \
+		-V 3.7 \
+		-e pytest-runner \
+		-e setuptools-scm \
+		-e flake8 \
 		--basename connexion \
 		-r connexion.txt  \
 		-e vcversioner
@@ -162,16 +163,15 @@ connexion-clear:
 
 empy: empy.nix
 	echo "building and testing empy ..."
-	$(NIX_BUILD) empy.nix -o empy -A interpreter --show-trace
+	$(NIX_BUILD) empy.nix -o empy interpreter
 	./empy/bin/python -c 'import em'
-	$(NIX_SHELL) empy.nix -A interpreter --run "python -c 'import em'"
+	$(NIX_SHELL) empy.nix interpreter --command python -c 'import em'
 
 empy.nix: empy.txt $(PYPI2NIX)
 	echo "generating empy nix expressions ..."
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "2.7" \
-		--default-overrides \
 		--basename empy \
 		-r empy.txt
 
@@ -190,16 +190,17 @@ empy-clear:
 
 flake8: flake8.nix
 	echo "building and testing flake8..."
-	$(NIX_BUILD) flake8.nix -o flake8 -A interpreter --show-trace --fallback
+	$(NIX_BUILD) flake8.nix -o flake8 interpreter
 	./flake8/bin/python -c 'import flake8'
-	$(NIX_SHELL) flake8.nix -A interpreter --run "python -c 'import flake8'"
+	$(NIX_SHELL) flake8.nix interpreter --command python -c 'import flake8'
 
 flake8.nix: flake8.txt $(PYPI2NIX)
 	echo "generating flake8.nix expressions ..."
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "3.5" \
-		--default-overrides \
+    -e pytest-runner \
+    -e setuptools-scm \
 		--basename flake8 \
 		-r flake8.txt
 
@@ -218,16 +219,15 @@ flake8-clear:
 
 ldap: ldap.nix
 	echo "building and testing ldap..."
-	$(NIX_BUILD) ldap.nix -o ldap -A interpreter --show-trace
+	$(NIX_BUILD) ldap.nix -o ldap interpreter
 	./ldap/bin/python -c 'import ldap'
-	$(NIX_SHELL) ldap.nix -A interpreter --run "python -c 'import ldap'"
+	$(NIX_SHELL) ldap.nix interpreter --command python -c 'import ldap'
 
 ldap.nix: ldap.txt $(PYPI2NIX)
 	echo "generating ldap.nix expressions ..."
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "2.7" \
-		--default-overrides \
 		--basename ldap \
 		-N "NIX_CFLAGS_COMPILE=\"-I\$${pkgs.cyrus_sasl.dev}/include/sasl \$$NIX_CFLAGS_COMPILE\"" \
 		-E "openldap cyrus_sasl openssl" \
@@ -248,18 +248,17 @@ ldap-clear:
 
 lektor: lektor.nix
 	echo "building and testing lektor ..."
-	$(NIX_BUILD) lektor.nix -o lektor -A interpreter --show-trace
+	$(NIX_BUILD) lektor.nix -o lektor interpreter
 	./lektor/bin/python -c 'import lektor'
 	./lektor/bin/lektor --help
-	$(NIX_SHELL) lektor.nix -A interpreter --run "python -c 'import lektor'"
-	$(NIX_SHELL) lektor.nix -A interpreter --run "lektor --help"
+	$(NIX_SHELL) lektor.nix interpreter --command python -c 'import lektor'
+	$(NIX_SHELL) lektor.nix interpreter --command lektor --help
 
 lektor.nix: lektor.txt $(PYPI2NIX)
 	echo "generating lektor nix expressions ..."
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "2.7" \
-		--default-overrides \
 		--basename lektor \
 		-E $(LEKTOR_BUILD_INPUTS) \
 		-r lektor.txt
@@ -279,9 +278,9 @@ lektor-clear:
 
 mercurial: mercurial.nix
 	echo "building and testing mercurial..."
-	$(NIX_BUILD) mercurial.nix -o mercurial -A interpreter --show-trace -j 1
+	$(NIX_BUILD) mercurial.nix -o mercurial interpreter
 	./mercurial/bin/python -c 'import flake8'
-	$(NIX_SHELL) mercurial.nix -A interpreter --run "python -c 'import flake8'"
+	$(NIX_SHELL) mercurial.nix interpreter --command python -c 'import flake8'
 	if ./string_in_file "a209fb6" mercurial.nix ; then true ; else echo "ERROR: Revision 'a209fb6' not found in tornado.nix!"; exit 123; fi
 
 mercurial.nix: mercurial.txt $(PYPI2NIX)
@@ -289,7 +288,6 @@ mercurial.nix: mercurial.txt $(PYPI2NIX)
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "2.7" \
-		--default-overrides \
 		--basename mercurial \
 		-E "mercurial" \
 		-r mercurial.txt
@@ -310,16 +308,15 @@ mercurial-clear:
 
 pillow: pillow.nix
 	echo "building and testing pillow..."
-	$(NIX_BUILD) pillow.nix -o pillow -A interpreter --show-trace
+	$(NIX_BUILD) pillow.nix -o pillow interpreter
 	./pillow/bin/python -c 'import PIL'
-	$(NIX_SHELL) pillow.nix -A interpreter --run "python -c 'import PIL'" 
+	$(NIX_SHELL) pillow.nix interpreter --command python -c 'import PIL'
 
 pillow.nix: pillow.txt $(PYPI2NIX)
 	echo "generating pillownix expressions ..."
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "3.5" \
-		--default-overrides \
 		--basename pillow \
 		-E "pkgconfig zlib libjpeg openjpeg libtiff freetype lcms2 libwebp tcl" \
 		-r pillow.txt
@@ -339,20 +336,19 @@ pillow-clear:
 
 rss2email: rss2email.nix
 	echo "building and testing rss2email ..."
-	$(NIX_BUILD) rss2email.nix -o rss2email -A interpreter --show-trace
+	$(NIX_BUILD) rss2email.nix -o rss2email interpreter
 	./rss2email/bin/python -c 'import rss2email'
 	./rss2email/bin/r2e --help
-	$(NIX_BUILD) rss2email.nix -A interpreter --run "python -c 'import rss2email'"
-	$(NIX_BUILD) rss2email.nix -A interpreter --run "r2e --help"
+	$(NIX_SHELL) rss2email.nix interpreter --command python -c 'import rss2email'
+	$(NIX_SHELL) rss2email.nix interpreter --command r2e --help
 
 rss2email.nix: rss2email.txt $(PYPI2NIX)
 	echo "generating rss2email nix expressions ..."
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "3.6" \
-		--default-overrides \
 		--basename rss2email \
-		-r rss2email.txt 
+		-r rss2email.txt
 
 rss2email.txt: rss2email-clear
 	echo "https://github.com/wking/rss2email/archive/master.zip#egg=rss2email" > rss2email.txt
@@ -369,16 +365,15 @@ rss2email-clear:
 
 scipy: scipy.nix
 	echo "building and testing scipy..."
-	$(NIX_BUILD) scipy.nix -o scipy -A interpreter --show-trace
+	$(NIX_BUILD) scipy.nix -o scipy interpreter
 	./scipy/bin/python -c 'import scipy'
-	$(NIX_SHELL) scipy.nix -A interpreter --run "python -c 'import scipy'"
+	$(NIX_SHELL) scipy.nix interpreter --command python -c 'import scipy'
 
 scipy.nix: scipy.txt $(PYPI2NIX)
 	echo "generating scipy.nix expressions ..."
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "3.5" \
-		--default-overrides \
 		--basename scipy \
 		-s numpy \
 		-E gfortran \
@@ -401,9 +396,9 @@ scipy-clear:
 
 tornado: tornado.nix
 	echo "building and testing tornado..."
-	$(NIX_BUILD) tornado.nix -o tornado -A interpreter --show-trace --fallback
+	$(NIX_BUILD) tornado.nix -o tornado interpreter
 	./tornado/bin/python -c 'import tornado'
-	$(NIX_SHELL) tornado.nix -A interpreter --run "python -c 'import tornado'"
+	$(NIX_SHELL) tornado.nix interpreter --command python -c 'import tornado'
 	if ./string_in_file "69253c820df473407c562a227d0ba36df25018ab" tornado.nix ; then true ; else echo "ERROR: Revision '69253c820df473407c562a227d0ba36df25018ab' not found in tornado.nix!" ; exit 123 ; fi
 
 tornado.nix: tornado.txt $(PYPI2NIX)
@@ -411,7 +406,6 @@ tornado.nix: tornado.txt $(PYPI2NIX)
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "3.5" \
-		--default-overrides \
 		--basename tornado \
 		-r tornado.txt
 
@@ -430,7 +424,7 @@ tornado-clear:
 
 packages_with: packages_with.nix
 	echo "building and testing packages_with..."
-	$(NIX_BUILD) packages_with.nix -o packages_with -A interpreter --show-trace --fallback
+	$(NIX_BUILD) packages_with.nix -o packages_with interpreter
 	sh test_with_packages.sh
 
 packages_with.nix: packages_with.txt $(PYPI2NIX)
@@ -438,7 +432,6 @@ packages_with.nix: packages_with.txt $(PYPI2NIX)
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "3.6" \
-		--default-overrides \
 		--basename packages_with \
 		-r packages_with.txt
 
