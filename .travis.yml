@@ -29,7 +29,6 @@ install:
 stages:
 - build
 - test
-script: cd examples && travis_wait 60 make $EXAMPLE && cd ..
 jobs:
   include: 
   - stage: build
@@ -40,4 +39,6 @@ jobs:
     env: EXAMPLE=none
     os: osx
     script: nix-build | cachix push pypi2nix
-#    if: os = linux
+  - stage: test
+    os: linux
+    script: cd examples && travis_wait 60 make $EXAMPLE && cd ..
