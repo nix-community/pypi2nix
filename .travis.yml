@@ -9,11 +9,11 @@ env:
   global:
     secure: "gEULslaL40LzLDk2SHspXOYbocZVO80YTjmL+iv/E3oZ7QVfz78zwtJgIY7gAX/hSyEfONQ1VtlSAbfZx8zLCSlPlEcGYTt3vKvHD6u0bdPDo2Qp8uINhq9P9diU3JMCSAcNtC72jIcf1cAY/a54aT5DyYwtLB+AxHGUnQjSB+0="
   matrix:
+  - EXAMPLE=empy
   # - EXAMPLE=scipy
   # - EXAMPLE=aiohttp
   # - EXAMPLE=awscli_and_requests
   # - EXAMPLE=connexion
-  - EXAMPLE=empy
   # - EXAMPLE=flake8
   # - EXAMPLE=ldap
   # - EXAMPLE=lektor
