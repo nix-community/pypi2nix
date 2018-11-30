@@ -26,9 +26,9 @@ install:
 - nix-env -if https://github.com/cachix/cachix/tarball/master --extra-substituters https://cachix.cachix.org --trusted-public-keys 'cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM='
 - cachix use pypi2nix
 - cachix push pypi2nix --watch-store&
+script: cd examples && travis_wait 60 make $EXAMPLE && cd ..
 stages:
 - build
-- test
 jobs:
   include: 
   - stage: build
@@ -39,6 +39,3 @@ jobs:
     env: EXAMPLE=none
     os: osx
     script: nix-build | cachix push pypi2nix
-  - stage: test
-    os: linux
-    script: cd examples && travis_wait 60 make $EXAMPLE && cd ..
