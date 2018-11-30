@@ -4,19 +4,25 @@ branches:
 language: nix
 sudo: required
 os:
-  - linux
-  - osx
+- linux
 env:
   global:
     secure: "gEULslaL40LzLDk2SHspXOYbocZVO80YTjmL+iv/E3oZ7QVfz78zwtJgIY7gAX/hSyEfONQ1VtlSAbfZx8zLCSlPlEcGYTt3vKvHD6u0bdPDo2Qp8uINhq9P9diU3JMCSAcNtC72jIcf1cAY/a54aT5DyYwtLB+AxHGUnQjSB+0="
 install:
-  - sudo mount -o remount,exec,size=4G,mode=755 /run/user || true
-  - nix-env -if https://github.com/cachix/cachix/tarball/master --extra-substituters https://cachix.cachix.org --trusted-public-keys 'cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM='
-  - cachix use pypi2nix
-  - cachix push pypi2nix --watch-store&
+- sudo mount -o remount,exec,size=4G,mode=755 /run/user || true
+- nix-env -if https://github.com/cachix/cachix/tarball/master --extra-substituters https://cachix.cachix.org --trusted-public-keys 'cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM='
+- cachix use pypi2nix
+- cachix push pypi2nix --watch-store&
+stages:
+- build
+- test
 jobs:
   include: 
   - stage: build
+    os: linux
+    script: nix-build | cachix push pypi2nix
+  - stage: build
+    os: osx
     script: nix-build | cachix push pypi2nix
 #  - stage: examples
 #    script: cd examples && travis_wait 60 make $EXAMPLE && cd ..
