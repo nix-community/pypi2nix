@@ -87,7 +87,7 @@ def main(
             )
         elif fetch_type == "fetchgit":
             fetch_expression = (
-                'pkgs.fetchgit {\n        url = "%(url)s"; '
+                'pkgs.fetchgit {\n        url = "%(url)s";'
                 '\n        %(hash_type)s = "%(hash_value)s";\n        rev = "%(rev)s";\n      }'
                 % dict(
                     url=item["url"],
@@ -98,7 +98,7 @@ def main(
             )
         elif fetch_type == "fetchhg":
             fetch_expression = (
-                'pkgs.fetchhg {\n        url = "%(url)s"; '
+                'pkgs.fetchhg {\n        url = "%(url)s";'
                 '\n        %(hash_type)s = "%(hash_value)s";\n        rev = "%(rev)s";\n      }'
                 % dict(
                     url=item["url"],
@@ -109,7 +109,7 @@ def main(
             )
         else:
             fetch_expression = (
-                'pkgs.fetchurl {\n        url = "%(url)s"; '
+                'pkgs.fetchurl {\n        url = "%(url)s";'
                 '\n        %(hash_type)s = "%(hash_value)s";\n      }'
                 % dict(
                     url=item["url"],

@@ -1,6 +1,8 @@
 !/examples/*_override.nix
 *.py?
 *~
+/.coverage
+/build
 /deploy_rsa
 /examples/*
 /examples/aiohttp_override.nix
@@ -11,4 +13,3 @@
 /requirements_override.nix
 /result*
 /src/pypi2nix.egg-info/
-/build

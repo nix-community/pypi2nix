@@ -27,13 +27,28 @@ let
 in python.mkDerivation {
   name = "pypi2nix-${version}";
   src = nix-gitignore.gitignoreSource [] ./.;
+  outputs = [ "out" "coverage" ];
   buildInputs = fromRequirementsFile ./requirements-dev.txt python.packages;
   propagatedBuildInputs = fromRequirementsFile ./requirements.txt python.packages;
   doCheck = true;
   checkPhase = ''
+    echo "Running black ..."
     black --check --diff -v setup.py src/
+    echo "Running flake8 ..."
     flake8 -v setup.py src/
-    # TODO: pytest
+    echo "Running pytest ..."
+    PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v --cov=src/ tests/
+    cp .coverage $coverage/coverage
+  '';
+  postInstall = ''
+    mkdir -p $coverage/bin $coverage/upload
+    cat > $coverage/bin/coverage <<EOL
+    #/bin/sh
+    cp "$coverage/coverage" ./.coverage
+    sed -i -e "s|$PWD/src|\$PWD/src|g" ./.coverage
+    eval ${python.packages."codecov"}/bin/codecov
+    EOL
+    chmod +x $coverage/bin/coverage
   '';
   meta = {
     homepage = https://github.com/garbas/pypi2nix;

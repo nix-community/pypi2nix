@@ -7,12 +7,12 @@ flake8-mypy
 flake8-quotes
 
 # testing
-#codecov
-#pytest
-#pytest-cov
+codecov
+pytest
+pytest-cov
 
 # develop
-#ipdb
+pdbpp
 
 # setup requires
 pytest-runner
