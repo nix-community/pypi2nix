@@ -21,19 +21,19 @@ jobs:
   include: 
   - stage: build
     script: nix-build | cachix push pypi2nix
-  - stage: examples
-    script: cd examples && travis_wait 60 make $EXAMPLE && cd ..
-    env:
-      - EXAMPLE=scipy
-      - EXAMPLE=aiohttp
-      - EXAMPLE=awscli_and_requests
-      - EXAMPLE=connexion
-      - EXAMPLE=empy
-      - EXAMPLE=flake8
-      - EXAMPLE=ldap
-      - EXAMPLE=lektor
-      - EXAMPLE=mercurial
-      - EXAMPLE=pillow
-      - EXAMPLE=rss2email
-      - EXAMPLE=tornado
-    if: os = linux
+#  - stage: examples
+#    script: cd examples && travis_wait 60 make $EXAMPLE && cd ..
+#    env:
+#      - EXAMPLE=scipy
+#      - EXAMPLE=aiohttp
+#      - EXAMPLE=awscli_and_requests
+#      - EXAMPLE=connexion
+#      - EXAMPLE=empy
+#      - EXAMPLE=flake8
+#      - EXAMPLE=ldap
+#      - EXAMPLE=lektor
+#      - EXAMPLE=mercurial
+#      - EXAMPLE=pillow
+#      - EXAMPLE=rss2email
+#      - EXAMPLE=tornado
+#    if: os = linux
