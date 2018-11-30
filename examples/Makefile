@@ -3,6 +3,7 @@ PYPI2NIX=./pypi2nix/bin/pypi2nix
 NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz
 NIX_BUILD=nix build -f
 NIX_SHELL=nix run -f
+AFTER=
 
 
 ifeq ($(OS), Darwin)
@@ -73,7 +74,7 @@ $(PYPI2NIX): pypi2nix-clear
 
 aiohttp: aiohttp.nix
 	echo "building and testing aiohttp..."
-	$(NIX_BUILD) aiohttp.nix -o aiohttp interpreter
+	$(NIX_BUILD) aiohttp.nix -o aiohttp interpreter $(AFTER)
 	./aiohttp/bin/python -c 'import aiohttp'
 	$(NIX_SHELL) aiohttp.nix interpreter --command python -c 'import aiohttp'
 
@@ -100,7 +101,7 @@ aiohttp-clear:
 
 awscli_and_requests: awscli_and_requests.nix
 	echo "building and testing awscli and requests library ..."
-	$(NIX_BUILD) awscli_and_requests.nix -o awscli_and_requests interpreter
+	$(NIX_BUILD) awscli_and_requests.nix -o awscli_and_requests interpreter $(AFTER)
 	./awscli_and_requests/bin/python -c 'import awscli; import requests'
 	PAGER=none ./awscli_and_requests/bin/aws help
 	$(NIX_SHELL) awscli_and_requests.nix interpreter --command python -c 'import awscli'
@@ -132,7 +133,7 @@ awscli_and_requests-clear:
 
 connexion: connexion.nix
 	echo "building and testing connexion..."
-	$(NIX_BUILD) connexion.nix -o connexion interpreter
+	$(NIX_BUILD) connexion.nix -o connexion interpreter $(AFTER)
 	./connexion/bin/python -c 'import connexion'
 	$(NIX_SHELL) connexion.nix interpreter --command python -c 'import connexion'
 
@@ -163,7 +164,7 @@ connexion-clear:
 
 empy: empy.nix
 	echo "building and testing empy ..."
-	$(NIX_BUILD) empy.nix -o empy interpreter
+	$(NIX_BUILD) empy.nix -o empy interpreter $(AFTER)
 	./empy/bin/python -c 'import em'
 	$(NIX_SHELL) empy.nix interpreter --command python -c 'import em'
 
@@ -190,7 +191,7 @@ empy-clear:
 
 flake8: flake8.nix
 	echo "building and testing flake8..."
-	$(NIX_BUILD) flake8.nix -o flake8 interpreter
+	$(NIX_BUILD) flake8.nix -o flake8 interpreter $(AFTER)
 	./flake8/bin/python -c 'import flake8'
 	$(NIX_SHELL) flake8.nix interpreter --command python -c 'import flake8'
 
@@ -219,7 +220,7 @@ flake8-clear:
 
 ldap: ldap.nix
 	echo "building and testing ldap..."
-	$(NIX_BUILD) ldap.nix -o ldap interpreter
+	$(NIX_BUILD) ldap.nix -o ldap interpreter $(AFTER)
 	./ldap/bin/python -c 'import ldap'
 	$(NIX_SHELL) ldap.nix interpreter --command python -c 'import ldap'
 
@@ -248,7 +249,7 @@ ldap-clear:
 
 lektor: lektor.nix
 	echo "building and testing lektor ..."
-	$(NIX_BUILD) lektor.nix -o lektor interpreter
+	$(NIX_BUILD) lektor.nix -o lektor interpreter $(AFTER)
 	./lektor/bin/python -c 'import lektor'
 	./lektor/bin/lektor --help
 	$(NIX_SHELL) lektor.nix interpreter --command python -c 'import lektor'
@@ -278,7 +279,7 @@ lektor-clear:
 
 mercurial: mercurial.nix
 	echo "building and testing mercurial..."
-	$(NIX_BUILD) mercurial.nix -o mercurial interpreter
+	$(NIX_BUILD) mercurial.nix -o mercurial interpreter $(AFTER)
 	./mercurial/bin/python -c 'import flake8'
 	$(NIX_SHELL) mercurial.nix interpreter --command python -c 'import flake8'
 	if ./string_in_file "a209fb6" mercurial.nix ; then true ; else echo "ERROR: Revision 'a209fb6' not found in tornado.nix!"; exit 123; fi
@@ -288,6 +289,8 @@ mercurial.nix: mercurial.txt $(PYPI2NIX)
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "2.7" \
+		-e pytest-runner \
+		-e setuptools-scm \
 		--basename mercurial \
 		-E "mercurial" \
 		-r mercurial.txt
@@ -308,7 +311,7 @@ mercurial-clear:
 
 pillow: pillow.nix
 	echo "building and testing pillow..."
-	$(NIX_BUILD) pillow.nix -o pillow interpreter
+	$(NIX_BUILD) pillow.nix -o pillow interpreter $(AFTER)
 	./pillow/bin/python -c 'import PIL'
 	$(NIX_SHELL) pillow.nix interpreter --command python -c 'import PIL'
 
@@ -336,7 +339,7 @@ pillow-clear:
 
 rss2email: rss2email.nix
 	echo "building and testing rss2email ..."
-	$(NIX_BUILD) rss2email.nix -o rss2email interpreter
+	$(NIX_BUILD) rss2email.nix -o rss2email interpreter $(AFTER)
 	./rss2email/bin/python -c 'import rss2email'
 	./rss2email/bin/r2e --help
 	$(NIX_SHELL) rss2email.nix interpreter --command python -c 'import rss2email'
@@ -365,7 +368,7 @@ rss2email-clear:
 
 scipy: scipy.nix
 	echo "building and testing scipy..."
-	$(NIX_BUILD) scipy.nix -o scipy interpreter
+	$(NIX_BUILD) scipy.nix -o scipy interpreter $(AFTER)
 	./scipy/bin/python -c 'import scipy'
 	$(NIX_SHELL) scipy.nix interpreter --command python -c 'import scipy'
 
@@ -396,7 +399,7 @@ scipy-clear:
 
 tornado: tornado.nix
 	echo "building and testing tornado..."
-	$(NIX_BUILD) tornado.nix -o tornado interpreter
+	$(NIX_BUILD) tornado.nix -o tornado interpreter $(AFTER)
 	./tornado/bin/python -c 'import tornado'
 	$(NIX_SHELL) tornado.nix interpreter --command python -c 'import tornado'
 	if ./string_in_file "69253c820df473407c562a227d0ba36df25018ab" tornado.nix ; then true ; else echo "ERROR: Revision '69253c820df473407c562a227d0ba36df25018ab' not found in tornado.nix!" ; exit 123 ; fi
@@ -424,7 +427,7 @@ tornado-clear:
 
 packages_with: packages_with.nix
 	echo "building and testing packages_with..."
-	$(NIX_BUILD) packages_with.nix -o packages_with interpreter
+	$(NIX_BUILD) packages_with.nix -o packages_with interpreter $(AFTER)
 	sh test_with_packages.sh
 
 packages_with.nix: packages_with.txt $(PYPI2NIX)
