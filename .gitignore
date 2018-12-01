@@ -21,6 +21,9 @@
 /examples/lektor
 /examples/lektor.nix
 /examples/lektor.nix
+/examples/mercurial
+/examples/mercurial.nix
+/examples/mercurial_override.nix
 /examples/pillow
 /examples/pillow
 /examples/pillow.nix
