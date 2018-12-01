@@ -39,7 +39,7 @@ jobs:
     after_success:
     - nix-build -A coverage
     - ./result-coverage/bin/coverage
-  - stage: build
-    env: EXAMPLE=none
-    os: osx
-    script: nix-build | cachix push pypi2nix
+  # - stage: build
+  #   env: EXAMPLE=none
+  #   os: osx
+  #   script: nix-build | cachix push pypi2nix
