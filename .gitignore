@@ -13,6 +13,9 @@
 /examples/empy.nix
 /examples/empy_override.nix
 /examples/flake8
+/examples/flake8-includes
+/examples/flake8-includes.nix
+/examples/flake8-includes_override.nix
 /examples/flake8.nix
 /examples/flake8_override.nix
 /examples/ldap

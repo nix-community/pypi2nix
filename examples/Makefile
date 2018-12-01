@@ -223,16 +223,17 @@ flake8-clear:
 
 flake8-includes: flake8-includes.nix
 	echo "building and testing flake8-includes..."
-	$(NIX_BUILD) flake8-includes.nix -o flake8-includes -A interpreter --show-trace --fallback
+	$(NIX_BUILD) flake8-includes.nix -o flake8-includes interpreter
 	./flake8-includes/bin/python -c 'import flake8'
-	$(NIX_SHELL) flake8-includes.nix -A interpreter --run "python -c 'import flake8'"
+	$(NIX_SHELL) flake8-includes.nix interpreter --command python -c 'import flake8'
 
 flake8-includes.nix: flake8-includes.txt $(PYPI2NIX)
 	echo "generating flake8-includes.nix expressions ..."
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "3.5" \
-		--default-overrides \
+		-e pytest-runner \
+		-e setuptools-scm \
 		--basename flake8-includes \
 		-r flake8-includes.txt
 flake8-includes.txt: flake8-includes-clear flake8.txt
