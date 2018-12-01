@@ -19,7 +19,7 @@ endif
 	connexion \
 	empy \
 	flake8 \
-	flake8-includes
+	flake8-includes \
 	ldap \
 	lektor \
 	mercurial \
