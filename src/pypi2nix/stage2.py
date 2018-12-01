@@ -147,6 +147,8 @@ def find_license(item):
 
         if license in ["LGPL with exceptions or ZPL", "ZPL 2.1"]:
             license = "licenses.zpl21"
+        elif license in ["3-Clause BSD License"]:
+            license = "licenses.bsd3"
         elif license in [
             "MIT",
             "MIT License",
