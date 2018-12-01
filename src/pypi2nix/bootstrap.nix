@@ -20,8 +20,8 @@ in
       mv src/pip tmp/
       cd tmp
 
-      ${python.interpreter} -c "import sys, pip._internal; sys.exit(pip._internal.main(['install', '--force-reinstall', '--upgrade', 'pip', 'setuptools', '--no-index', '--find-links=file://$out/index', '-v', '--target', '$out/base']))"
-      PYTHONPATH=$out/base ${python.interpreter} -c "import sys, pip._internal; sys.exit(pip._internal.main(['install', '--force-reinstall', '--upgrade', 'wheel', '--no-index', '--find-links=file://$out/index', '-v', '--target', '$out/base']))"
+      python -c "import sys, pip._internal; sys.exit(pip._internal.main(['install', '--force-reinstall', '--upgrade', 'pip', 'setuptools', '--no-index', '--find-links=file://$out/index', '-v', '--target', '$out/base']))"
+      PYTHONPATH=$out/base python -c "import sys, pip._internal; sys.exit(pip._internal.main(['install', '--force-reinstall', '--upgrade', 'wheel', '--no-index', '--find-links=file://$out/index', '-v', '--target', '$out/base']))"
 
       echo -e "#!${python.interpreter}\nimport sys, pip._internal; sys.exit(pip._internal.main())" > $out/bin/pip
 
