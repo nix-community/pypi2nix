@@ -11,6 +11,10 @@ let
   nix-gitignore = pkgs.callPackage nix-gitignore-src {};
   python = import ./requirements.nix { inherit pkgs; };
   version = pkgs.lib.fileContents ./src/pypi2nix/VERSION;
+  additionalIgnores = ''
+    /examples
+    /.travis.yml
+  '';
   # we need to move it to src/pypi2nix/templates/
   readLines = file: with pkgs.lib; splitString "\n" (removeSuffix "\n" (builtins.readFile file));
   removeAfter = delim: line:
@@ -26,7 +30,7 @@ let
         (builtins.foldl' applyTransform (readLines file) transforms));
 in python.mkDerivation {
   name = "pypi2nix-${version}";
-  src = nix-gitignore.gitignoreSource [] ./.;
+  src = nix-gitignore.gitignoreSource additionalIgnores ./.;
   outputs = [ "out" "coverage" ];
   buildInputs = fromRequirementsFile ./requirements-dev.txt python.packages;
   propagatedBuildInputs = fromRequirementsFile ./requirements.txt python.packages;
