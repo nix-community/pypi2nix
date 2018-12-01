@@ -1,85 +1,62 @@
-{ stdenv, fetchurl, zip, makeWrapper, nix, nix-prefetch-git, nix-prefetch-hg
-, pythonPackages, nixpkgs
-, src ? { outPath = ./.; name = "pypi2nix"; }
+{ pkgs ? import <nixpkgs> {}
 }:
 
 let
-
-  version = stdenv.lib.fileContents ./src/pypi2nix/VERSION;
-
-  pythonEnv = import ./requirements.nix { pkgs = nixpkgs; };
-
-in stdenv.mkDerivation rec {
+  nix-gitignore-src = pkgs.fetchFromGitHub {
+    owner = "siers";
+    repo = "nix-gitignore";
+    rev = "221d4aea15b4b7cc957977867fd1075b279837b3";
+    sha256 = "0xgxzjazb6qzn9y27b2srsp2h9pndjh3zjpbxpmhz0awdi7h8y9m";
+  };
+  nix-gitignore = pkgs.callPackage nix-gitignore-src {};
+  python = import ./requirements.nix { inherit pkgs; };
+  version = pkgs.lib.fileContents ./src/pypi2nix/VERSION;
+  additionalIgnores = ''
+    /examples
+    /.travis.yml
+  '';
+  # we need to move it to src/pypi2nix/templates/
+  readLines = file: with pkgs.lib; splitString "\n" (removeSuffix "\n" (builtins.readFile file));
+  removeAfter = delim: line:
+    let split = pkgs.lib.splitString delim line; in
+    if builtins.length split > 1 then builtins.head split else line;
+  applyTransform = lines: transform: builtins.map transform lines;
+  transforms =
+    [ (removeAfter "#") # remove after comment
+    ];
+  fromRequirementsFile = file: pythonPackages:
+    builtins.map (name: builtins.getAttr name pythonPackages)
+      (builtins.filter (x: x != "")
+        (builtins.foldl' applyTransform (readLines file) transforms));
+in python.mkDerivation {
   name = "pypi2nix-${version}";
-  inherit src;
-  buildInputs = [
-    pythonPackages.python pythonPackages.flake8
-    zip makeWrapper nix.out nix-prefetch-git nix-prefetch-hg
-  ];
+  src = nix-gitignore.gitignoreSource additionalIgnores ./.;
+  outputs = [ "out" "coverage" ];
+  buildInputs = fromRequirementsFile ./requirements-dev.txt python.packages;
+  propagatedBuildInputs = fromRequirementsFile ./requirements.txt python.packages;
   doCheck = true;
-  postUnpack = ''
-    mkdir -p $out/pkgs
-    if [ -e git-export/src/pypi2nix ]; then
-      mv git-export/src/pypi2nix      $out/pkgs/pypi2nix;
-    elif [ -e source/src/pypi2nix ]; then
-      mv source/src/pypi2nix                 $out/pkgs/pypi2nix;
-    elif [ -e pypi2nix*/src/pypi2nix ]; then
-      mv pypi2nix*/src/pypi2nix       $out/pkgs/pypi2nix;
-    elif [ -e src/pypi2nix ]; then
-      mv src/pypi2nix                 $out/pkgs/pypi2nix;
-    else
-      echo "!!! Could not find source for pypi2nix !!!";
-      exit 123;
-    fi
-  '';
-
-  patchPhase = ''
-    sed -i -e "s|default='nix-shell',|default='${nix.out}/bin/nix-shell',|" $out/pkgs/pypi2nix/cli.py
-    sed -i -e "s|nix-prefetch-git|${nix-prefetch-git}/bin/nix-prefetch-git|" $out/pkgs/pypi2nix/utils.py
-    sed -i -e "s|nix-prefetch-hg|${nix-prefetch-hg}/bin/nix-prefetch-hg|" $out/pkgs/pypi2nix/stage2.py
-  '';
-
-  commonPhase = ''
-    mkdir -p $out/bin
-
-    echo "#!${pythonEnv.interpreter}/bin/python" >  $out/bin/pypi2nix
-    echo "import pypi2nix.cli" >> $out/bin/pypi2nix
-    echo "pypi2nix.cli.main()" >> $out/bin/pypi2nix
-
-    chmod +x $out/bin/pypi2nix
-
-    export PYTHONPATH=$out/pkgs:$PYTHONPATH
-  '';
-
   checkPhase = ''
-    flake8 ${src}/src
+    echo "Running black ..."
+    black --check --diff -v setup.py src/
+    echo "Running flake8 ..."
+    flake8 -v setup.py src/
+    echo "Running pytest ..."
+    PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v --cov=src/ tests/
+    cp .coverage $coverage/coverage
   '';
-
-  installPhase = commonPhase + ''
-    wrapProgram $out/bin/pypi2nix \
-        --prefix PYTHONPATH : "$PYTHONPATH" \
-        --prefix PATH : "${pythonEnv.interpreter}/bin:${nix-prefetch-hg}/bin"
+  postInstall = ''
+    mkdir -p $coverage/bin $coverage/upload
+    cat > $coverage/bin/coverage <<EOL
+    #/bin/sh
+    cp "$coverage/coverage" ./.coverage
+    sed -i -e "s|$PWD/src|\$PWD/src|g" ./.coverage
+    eval ${python.packages."codecov"}/bin/codecov
+    EOL
+    chmod +x $coverage/bin/coverage
   '';
-
-  shellHook = ''
-    export home=`pwd`
-    export out=/tmp/`pwd | md5sum | cut -f 1 -d " "`-$name
-
-    rm -rf $out
-    mkdir -p $out
-
-    cd $out
-    runHook unpackPhase
-    runHook commonPhase
-    cd $home
-
-    export PATH=$out/bin:$PATH
-    export PYTHONPATH=`pwd`/src:$PYTHONPATH
-  '';
-
   meta = {
     homepage = https://github.com/garbas/pypi2nix;
     description = "A tool that generates nix expressions for your python packages, so you don't have to.";
-    maintainers = with stdenv.lib.maintainers; [ garbas ];
+    maintainers = with pkgs.lib.maintainers; [ garbas ];
   };
 }
