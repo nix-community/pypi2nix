@@ -22,14 +22,9 @@ Make sure Nix is installed.::
 
     % curl https://nixos.org/nix/install | sh
 
-Next clone `pypi2nix repository`_.::
-
-    % git clone https://github.com/garbas/pypi2nix
-
 And now install it using `nix-env`_ command.::
 
-    % cd pypi2nix
-    % nix-env -f release.nix -iA build."x86_64-linux"
+    % nix-env -if https://github.com/garbas/pypi2nix/tarball/master
 
 
 2. Usage
@@ -98,21 +93,21 @@ Building generated packages
 
 Build one package::
 
-    % nix-build requirements.nix -A packages.empy
+    % nix build -f requirements.nix packages.empy
 
 Build all packages::
 
-    % nix-build requirements.nix -A packages
+    % nix build -f requirements.nix packages
 
 Build python interpreter with all packages loaded::
 
-    % nix-build requirements.nix -A interpreter
+    % nix build -f requirements.nix interpreter
     % ./result/bin/python -c "import empy"
 
 Enter developent environemnt::
 
-    % nix-shell requirements.nix -A interpreter
-    (nix-shell) % python -c "import empy"
+    % nix run -f requirements.nix interpreter
+    [user@localhost:~/dev/nixos/pypi2nix) % python -c "import empy"
 
 
 Using generated packages
@@ -302,12 +297,12 @@ The file `examples/Makefile`_ contains specific instructions for packages like
 4. Help developing pypi2nix
 ---------------------------
 
-Clone `pypi2nix repository`_ and using `nix-shell`_ command enter development
+Clone `pypi2nix repository`_ and using ``nix run`` command enter development
 environment.::
 
     % git clone https://github.com/garbas/pypi2nix
     % cd pypi2nix
-    % nix-shell
+    % nix run -f .
 
 Code is located in ``src/pypi2nix``.
 
@@ -315,5 +310,4 @@ Code is located in ``src/pypi2nix``.
 .. _`Nix expressions`: http://nixos.org/nix/manual/#chap-writing-nix-expressions
 .. _`pypi2nix repository`: https://github.com/garbas/pypi2nix
 .. _`examples/Makefile`: https://github.com/garbas/pypi2nix/blob/master/examples/Makefile
-.. _`nix-shell`: http://nixos.org/nix/manual/#sec-nix-shell
 .. _`nix-env`: http://nixos.org/nix/manual/#sec-nix-env
