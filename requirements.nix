@@ -315,10 +315,10 @@ let
     };
 
     "effect" = python.mkDerivation {
-      name = "effect-0.11.0";
+      name = "effect-0.12.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/8a/9a/25a881d1a48847ae95742a30ad0471d9fd71f28a506d30e09dc8cdf4b3ac/effect-0.11.0.tar.gz";
-        sha256 = "0607530ef589b59f907cfebcb681b5ed4ed56bff1fc2a5de430dcfa72ae1e5e0";
+        url = "https://files.pythonhosted.org/packages/e0/48/9b8f44c0ce230cb88abf1addc3efb266c2df02a325c8bf453c7a0de0b374/effect-0.12.0.tar.gz";
+        sha256 = "f43322b269b2dca0c15856f090b9167d8499bf474ec64696c80a508299d51f69";
       };
       doCheck = commonDoCheck;
       checkPhase = "";
@@ -403,10 +403,10 @@ let
     };
 
     "flake8-isort" = python.mkDerivation {
-      name = "flake8-isort-2.5";
+      name = "flake8-isort-2.6.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/07/ad/d8d87f1dc4f2ab398ba9e9ad603367d14ba7d614dad7dece66ae0148541b/flake8-isort-2.5.tar.gz";
-        sha256 = "298d7904ac3a46274edf4ce66fd7e272c2a60c34c3cc999dea000608d64e5e6e";
+        url = "https://files.pythonhosted.org/packages/85/fb/f2a33e47cf7520fd391e5f180cae5b8d2977ad7a5ddf897213137fe8a171/flake8-isort-2.6.0.tar.gz";
+        sha256 = "3c107c405dd6e3dbdcccb2f84549d76d58a07120cd997a0560fab8b84c305f2a";
       };
       doCheck = commonDoCheck;
       checkPhase = "";
@@ -719,6 +719,7 @@ let
         self."more-itertools"
         self."pluggy"
         self."py"
+        self."requests"
         self."six"
       ];
       meta = with pkgs.stdenv.lib; {
@@ -761,7 +762,9 @@ let
       buildInputs = commonBuildInputs ++ [
         self."setuptools-scm"
       ];
-      propagatedBuildInputs = [ ];
+      propagatedBuildInputs = [
+        self."pytest"
+      ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pytest-dev/pytest-runner";
         license = "UNKNOWN";
@@ -892,7 +895,10 @@ let
       checkPhase = "";
       installCheckPhase = "";
       buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [ ];
+      propagatedBuildInputs = [
+        self."certifi"
+        self."idna"
+      ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://urllib3.readthedocs.io/";
         license = licenses.mit;
