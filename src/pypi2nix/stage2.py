@@ -52,15 +52,21 @@ def extract_deps(deps, default_environment):
             for marker in req.marker._markers:
                 if len(marker) != 3:
                     continue
-                if type(marker[0]) == setuptools._vendor.packaging.markers.Variable and \
-                   type(marker[1]) == setuptools._vendor.packaging.markers.Op and \
-                   type(marker[2]) == setuptools._vendor.packaging.markers.Value and \
-                   marker[0].value == 'extra' and \
-                   marker[1].value == '==':
+                if (
+                    type(marker[0]) == setuptools._vendor.packaging.markers.Variable
+                    and type(marker[1]) == setuptools._vendor.packaging.markers.Op
+                    and type(marker[2]) == setuptools._vendor.packaging.markers.Value
+                    and marker[0].value == "extra"
+                    and marker[1].value == "=="
+                ):
                     extra = marker[2].value
                     break
 
             if extra:
+                # this will save us from some cyclic dependencies until we have
+                # time to implement real solution
+                if extra in ["test", "tests", "dev", "docs", "doc"]:
+                    continue
                 environment = dict(**default_environment, **dict(extra=extra))
             else:
                 environment = dict(**default_environment)
