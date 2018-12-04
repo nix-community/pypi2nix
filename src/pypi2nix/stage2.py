@@ -46,10 +46,27 @@ def extract_deps(deps, default_environment):
         if req.name.lower() in TO_IGNORE:
             continue
 
-        if req.marker and not req.marker.evaluate(
-            dict(**default_environment, **dict(extra="???"))
-        ):
-            continue
+        if req.marker:
+
+            extra = None
+            for marker in req.marker._markers:
+                if len(marker) != 3:
+                    continue
+                if type(marker[0]) == setuptools._vendor.packaging.markers.Variable and \
+                   type(marker[1]) == setuptools._vendor.packaging.markers.Op and \
+                   type(marker[2]) == setuptools._vendor.packaging.markers.Value and \
+                   marker[0].value == 'extra' and \
+                   marker[1].value == '==':
+                    extra = marker[2].value
+                    break
+
+            if extra:
+                environment = dict(**default_environment, **dict(extra=extra))
+            else:
+                environment = dict(**default_environment)
+
+            if not req.marker.evaluate(environment):
+                continue
 
         extracted_deps.append(req.name)
 
