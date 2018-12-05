@@ -160,11 +160,13 @@ in pkgs.stdenv.mkDerivation rec {
         --no-index
 
     RETVAL=$?
+    for file in ${project_dir}/wheel/*; do
+      cp -f $file ${wheel_cache_dir}
+    done
     [ $RETVAL -ne 0 ] && exit $RETVAL
 
     pushd ${project_dir}/wheelhouse
     for file in ${project_dir}/wheel/*; do
-      cp -f $file ${wheel_cache_dir}
       unzip -qo $file
     done
     popd
