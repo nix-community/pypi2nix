@@ -167,6 +167,7 @@ def find_license(item):
 
     if license is None:
         license = item.get("license", "")
+        license = str(license)
 
         if license in ["LGPL with exceptions or ZPL", "ZPL 2.1"]:
             license = "licenses.zpl21"
