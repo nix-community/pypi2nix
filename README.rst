@@ -2,15 +2,24 @@ pypi2nix - generate Nix expressions for Python packages
 =======================================================
 
 ``pypi2nix`` is a command line tool that generates `Nix expressions`_ from
-different python specific sources (``requirements.txt``, ``buildout.cfg``,
-...).
+different Python specific sources (``requirements.txt``, ``buildout.cfg``,
+\...). This is useful for:
+
+- Building a Nix derivation for a program written in Python as part of
+  packaging it.
+
+- Setting up a development environment to hack on a program written in Python.
 
     The only way we can fix bugs with pypi2nix is if you report them. Please
     create an issue if you discover problems.
 
 ``pypi2nix`` will (until further notice) only work with latest *unstable*
-channel. This is due to ongoing changes in python infrastructure happening in
-nixpkgs.
+channel. This is due to ongoing changes in Python infrastructure happening in
+Nixpkgs.
+
+The `Nixpkgs manual section about Python
+<https://nixos.org/nixpkgs/manual/#python>`_ makes good reading if you
+haven't seen it already.
 
 .. contents::
 
@@ -18,11 +27,11 @@ nixpkgs.
 1. Installation
 ---------------
 
-Make sure Nix is installed.::
+Make sure Nix is installed::
 
     % curl https://nixos.org/nix/install | sh
 
-And now install it using `nix-env`_ command.::
+And now install it using `nix-env`_ command::
 
     % nix-env -if https://github.com/garbas/pypi2nix/tarball/master
 
@@ -30,18 +39,19 @@ And now install it using `nix-env`_ command.::
 2. Usage
 --------
 
-The easiest way to generate a Nix expressions is to invoke.::
+The easiest way to generate a Nix expressions is to invoke::
 
     % pypi2nix -V "3.5" -e packageA -e packageB==0.1
 
-If you also have ``requirements.txt`` file for you python project you can use
-``-r`` option.::
+If you also have a ``requirements.txt`` file for your Python project you can use
+the ``-r`` option.
 
+::
 
     % pypi2nix -V "3.5" -e packageA -e packageB==0.1 \
         -r requirements.txt -r requirements-dev.txt
 
-If your project relies on ``zc.buildout`` you can give ``-b`` option a try.::
+If your project relies on ``zc.buildout`` you can give ``-b`` option a try::
 
     % pypi2nix -V "2.7" -b buildout.cfg
 
@@ -50,42 +60,17 @@ What is being generated
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 Option ``-V`` tells pypi2nix which python version to be used. To see which
-python versions are available consule ``pypi2nix --help``.
+Python versions are available consult ``pypi2nix --help``.
 
 Once Nix expressions are generated you should be able to see 3 new files:
 
-- ``requirements_frozen.txt`` - full frozen set for your for you pypi2nix call.
+- ``requirements_frozen.txt`` - full frozen set for your for your pypi2nix call.
   This is the output you would expect from `pip freeze`.
 
 - ``requirements.nix`` is a file which contains a nix expression to for the package set that was built.
 
-- ``requirements_override.nix`` - this is an empty file which is ment to
+- ``requirements_override.nix`` - this is an empty file which lets you
   override generated nix expressions.
-
-
-
-Non-python/system dependencies
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Quite few python package require non-python dependencies to be present at
-installation time. For this purpose ``pypi2nix`` has ``-E`` options which can
-be used to define this extra non-python dependencies.
-
-``psycopg2`` requires ``pg_config`` binary to be present at installation time::
-
-    % pypi2nix -v -V 2.7 -e psycopg2 -E postgresql
-
-``lxml`` requires ``libxml2`` and ``libxslt`` system package::
-
-    % pypi2nix -v -V 2.7 -e lxml -E libxml2 -E libxslt
-    
-    
-Additional environment variables
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Some packages expect additional environment variables to be set::
-
-  % pypi2nix -v -V 2.7 -e bsddb3 -N 'BERKELEYDB_DIR=${pkgs.db.dev}'
 
 
 Building generated packages
@@ -104,7 +89,7 @@ Build python interpreter with all packages loaded::
     % nix build -f requirements.nix interpreter
     % ./result/bin/python -c "import empy"
 
-Enter developent environemnt::
+Enter development environment::
 
     % nix run -f requirements.nix interpreter
     [user@localhost:~/dev/nixos/pypi2nix) % python -c "import empy"
@@ -115,7 +100,7 @@ Using generated packages
 
 If you are working on a project where its dependencies are defined in
 ``requirements.txt`` then you can create a ``default.nix`` and add generated
-packages as buildInputs as demonstrated here::
+packages as ``buildInputs``, as demonstrated here::
 
     {}:
     let
@@ -148,27 +133,75 @@ packages as buildInputs as demonstrated here::
 
 
 As you can see you can access all packages via ``python.packages."<name>"``. If
-you want to depend on *all* packages you can as well do::
+you want to depend on *all* packages you can even do::
 
 
     propagatedBuildInputs = builtins.attrValues python.packages;
 
 
 
+3. When it doesn't work
+-----------------------
+
+I hope nobody is expecting ``pypi2nix`` to do always a perfect job. In Python
+packaging, there are just too many different cases that we will never be able to
+cover. What ``pypi2nix`` tries to do is to get you very close.
+
+Sometimes ``pypi2nix`` fails entirely. If this happens, open a bug --
+it's almost always a bug in ``pypi2nix``. However, sometimes
+``pypi2nix`` succeeds but the resulting ``requirements.nix`` file
+fails during the building of your Python package. Depending on what
+the problem is, this section may be helpful.
+
+Non-Python/system dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Quite a few Python packages require non-Python dependencies to be
+present at build time. These packages will fail to build with error
+messages about not being able to find ``foo.h`` or some ``fooconfig``
+file. To work around this, ``pypi2nix`` has ``-E`` options which can
+be used to include extra non-Python dependencies.
+
+For example, ``psycopg2`` requires ``pg_config`` binary to be present at installation time::
+
+    % pypi2nix -v -V 2.7 -e psycopg2 -E postgresql
+
+``lxml`` requires ``libxml2`` and ``libxslt`` system package::
+
+    % pypi2nix -v -V 2.7 -e lxml -E libxml2 -E libxslt
+
+
+Additional environment variables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some packages expect additional environment variables to be set::
+
+  % pypi2nix -v -V 2.7 -e bsddb3 -N 'BERKELEYDB_DIR=${pkgs.db.dev}'
+
+
 Using requirements_override.nix
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-I hope nobody is expecting ``pypi2nix`` to do always a perfect job. In python
-packaging there are just too many different cases that we will never be able to
-cover. What ``pypi2nix`` tries to do is to get you very close.
+Some other failures might be caused because the derivation that
+``pypi2nix`` wrote was incomplete. A very common situation is that
+``pypi2nix`` didn't include all the dependencies of some package. As
+an example, ``execnet`` depends on ``setuptools-scm``, but
+``pypi2nix`` may not detect this.
 
-When things go not as you expected, ``pypi2nix`` gives you an option to
-override anything that it was generated. Even add new packages this way.
+When this happens, Nix will fail to build ``execnet``, perhaps with an
+error message from distutils/setuptools complaining that it can't find
+a distribution for ``setuptools-scm``. What's happening here is that
+normally ``execnet`` would fetch ``setuptools-scm`` from PyPI, but Nix
+disables network access to guarantee reproducability. So when you
+build ``execnet``, it fails to find ``setuptools-scm``.
 
-An example how you would override a derivation would be adding extra build time
-dependencies which we can not detect with ``pypi2nix``. As example lets add
-``setuptools-src`` which got generated, but was not detected as build time
-dependency of ``execnet``::
+For these situations, ``pypi2nix`` provides a
+``requirements_override.nix`` file, which lets you override anything
+that it generated. You can even add new packages to the dependency set
+this way.
+
+As an example, let's add ``setuptools-scm`` as a build-time dependency
+of ``execnet``. Here's the ``requirements_override.nix``::
 
     { pkgs, python }:
 
@@ -181,24 +214,32 @@ dependency of ``execnet``::
     }
 
 
-This was you can add or remove any python package.
+In a similar way, you can add or remove any Python package.
 
-Including overrides
-^^^^^^^^^^^^^^^^^^^
+Shared overrides
+^^^^^^^^^^^^^^^^
 
-Additional to an autogenerated ``requirements_overrides.nix`` file you
-can include preexisting overrides files via the ``-O`` command line
-argument.  These overrides will be included the same way as your
-``requirements_overrides.nix``.  ``pypi2nix`` allows this via some
-common protocols.  The following are some usage examples and
-explanations of this feature.
+In addition to the empty autogenerated ``requirements_overrides.nix``
+file, you can include pre-existing overrides files.  These overrides
+will be included the same way as your ``requirements_overrides.nix``.
+
+The ``pypi2nix`` author also maintains a set of "default" overrides at
+https://github.com/garbas/nixpkgs-python/blob/master/overrides.nix --
+you can include these by using the ``--default-overrides`` argument to
+``pypi2nix``. These overrides are designed in such a way that they
+only override dependencies that were already present in your
+``requirements.nix``.
+
+You can also include an overrides file using the ``-O`` command line
+argument.  ``pypi2nix`` can fetch these overrides from a local file or
+over certain common protocols.
 
 ``http`` and ``https``
   ``pypi2nix -V 3 --overrides https://raw.githubusercontent.com/garbas/nixpkgs-python/master/overrides.nix``
 
-  Note that the generated nix expression will check if contents of
-  overrides files differs from when a nix expression was build and
-  fail of this was the case or the file does not exist anymore.
+  Note that the generated Nix expression will check if contents of
+  the overrides file differs from when the Nix expression was built, and
+  fail if this was the case (or the file does not exist anymore).
 
 Local files
   ``pypi2nix -V 3 --override ../some/relative/path --override /some/absolute/path``
@@ -210,10 +251,13 @@ Git repositories
   to prefix its URL with ``git+``, quite similar to how you would do
   in a ``requirements.txt`` file for ``pip``.
 
-Creating default.nix for you project
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4. Advanced Use
+---------------
 
-Nothing speaks better then an example::
+Creating default.nix for your project
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Nothing speaks better than an example::
 
     { }:
 
@@ -251,27 +295,27 @@ Nothing speaks better then an example::
     }
 
 
-Important to know here is that you instantiate all generated packages as
-``python = import ./requirements.nix { inherit pkgs; };`` which gives you
-a python environment with ``pypi2nix`` generated packages and some common
-utilities.
+Important to know here is that you instantiate all generated packages
+as ``python = import ./requirements.nix { inherit pkgs; };`` which
+gives you a Python environment with all the packages generated by
+``pypi2nix`` as well as some common utilities.
 
-To create a package you would use ``python.mkDerivation`` as you are used to
-that ``pythonPackages.buildPythonPackage`` function in ``nixpkgs``. All
+To create a package you use ``python.mkDerivation`` which works like
+the ``pythonPackages.buildPythonPackage`` function in ``nixpkgs``. All
 generated packages are available as one attribute set under
 ``python.packages``.
 
 .. TODO explain withPackages and show some example
 
 One of future goals of ``pypi2nix`` project is to also improve the UX of our
-python tooling in nixpkgs. While this is very hard to do within ``nixpkgs`` it
+Python tooling in nixpkgs. While this is very hard to do within ``nixpkgs`` it
 is almost trivial to experiment with this outside ``nixpkgs``.
 
 
 Convert generated requirements.nix into nixpkgs overlay
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A working example tells more then 1000 words
+A working example is worth 1000 words.
 
 overlay.nix::
 
@@ -287,14 +331,14 @@ shell.nix::
     customPython.interpreter
 
 
-3. Existing examples
+5. Existing examples
 --------------------
 
-The file `examples/Makefile`_ contains specific instructions for packages like
+The file `examples/Makefile`_ contains demonstrations using packages like
 ``sentry``, ``empy``, ``lektor``, ``awscli`` and ``rss2email``.
 
 
-4. Help developing pypi2nix
+6. Help developing pypi2nix
 ---------------------------
 
 Clone `pypi2nix repository`_ and using ``nix run`` command enter development
