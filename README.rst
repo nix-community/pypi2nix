@@ -23,11 +23,11 @@ nixpkgs.
 1. Installation
 ---------------
 
-Make sure Nix is installed.::
+Make sure Nix is installed::
 
     % curl https://nixos.org/nix/install | sh
 
-And now install it using `nix-env`_ command.::
+And now install it using `nix-env`_ command::
 
     % nix-env -if https://github.com/garbas/pypi2nix/tarball/master
 
@@ -35,18 +35,19 @@ And now install it using `nix-env`_ command.::
 2. Usage
 --------
 
-The easiest way to generate a Nix expressions is to invoke.::
+The easiest way to generate a Nix expressions is to invoke::
 
     % pypi2nix -V "3.5" -e packageA -e packageB==0.1
 
 If you also have a ``requirements.txt`` file for your Python project you can use
-the ``-r`` option.::
+the ``-r`` option.
 
+::
 
     % pypi2nix -V "3.5" -e packageA -e packageB==0.1 \
         -r requirements.txt -r requirements-dev.txt
 
-If your project relies on ``zc.buildout`` you can give ``-b`` option a try.::
+If your project relies on ``zc.buildout`` you can give ``-b`` option a try::
 
     % pypi2nix -V "2.7" -b buildout.cfg
 
@@ -84,7 +85,7 @@ Build python interpreter with all packages loaded::
     % nix build -f requirements.nix interpreter
     % ./result/bin/python -c "import empy"
 
-Enter developent environemnt::
+Enter development environment::
 
     % nix run -f requirements.nix interpreter
     [user@localhost:~/dev/nixos/pypi2nix) % python -c "import empy"
@@ -128,7 +129,7 @@ packages as ``buildInputs``, as demonstrated here::
 
 
 As you can see you can access all packages via ``python.packages."<name>"``. If
-you want to depend on *all* packages you can as well do::
+you want to depend on *all* packages you can even do::
 
 
     propagatedBuildInputs = builtins.attrValues python.packages;
@@ -227,7 +228,7 @@ only override dependencies that were already present in your
 
 You can also include an overrides file using the ``-O`` command line
 argument.  ``pypi2nix`` can fetch these overrides from a local file or
-over certain common protocols::
+over certain common protocols.
 
 ``http`` and ``https``
   ``pypi2nix -V 3 --overrides https://raw.githubusercontent.com/garbas/nixpkgs-python/master/overrides.nix``
