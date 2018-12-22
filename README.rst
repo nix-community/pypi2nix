@@ -2,7 +2,7 @@ pypi2nix - generate Nix expressions for Python packages
 =======================================================
 
 ``pypi2nix`` is a command line tool that generates `Nix expressions`_ from
-different python specific sources (``requirements.txt``, ``buildout.cfg``,
+different Python specific sources (``requirements.txt``, ``buildout.cfg``,
 \...). This is useful for:
 
 - Building a Nix derivation for a program written in Python as part of
@@ -14,8 +14,12 @@ different python specific sources (``requirements.txt``, ``buildout.cfg``,
     create an issue if you discover problems.
 
 ``pypi2nix`` will (until further notice) only work with latest *unstable*
-channel. This is due to ongoing changes in python infrastructure happening in
-nixpkgs.
+channel. This is due to ongoing changes in Python infrastructure happening in
+Nixpkgs.
+
+The `Nixpkgs manual section about Python
+<https://nixos.org/nixpkgs/manual/#python>`_ makes good reading if you
+haven't seen it already.
 
 .. contents::
 
