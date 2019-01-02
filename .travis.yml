@@ -23,8 +23,8 @@ env:
   - EXAMPLE=tornado
 install:
 - sudo mount -o remount,exec,size=4G,mode=755 /run/user || true
-- nix-env -iA nixpkgs.nix-prefetch-git nixpkgs.nix-prefetch-hg nixpkgs.cachix
-#- nix-env -if https://github.com/cachix/cachix/tarball/master --extra-substituters https://cachix.cachix.org --trusted-public-keys 'cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cachix.cachix.org-1:eWNHQldwUO7G2VkjpnjDbWwy4KQ/HNxht7H4SSoMckM='
+- nix-env -iA nixpkgs.nix-prefetch-git nixpkgs.nix-prefetch-hg
+- nix-env -iA cachix -f https://github.com/NixOS/nixpkgs/tarball/889c72032f8595fcd7542c6032c208f6b8033db6
 - cachix use pypi2nix
 script:
 - travis_wait 60 make $EXAMPLE -C ./examples
