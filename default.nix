@@ -32,7 +32,7 @@ in python.mkDerivation {
   name = "pypi2nix-${version}";
   src = nix-gitignore.gitignoreSource additionalIgnores ./.;
   outputs = [ "out" "coverage" ];
-  buildInputs = fromRequirementsFile ./requirements-dev.txt python.packages;
+  checkInputs = fromRequirementsFile ./requirements-dev.txt python.packages;
   propagatedBuildInputs = fromRequirementsFile ./requirements.txt python.packages;
   doCheck = true;
   checkPhase = ''

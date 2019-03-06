@@ -2,7 +2,7 @@
       name = "{{ name }}-{{ version }}";
       src = {{ fetch_expression }};
       doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs ++ {{ buildInputs }};
+      checkInputs = commonBuildInputs ++ {{ buildInputs }};
       propagatedBuildInputs = {{ propagatedBuildInputs }};
       meta = with pkgs.stdenv.lib; {
         homepage = "{{ homepage }}";
