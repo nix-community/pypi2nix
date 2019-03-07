@@ -3,6 +3,9 @@
       src = {{ fetch_expression }};
       doCheck = commonDoCheck;
       checkInputs = commonBuildInputs ++ {{ buildInputs }};
+      buildInputs = commonBuildInputs ++ {{ buildInputs }};
+      nativeBuildInputs = commonBuildInputs ++ {{ buildInputs }};
+      propagatedNativeBuildInputs = commonBuildInputs ++ {{ buildInputs }};
       propagatedBuildInputs = {{ propagatedBuildInputs }};
       meta = with pkgs.stdenv.lib; {
         homepage = "{{ homepage }}";
