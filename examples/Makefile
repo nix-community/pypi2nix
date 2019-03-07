@@ -116,7 +116,7 @@ awscli_and_requests.nix: awscli_and_requests.txt $(PYPI2NIX)
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "2.7" \
-    -e setuptools-scm \
+		-s setuptools-scm \
 		--basename awscli_and_requests \
 		-r awscli_and_requests.txt
 
@@ -145,12 +145,13 @@ connexion.nix: connexion.txt $(PYPI2NIX)
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V 3.7 \
-		-e pytest-runner \
-		-e setuptools-scm \
-		-e flake8 \
 		--basename connexion \
-		-r connexion.txt  \
-		-e vcversioner
+		-s flake8 \
+		-s flit \
+		-s pytest-runner \
+		-s setuptools-scm \
+		-s vcversioner \
+		-r connexion.txt
 
 connexion.txt: connexion-clear
 	echo "connexion" > connexion.txt
@@ -203,8 +204,9 @@ flake8.nix: flake8.txt $(PYPI2NIX)
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "3.5" \
-    -e pytest-runner \
-    -e setuptools-scm \
+		-s flit \
+		-s pytest-runner \
+		-s setuptools-scm \
 		--basename flake8 \
 		-r flake8.txt
 
@@ -232,8 +234,8 @@ flake8-includes.nix: flake8-includes.txt $(PYPI2NIX)
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "3.5" \
-		-e pytest-runner \
-		-e setuptools-scm \
+		-s pytest-runner \
+		-s setuptools-scm \
 		--basename flake8-includes \
 		-r flake8-includes.txt
 flake8-includes.txt: flake8-includes-clear flake8.txt
@@ -317,8 +319,8 @@ mercurial.nix: mercurial.txt $(PYPI2NIX)
 	$(PYPI2NIX) -v \
 		-I $(NIX_PATH) \
 		-V "2.7" \
-		-e pytest-runner \
-		-e setuptools-scm \
+		-s pytest-runner \
+		-s setuptools-scm \
 		--basename mercurial \
 		-E "mercurial" \
 		-r mercurial.txt
