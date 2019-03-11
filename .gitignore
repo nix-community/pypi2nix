@@ -9,6 +9,8 @@
 /examples/aiohttp_override.nix
 /examples/awscli_and_requests
 /examples/awscli_and_requests.nix
+/examples/connexion
+/examples/connexion.nix
 /examples/empy
 /examples/empy.nix
 /examples/empy_override.nix
