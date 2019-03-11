@@ -201,7 +201,7 @@ flake8: flake8.nix
 
 flake8.nix: flake8.txt $(PYPI2NIX)
 	echo "generating flake8.nix expressions ..."
-	$(PYPI2NIX) -v \
+	$(PYPI2NIX) \
 		-I $(NIX_PATH) \
 		-V "3.5" \
 		-s flit \
