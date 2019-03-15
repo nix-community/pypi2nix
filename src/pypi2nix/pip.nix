@@ -51,6 +51,7 @@ let
       echo ""
       ${extra_env} pip download \
         ${builtins.concatStringsSep " " setup_requires} \
+        ${builtins.concatStringsSep " " (map (x: "-c ${x} ") requirements_files)} \
         --dest ${download_cache_dir} \
         --src ${project_dir}/src-download \
         --build ${project_dir}/build \
