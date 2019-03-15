@@ -205,6 +205,7 @@ flake8.nix: flake8.txt $(PYPI2NIX)
 		-I $(NIX_PATH) \
 		-V "3.5" \
 		-s flit \
+		-s intreehooks \
 		-s pytest-runner \
 		-s setuptools-scm \
 		--basename flake8 \
