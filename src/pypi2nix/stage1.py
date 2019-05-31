@@ -60,7 +60,7 @@ class WheelBuilder:
                 command="exit", derivation_path=PIP_NIX, nix_arguments=nix_arguments
             )
         except EvaluationFailed as error:
-            self.handle_build_error(error.stdout)
+            self.handle_build_error(error.output)
 
         if output.endswith("ERROR: Failed to build one or more wheels"):
             self.handle_build_error(output)
