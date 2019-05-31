@@ -3,10 +3,9 @@ import os.path
 import pytest
 from pypi2nix.nix import *
 
+from .switches import nix
+
 HERE = os.path.dirname(__file__)
-
-
-nix = pytest.mark.nix
 
 
 @pytest.fixture

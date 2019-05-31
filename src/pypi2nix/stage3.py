@@ -10,6 +10,7 @@ HERE = os.path.dirname(__file__)
 
 def main(
     packages_metadata,
+    sources,
     requirements_name,
     requirements_files,
     requirements_frozen,
@@ -34,17 +35,17 @@ def main(
     version = version.strip()
 
     metadata_by_name = {
-        setuptools._vendor.packaging.utils.canonicalize_name(x["name"]): x
+        setuptools._vendor.packaging.utils.canonicalize_name(x.name): x
         for x in packages_metadata
     }
 
     generated_packages_metadata = []
-    for item in sorted(packages_metadata, key=lambda x: x["name"]):
+    for item in sorted(packages_metadata, key=lambda x: x.name):
         buildInputs = "[ ]"
-        if item.get("build_deps"):
+        if item.build_deps:
             build_deps = [
                 setuptools._vendor.packaging.utils.canonicalize_name(x)
-                for x in item["build_deps"]
+                for x in item.build_deps
                 if setuptools._vendor.packaging.utils.canonicalize_name(x)
                 in metadata_by_name.keys()
             ]
@@ -53,18 +54,18 @@ def main(
                     "\n".join(
                         sorted(
                             [
-                                '        self."%s"' % (metadata_by_name[x]["name"])
+                                '        self."%s"' % (metadata_by_name[x].name)
                                 for x in build_deps
-                                if x not in [item["name"]]
+                                if x != item.name
                             ]
                         )
                     )
                 )
         propagatedBuildInputs = "[ ]"
-        if item.get("deps"):
+        if item.deps:
             deps = [
                 setuptools._vendor.packaging.utils.canonicalize_name(x)
-                for x in item["deps"]
+                for x in item.deps
                 if setuptools._vendor.packaging.utils.canonicalize_name(x)
                 in metadata_by_name.keys()
             ]
@@ -73,61 +74,25 @@ def main(
                     "\n".join(
                         sorted(
                             [
-                                '        self."%s"' % (metadata_by_name[x]["name"])
+                                '        self."%s"' % (metadata_by_name[x].name)
                                 for x in deps
-                                if x not in [item["name"]]
+                                if x != item.name
                             ]
                         )
                     )
                 )
-        fetch_type = item.get("fetch_type", None)
-        if fetch_type == "path":
-            fetch_expression = "pkgs.lib.cleanSource ./" + os.path.relpath(
-                item["url"], current_dir
-            )
-        elif fetch_type == "fetchgit":
-            fetch_expression = (
-                'pkgs.fetchgit {\n        url = "%(url)s";'
-                '\n        %(hash_type)s = "%(hash_value)s";\n        rev = "%(rev)s";\n      }'
-                % dict(
-                    url=item["url"],
-                    hash_type=item["hash_type"],
-                    hash_value=item["hash_value"],
-                    rev=item["rev"],
-                )
-            )
-        elif fetch_type == "fetchhg":
-            fetch_expression = (
-                'pkgs.fetchhg {\n        url = "%(url)s";'
-                '\n        %(hash_type)s = "%(hash_value)s";\n        rev = "%(rev)s";\n      }'
-                % dict(
-                    url=item["url"],
-                    hash_type=item["hash_type"],
-                    hash_value=item["hash_value"],
-                    rev=item["rev"],
-                )
-            )
-        else:
-            fetch_expression = (
-                'pkgs.fetchurl {\n        url = "%(url)s";'
-                '\n        %(hash_type)s = "%(hash_value)s";\n      }'
-                % dict(
-                    url=item["url"],
-                    hash_type=item["hash_type"],
-                    hash_value=item["hash_value"],
-                )
-            )
-
+        source = sources[item.name]
+        fetch_expression = source.nix_expression()
         generated_packages_metadata.append(
             dict(
-                name=item.get("name", ""),
-                version=item.get("version", ""),
+                name=item.name,
+                version=item.version,
                 fetch_expression=fetch_expression,
                 buildInputs=buildInputs,
                 propagatedBuildInputs=propagatedBuildInputs,
-                homepage=item.get("homepage", ""),
-                license=item.get("license", ""),
-                description=item.get("description", ""),
+                homepage=item.homepage,
+                license=item.license,
+                description=item.description,
             )
         )
 

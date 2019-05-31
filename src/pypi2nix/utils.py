@@ -1,9 +1,11 @@
+import hashlib
 import json
 import os
 import shlex
 import subprocess
 
 import click
+import requests
 from nix_prefetch_github import nix_prefetch_github
 
 HERE = os.path.dirname(__file__)
@@ -79,11 +81,6 @@ def args_as_list(inputs):
     return list(filter(lambda x: x != "", (" ".join(inputs)).split(" ")))
 
 
-def prefetch_url(url):
-    output = cmd(["nix-prefetch-url", url], stderr=None)
-    return output[-1][:-1]
-
-
 def prefetch_git(url, rev=None):
     command = ["nix-prefetch-git", url]
 
@@ -121,9 +118,68 @@ def prefetch_git(url, rev=None):
     return repo_data
 
 
+def prefetch_hg(url, rev=None, verbose=False):
+    command = ["nix-prefetch-hg", url] + ([rev] if rev else [])
+    return_code, output = cmd(command, verbose)
+    if return_code != 0:
+        raise click.ClickException(
+            " ".join(
+                [
+                    "Could not fetch hg repository at {url}, returncode was {code}."
+                    "stdout:\n {stdout}"
+                ]
+            ).format(url=url, code=return_code, stdout=output)
+        )
+    HASH_PREFIX = "hash is "
+    REV_PREFIX = "hg revision is "
+    hash_value = None
+    revision = None
+    for output_line in output.splitlines():
+        output_line = output_line.strip()
+        if output_line.startswith(HASH_PREFIX):
+            hash_value = output_line[len(HASH_PREFIX) :].strip()
+        elif output_line.startswith(REV_PREFIX):
+            revision = output_line[len(REV_PREFIX) :].strip()
+
+    if hash_value is None:
+        raise click.ClickException(
+            "Could not determine the hash from ouput:\n{output}".format(output=output)
+        )
+    if revision is None:
+        raise click.ClickException(
+            "Could not determine the revision from ouput:\n{output}".format(
+                output=output
+            )
+        )
+    return {"sha256": hash_value, "revision": revision}
+
+
 def prefetch_github(owner, repo, rev=None):
     return nix_prefetch_github(owner, repo, rev=rev)
 
 
 def escape_double_quotes(text):
     return text.replace('"', '\\"')
+
+
+def prefetch_url(url, verbose=False):
+    returncode, output = cmd(["nix-prefetch-url", url], verbose=verbose)
+    return output.splitlines()[2]
+
+
+def download_file(url, filename, chunk_size=2048):
+    r = requests.get(url, stream=True, timeout=None)
+    r.raise_for_status()  # TODO: handle this nicer
+
+    with open(filename, "wb") as fd:
+        for chunk in r.iter_content(chunk_size):
+            fd.write(chunk)
+
+
+def md5_sum_of_files_with_file_names(paths):
+    hash_sum = hashlib.md5()
+    for path in paths:
+        hash_sum.update(path.encode())
+        with open(path, "rb") as f:
+            hash_sum.update(f.read())
+    return hash_sum.hexdigest()

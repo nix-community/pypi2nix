@@ -10,6 +10,10 @@ import pypi2nix.stage2
 import pypi2nix.stage3
 import pypi2nix.utils
 from pypi2nix.nix import Nix
+from pypi2nix.package_source import PathSource
+from pypi2nix.requirements_file import RequirementsFile
+from pypi2nix.sources import Sources
+from pypi2nix.utils import md5_sum_of_files_with_file_names
 
 
 @click.command("pypi2nix")
@@ -79,7 +83,7 @@ from pypi2nix.nix import Nix
     "-r",
     "--requirements",
     required=False,
-    default=None,
+    default=[],
     multiple=True,
     type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True),
     help=u"pip requirements.txt file",
@@ -203,104 +207,14 @@ def main(
     if not os.path.exists(wheel_cache_dir):
         os.makedirs(wheel_cache_dir)
 
-    requirements_files = []
-    if requirements:
-        requirements_files += requirements
+    assert requirements is not None
 
-    requirements_hash = ""
-    for requirements_file in requirements_files:
-        requirements_hash += requirements_file
-        with open(requirements_file) as f:
-            requirements_hash += f.read()
-
-    project_hash = hashlib.md5(requirements_hash.encode()).hexdigest()
+    project_hash = md5_sum_of_files_with_file_names(requirements)
 
     project_dir = os.path.join(tmp_dir, project_hash)
     if os.path.exists(project_dir):
         shutil.rmtree(project_dir)
     os.makedirs(project_dir)
-
-    sources = dict()
-
-    def handle_requirements_file(project_dir, requirements_file):
-
-        # we find new name for our requirements_file
-        new_requirements_file = "%s/%s.txt" % (
-            project_dir,
-            hashlib.md5(requirements_file.encode()).hexdigest(),
-        )
-
-        # we open both files: f1 to read, f2 to write
-        with open(requirements_file) as f1:
-            with open(new_requirements_file, "w+") as f2:
-                for requirements_line in f1.readlines():
-                    requirements_line = requirements_line.strip()
-                    if requirements_line.startswith(
-                        "-e git+"
-                    ) or requirements_line.startswith("-e hg+"):
-                        pass
-                    elif requirements_line.startswith("-e "):
-                        requirements_line = requirements_line[3:]
-                        try:
-                            tmp_path, egg = requirements_line.split("#")
-                            tmp_name = egg.split("egg=")[1]
-                            tmp_path = tmp_path.strip()
-                            _tmp = tmp_path.split("[")
-                            if len(_tmp) > 1:
-                                tmp_path = _tmp[0]
-                                tmp_other = "[" + _tmp[1]
-                            else:
-                                tmp_other = ""
-                        except Exception:
-                            raise click.ClickException(
-                                "Requirement starting with `.` "
-                                "should end with #egg=<name>. Line `%s` does "
-                                "not end with egg=<name>" % requirements_line
-                            )
-
-                        tmp_path = os.path.abspath(
-                            os.path.join(
-                                os.path.dirname(requirements_file),
-                                os.path.abspath(os.path.join(current_dir, tmp_path)),
-                            )
-                        )
-
-                        requirements_line = "-e %s%s" % (tmp_path, tmp_other)
-                        sources[tmp_name] = dict(url=tmp_path, type="path")
-
-                    elif requirements_line.startswith(
-                        "-r "
-                    ) or requirements_line.startswith(
-                        "-c "
-                    ):  # noqa
-                        requirements_file2 = os.path.abspath(
-                            os.path.join(
-                                os.path.dirname(requirements_file),
-                                requirements_line[3:],
-                            )
-                        )
-                        new_requirements_file2 = handle_requirements_file(
-                            project_dir, requirements_file2
-                        )
-                        requirements_line = (
-                            requirements_line[0:3] + new_requirements_file2
-                        )  # noqa
-                    f2.write(requirements_line + "\n")
-
-        return new_requirements_file
-
-    requirements_files_tmp = []
-    for requirements_file in requirements_files:
-        if requirements_file in requirements:
-            requirements_files_tmp.append(
-                handle_requirements_file(project_dir, requirements_file)
-            )
-        else:
-            requirements_files_tmp.append(requirements_file)
-    requirements_files = requirements_files_tmp
-
-    click.echo("pypi2nix v{} running ...".format(pypi2nix_version))
-    click.echo("")
 
     if editable:
         editable_file = os.path.join(project_dir, "editable.txt")
@@ -315,10 +229,18 @@ def main(
                     f.write("-e %s\n" % item)
                 else:
                     f.write("%s\n" % item)
+        requirements += requirements + (editable_file,)
 
-        requirements_files = [
-            handle_requirements_file(project_dir, editable_file)
-        ] + requirements_files  # noqa
+    sources = Sources()
+    requirements_files = []
+    for requirements_path in requirements:
+        requirements_file = RequirementsFile(requirements_path, project_dir)
+        requirements_file.process()
+        sources.update(requirements_file.sources)
+        requirements_files.append(requirements_file.processed_requirements_file_path())
+
+    click.echo("pypi2nix v{} running ...".format(pypi2nix_version))
+    click.echo("")
 
     click.echo("Stage1: Downloading wheels and creating wheelhouse ...")
 
@@ -342,19 +264,18 @@ def main(
 
     click.echo("Stage2: Extracting metadata from pypi.python.org ...")
 
-    packages_metadata = pypi2nix.stage2.main(
-        verbose=verbose,
-        wheels=wheels,
-        default_environment=default_environment,
-        requirements_files=requirements_files,
-        wheel_cache_dir=wheel_cache_dir,
-        sources=sources,
-    )
+    stage2 = pypi2nix.stage2.Stage2(sources=sources, verbose=verbose)
 
+    packages_metadata = stage2.main(
+        wheel_paths=wheels,
+        default_environment=default_environment,
+        wheel_cache_dir=wheel_cache_dir,
+    )
     click.echo("Stage3: Generating Nix expressions ...")
 
     pypi2nix.stage3.main(
         packages_metadata=packages_metadata,
+        sources=sources,
         requirements_name=requirements_name,
         requirements_files=requirements_files,
         requirements_frozen=requirements_frozen,
