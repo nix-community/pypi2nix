@@ -1,15 +1,15 @@
-import click
 import hashlib
 import os
 import shutil
 import tempfile
 
+import click
 import pypi2nix.overrides
-import pypi2nix.stage0
 import pypi2nix.stage1
 import pypi2nix.stage2
 import pypi2nix.stage3
 import pypi2nix.utils
+from pypi2nix.nix import Nix
 
 
 @click.command("pypi2nix")
@@ -146,6 +146,16 @@ def main(
 ):
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
+
+    if os.path.exists(nix_shell):
+        nix_executable_directory = os.path.abspath(os.path.dirname(nix_shell))
+    else:
+        nix_executable_directory = None
+    nix = Nix(
+        nix_path=nix_path,
+        executable_directory=nix_executable_directory,
+        verbose=verbose != 0,
+    )
 
     if default_overrides:
         overrides += tuple(
@@ -312,7 +322,7 @@ def main(
 
     click.echo("Stage1: Downloading wheels and creating wheelhouse ...")
 
-    requirements_frozen, wheels, default_environment = pypi2nix.stage1.main(
+    wheel_builder = pypi2nix.stage1.WheelBuilder(
         verbose=verbose,
         requirements_files=requirements_files,
         project_dir=project_dir,
@@ -320,11 +330,13 @@ def main(
         wheel_cache_dir=wheel_cache_dir,
         extra_build_inputs=extra_build_inputs,
         python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
-        nix_path=nix_path,
         setup_requires=setup_requires,
         extra_env=extra_env,
         wheels_cache=wheels_cache,
+        nix=nix,
     )
+
+    requirements_frozen, wheels, default_environment = wheel_builder.build()
 
     click.echo("Stage2: Extracting metadata from pypi.python.org ...")
 

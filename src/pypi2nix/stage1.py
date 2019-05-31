@@ -6,82 +6,102 @@ import urllib
 
 import click
 import pypi2nix.utils
-
+from pypi2nix.nix import EvaluationFailed
+from pypi2nix.utils import escape_double_quotes
 
 HERE = os.path.dirname(__file__)
+PIP_NIX = os.path.join(os.path.dirname(__file__), "pip.nix")
 
 
-def main(
-    verbose,
-    requirements_files,
-    project_dir,
-    download_cache_dir,
-    wheel_cache_dir,
-    extra_build_inputs,
-    python_version,
-    nix_path=None,
-    nix_shell="nix-shell",
-    setup_requires=[],
-    extra_env="",
-    wheels_cache=[],
-):
-    """Create a complete (pip freeze) requirements.txt and a wheelhouse from
-       a user provided requirements.txt.
-    """
+class WheelBuilder:
+    def __init__(
+        self,
+        verbose,
+        requirements_files,
+        project_dir,
+        download_cache_dir,
+        wheel_cache_dir,
+        extra_build_inputs,
+        python_version,
+        nix,
+        setup_requires=[],
+        extra_env="",
+        wheels_cache=[],
+    ):
+        self.verbose = verbose
+        self.requirements_files = requirements_files
+        self.project_dir = project_dir
+        self.download_cache_dir = download_cache_dir
+        self.wheel_cache_dir = wheel_cache_dir
+        self.extra_build_inputs = extra_build_inputs
+        self.python_version = python_version
+        self.nix = nix
+        self.setup_requires = setup_requires
+        self.extra_env = extra_env
+        self.wheels_cache = wheels_cache
+        self.evaluated_environment = None
 
-    if nix_path:
-        nix_path = " ".join("-I {}".format(i) for i in nix_path)
-    else:
-        nix_path = ""
-
-    if extra_env:
-        nix_instantiate = "nix-instantiate"
-        if os.path.exists(nix_shell):
-            nix_instantiate = os.path.abspath(
-                os.path.join(os.path.dirname(nix_path), nix_instantiate)
-            )
-        command_env = (
-            "%s %s --eval --expr 'let pkgs = import <nixpkgs> {}; in \"%s\"'"
-            % (nix_instantiate, nix_path, extra_env.replace('"', '\\"'))  # noqa
+    def build(self):
+        self.evaluate_environment_variables()
+        nix_arguments = dict(
+            requirements_files=self.requirements_files,
+            project_dir=self.project_dir,
+            download_cache_dir=self.download_cache_dir,
+            wheel_cache_dir=self.wheel_cache_dir,
+            extra_build_inputs=self.extra_build_inputs,
+            extra_env=self.evaluated_environment,
+            python_version=self.python_version,
+            setup_requires=self.setup_requires,
+            wheels_cache=self.wheels_cache,
         )
-        returncode, output = pypi2nix.utils.cmd(command_env, verbose != 0)
-        if returncode != 0:
-            if verbose == 0:
-                click.echo(output)
-            raise click.ClickException("Failed to interpret extra_env")
-        extra_env = output.split("\n")[-2].strip()[1:-1]
 
-    command = "{nix_shell} {nix_file} {nix_options} {nix_path} --show-trace --pure --run exit".format(  # noqa
-        nix_shell=nix_shell,
-        nix_file=os.path.join(os.path.dirname(__file__), "pip.nix"),
-        nix_options=pypi2nix.utils.create_command_options(
-            dict(
-                requirements_files=requirements_files,
-                project_dir=project_dir,
-                download_cache_dir=download_cache_dir,
-                wheel_cache_dir=wheel_cache_dir,
-                extra_build_inputs=extra_build_inputs,
-                extra_env=extra_env,
-                python_version=python_version,
-                setup_requires=setup_requires,
-                wheels_cache=wheels_cache,
+        try:
+            output = self.nix.shell(
+                command="exit", derivation_path=PIP_NIX, nix_arguments=nix_arguments
             )
-        ),
-        nix_path=nix_path,
-    )
+        except EvaluationFailed as error:
+            self.handle_build_error(error.stdout)
 
-    returncode, output = pypi2nix.utils.cmd(command, verbose != 0)
-    if returncode != 0 or output.endswith("ERROR: Failed to build one or more wheels"):
-        if verbose == 0:
-            click.echo(output)
+        if output.endswith("ERROR: Failed to build one or more wheels"):
+            self.handle_build_error(output)
+
+        return (
+            self.frozen_requirements_txt_path(),
+            self.dist_info_directories(),
+            self.default_environment(),
+        )
+
+    def default_environment(self):
+        with open(os.path.join(self.project_dir, "default_environment.json")) as f:
+            return json.load(f)
+
+    def dist_info_directories(self):
+        return glob.glob(os.path.join(self.project_dir, "wheelhouse", "*.dist-info"))
+
+    def frozen_requirements_txt_path(self):
+        return os.path.join(self.project_dir, "requirements.txt")
+
+    def evaluate_environment_variables(self):
+        output = self.nix.evaluate_expression(
+            'let pkgs = import <nixpkgs> {}; in "%s"'
+            % escape_double_quotes(self.extra_env)
+        )
+        # trim quotes
+        self.evaluated_environment = output[1:-1]
+
+    def handle_build_error(self, build_output):
+        if self.verbose == 0:
+            click.echo(build_output)
 
         message = u"While trying to run the command something went wrong."
 
         # trying to recognize the problem and provide more meanigful error
         # message
         no_matching_dist = "No matching distribution found for "
-        if no_matching_dist in output:
-            dist_name = output[output.find(no_matching_dist) + len(no_matching_dist) :]
+        if no_matching_dist in build_output:
+            dist_name = build_output[
+                build_output.find(no_matching_dist) + len(no_matching_dist) :
+            ]
             dist_name = dist_name[: dist_name.find(" (from")]
             message = (
                 "Most likely `%s` package does not have source (zip/tar.bz) "
@@ -102,19 +122,10 @@ def main(
                 with open(os.path.join(HERE, "VERSION")) as f:
                     body += f.read() + "\n"
                 body += "% pypi2nix " + " ".join(sys.argv[1:]) + "\n"
-                body += output + "\n```\n"
+                body += build_output + "\n```\n"
                 click.launch(
                     "https://github.com/garbas/pypi2nix/issues/new?%s"
                     % (urllib.parse.urlencode(dict(title=title, body=body)))
                 )
 
         raise click.ClickException(message)
-
-    with open(os.path.join(project_dir, "default_environment.json")) as f:
-        default_environment = json.load(f)
-
-    return (
-        os.path.join(project_dir, "requirements.txt"),
-        glob.glob(os.path.join(project_dir, "wheelhouse", "*.dist-info")),
-        default_environment,
-    )

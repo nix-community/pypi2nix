@@ -41,7 +41,7 @@ in python.mkDerivation {
     echo "Running flake8 ..."
     flake8 -v setup.py src/
     echo "Running pytest ..."
-    PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v --cov=src/ tests/
+    PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v --cov=src/ tests/ -m 'not nix'
     cp .coverage $coverage/coverage
   '';
   postInstall = ''

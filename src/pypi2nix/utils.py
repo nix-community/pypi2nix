@@ -60,15 +60,19 @@ def cmd(command, verbose=False, stderr=subprocess.STDOUT):
     return p.returncode, "\n".join(out)
 
 
-def create_command_options(options):
+def create_command_options(options, list_form=False):
     command_options = []
     for name, value in options.items():
         if isinstance(value, str):
-            command_options.append('--argstr {} "{}"'.format(name, value))
+            command_options.append("--argstr")
+            command_options.append(name)
+            command_options.append(value if list_form else '"{}"'.format(value))
         elif isinstance(value, list) or isinstance(value, tuple):
             value = "[ %s ]" % (" ".join(['"%s"' % x for x in value]))
-            command_options.append("--arg {} '{}'".format(name, value))
-    return " ".join(command_options)
+            command_options.append("--arg")
+            command_options.append(name)
+            command_options.append(value if list_form else "'{}'".format(value))
+    return command_options if list_form else " ".join(command_options)
 
 
 def args_as_list(inputs):
@@ -119,3 +123,7 @@ def prefetch_git(url, rev=None):
 
 def prefetch_github(owner, repo, rev=None):
     return nix_prefetch_github(owner, repo, rev=rev)
+
+
+def escape_double_quotes(text):
+    return text.replace('"', '\\"')
