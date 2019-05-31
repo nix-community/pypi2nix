@@ -335,8 +335,10 @@ def main(
         wheels_cache=wheels_cache,
         nix=nix,
     )
-
-    requirements_frozen, wheels, default_environment = wheel_builder.build()
+    wheel_builder.build()
+    requirements_frozen = wheel_builder.requirements_frozen()
+    wheels = wheel_builder.wheels()
+    default_environment = wheel_builder.default_environment()
 
     click.echo("Stage2: Extracting metadata from pypi.python.org ...")
 
