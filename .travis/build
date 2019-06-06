@@ -1,0 +1,8 @@
+# -*- mode: sh -*-
+
+nix build -f ./
+
+if [ $TRAVIS_PULL_REQUEST = "false" -a \
+     $TRAVIS_REPO_SLUG = "garbas/pypi2nix" ]; then
+    cachix push pypi2nix ./result
+fi

@@ -1,6 +1,3 @@
-branches:
-  only:
-  - master
 language: nix
 sudo: required
 os:
@@ -27,8 +24,7 @@ install:
 - nix-env -iA cachix -f https://github.com/NixOS/nixpkgs/tarball/889c72032f8595fcd7542c6032c208f6b8033db6
 - cachix use pypi2nix
 script:
-- travis_wait 60 make $EXAMPLE -C ./examples
-- cachix push pypi2nix ./examples/$EXAMPLE
+- source .travis/script
 stages:
 - build
 jobs:
@@ -37,13 +33,7 @@ jobs:
     env: EXAMPLE=none
     os: linux
     script:
-    - nix build -f ./
-    - cachix push pypi2nix ./result
+    - source .travis/build
     after_success:
     - nix-build -A coverage
     - ./result-coverage/bin/coverage
-  # TODO: cachix takes too long to build on osx
-  # - stage: build
-  #   env: EXAMPLE=none
-  #   os: osx
-  #   script: nix-build | cachix push pypi2nix
