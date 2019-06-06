@@ -3,10 +3,9 @@ import os.path
 import pytest
 from pypi2nix.nix import *
 
+from .switches import nix
+
 HERE = os.path.dirname(__file__)
-
-
-nix = pytest.mark.nix
 
 
 @pytest.fixture
@@ -56,4 +55,4 @@ def test_shell_accepts_nix_arguments(nix_instance, dummy_derivation):
 @nix
 def test_evaluate_expression_throws_on_erroneous_expression(nix_instance):
     with pytest.raises(EvaluationFailed):
-        nix_instance.evaluate_expression('1+')
+        nix_instance.evaluate_expression("1+")

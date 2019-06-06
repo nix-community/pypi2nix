@@ -1,0 +1,10 @@
+# -*- mode: sh -*-
+
+set -e
+
+travis_wait 60 make $EXAMPLE -C ./examples
+
+if [ $TRAVIS_PULL_REQUEST = "false" -a \
+     $TRAVIS_REPO_SLUG = "garbas/pypi2nix" ]; then
+    cachix push pypi2nix ./examples/$EXAMPLE
+fi
