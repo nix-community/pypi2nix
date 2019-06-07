@@ -75,7 +75,9 @@ let
       __old = pythonPackages;
       inherit interpreter;
       inherit interpreterWithPackages;
-      mkDerivation = args: pythonPackages.buildPythonPackage (args // { nativeBuildInputs = args.buildInputs; });
+      mkDerivation = args: pythonPackages.buildPythonPackage (args // {
+        nativeBuildInputs = (args.nativeBuildInputs or []) ++ args.buildInputs;
+      });
       packages = pkgs;
       overrideDerivation = drv: f:
         pythonPackages.buildPythonPackage (
