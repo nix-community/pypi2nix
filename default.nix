@@ -1,4 +1,5 @@
 { pkgs ? import <nixpkgs> {}
+, excludeIntegrationTests ? false
 }:
 
 let
@@ -14,6 +15,7 @@ let
   additionalIgnores = ''
     /examples
     /.travis.yml
+    ${pkgs.lib.optionalString excludeIntegrationTests "/integrationtests"}
   '';
   # we need to move it to src/pypi2nix/templates/
   readLines = file: with pkgs.lib; splitString "\n" (removeSuffix "\n" (builtins.readFile file));
@@ -41,7 +43,7 @@ in python.mkDerivation {
     echo "Running flake8 ..."
     flake8 -v setup.py src/
     echo "Running pytest ..."
-    PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v --cov=src/ tests/ -m 'not nix'
+    PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v --cov=src/ unittests/ -m 'not nix'
     cp .coverage $coverage/coverage
   '';
   postInstall = ''
