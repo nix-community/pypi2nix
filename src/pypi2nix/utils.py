@@ -45,20 +45,25 @@ def cmd(command, verbose=False, stderr=subprocess.STDOUT):
         command = shlex.split(command)
 
     if verbose:
-        click.echo("|-> " + " ".join(command))
+        click.echo("|-> " + " ".join(map(shlex.quote, command)))
 
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=stderr)
 
-    out = []
-    while True:
-        line = p.stdout.readline().decode()
-        if line == "" and p.poll() is not None:
-            break
-        if line != "":
-            if verbose:
-                click.echo("    " + line.rstrip("\n"))
-            out.append(line)
-
+    try:
+        out = []
+        while True:
+            line = p.stdout.readline().decode()
+            if line == "" and p.poll() is not None:
+                break
+            if line != "":
+                if verbose:
+                    click.echo("    " + line.rstrip("\n"))
+                out.append(line)
+    except Exception:
+        p.kill()
+        raise
+    finally:
+        p.communicate()
     return p.returncode, "\n".join(out)
 
 
