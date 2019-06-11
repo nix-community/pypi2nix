@@ -5,6 +5,7 @@ import sys
 import urllib
 
 import click
+
 import pypi2nix.utils
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.utils import escape_double_quotes

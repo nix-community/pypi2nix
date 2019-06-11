@@ -3,6 +3,7 @@ import os.path
 
 import click
 import setuptools._vendor.packaging.requirements
+
 from pypi2nix.license import find_license
 from pypi2nix.utils import TO_IGNORE
 from pypi2nix.utils import safe

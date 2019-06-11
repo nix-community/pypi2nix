@@ -1,4 +1,5 @@
 import pytest
+
 from pypi2nix.requirements import ParsingFailed
 from pypi2nix.requirements import Requirement
 

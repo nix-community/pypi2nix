@@ -23,19 +23,33 @@ class Nix:
 
     def evaluate_expression(self, expression):
         output = self.run_nix_command(
-            "nix-instantiate",
-            self.nix_path_arguments() + ["--eval", "--expr", expression],
+            "nix-instantiate", ["--eval", "--expr", expression]
         )
         # cut off the last newline character append to the output
         return output[:-1]
 
-    def shell(self, command, derivation_path, nix_arguments={}):
+    def shell(self, command, derivation_path, nix_arguments={}, pure=True):
         output = self.run_nix_command(
             "nix-shell",
             create_command_options(nix_arguments, list_form=True)
+            + (["--pure"] if pure else [])
             + [derivation_path, "--command", command],
         )
         return output
+
+    def build(self, source_file, attribute=None, out_link=None, arguments={}):
+        self.run_nix_command(
+            "nix-build",
+            [source_file]
+            + (["-o", out_link] if out_link else [])
+            + (["-A", attribute] if attribute else [])
+            + create_command_options(arguments, list_form=True),
+        )
+
+    def build_expression(self, expression, out_link=None):
+        self.run_nix_command(
+            "nix-build", ["--expr", expression] + (["-o", out_link] if out_link else [])
+        )
 
     def run_nix_command(self, binary_name, command):
         final_command = (

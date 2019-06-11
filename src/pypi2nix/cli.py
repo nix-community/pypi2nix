@@ -4,6 +4,7 @@ import shutil
 import tempfile
 
 import click
+
 import pypi2nix.overrides
 import pypi2nix.stage1
 import pypi2nix.stage2
@@ -150,7 +151,6 @@ def main(
 ):
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
-
     if os.path.exists(nix_shell):
         nix_executable_directory = os.path.abspath(os.path.dirname(nix_shell))
     else:

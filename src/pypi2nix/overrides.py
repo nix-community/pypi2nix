@@ -1,9 +1,12 @@
 import subprocess
-from urllib.parse import urldefrag, urlparse
+from urllib.parse import urldefrag
+from urllib.parse import urlparse
 
 import click
 
-from .utils import cmd, prefetch_git, prefetch_github
+from .utils import cmd
+from .utils import prefetch_git
+from .utils import prefetch_github
 
 
 class UnsupportedUrlError(Exception):

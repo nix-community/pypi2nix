@@ -1,6 +1,7 @@
 import os.path
 
 import click
+
 from pypi2nix.package_source import GitSource
 from pypi2nix.package_source import HgSource
 from pypi2nix.package_source import PathSource

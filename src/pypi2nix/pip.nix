@@ -102,6 +102,7 @@ in pkgs.stdenv.mkDerivation rec {
     pypi2nix_bootstrap
     unzip
     gitAndTools.git
+    mercurial
   ] ++ (pkgs.lib.optional pkgs.stdenv.isLinux pkgs.glibcLocales)
     ++ (map (name: pkgs.lib.getAttrFromPath
           (pkgs.lib.splitString "." name) pkgs) extra_build_inputs);

@@ -1,5 +1,6 @@
 import click
 import pytest
+
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.stage1 import WheelBuilder
 
