@@ -3,32 +3,30 @@ sudo: required
 os:
 - linux
 env:
-  global:
-    secure: "gEULslaL40LzLDk2SHspXOYbocZVO80YTjmL+iv/E3oZ7QVfz78zwtJgIY7gAX/hSyEfONQ1VtlSAbfZx8zLCSlPlEcGYTt3vKvHD6u0bdPDo2Qp8uINhq9P9diU3JMCSAcNtC72jIcf1cAY/a54aT5DyYwtLB+AxHGUnQjSB+0="
   matrix:
-  - EXAMPLE=scipy
-  - EXAMPLE=aiohttp
-  - EXAMPLE=awscli_and_requests
-  - EXAMPLE=connexion
-  - EXAMPLE=empy
-  - EXAMPLE=flake8
-  - EXAMPLE=ldap
-  - EXAMPLE=lektor
-  - EXAMPLE=mercurial
-  - EXAMPLE=pillow
-  - EXAMPLE=rss2email
-  - EXAMPLE=tornado
+    - TEST_FILE=aiohttp
+    - TEST_FILE=awscli_and_requests
+    - TEST_FILE=connexion
+    - TEST_FILE=empy
+    - TEST_FILE=flake8
+    - TEST_FILE=flake8_include_default_overrides
+    - TEST_FILE=flake8_mercurial
+    - TEST_FILE=flit
+    - TEST_FILE=ldap
+    - TEST_FILE=lektor
+    - TEST_FILE=pillow
+    - TEST_FILE=rss2email
+    - TEST_FILE=scipy
+    - TEST_FILE=tornado
 install:
 - sudo mount -o remount,exec,size=4G,mode=755 /run/user || true
 - nix-env -iA nixpkgs.nix-prefetch-git nixpkgs.nix-prefetch-hg
-- nix-env -iA cachix -f https://github.com/NixOS/nixpkgs/tarball/889c72032f8595fcd7542c6032c208f6b8033db6
-- cachix use pypi2nix
 script:
-- source .travis/script
+- nix-shell --command 'python -m unittest integrationtests/test_${TEST_FILE}.py'
 stages:
 - build
 jobs:
-  include: 
+  include:
   - stage: build
     env: EXAMPLE=none
     os: linux

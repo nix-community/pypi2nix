@@ -108,6 +108,7 @@ in pkgs.stdenv.mkDerivation rec {
           (pkgs.lib.splitString "." name) pkgs) extra_build_inputs);
 
   shellHook = ''
+    set -e
     export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     export PYTHONPATH=${pypi2nix_bootstrap}/base

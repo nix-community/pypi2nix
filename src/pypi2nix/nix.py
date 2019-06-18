@@ -37,7 +37,7 @@ class Nix:
         )
         return output
 
-    def build(self, source_file, attribute=None, out_link=None, arguments={}):
+    def build(self, source_file, attribute=None, out_link=None, arguments=dict()):
         self.run_nix_command(
             "nix-build",
             [source_file]
@@ -46,9 +46,12 @@ class Nix:
             + create_command_options(arguments, list_form=True),
         )
 
-    def build_expression(self, expression, out_link=None):
+    def build_expression(self, expression, out_link=None, arguments=dict()):
         self.run_nix_command(
-            "nix-build", ["--expr", expression] + (["-o", out_link] if out_link else [])
+            "nix-build",
+            ["--expr", expression]
+            + (["-o", out_link] if out_link else [])
+            + create_command_options(arguments, list_form=True),
         )
 
     def run_nix_command(self, binary_name, command):

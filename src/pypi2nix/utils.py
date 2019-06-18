@@ -79,6 +79,10 @@ def create_command_options(options, list_form=False):
             command_options.append("--arg")
             command_options.append(name)
             command_options.append(value if list_form else "'{}'".format(value))
+        elif isinstance(value, bool):
+            command_options.append("--arg")
+            command_options.append(name)
+            command_options.append("true" if value else "false")
     return command_options if list_form else " ".join(command_options)
 
 
