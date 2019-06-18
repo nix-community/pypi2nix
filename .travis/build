@@ -1,3 +1,0 @@
-# -*- mode: sh -*-
-
-nix build -f ./default.nix

@@ -28,10 +28,9 @@ stages:
 jobs:
   include:
   - stage: build
-    env: EXAMPLE=none
     os: linux
     script:
-    - source .travis/build
+    - nix build
     after_success:
     - nix-build -A coverage
     - ./result-coverage/bin/coverage
