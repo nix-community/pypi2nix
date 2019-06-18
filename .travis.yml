@@ -40,4 +40,4 @@ jobs:
     script:
       - nix-shell --command 'pytest unittests/ --cov=src/'
     after_success:
-      - nix-shell -p 'python.packages.codecov' --command 'codecov'
+      - nix-shell -p 'python3.pkgs.codecov' --command 'codecov'
