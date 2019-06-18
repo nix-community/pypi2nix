@@ -33,12 +33,11 @@ jobs:
       - TEST_FILE=none
     script:
     - nix build
-    after_success:
-    - nix-build -A coverage
-    - ./result-coverage/bin/coverage
   - stage: build
     os: linux
     env:
       - TEST_FILE=none
     script:
-      - nix-shell --command 'pytest unittests/'
+      - nix-shell --command 'pytest unittests/ --cov=src/'
+    after_success:
+      - nix-shell -p 'python.packages.codecov' --command 'codecov'
