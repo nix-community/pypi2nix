@@ -52,7 +52,7 @@
 /integrationtests/*/requirements_frozen.txt
 /integrationtests/*/result
 /integrationtests/pypi2nix
-\#*#
-.#*
+[#]*[#]
+.[#]*
 /htmlcov
 .pytest_cache
