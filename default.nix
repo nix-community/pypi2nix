@@ -33,7 +33,7 @@ let
 in python.mkDerivation {
   name = "pypi2nix-${version}";
   src = nix-gitignore.gitignoreSource additionalIgnores ./.;
-  outputs = [ "out" "coverage" ];
+  outputs = [ "out" ];
   buildInputs = fromRequirementsFile ./requirements-dev.txt python.packages;
   propagatedBuildInputs = fromRequirementsFile ./requirements.txt python.packages;
   doCheck = true;
@@ -43,18 +43,7 @@ in python.mkDerivation {
     echo "Running flake8 ..."
     flake8 -v setup.py src/
     echo "Running pytest ..."
-    PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v --cov=src/ unittests/ -m 'not nix'
-    cp .coverage $coverage/coverage
-  '';
-  postInstall = ''
-    mkdir -p $coverage/bin $coverage/upload
-    cat > $coverage/bin/coverage <<EOL
-    #/bin/sh
-    cp "$coverage/coverage" ./.coverage
-    sed -i -e "s|$PWD/src|\$PWD/src|g" ./.coverage
-    eval ${python.packages."codecov"}/bin/codecov
-    EOL
-    chmod +x $coverage/bin/coverage
+    PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v unittests/ -m 'not nix'
   '';
   meta = {
     homepage = https://github.com/garbas/pypi2nix;
