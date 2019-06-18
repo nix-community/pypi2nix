@@ -34,3 +34,7 @@ jobs:
     after_success:
     - nix-build -A coverage
     - ./result-coverage/bin/coverage
+  - stage: build
+    os: linux
+    script:
+      - nix-shell --command 'pytest unittests/'
