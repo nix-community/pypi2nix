@@ -29,6 +29,8 @@ jobs:
   include:
   - stage: build
     os: linux
+    env:
+      - TEST_FILE=none
     script:
     - nix build
     after_success:
@@ -36,5 +38,7 @@ jobs:
     - ./result-coverage/bin/coverage
   - stage: build
     os: linux
+    env:
+      - TEST_FILE=none
     script:
       - nix-shell --command 'pytest unittests/'
