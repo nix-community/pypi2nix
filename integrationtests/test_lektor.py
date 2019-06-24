@@ -24,7 +24,7 @@ class LektorTest(IntegrationTest, TestCase):
 
     def external_dependencies(self):
         return [
-            'libffi openssl unzip',
-#            'openssl',
-#            'unzip',
+            'libffi',
+            'openssl',
+            'unzip',
         ]

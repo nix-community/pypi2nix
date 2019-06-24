@@ -6,6 +6,7 @@ from .framework import TestCommand
 
 REVISION = 'a209fb6'
 
+
 class Flake8MercurialTest(IntegrationTest, TestCase):
     def name_of_testcase(self):
         return 'flake8-mercurial'

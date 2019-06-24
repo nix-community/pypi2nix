@@ -1,8 +1,9 @@
 import os.path
 
 import pytest
-
-from pypi2nix.nix import *
+from pypi2nix.nix import EvaluationFailed
+from pypi2nix.nix import ExecutableNotFound
+from pypi2nix.nix import Nix
 
 from .switches import nix
 
@@ -107,4 +108,3 @@ def test_build_expression_respects_boolean_arguments(nix_instance):
             'argument': True,
         }
     )
-    

@@ -5,6 +5,7 @@ from .framework import IntegrationTest
 
 REVISION = '69253c820df473407c562a227d0ba36df25018ab'
 
+
 class TornadoTest(IntegrationTest, TestCase):
     def name_of_testcase(self):
         return 'tornado'
@@ -24,5 +25,3 @@ class TornadoTest(IntegrationTest, TestCase):
 
     def requirements_file_check(self, content):
         self.assertIn(REVISION, content)
-
-    
