@@ -37,6 +37,9 @@ in pkgs.lib.makeOverridable pkgs.stdenv.mkDerivation rec {
     export PIP_DOWNLOAD_CACHE=${download_cache_dir}
     export PIP_DEST=${download_cache_dir}
     export PIP_SRC=${project_dir}/src
+    export PIP_BUILD=${project_dir}/build
+    export PIP_WHEEL_DIR=${project_dir}/wheel
+    export PIP_EXISTS_ACTION=w
 
     mkdir -p \
       ${project_dir}/build \

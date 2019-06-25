@@ -55,10 +55,8 @@ let
       ${extra_env} pip download \
         ${builtins.concatStringsSep " " setup_requires} \
         ${builtins.concatStringsSep " " (map (x: "-c ${x} ") requirements_files)} \
-        --build ${project_dir}/build \
         --find-links file://${download_cache_dir} \
-        --no-binary :all: \
-        --exists-action w
+        --no-binary :all:
 
       rm -rf ${project_dir}/build
 
@@ -69,8 +67,6 @@ let
       echo ""
       ${extra_env} pip wheel \
         ${builtins.concatStringsSep " " setup_requires} \
-        --build ${project_dir}/build \
-        --wheel-dir ${project_dir}/wheel \
         ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
         --find-links file://${wheel_cache_dir} \
         --find-links file://${download_cache_dir} \
@@ -107,11 +103,9 @@ in pip_base.override( old: {
     PYTHONPATH=${project_dir}/setup_requires:$PYTHONPATH \
       ${extra_env} pip download \
         ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
-        --build ${project_dir}/build \
         --find-links file://${download_cache_dir} \
         --find-links file://$PYPI2NIX_BOOTSTRAP/index \
-        --no-binary :all: \
-        --exists-action w
+        --no-binary :all:
 
     rm -rf ${project_dir}/build
 
@@ -123,8 +117,6 @@ in pip_base.override( old: {
     PYTHONPATH=${project_dir}/setup_requires:$PYTHONPATH \
       ${extra_env} pip wheel \
         ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
-        --wheel-dir ${project_dir}/wheel \
-        --build ${project_dir}/build \
         ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
         --find-links file://${wheel_cache_dir} \
         --find-links file://${download_cache_dir} \
