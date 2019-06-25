@@ -1,3 +1,4 @@
+args @
 { requirements_files
 , project_dir
 , download_cache_dir
@@ -7,18 +8,12 @@
 , extra_env ? ""
 , setup_requires ? []
 , wheels_cache ? []
+, pkgs ? import <nixpkgs> {}
 }:
 
 let
 
-  pkgs = import <nixpkgs> {};
-
-  python = builtins.getAttr python_version pkgs;
-
-  pypi2nix_bootstrap = import ./bootstrap.nix {
-    inherit (pkgs) stdenv fetchurl unzip which makeWrapper;
-    inherit python;
-  };
+  pip_base = import "pip/base.nix" args;
 
   blas = pkgs.openblasCompat;
 
@@ -94,36 +89,8 @@ let
         --no-index
     '';
 
-in pkgs.stdenv.mkDerivation rec {
-  name = "pypi2nix-pip";
-
-  buildInputs = with pkgs; [
-    python
-    pypi2nix_bootstrap
-    unzip
-    gitAndTools.git
-    mercurial
-  ] ++ (pkgs.lib.optional pkgs.stdenv.isLinux pkgs.glibcLocales)
-    ++ (map (name: pkgs.lib.getAttrFromPath
-          (pkgs.lib.splitString "." name) pkgs) extra_build_inputs);
-
-  shellHook = ''
-    set -e
-    export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-    export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-    export PYTHONPATH=${pypi2nix_bootstrap}/base
-    export PIP_DOWNLOAD_CACHE=${download_cache_dir}
-    export LANG=en_US.UTF-8
-    export HOME=${project_dir}
-    export SOURCE_DATE_EPOCH=315532800
-
-    mkdir -p \
-      ${project_dir}/build \
-      ${project_dir}/src-download \
-      ${project_dir}/src-wheel \
-      ${project_dir}/wheel \
-      ${project_dir}/wheelhouse
-
+in pip_base.overrideDerivation( old: {
+  shellHook = old.shellHook + ''
     ${numpySiteCfg}
     ${scriptRequires}
 
@@ -178,4 +145,4 @@ in pkgs.stdenv.mkDerivation rec {
 
     python -c "import json; from setuptools._vendor.packaging.markers import default_environment; print(json.dumps(default_environment(), indent=2, sort_keys=True))" > ${project_dir}/default_environment.json
   '';
-}
+})
