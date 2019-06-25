@@ -41,7 +41,7 @@ in python.mkDerivation {
     echo "Running black ..."
     black --check --diff -v setup.py src/
     echo "Running flake8 ..."
-    flake8 -v setup.py src/
+    flake8 -v setup.py src/ integrationtests/ unittests/
     echo "Running pytest ..."
     PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v unittests/ -m 'not nix'
   '';
