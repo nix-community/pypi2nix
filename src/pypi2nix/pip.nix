@@ -12,8 +12,16 @@ args @
 
 let
   pkgs = import <nixpkgs> {};
+  extra_build_inputs_derivations = (map
+    (name: pkgs.lib.getAttrFromPath (pkgs.lib.splitString "." name) pkgs)
+    extra_build_inputs
+  );
 
-  pip_base = import pip/base.nix (args // {inherit pkgs;});
+  pip_base = import pip/base.nix {
+    inherit project_dir download_cache_dir pkgs;
+    python = builtins.getAttr python_version pkgs;
+    extra_build_inputs = extra_build_inputs_derivations;
+  };
 
   blas = pkgs.openblasCompat;
 

@@ -1,19 +1,11 @@
-{ requirements_files
-, project_dir
+{ project_dir
 , download_cache_dir
-, wheel_cache_dir
-, python_version
-, extra_build_inputs ? []
-, extra_env ? ""
-, setup_requires ? []
-, wheels_cache ? []
+, python
+, extra_build_inputs
 , pkgs
 }:
 
 let
-
-  python = builtins.getAttr python_version pkgs;
-
   pypi2nix_bootstrap = import ./bootstrap.nix {
     inherit (pkgs) stdenv fetchurl unzip which makeWrapper;
     inherit python;
@@ -28,9 +20,9 @@ in pkgs.lib.makeOverridable pkgs.stdenv.mkDerivation rec {
     unzip
     gitAndTools.git
     mercurial
-  ] ++ (pkgs.lib.optional pkgs.stdenv.isLinux pkgs.glibcLocales)
-    ++ (map (name: pkgs.lib.getAttrFromPath
-          (pkgs.lib.splitString "." name) pkgs) extra_build_inputs);
+  ] ++ extra_build_inputs ++
+    (pkgs.lib.optional pkgs.stdenv.isLinux pkgs.glibcLocales);
+
 
   shellHook = ''
     set -e
