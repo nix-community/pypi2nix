@@ -29,16 +29,18 @@ in pkgs.lib.makeOverridable pkgs.stdenv.mkDerivation rec {
     export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     export PYTHONPATH=${pypi2nix_bootstrap}/base
-    export PIP_DOWNLOAD_CACHE=${download_cache_dir}
     export LANG=en_US.UTF-8
     export HOME=${project_dir}
     export SOURCE_DATE_EPOCH=315532800
     export PYPI2NIX_BOOTSTRAP="${pypi2nix_bootstrap}"
 
+    export PIP_DOWNLOAD_CACHE=${download_cache_dir}
+    export PIP_DEST=${download_cache_dir}
+    export PIP_SRC=${project_dir}/src
+
     mkdir -p \
       ${project_dir}/build \
-      ${project_dir}/src-download \
-      ${project_dir}/src-wheel \
+      ${project_dir}/src \
       ${project_dir}/wheel \
       ${project_dir}/wheelhouse
   '';

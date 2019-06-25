@@ -55,8 +55,6 @@ let
       ${extra_env} pip download \
         ${builtins.concatStringsSep " " setup_requires} \
         ${builtins.concatStringsSep " " (map (x: "-c ${x} ") requirements_files)} \
-        --dest ${download_cache_dir} \
-        --src ${project_dir}/src-download \
         --build ${project_dir}/build \
         --find-links file://${download_cache_dir} \
         --no-binary :all: \
@@ -71,7 +69,6 @@ let
       echo ""
       ${extra_env} pip wheel \
         ${builtins.concatStringsSep " " setup_requires} \
-        --src ${project_dir}/src-wheel \
         --build ${project_dir}/build \
         --wheel-dir ${project_dir}/wheel \
         ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
@@ -110,8 +107,6 @@ in pip_base.override( old: {
     PYTHONPATH=${project_dir}/setup_requires:$PYTHONPATH \
       ${extra_env} pip download \
         ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
-        --dest ${download_cache_dir} \
-        --src ${project_dir}/src-download \
         --build ${project_dir}/build \
         --find-links file://${download_cache_dir} \
         --find-links file://$PYPI2NIX_BOOTSTRAP/index \
@@ -129,7 +124,6 @@ in pip_base.override( old: {
       ${extra_env} pip wheel \
         ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
         --wheel-dir ${project_dir}/wheel \
-        --src ${project_dir}/src-wheel \
         --build ${project_dir}/build \
         ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
         --find-links file://${wheel_cache_dir} \
