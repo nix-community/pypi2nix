@@ -8,12 +8,12 @@ args @
 , extra_env ? ""
 , setup_requires ? []
 , wheels_cache ? []
-, pkgs ? import <nixpkgs> {}
 }:
 
 let
+  pkgs = import <nixpkgs> {};
 
-  pip_base = import "pip/base.nix" args;
+  pip_base = import pip/base.nix (args // {inherit pkgs;});
 
   blas = pkgs.openblasCompat;
 
@@ -69,7 +69,7 @@ let
         ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
         --find-links file://${wheel_cache_dir} \
         --find-links file://${download_cache_dir} \
-        --find-links file://${pypi2nix_bootstrap}/index \
+        --find-links file://$PYPI2NIX_BOOTSTRAP/index \
         --no-index
 
       for file in ${project_dir}/wheel/*; do
@@ -85,11 +85,11 @@ let
         ${builtins.concatStringsSep " " setup_requires} \
         --target=${project_dir}/setup_requires \
         --find-links file://${wheel_cache_dir} \
-        --find-links file://${pypi2nix_bootstrap}/index \
+        --find-links file://$PYPI2NIX_BOOSTRAP/index \
         --no-index
     '';
 
-in pip_base.overrideDerivation( old: {
+in pip_base.override( old: {
   shellHook = old.shellHook + ''
     ${numpySiteCfg}
     ${scriptRequires}
@@ -106,7 +106,7 @@ in pip_base.overrideDerivation( old: {
         --src ${project_dir}/src-download \
         --build ${project_dir}/build \
         --find-links file://${download_cache_dir} \
-        --find-links file://${pypi2nix_bootstrap}/index \
+        --find-links file://$PYPI2NIX_BOOTSTRAP/index \
         --no-binary :all: \
         --exists-action w
 
@@ -126,7 +126,7 @@ in pip_base.overrideDerivation( old: {
         ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
         --find-links file://${wheel_cache_dir} \
         --find-links file://${download_cache_dir} \
-        --find-links file://${pypi2nix_bootstrap}/index \
+        --find-links file://$PYPI2NIX_BOOTSTRAP/index \
         --no-index
 
     RETVAL=$?

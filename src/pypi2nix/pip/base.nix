@@ -19,7 +19,7 @@ let
     inherit python;
   };
 
-in pkgs.stdenv.mkDerivation rec {
+in pkgs.lib.makeOverridable pkgs.stdenv.mkDerivation rec {
   name = "pypi2nix-pip";
 
   buildInputs = with pkgs; [
@@ -41,6 +41,7 @@ in pkgs.stdenv.mkDerivation rec {
     export LANG=en_US.UTF-8
     export HOME=${project_dir}
     export SOURCE_DATE_EPOCH=315532800
+    export PYPI2NIX_BOOTSTRAP="${pypi2nix_bootstrap}"
 
     mkdir -p \
       ${project_dir}/build \
