@@ -1,6 +1,7 @@
 import pytest
-from pypi2nix.sources import Sources
+
 from pypi2nix.package_source import PathSource
+from pypi2nix.sources import Sources
 
 
 @pytest.fixture

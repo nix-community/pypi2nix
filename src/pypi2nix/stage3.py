@@ -1,4 +1,5 @@
 import os
+import shlex
 import sys
 
 import click
@@ -113,7 +114,7 @@ def main(
     overrides_file_nix_path = os.path.join(".", os.path.split(overrides_file)[1])
     default = default_template.render(
         version=version,
-        command_arguments=" ".join(sys.argv[1:]),
+        command_arguments=" ".join(map(shlex.quote, sys.argv[1:])),
         python_version=python_version,
         extra_build_inputs=(
             extra_build_inputs

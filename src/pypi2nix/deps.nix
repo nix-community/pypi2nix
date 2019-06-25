@@ -4,10 +4,7 @@
 rec {
 
   pipVersion = "19.1.1";
-  pipWhl = fetchurl {
-    url = "https://files.pythonhosted.org/packages/5c/e0/be401c003291b56efc55aeba6a80ab790d3d4cece2778288d65323009420/pip-19.1.1-py2.py3-none-any.whl";
-    sha256 = "993134f0475471b91452ca029d4390dc8f298ac63a712814f101cd1b6db46676";
-  };
+  pipWhl = wheels/pip-19.1.1-py2.py3-none-any.whl;
   pip = fetchurl {
     url = "https://files.pythonhosted.org/packages/93/ab/f86b61bef7ab14909bd7ec3cd2178feb0a1c86d451bc9bccd5a1aedcde5f/pip-19.1.1.tar.gz";
     sha256 = "44d3d7d3d30a1eb65c7e5ff1173cdf8f7467850605ac7cc3707b6064bddd0958";

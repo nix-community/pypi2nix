@@ -1,4 +1,5 @@
 import pytest
+
 from pypi2nix.nix import Nix
 from pypi2nix.package_source import GitSource
 from pypi2nix.package_source import HgSource

@@ -47,3 +47,12 @@
 /out/
 /result*
 /src/pypi2nix.egg-info/
+/integrationtests/*/requirements.nix
+/integrationtests/*/requirements.txt
+/integrationtests/*/requirements_frozen.txt
+/integrationtests/*/result
+/integrationtests/pypi2nix
+[#]*[#]
+.[#]*
+/htmlcov
+.pytest_cache

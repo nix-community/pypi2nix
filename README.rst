@@ -331,14 +331,7 @@ shell.nix::
     customPython.interpreter
 
 
-5. Existing examples
---------------------
-
-The file `examples/Makefile`_ contains demonstrations using packages like
-``sentry``, ``empy``, ``lektor``, ``awscli`` and ``rss2email``.
-
-
-6. Help developing pypi2nix
+5. Help developing pypi2nix
 ---------------------------
 
 Clone `pypi2nix repository`_ and using ``nix run`` command enter development
@@ -350,8 +343,28 @@ environment.::
 
 Code is located in ``src/pypi2nix``.
 
+Testing
+^^^^^^^
+
+Pypi2nix comes with two kinds of tests: unit tests and integration
+tests.  They can be found in the folders ``/unittests`` and
+``/integrationtests`` respectively.
+
+Unit tests are straight forward.  They are run via `pytest`_ and (try
+to) follow `pytest`_ best practices.  Idealy all of pypi2nix's code
+should be covered by unittests.  If possible unittests should not go
+online and fetch data from the internet.  If this cannot be avoided
+use the ``@nix`` decorator, found in ``unittests.switches`` to mark
+tests that require network access.
+
+Integration tests are a little bit more involved.  We implemented a
+small framework to write new tests and maintain old ones.  Check out
+``integrationtests.framework`` for information on how to write custom
+integration tests.
+
 
 .. _`Nix expressions`: http://nixos.org/nix/manual/#chap-writing-nix-expressions
 .. _`pypi2nix repository`: https://github.com/garbas/pypi2nix
 .. _`examples/Makefile`: https://github.com/garbas/pypi2nix/blob/master/examples/Makefile
 .. _`nix-env`: http://nixos.org/nix/manual/#sec-nix-env
+.. _`pytest`: https://pytest.org

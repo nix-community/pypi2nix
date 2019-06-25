@@ -10,6 +10,7 @@ import tempfile
 import click
 import requests
 import setuptools._vendor.packaging.requirements
+
 from pypi2nix.package_source import find_release
 from pypi2nix.requirements import Requirement
 from pypi2nix.utils import TO_IGNORE
@@ -39,7 +40,7 @@ class Stage2:
                 "-- sources ---------------------------------------------------------------"
             )
             for name, source in self.sources.items():
-                click.echo(name, source)
+                click.echo("{name}, {source}".format(name=name, source=name))
             click.echo(
                 "--------------------------------------------------------------------------"
             )

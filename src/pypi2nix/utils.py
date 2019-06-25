@@ -45,20 +45,25 @@ def cmd(command, verbose=False, stderr=subprocess.STDOUT):
         command = shlex.split(command)
 
     if verbose:
-        click.echo("|-> " + " ".join(command))
+        click.echo("|-> " + " ".join(map(shlex.quote, command)))
 
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=stderr)
 
-    out = []
-    while True:
-        line = p.stdout.readline().decode()
-        if line == "" and p.poll() is not None:
-            break
-        if line != "":
-            if verbose:
-                click.echo("    " + line.rstrip("\n"))
-            out.append(line)
-
+    try:
+        out = []
+        while True:
+            line = p.stdout.readline().decode()
+            if line == "" and p.poll() is not None:
+                break
+            if line != "":
+                if verbose:
+                    click.echo("    " + line.rstrip("\n"))
+                out.append(line)
+    except Exception:
+        p.kill()
+        raise
+    finally:
+        p.communicate()
     return p.returncode, "\n".join(out)
 
 
@@ -74,6 +79,10 @@ def create_command_options(options, list_form=False):
             command_options.append("--arg")
             command_options.append(name)
             command_options.append(value if list_form else "'{}'".format(value))
+        elif isinstance(value, bool):
+            command_options.append("--arg")
+            command_options.append(name)
+            command_options.append("true" if value else "false")
     return command_options if list_form else " ".join(command_options)
 
 
