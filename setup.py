@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup
-from setuptools import find_packages
 
 with open("src/pypi2nix/VERSION") as f:
     version = f.read().strip()

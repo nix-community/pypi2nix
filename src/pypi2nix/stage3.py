@@ -138,8 +138,5 @@ def main(
     with open(default_file, "w+") as f:
         f.write(default.strip())
 
-    with open(requirements_frozen) as f:
-        frozen_content = f.read()
-
     with open(frozen_file, "w+") as f:
-        f.write(frozen_content)
+        f.write(requirements_frozen)

@@ -20,36 +20,8 @@ let
     extra_build_inputs = extra_build_inputs_derivations;
   };
 
-  blas = pkgs.openblasCompat;
-
 in pip_base.override( old: {
   shellHook = old.shellHook + ''
-    echo ""
-    echo "==================================================================="
-    echo "download source distributions to: ${download_cache_dir}"
-    echo "==================================================================="
-    echo ""
-    ${extra_env} pip download \
-      ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
-      --find-links file://${download_cache_dir} \
-      --find-links file://$PYPI2NIX_BOOTSTRAP/index \
-      --no-binary :all:
-
-    rm -rf ${project_dir}/build
-
-    echo ""
-    echo "==================================================================="
-    echo "create wheels from source distributions without going online"
-    echo "==================================================================="
-    echo ""
-    ${extra_env} pip wheel \
-      ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
-      ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
-      --find-links file://${wheel_cache_dir} \
-      --find-links file://${download_cache_dir} \
-      --find-links file://$PYPI2NIX_BOOTSTRAP/index \
-      --no-index
-
     RETVAL=$?
     for file in ${project_dir}/wheel/*; do
       cp -f $file ${wheel_cache_dir}

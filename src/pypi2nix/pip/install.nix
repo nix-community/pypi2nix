@@ -5,19 +5,15 @@
 , requirements_files
 , target_directory
 , wheel_cache_dir
+, sources_directories
 }:
 let
-  pkgs = import <nixpkgs> {};
-  extra_build_inputs_derivations = (map
-    (name: pkgs.lib.getAttrFromPath (pkgs.lib.splitString "." name) pkgs)
-    extra_build_inputs
-  );
-  python = builtins.getAttr python_version pkgs;
   pip_base = import ./base.nix {
-    inherit project_dir download_cache_dir pkgs;
-    python = builtins.getAttr python_version pkgs;
-    extra_build_inputs = extra_build_inputs_derivations;
+    inherit project_dir download_cache_dir python_version extra_build_inputs;
   };
+  sources_directories_links =
+    with builtins;
+    concatStringsSep " " (map (x: "--find-links file://${x}") sources_directories);
 in
 pip_base.override( old: {
   shellHook = old.shellHook + ''
@@ -25,8 +21,10 @@ pip_base.override( old: {
       ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
       --target=${target_directory} \
       --find-links file://${wheel_cache_dir} \
-      --find-links file://$PYPI2NIX_BOOSTRAP/index \
+      ${sources_directories_links} \
+      --find-links file://$PYPI2NIX_BOOTSTRAP/index \
       --find-links file://${project_dir}/wheel \
+      --find-links file://${download_cache_dir} \
       --no-index
   '';
 })

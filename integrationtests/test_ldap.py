@@ -7,27 +7,21 @@ from .framework import IntegrationTest
 @expectedFailure
 class LdapTest(IntegrationTest, TestCase):
     def name_of_testcase(self):
-        return 'ldap'
+        return "ldap"
 
     def requirements(self):
-        return [
-            'python-ldap',
-        ]
+        return ["python-ldap"]
 
     def python_version(self):
-        return '2.7'
+        return "2.7"
 
     def code_for_testing(self):
-        return ['import ldap']
+        return ["import ldap"]
 
     def extra_environment(self):
         return {
-            "NIX_CFLAGS_COMPILE": '"-I${pkgs.cyrus_sasl.dev}/include/sasl $NIX_CFLAGS_COMPILE"',
+            "NIX_CFLAGS_COMPILE": '"-I${pkgs.cyrus_sasl.dev}/include/sasl $NIX_CFLAGS_COMPILE"'
         }
 
     def external_dependencies(self):
-        return [
-            'openldap',
-            'cyrus_sasl',
-            'openssl',
-        ]
+        return ["openldap", "cyrus_sasl", "openssl"]

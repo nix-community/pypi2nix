@@ -1,9 +1,9 @@
 import hashlib
 import os
 import os.path
+import tempfile
 
 import click
-
 from pypi2nix.package_source import PathSource
 from pypi2nix.requirements import Requirement
 from pypi2nix.sources import Sources
@@ -14,6 +14,25 @@ class RequirementsFile:
         self.project_dir = project_dir
         self.original_path = path
         self.sources = Sources()
+
+    @classmethod
+    def from_lines(constructor, lines, project_dir):
+        assert not isinstance(lines, str)
+        temporary_file_descriptor, temporary_file_path = tempfile.mkstemp(
+            dir=project_dir, text=True
+        )
+        try:
+            with open(temporary_file_descriptor, "w") as f:
+                for line in lines:
+                    f.write(line)
+                    f.write("\n")
+            requirements_file = constructor(
+                project_dir=project_dir, path=temporary_file_path
+            )
+            requirements_file.process()
+        finally:
+            os.remove(temporary_file_path)
+        return requirements_file
 
     def read(self):
         if os.path.exists(self.process_requirements_file_path()):

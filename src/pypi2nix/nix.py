@@ -1,5 +1,4 @@
 import os.path
-import subprocess
 
 from pypi2nix.utils import cmd
 from pypi2nix.utils import create_command_options

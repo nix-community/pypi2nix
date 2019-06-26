@@ -8,27 +8,23 @@ class PillowTest(IntegrationTest, TestCase):
         return "pillow"
 
     def requirements(self):
-        return [
-            'Pillow',
-        ]
+        return ["Pillow"]
 
     def python_version(self):
-        return '3.5'
+        return "3.5"
 
     def code_for_testing(self):
-        return [
-            'import PIL',
-        ]
+        return ["import PIL"]
 
     def external_dependencies(self):
         return [
-            'pkgconfig',
-            'zlib',
-            'libjpeg',
-            'openjpeg',
-            'libtiff',
-            'freetype',
-            'lcms2',
-            'libwebp',
-            'tcl',
+            "pkgconfig",
+            "zlib",
+            "libjpeg",
+            "openjpeg",
+            "libtiff",
+            "freetype",
+            "lcms2",
+            "libwebp",
+            "tcl",
         ]

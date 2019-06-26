@@ -6,25 +6,19 @@ from .framework import TestCommand
 
 class LektorTest(IntegrationTest, TestCase):
     def name_of_testcase(self):
-        return 'lektor'
+        return "lektor"
 
     def requirements(self):
-        return ['Lektor']
+        return ["Lektor"]
 
     def python_version(self):
-        return '2.7'
+        return "2.7"
 
     def code_for_testing(self):
-        return ['import lektor']
+        return ["import lektor"]
 
     def executables_for_testing(self):
-        return [
-            TestCommand(command=['lektor', '--help'])
-        ]
+        return [TestCommand(command=["lektor", "--help"])]
 
     def external_dependencies(self):
-        return [
-            'libffi',
-            'openssl',
-            'unzip',
-        ]
+        return ["libffi", "openssl", "unzip"]
