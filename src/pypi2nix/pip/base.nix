@@ -28,7 +28,7 @@ in pkgs.lib.makeOverridable pkgs.stdenv.mkDerivation rec {
     set -e
     export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-    export PYTHONPATH=${pypi2nix_bootstrap}/base
+    export PYTHONPATH=${pypi2nix_bootstrap}/base:${project_dir}/setup_requires
     export LANG=en_US.UTF-8
     export HOME=${project_dir}
     export SOURCE_DATE_EPOCH=315532800

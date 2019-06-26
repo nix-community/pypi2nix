@@ -1,17 +1,21 @@
 import glob
 import json
 import os
+import shutil
 import sys
 import urllib
+from functools import lru_cache
 
 import click
-
 import pypi2nix.utils
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.utils import escape_double_quotes
 
 HERE = os.path.dirname(__file__)
-PIP_NIX = os.path.join(os.path.dirname(__file__), "pip.nix")
+PIP_NIX = os.path.join(HERE, "pip.nix")
+DOWNLOAD_NIX = os.path.join(HERE, "pip", "download.nix")
+WHEEL_NIX = os.path.join(HERE, "pip", "wheel.nix")
+INSTALL_NIX = os.path.join(HERE, "pip", "install.nix")
 
 
 class WheelBuilder:
@@ -41,32 +45,107 @@ class WheelBuilder:
         self.extra_env = extra_env
         self.wheels_cache = wheels_cache
         self.evaluated_environment = None
-        self.build_output = None
+        self.build_output = ""
 
     def build(self):
+        self.create_project_directory()
         self.evaluate_environment_variables()
+        self.prepare_setup_requirements()
         nix_arguments = dict(
             requirements_files=self.requirements_files,
             project_dir=self.project_dir,
             download_cache_dir=self.download_cache_dir,
             wheel_cache_dir=self.wheel_cache_dir,
+            python_version=self.python_version,
             extra_build_inputs=self.extra_build_inputs,
             extra_env=self.evaluated_environment,
-            python_version=self.python_version,
-            setup_requires=self.setup_requires,
             wheels_cache=self.wheels_cache,
         )
+        self.build_from_nix_file(
+            command="exit", file_path=PIP_NIX, nix_arguments=nix_arguments
+        )
 
+    def create_project_directory(self):
+        os.makedirs(self.project_dir, exist_ok=True)
+
+    def prepare_setup_requirements(self):
+        if self.setup_requires:
+            self.download_setup_requirements()
+            self.build_setup_requirements()
+            self.install_setup_requirements()
+
+    def download_setup_requirements(self):
+        self.delete_build_dir()
+        nix_arguments = dict(
+            download_cache_dir=self.download_cache_dir,
+            extra_build_inputs=self.extra_build_inputs,
+            project_dir=self.project_dir,
+            python_version=self.python_version,
+            extra_env=self.evaluated_environment,
+            requirements_files=self.setup_requirements_files(),
+            constraint_files=self.requirements_files,
+        )
+        self.build_from_nix_file(
+            command="exit", file_path=DOWNLOAD_NIX, nix_arguments=nix_arguments
+        )
+
+    def build_setup_requirements(self):
+        self.delete_build_dir()
+        nix_arguments = dict(
+            project_dir=self.project_dir,
+            download_cache_dir=self.download_cache_dir,
+            python_version=self.python_version,
+            extra_build_inputs=self.extra_build_inputs,
+            extra_env=self.evaluated_environment,
+            wheels_cache=self.wheels_cache,
+            requirements_files=self.setup_requirements_files(),
+            wheel_cache_dir=self.wheel_cache_dir,
+        )
+        self.build_from_nix_file(
+            command="exit", file_path=WHEEL_NIX, nix_arguments=nix_arguments
+        )
+
+    def install_setup_requirements(self):
+        nix_arguments = dict(
+            project_dir=self.project_dir,
+            download_cache_dir=self.download_cache_dir,
+            python_version=self.python_version,
+            extra_build_inputs=self.extra_build_inputs,
+            requirements_files=self.setup_requirements_files(),
+            wheel_cache_dir=self.wheel_cache_dir,
+            target_directory=os.path.join(self.project_dir, "setup_requires"),
+        )
+        self.build_from_nix_file(
+            command="exit", file_path=INSTALL_NIX, nix_arguments=nix_arguments
+        )
+
+    def build_from_nix_file(self, file_path, command, nix_arguments):
         try:
             self.build_output = self.nix.shell(
-                command="exit", derivation_path=PIP_NIX, nix_arguments=nix_arguments
+                command=command, derivation_path=file_path, nix_arguments=nix_arguments
             )
         except EvaluationFailed as error:
-            self.build_output = error.output
-            self.handle_build_error()
+            self.build_output += error.output
+            is_failure = True
         else:
-            if self.build_output.endswith("ERROR: Failed to build one or more wheels"):
-                self.handle_build_error()
+            is_failure = False
+        self.handle_build_error(is_failure=is_failure)
+
+    def delete_build_dir(self):
+        build_dir_path = os.path.join(self.project_dir, "build")
+        try:
+            shutil.rmtree(build_dir_path)
+        except FileNotFoundError:
+            pass
+
+    @lru_cache()
+    def setup_requirements_files(self):
+        path = os.path.join(self.project_dir, "setup_requirements.txt")
+        with open(path, "w") as requirement_file:
+            for requirement in self.setup_requires:
+                requirement_file.write(requirement)
+                requirement_file.write("\n")
+        return [path]
 
     def default_environment(self):
         with open(os.path.join(self.project_dir, "default_environment.json")) as f:
@@ -86,7 +165,13 @@ class WheelBuilder:
         # trim quotes
         self.evaluated_environment = output[1:-1]
 
-    def handle_build_error(self):
+    def handle_build_error(self, is_failure):
+        if not is_failure:
+            if not self.build_output.endswith(
+                "ERROR: Failed to build one or more wheels"
+            ):
+                return
+
         if self.verbose == 0:
             click.echo(self.build_output)
 
