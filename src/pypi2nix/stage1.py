@@ -13,6 +13,7 @@ class WheelBuilder:
         self.download_directory = os.path.join(project_directory, "download")
         self.wheel_directory = os.path.join(project_directory, "wheel")
         self.extracted_wheels_directory = os.path.join(project_directory, "wheelhouse")
+        self.indexes = [self.wheel_directory]
 
     def build(self):
         self.pip.download_sources(
@@ -26,8 +27,7 @@ class WheelBuilder:
             source_directories=[self.download_directory],
         )
         self.pip.install(
-            requirements=self.setup_requirements_files,
-            source_directories=[self.download_directory],
+            requirements=self.setup_requirements_files, source_directories=self.indexes
         )
 
         self.pip.download_sources(
@@ -41,8 +41,7 @@ class WheelBuilder:
         )
 
         self.pip.install(
-            requirements=self.requirements_files,
-            source_directories=[self.download_directory],
+            requirements=self.requirements_files, source_directories=self.indexes
         )
         return self.extract_wheels()
 

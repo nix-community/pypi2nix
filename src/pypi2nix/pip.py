@@ -1,10 +1,12 @@
 import json
 import os.path
+import shlex
 import shutil
 import sys
 import urllib
 
 import click
+
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.utils import escape_double_quotes
 
@@ -42,6 +44,7 @@ class Pip:
         self.extra_env = output[1:-1]
 
         self.wheel_cache_dir = os.path.join(self.project_directory, "cache", "wheels")
+        self.default_lib_directory = os.path.join(self.project_directory, "lib")
         self.download_cache_directory = os.path.join(
             self.project_directory, "cache", "download"
         )
@@ -87,7 +90,9 @@ class Pip:
             ),
         )
 
-    def install(self, requirements, source_directories):
+    def install(self, requirements, source_directories, target_directory=None):
+        if target_directory is None:
+            target_directory = self.default_lib_directory
         requirements_files = list(
             map(lambda r: r.processed_requirements_file_path(), requirements)
         )
@@ -97,14 +102,22 @@ class Pip:
             nix_arguments=self.nix_arguments(
                 requirements_files=requirements_files,
                 wheel_cache_dir=self.wheel_cache_dir,
-                target_directory=os.path.join(self.project_directory, "lib"),
+                target_directory=target_directory,
                 sources_directories=source_directories,
             ),
         )
 
-    def freeze(self):
+    def freeze(self, python_path=[]):
+        additional_paths = ":".join(map(shlex.quote, python_path))
+
         output = self.nix.shell(
-            "pip freeze", BASE_NIX, nix_arguments=self.nix_arguments()
+            "{PYTHONPATH} pip freeze".format(
+                PYTHONPATH="PYTHONPATH=" + additional_paths + ':"$PYTHONPATH"'
+                if python_path
+                else ""
+            ),
+            BASE_NIX,
+            nix_arguments=self.nix_arguments(),
         )
         return "\n".join(map(lambda x: x.strip(), output.splitlines()))
 

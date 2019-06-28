@@ -4,6 +4,7 @@ import os.path
 import tempfile
 
 import click
+
 from pypi2nix.package_source import PathSource
 from pypi2nix.requirements import Requirement
 from pypi2nix.sources import Sources

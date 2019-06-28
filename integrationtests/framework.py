@@ -6,6 +6,7 @@ import subprocess
 from attr import attrib
 from attr import attrs
 from attr import evolve
+
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
 

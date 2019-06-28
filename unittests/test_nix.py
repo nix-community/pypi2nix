@@ -1,6 +1,7 @@
 import os.path
 
 import pytest
+
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import ExecutableNotFound
 from pypi2nix.nix import Nix

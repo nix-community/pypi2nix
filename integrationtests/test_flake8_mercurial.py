@@ -2,7 +2,6 @@ from unittest import TestCase
 
 from .framework import IntegrationTest
 
-
 REVISION = "a209fb6"
 
 

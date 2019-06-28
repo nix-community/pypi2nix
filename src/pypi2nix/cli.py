@@ -3,6 +3,7 @@ import shutil
 import tempfile
 
 import click
+
 import pypi2nix.overrides
 import pypi2nix.stage1
 import pypi2nix.stage2
