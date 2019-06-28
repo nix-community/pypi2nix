@@ -29,7 +29,6 @@ pip_base.override( old: {
       --build ${build_directory} \
       ${sources_directories_links} \
       --find-links file://${wheel_cache_dir} \
-      --find-links file://${download_cache_dir} \
       --find-links file://$PYPI2NIX_BOOTSTRAP/index \
       --no-index \
       --exists-action w
