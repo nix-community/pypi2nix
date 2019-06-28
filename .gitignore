@@ -56,3 +56,4 @@
 .[#]*
 /htmlcov
 .pytest_cache
+/dist/

@@ -3,6 +3,8 @@ import os.path
 
 from pypi2nix.requirements_file import RequirementsFile
 
+from ..switches import nix
+
 
 def list_files(dirname):
     return [
@@ -12,6 +14,7 @@ def list_files(dirname):
     ]
 
 
+@nix
 def test_pip_downloads_sources_to_target_directory(pip, project_dir):
     download_path = os.path.join(project_dir, "download")
     pip.download_sources(

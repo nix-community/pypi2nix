@@ -2,6 +2,8 @@ import os.path
 
 from pypi2nix.requirements_file import RequirementsFile
 
+from ..switches import nix
+
 
 def list_files(dirname):
     return [
@@ -11,6 +13,7 @@ def list_files(dirname):
     ]
 
 
+@nix
 def test_pip_can_install_wheels_previously_downloaded(pip, project_dir):
     download_directory = os.path.join(project_dir, "download")
     target_directory = os.path.join(project_dir, "wheels")

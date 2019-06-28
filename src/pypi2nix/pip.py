@@ -106,7 +106,7 @@ class Pip:
         output = self.nix.shell(
             "pip freeze", BASE_NIX, nix_arguments=self.nix_arguments()
         )
-        return "\n".join([line.trim() for line in output.splitlines() if line.trim()])
+        return "\n".join(map(lambda x: x.strip(), output.splitlines()))
 
     def default_environment(self):
         output = self.nix.shell(
