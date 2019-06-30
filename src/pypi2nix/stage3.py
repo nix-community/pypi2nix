@@ -43,25 +43,6 @@ def main(
     generated_packages_metadata = []
     for item in sorted(packages_metadata, key=lambda x: x.name):
         buildInputs = "[ ]"
-        if item.build_deps:
-            build_deps = [
-                setuptools._vendor.packaging.utils.canonicalize_name(x)
-                for x in item.build_deps
-                if setuptools._vendor.packaging.utils.canonicalize_name(x)
-                in metadata_by_name.keys()
-            ]
-            if build_deps:
-                buildInputs = "[\n%s\n      ]" % (
-                    "\n".join(
-                        sorted(
-                            [
-                                '        self."%s"' % (metadata_by_name[x].name)
-                                for x in build_deps
-                                if x != item.name
-                            ]
-                        )
-                    )
-                )
         propagatedBuildInputs = "[ ]"
         if item.deps:
             deps = [

@@ -10,11 +10,10 @@ from pypi2nix.utils import safe
 
 
 class Wheel:
-    def __init__(self, name, version, deps, build_deps, homepage, license, description):
+    def __init__(self, name, version, deps, homepage, license, description):
         self.name = name
         self.version = version
         self.deps = deps
-        self.build_deps = build_deps
         self.homepage = homepage
         self.license = license
         self.description = description
@@ -24,7 +23,6 @@ class Wheel:
             "name": self.name,
             "version": self.version,
             "deps": self.deps,
-            "build_deps": self.build_deps,
             "homepage": self.homepage,
             "license": self.license,
             "description": self.description,
@@ -34,14 +32,6 @@ class Wheel:
     def from_wheel_directory_path(
         wheel_class, wheel_directory_path, default_environment
     ):
-        build_deps = []
-        setup_requires_file = os.path.join(wheel_directory_path, "setup_requires.txt")
-        if os.path.exists(setup_requires_file):
-            with open(setup_requires_file) as f:
-                deps = f.read().split("\n")
-                deps = filter(lambda line: line != "", deps)  # remove empty lines
-                build_deps = extract_deps(deps, default_environment)
-
         metadata_file = os.path.join(wheel_directory_path, "METADATA")
         if os.path.exists(metadata_file):
             with open(
@@ -69,7 +59,6 @@ class Wheel:
                     "deps": extract_deps(
                         metadata.get_all("requires-dist", []), default_environment
                     ),
-                    "build_deps": build_deps,
                     "homepage": safe(find_homepage(metadata)),
                     "license": license,
                     "description": safe(metadata.get("summary", "")),
