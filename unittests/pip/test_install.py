@@ -1,16 +1,9 @@
 import os
 import os.path
 
-import pytest
-
 from pypi2nix.requirements_file import RequirementsFile
 
 from ..switches import nix
-
-
-@pytest.fixture
-def download_dir(project_dir):
-    return os.path.join(project_dir, "download")
 
 
 @nix
@@ -39,3 +32,11 @@ def test_install_to_target_directory_does_not_install_to_default_directory(
     )
 
     assert os.listdir(target_directory)
+
+
+@nix
+def test_install_does_not_install_anything_with_empty_requirements(pip, project_dir):
+    target_directory = os.path.join(project_dir, "target_dir")
+    os.makedirs(target_directory)
+    pip.install([], [], target_directory)
+    assert not os.listdir(target_directory)

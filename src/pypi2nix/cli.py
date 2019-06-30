@@ -257,13 +257,11 @@ def main(
         verbose=verbose,
         wheels_cache=wheels_cache,
     )
-    wheel_builder = pypi2nix.stage1.WheelBuilder(
+    wheel_builder = pypi2nix.stage1.WheelBuilder(pip=pip, project_directory=project_dir)
+    wheels = wheel_builder.build(
         requirements_files=requirements_files,
         setup_requirements_files=setup_requirements_files,
-        pip=pip,
-        project_directory=project_dir,
     )
-    wheels = wheel_builder.build()
     requirements_frozen = wheel_builder.get_frozen_requirements()
     default_environment = pip.default_environment()
 

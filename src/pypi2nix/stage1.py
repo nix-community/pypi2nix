@@ -4,38 +4,33 @@ import zipfile
 
 
 class WheelBuilder:
-    def __init__(
-        self, requirements_files, setup_requirements_files, pip, project_directory
-    ):
-        self.requirements_files = requirements_files
-        self.setup_requirements_files = setup_requirements_files
+    def __init__(self, pip, project_directory):
         self.pip = pip
         self.download_directory = os.path.join(project_directory, "download")
         self.wheel_directory = os.path.join(project_directory, "wheel")
         self.extracted_wheels_directory = os.path.join(project_directory, "wheelhouse")
         self.indexes = [self.wheel_directory]
 
-    def build(self):
+    def build(self, requirements_files, setup_requirements_files):
         self.pip.download_sources(
-            requirements=self.setup_requirements_files,
-            constraints=self.requirements_files,
+            requirements=setup_requirements_files,
+            constraints=requirements_files,
             target_directory=self.download_directory,
         )
         self.pip.build_wheels(
-            requirements=self.setup_requirements_files,
+            requirements=setup_requirements_files,
             target_directory=self.wheel_directory,
             source_directories=[self.download_directory],
         )
         self.pip.install(
-            requirements=self.setup_requirements_files, source_directories=self.indexes
+            requirements=setup_requirements_files, source_directories=self.indexes
         )
 
         self.pip.download_sources(
-            requirements=self.requirements_files,
-            target_directory=self.download_directory,
+            requirements=requirements_files, target_directory=self.download_directory
         )
         self.pip.build_wheels(
-            requirements=self.requirements_files,
+            requirements=requirements_files,
             target_directory=self.wheel_directory,
             source_directories=[self.download_directory],
         )

@@ -50,14 +50,14 @@ class Pip:
         )
 
     def download_sources(self, requirements, target_directory, constraints=[]):
+        if not requirements:
+            return
         requirements_files = list(
             map(lambda r: r.processed_requirements_file_path(), requirements)
         )
         constraints_files = list(
             map(lambda c: c.processed_requirements_file_path(), constraints)
         )
-        with open(requirements_files[0]) as f:
-            print(f.read())
         self.build_from_nix_file(
             command="exit",
             file_path=DOWNLOAD_NIX,
@@ -73,6 +73,8 @@ class Pip:
     def build_wheels(
         self, requirements, target_directory, source_directories, constraints=[]
     ):
+        if not requirements:
+            return
         requirements_files = list(
             map(lambda r: r.processed_requirements_file_path(), requirements)
         )
@@ -91,6 +93,8 @@ class Pip:
         )
 
     def install(self, requirements, source_directories, target_directory=None):
+        if not requirements:
+            return
         if target_directory is None:
             target_directory = self.default_lib_directory
         requirements_files = list(
