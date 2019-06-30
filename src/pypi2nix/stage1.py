@@ -39,10 +39,6 @@ class WheelBuilder:
             target_directory=self.wheel_directory,
             source_directories=[self.download_directory],
         )
-
-        self.pip.install(
-            requirements=self.requirements_files, source_directories=self.indexes
-        )
         return self.extract_wheels()
 
     def extract_wheels(self):
