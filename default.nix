@@ -15,7 +15,7 @@ let
   additionalIgnores = ''
     /examples
     /.travis.yml
-    ${pkgs.lib.optionalString excludeIntegrationTests "/integrationtests"}
+    ${pkgs.lib.optionalString excludeIntegrationTests "/integrationtests/*"}
   '';
   # we need to move it to src/pypi2nix/templates/
   readLines = file: with pkgs.lib; splitString "\n" (removeSuffix "\n" (builtins.readFile file));
