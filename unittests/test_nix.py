@@ -1,6 +1,7 @@
 import os.path
 
 import pytest
+
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import ExecutableNotFound
 from pypi2nix.nix import Nix
@@ -14,8 +15,7 @@ HERE = os.path.dirname(__file__)
 def nix_instance(tmpdir):
     nix_path_addition = tmpdir.mkdir("testpath_exists")
     yield Nix(
-        nix_path=["test_variable={}".format(str(nix_path_addition))],
-        verbose=True,
+        nix_path=["test_variable={}".format(str(nix_path_addition))], verbose=True
     )
 
 
@@ -80,31 +80,27 @@ def test_build_expression_creates_proper_out_link(nix_instance, tmpdir):
 
 @nix
 def test_build_respects_boolean_arguments(nix_instance, tmpdir):
-    source_path = tmpdir.join('test.nix')
-    with open(source_path, 'w') as f:
-        f.write(' '.join([
-            '{ argument }:',
-            'with import <nixpkgs> {};'
-            'if lib.assertMsg argument "Argument is false" then hello else null'
-        ]))
-    nix_instance.build(
-        source_file=str(source_path),
-        arguments={
-            'argument': True,
-        }
-    )
+    source_path = tmpdir.join("test.nix")
+    with open(source_path, "w") as f:
+        f.write(
+            " ".join(
+                [
+                    "{ argument }:",
+                    "with import <nixpkgs> {};"
+                    'if lib.assertMsg argument "Argument is false" then hello else null',
+                ]
+            )
+        )
+    nix_instance.build(source_file=str(source_path), arguments={"argument": True})
 
 
 @nix
 def test_build_expression_respects_boolean_arguments(nix_instance):
-    expression = ' '.join([
-        '{ argument }:',
-        'with import <nixpkgs> {};'
-        'if lib.assertMsg argument "Argument is false" then hello else null'
-    ])
-    nix_instance.build_expression(
-        expression,
-        arguments={
-            'argument': True,
-        }
+    expression = " ".join(
+        [
+            "{ argument }:",
+            "with import <nixpkgs> {};"
+            'if lib.assertMsg argument "Argument is false" then hello else null',
+        ]
     )
+    nix_instance.build_expression(expression, arguments={"argument": True})

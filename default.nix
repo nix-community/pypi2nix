@@ -15,7 +15,7 @@ let
   additionalIgnores = ''
     /examples
     /.travis.yml
-    ${pkgs.lib.optionalString excludeIntegrationTests "/integrationtests"}
+    ${pkgs.lib.optionalString excludeIntegrationTests "/integrationtests/*"}
   '';
   # we need to move it to src/pypi2nix/templates/
   readLines = file: with pkgs.lib; splitString "\n" (removeSuffix "\n" (builtins.readFile file));
@@ -39,9 +39,9 @@ in python.mkDerivation {
   doCheck = true;
   checkPhase = ''
     echo "Running black ..."
-    black --check --diff -v setup.py src/
+    black --check --diff -v setup.py src/ integrationtests/ unittests/
     echo "Running flake8 ..."
-    flake8 -v setup.py src/
+    flake8 -v setup.py src/ integrationtests/ unittests/
     echo "Running pytest ..."
     PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v unittests/ -m 'not nix'
   '';

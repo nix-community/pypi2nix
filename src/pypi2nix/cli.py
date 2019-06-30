@@ -1,4 +1,3 @@
-import hashlib
 import os
 import shutil
 import tempfile
@@ -11,7 +10,7 @@ import pypi2nix.stage2
 import pypi2nix.stage3
 import pypi2nix.utils
 from pypi2nix.nix import Nix
-from pypi2nix.package_source import PathSource
+from pypi2nix.pip import Pip
 from pypi2nix.requirements_file import RequirementsFile
 from pypi2nix.sources import Sources
 from pypi2nix.utils import md5_sum_of_files_with_file_names
@@ -183,6 +182,7 @@ def main(
             'Missing option "-V" / "--python-version".  Choose from '
             + (", ".join(python_versions))
         )
+    python_version = pypi2nix.utils.PYTHON_VERSIONS[python_version]
 
     extra_build_inputs = pypi2nix.utils.args_as_list(extra_build_inputs)
     setup_requires = pypi2nix.utils.args_as_list(setup_requires)
@@ -237,30 +237,33 @@ def main(
         requirements_file = RequirementsFile(requirements_path, project_dir)
         requirements_file.process()
         sources.update(requirements_file.sources)
-        requirements_files.append(requirements_file.processed_requirements_file_path())
+        requirements_files.append(requirements_file)
+
+    setup_requirements_files = [
+        RequirementsFile.from_lines(setup_requires, project_dir)
+    ]
 
     click.echo("pypi2nix v{} running ...".format(pypi2nix_version))
     click.echo("")
 
     click.echo("Stage1: Downloading wheels and creating wheelhouse ...")
 
-    wheel_builder = pypi2nix.stage1.WheelBuilder(
-        verbose=verbose,
-        requirements_files=requirements_files,
-        project_dir=project_dir,
-        download_cache_dir=download_cache_dir,
-        wheel_cache_dir=wheel_cache_dir,
-        extra_build_inputs=extra_build_inputs,
-        python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
-        setup_requires=setup_requires,
-        extra_env=extra_env,
-        wheels_cache=wheels_cache,
+    pip = Pip(
         nix=nix,
+        project_directory=project_dir,
+        python_version=python_version,
+        extra_env=extra_env,
+        extra_build_inputs=extra_build_inputs,
+        verbose=verbose,
+        wheels_cache=wheels_cache,
     )
-    wheel_builder.build()
-    requirements_frozen = wheel_builder.requirements_frozen()
-    wheels = wheel_builder.wheels()
-    default_environment = wheel_builder.default_environment()
+    wheel_builder = pypi2nix.stage1.WheelBuilder(pip=pip, project_directory=project_dir)
+    wheels = wheel_builder.build(
+        requirements_files=requirements_files,
+        setup_requirements_files=setup_requirements_files,
+    )
+    requirements_frozen = wheel_builder.get_frozen_requirements()
+    default_environment = pip.default_environment()
 
     click.echo("Stage2: Extracting metadata from pypi.python.org ...")
 
@@ -281,7 +284,7 @@ def main(
         requirements_frozen=requirements_frozen,
         extra_build_inputs=extra_build_inputs,
         enable_tests=enable_tests,
-        python_version=pypi2nix.utils.PYTHON_VERSIONS[python_version],
+        python_version=python_version,
         current_dir=current_dir,
         common_overrides=overrides,
     )

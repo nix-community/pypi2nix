@@ -28,12 +28,14 @@ stages:
 jobs:
   include:
   - stage: build
+    name: build
     os: linux
     env:
       - TEST_FILE=none
     script:
     - nix build
   - stage: build
+    name: unittests
     os: linux
     env:
       - TEST_FILE=none

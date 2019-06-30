@@ -1,12 +1,12 @@
 import os
 import os.path
-import shlex
 import shutil
 import subprocess
 
 from attr import attrib
 from attr import attrs
 from attr import evolve
+
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
 
@@ -49,11 +49,8 @@ class IntegrationTest:
         print("Build pypi2nix executable")
         try:
             self.nix.build(
-                os.path.join(
-                    os.path.dirname(HERE),
-                    'default.nix',
-                ),
-                arguments={'excludeIntegrationTests': True},
+                os.path.join(os.path.dirname(HERE), "default.nix"),
+                arguments={"excludeIntegrationTests": True},
                 out_link=os.path.join(HERE, "pypi2nix"),
             )
         except EvaluationFailed:
@@ -94,15 +91,15 @@ class IntegrationTest:
             command.append(requirement)
 
         for variable_name, value in self.extra_environment().items():
-            command.append('-N')
-            command.append('{name}={value}'.format(name=variable_name, value=value))
+            command.append("-N")
+            command.append("{name}={value}".format(name=variable_name, value=value))
 
         for dependency in self.external_dependencies():
-            command.append('-E')
+            command.append("-E")
             command.append(dependency)
 
         if self.default_overrides:
-            command.append('--default-overrides')
+            command.append("--default-overrides")
 
         return command
 
@@ -122,9 +119,9 @@ class IntegrationTest:
         print("Build python interpreter from generated expression")
         try:
             self.nix.build(
-                os.path.join(self.example_directory(), 'requirements.nix'),
-                attribute='interpreter',
-                out_link=os.path.join(self.example_directory(), 'result')
+                os.path.join(self.example_directory(), "requirements.nix"),
+                attribute="interpreter",
+                out_link=os.path.join(self.example_directory(), "result"),
             )
         except EvaluationFailed:
             self.fail(
@@ -169,7 +166,7 @@ class IntegrationTest:
             self.fail("Executation of test code in nix-shell failed")
 
     def read_requirements_file_contents(self):
-        with open(os.path.join(self.example_directory(), 'requirements.nix')) as f:
+        with open(os.path.join(self.example_directory(), "requirements.nix")) as f:
             return f.read()
 
     def code_for_testing_string(self):

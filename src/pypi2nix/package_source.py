@@ -1,10 +1,6 @@
-import hashlib
-import os.path
-
 import click
 import pkg_resources
 
-from pypi2nix.utils import download_file
 from pypi2nix.utils import prefetch_git
 from pypi2nix.utils import prefetch_hg
 from pypi2nix.utils import prefetch_url
