@@ -1,3 +1,4 @@
+import os
 import os.path
 
 import pytest
@@ -64,3 +65,14 @@ def six_requirements(project_dir):
 @pytest.fixture
 def default_environment(pip):
     return pip.default_environment()
+
+
+@pytest.fixture
+def six_source_distribution(pip, download_dir, six_requirements):
+    pip.download_sources(
+        six_requirements,
+        download_dir,
+    )
+    for file_name in os.listdir(download_dir):
+        if 'six' in file_name:
+            return os.path.join(download_dir, file_name)

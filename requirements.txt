@@ -2,3 +2,4 @@ Click
 Jinja2
 requests
 nix-prefetch-github
+toml
