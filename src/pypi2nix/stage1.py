@@ -54,8 +54,10 @@ class WheelBuilder:
         ]
         for wheel in wheels:
             zip_file = zipfile.ZipFile(wheel)
-            zip_file.extractall(self.extracted_wheels_directory)
-            zip_file.close()
+            try:
+                zip_file.extractall(self.extracted_wheels_directory)
+            finally:
+                zip_file.close()
 
         return [
             dist_info
