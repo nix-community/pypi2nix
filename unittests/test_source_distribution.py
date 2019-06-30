@@ -14,14 +14,14 @@ def source_distribution(six_source_distribution):
 
 @pytest.fixture
 def flit_distribution(pip, project_dir, download_dir):
-    requirements = [RequirementsFile.from_lines(['flit'], project_dir)]
+    requirements = [RequirementsFile.from_lines(["flit"], project_dir)]
     pip.download_sources(requirements, download_dir)
     distributions = [
         SourceDistribution.from_tarball(os.path.join(download_dir, filename))
         for filename in os.listdir(download_dir)
     ]
     for distribution in distributions:
-        if distribution.name == 'flit':
+        if distribution.name == "flit":
             return distribution
 
 
