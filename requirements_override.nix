@@ -10,6 +10,9 @@ self: super: {
     buildInputs = old.buildInputs ++ [ self."pytest-runner" ];
   });
 
+  "importlib-metadata" = python.overrideDerivation super."importlib-metadata" (old: {
+    buildInputs = old.buildInputs ++ [ self."setuptools-scm" ];
+  });
   "mccabe" = python.overrideDerivation super."mccabe" (old: {
     buildInputs = old.buildInputs ++ [ self."pytest-runner" ];
   });
@@ -31,6 +34,10 @@ self: super: {
   });
 
   "pytest-runner" = python.overrideDerivation super."pytest-runner" (old: {
+    buildInputs = old.buildInputs ++ [ self."setuptools-scm" ];
+  });
+
+  "zipp" = python.overrideDerivation super."zipp" (old: {
     buildInputs = old.buildInputs ++ [ self."setuptools-scm" ];
   });
 
