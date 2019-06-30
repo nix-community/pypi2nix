@@ -63,6 +63,9 @@ class WheelBuilder:
             if dist_info.endswith(".dist-info")
         ]
 
+    def get_frozen_requirements(self):
+        return self.pip.freeze(python_path=[self.extracted_wheels_directory])
+
 
 def list_files(path):
     return map(lambda f: os.path.join(path, f), os.listdir(path))

@@ -264,9 +264,7 @@ def main(
         project_directory=project_dir,
     )
     wheels = wheel_builder.build()
-    requirements_frozen = pip.freeze(
-        python_path=[os.path.join(project_dir, "wheelhouse")]
-    )
+    requirements_frozen = wheel_builder.get_frozen_requirements()
     default_environment = pip.default_environment()
 
     click.echo("Stage2: Extracting metadata from pypi.python.org ...")
