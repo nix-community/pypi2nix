@@ -24,5 +24,12 @@ setup(
     packages=["pypi2nix"],
     package_dir={"": "src"},
     include_package_data=True,
-    install_requires=["click", "jinja2", "requests", "nix-prefetch-github", "toml", "markerlib"],
+    install_requires=[
+        "click",
+        "jinja2",
+        "requests",
+        "nix-prefetch-github",
+        "toml",
+        "markerlib",
+    ],
 )

@@ -1,5 +1,5 @@
 import click
-
+from markerlib import interpret
 from pypi2nix.package_source import GitSource
 from pypi2nix.package_source import HgSource
 from pypi2nix.package_source import UrlSource
@@ -25,14 +25,23 @@ class Requirement:
         self.name = None
         self.source = None
         self.is_editable = None
+        self.environment_marker = None
 
         self.parse()
 
+    def applies_to_system(self):
+        return interpret(self.environment_marker)
+
     def parse(self):
+        self.detect_environment_marker()
         self.detect_editable()
-        # if os.path.isdir(self.line) and line not in sources_urls:
-        #     raise click.ClickException("Source for path `%s` does not exists." % line)
         self.detect_source()
+
+    def detect_environment_marker(self):
+        segments = self.line.split(";")
+        if len(segments) > 1:
+            self.environment_marker = ";".join(segments[1:]).strip()
+            self.line = segments[0]
 
     def detect_editable(self):
         if self.is_editable is None:
