@@ -39,7 +39,7 @@ in python.mkDerivation {
   doCheck = true;
   checkPhase = ''
     echo "Running black ..."
-    black --check --diff -v setup.py src/
+    black --check --diff -v setup.py src/ integrationtests/ unittests/
     echo "Running flake8 ..."
     flake8 -v setup.py src/ integrationtests/ unittests/
     echo "Running pytest ..."
