@@ -39,13 +39,15 @@ class WheelBuilder:
         )
 
     def get_uninspected_source_distributions(self):
-        return list(map(
-            SourceDistribution.from_tarball,
-            filter(
-                lambda path: path not in self.inspected_source_distribution_files,
-                list_files(self.download_directory),
-            ),
-        ))
+        return list(
+            map(
+                SourceDistribution.from_tarball,
+                filter(
+                    lambda path: path not in self.inspected_source_distribution_files,
+                    list_files(self.download_directory),
+                ),
+            )
+        )
 
     def register_all_source_distributions(self):
         for path in list_files(self.download_directory):
