@@ -8,6 +8,7 @@ import urllib
 import click
 
 from pypi2nix.nix import EvaluationFailed
+from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.utils import escape_double_quotes
 
 HERE = os.path.dirname(__file__)
@@ -49,15 +50,21 @@ class Pip:
             self.project_directory, "cache", "download"
         )
 
-    def download_sources(self, requirements, target_directory, constraints=[]):
+    def download_sources(
+        self, requirements, target_directory, constraints=RequirementSet()
+    ):
         if not requirements:
             return
-        requirements_files = list(
-            map(lambda r: r.processed_requirements_file_path(), requirements)
-        )
-        constraints_files = list(
-            map(lambda c: c.processed_requirements_file_path(), constraints)
-        )
+        requirements_files = [
+            requirements.to_file(
+                self.project_directory
+            ).processed_requirements_file_path()
+        ]
+        constraints_files = [
+            constraints.to_file(
+                self.project_directory
+            ).processed_requirements_file_path()
+        ]
         self.build_from_nix_file(
             command="exit",
             file_path=DOWNLOAD_NIX,
@@ -71,13 +78,19 @@ class Pip:
         )
 
     def build_wheels(
-        self, requirements, target_directory, source_directories, constraints=[]
+        self,
+        requirements,
+        target_directory,
+        source_directories,
+        constraints=RequirementSet(),
     ):
         if not requirements:
             return
-        requirements_files = list(
-            map(lambda r: r.processed_requirements_file_path(), requirements)
-        )
+        requirements_files = [
+            requirements.to_file(
+                self.project_directory
+            ).processed_requirements_file_path()
+        ]
         self.build_from_nix_file(
             command="exit",
             file_path=WHEEL_NIX,
@@ -97,9 +110,11 @@ class Pip:
             return
         if target_directory is None:
             target_directory = self.default_lib_directory
-        requirements_files = list(
-            map(lambda r: r.processed_requirements_file_path(), requirements)
-        )
+        requirements_files = [
+            requirements.to_file(
+                self.project_directory
+            ).processed_requirements_file_path()
+        ]
         self.build_from_nix_file(
             command="exit",
             file_path=INSTALL_NIX,

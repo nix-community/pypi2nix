@@ -5,16 +5,11 @@ import tempfile
 
 import click
 
-from pypi2nix.package_source import PathSource
-from pypi2nix.requirements import Requirement
-from pypi2nix.sources import Sources
-
 
 class RequirementsFile:
     def __init__(self, path, project_dir):
         self.project_dir = project_dir
         self.original_path = path
-        self.sources = Sources()
 
     @classmethod
     def from_lines(constructor, lines, project_dir):
@@ -36,8 +31,8 @@ class RequirementsFile:
         return requirements_file
 
     def read(self):
-        if os.path.exists(self.process_requirements_file_path()):
-            path = self.process_requirements_file_path()
+        if os.path.exists(self.processed_requirements_file_path()):
+            path = self.processed_requirements_file_path()
         else:
             path = self.original_path
         with open(path) as f:
@@ -58,9 +53,6 @@ class RequirementsFile:
             requirements_line = self.handle_editable_line(requirements_line)
         elif self.is_include_line(requirements_line):
             requirements_line = self.handle_include_line(requirements_line)
-        requirement = Requirement(requirements_line)
-        if requirement.source is not None:
-            self.sources.add(requirement.name, requirement.source)
         return requirements_line
 
     def processed_requirements_file_path(self):
@@ -79,7 +71,6 @@ class RequirementsFile:
         )
         new_requirements_file = RequirementsFile(self.project_dir, requirements_file)
         new_requirements_file.process()
-        self.sources.update(new_requirements_file.sources)
         return line[0:3] + new_requirements_file.processed_requirements_file_path()
 
     def is_vcs_line(self, line):
@@ -91,8 +82,7 @@ class RequirementsFile:
     def handle_editable_line(self, line):
         line = line[3:]
         try:
-            tmp_path, egg = line.split("#")
-            tmp_name = egg.split("egg=")[1]
+            tmp_path, _ = line.split("#")
             tmp_path = tmp_path.strip()
             _tmp = tmp_path.split("[")
             if len(_tmp) > 1:
@@ -113,6 +103,4 @@ class RequirementsFile:
                 os.path.abspath(os.path.join(os.getcwd(), tmp_path)),
             )
         )
-
-        self.sources.add(tmp_name, PathSource(tmp_path))
         return "-e %s%s" % (tmp_path, tmp_other)

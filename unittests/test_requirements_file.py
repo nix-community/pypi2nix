@@ -18,12 +18,6 @@ def requirements_file_from_lines(project_dir, tmpdir_factory):
     return factory
 
 
-def test_requirements_file_detects_git_source(requirements_file_from_lines):
-    requirements_file = requirements_file_from_lines(["git+git://test.com#egg=testegg"])
-    requirements_file.process()
-    assert "testegg" in requirements_file.sources
-
-
 def test_requirements_file_handles_comments(requirements_file_from_lines):
     requirements_file = requirements_file_from_lines(["# comment"])
     requirements_file.process()

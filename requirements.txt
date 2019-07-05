@@ -3,4 +3,4 @@ Jinja2
 requests
 nix-prefetch-github
 toml
-markerlib
+Parsley

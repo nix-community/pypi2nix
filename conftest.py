@@ -1,11 +1,20 @@
 import os
 import os.path
+import platform
 
 import pytest
 from pypi2nix.nix import Nix
 from pypi2nix.pip import Pip
-from pypi2nix.requirements_file import RequirementsFile
+from pypi2nix.requirement_set import RequirementSet
+from pypi2nix.requirements import Requirement
 from pypi2nix.stage1 import WheelBuilder
+
+
+@pytest.fixture
+def python_version():
+    return '.'.join(
+        platform.python_version().split('.')[:2]
+    )
 
 
 @pytest.fixture
@@ -52,14 +61,16 @@ def wheel_builder(pip, project_dir):
 
 @pytest.fixture
 def extracted_six_package(six_requirements, wheel_builder):
-    wheels = wheel_builder.build(six_requirements, [])
+    wheels = wheel_builder.build(six_requirements)
     assert len(wheels) == 1
     return wheels[0]
 
 
 @pytest.fixture
 def six_requirements(project_dir):
-    return [RequirementsFile.from_lines(['six'], project_dir)]
+    requirements = RequirementSet()
+    requirements.add(Requirement.from_line('six'))
+    return requirements
 
 
 @pytest.fixture

@@ -140,6 +140,22 @@ let
       };
     };
 
+    "Parsley" = python.mkDerivation {
+      name = "Parsley-1.3";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/06/52/cac2f9e78c26cff8bb518bdb4f2b5a0c7058dec7a62087ed48fe87478ef0/Parsley-1.3.tar.gz";
+        sha256 = "9444278d47161d5f2be76a767809a3cbe6db4db822f46a4fd7481d4057208d41";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://launchpad.net/parsley";
+        license = "MIT License";
+        description = "Parsing and pattern matching made easy.";
+      };
+    };
+
     "Pygments" = python.mkDerivation {
       name = "Pygments-2.4.2";
       src = pkgs.fetchurl {
@@ -167,7 +183,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "http://github.com/ActiveState/appdirs";
-        license = "MIT";
+        license = licenses.mit;
         description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\".";
       };
     };

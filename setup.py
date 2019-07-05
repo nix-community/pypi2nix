@@ -30,6 +30,6 @@ setup(
         "requests",
         "nix-prefetch-github",
         "toml",
-        "markerlib",
+        "Parsley",
     ],
 )

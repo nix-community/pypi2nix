@@ -5,6 +5,9 @@ import tempfile
 
 import toml
 
+from pypi2nix.requirement_set import RequirementSet
+from pypi2nix.requirements import Requirement
+
 
 class SourceDistribution:
     def __init__(self, name, pyproject_toml):
@@ -53,3 +56,16 @@ class SourceDistribution:
                 return toml.load(f)
         else:
             return None
+
+    def build_dependencies(self):
+        requirement_set = RequirementSet()
+        if self.pyproject_toml is None:
+            pass
+        else:
+            for build_input in self.pyproject_toml.get("build-system", {}).get(
+                "requires", []
+            ):
+                requirement = Requirement.from_line(build_input)
+                if requirement.applies_to_system():
+                    requirement_set.add(requirement)
+        return requirement_set
