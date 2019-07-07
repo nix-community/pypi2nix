@@ -87,3 +87,26 @@ def six_source_distribution(pip, download_dir, six_requirements):
     for file_name in os.listdir(download_dir):
         if 'six' in file_name:
             return os.path.join(download_dir, file_name)
+
+
+@pytest.fixture(params=(
+    'six',
+    'setuptools == 41.0.1',
+))
+def requirement(request):
+    return Requirement.from_line(request.param)
+
+
+@pytest.fixture
+def source_distribution_file(pip, requirement, download_dir):
+    requirement_set = RequirementSet()
+    requirement_set.add(requirement)
+    pip.download_sources(
+        requirement_set,
+        download_dir,
+    )
+    for file_name in os.listdir(download_dir):
+        if file_name.startswith(requirement.name):
+            return os.path.join(download_dir, file_name)
+    else:
+        assert False

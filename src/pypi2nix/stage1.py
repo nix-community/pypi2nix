@@ -41,7 +41,7 @@ class WheelBuilder:
     def get_uninspected_source_distributions(self):
         return list(
             map(
-                SourceDistribution.from_tarball,
+                SourceDistribution.from_archive,
                 filter(
                     lambda path: path not in self.inspected_source_distribution_files,
                     list_files(self.download_directory),

@@ -2,11 +2,16 @@ import email
 import os
 import tarfile
 import tempfile
+import zipfile
 
 import toml
 
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
+
+
+class UnpackingFailed(Exception):
+    pass
 
 
 class SourceDistribution:
@@ -15,23 +20,41 @@ class SourceDistribution:
         self.pyproject_toml = pyproject_toml
 
     @classmethod
-    def from_tarball(source_distribution, tarball_path):
-        with tempfile.TemporaryDirectory() as extraction_directory, tarfile.open(
-            tarball_path, "r:gz"
-        ) as tar:
-            tar.extractall(path=extraction_directory)
-            extracted_files = [
-                os.path.join(directory_path, file_name)
-                for directory_path, _, file_names in os.walk(extraction_directory)
-                for file_name in file_names
-            ]
-            metadata = source_distribution.metadata_from_uncompressed_distribution(
-                extracted_files
+    def from_archive(source_distribution, tarball_path):
+        try:
+            with tempfile.TemporaryDirectory() as extraction_directory:
+                source_distribution.unpack_archive(tarball_path, extraction_directory)
+                extracted_files = [
+                    os.path.join(directory_path, file_name)
+                    for directory_path, _, file_names in os.walk(extraction_directory)
+                    for file_name in file_names
+                ]
+                metadata = source_distribution.metadata_from_uncompressed_distribution(
+                    extracted_files
+                )
+                pyproject_toml = source_distribution.get_pyproject_toml(extracted_files)
+        except tarfile.ReadError:
+            raise UnpackingFailed(
+                "Failed to unpack compressed file {} as a .tar.gz file type".format(
+                    tarball_path
+                )
             )
-            pyproject_toml = source_distribution.get_pyproject_toml(extracted_files)
         return source_distribution(
             name=metadata.get("name"), pyproject_toml=pyproject_toml
         )
+
+    @classmethod
+    def unpack_archive(_, archive_path, target_directory):
+        if archive_path.endswith(".tar.gz"):
+            with tarfile.open(archive_path, "r:gz") as tar:
+                tar.extractall(path=target_directory)
+        elif archive_path.endswith(".zip"):
+            with zipfile.ZipFile(archive_path) as archive:
+                archive.extractall(path=target_directory)
+        else:
+            raise UnpackingFailed(
+                "Could not detect archive format for file {}".format(archive_path)
+            )
 
     @classmethod
     def metadata_from_uncompressed_distribution(_, extracted_files):
