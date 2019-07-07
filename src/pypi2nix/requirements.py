@@ -30,7 +30,7 @@ class Requirement:
             versions = versions_or_url
             url = None
         else:
-            versions = None
+            versions = []
             url = versions_or_url
         return constructor(name, extras, versions, markers, url)
 
