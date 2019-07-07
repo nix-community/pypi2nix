@@ -26,3 +26,9 @@ def test_environment_marker_is_propagated_properly(python_version):
     assert extras == []
     assert version == []
     assert marker == ("in", python_version, "3.3 3.4 3.5")
+
+
+def test_that_python_implemntation_marker_can_be_parsed():
+    requirement_parser.compiled_grammar()(
+        'testspec; python_implementation == "CPython"'
+    )

@@ -112,7 +112,8 @@ class RequirementParser:
                          'platform_system' | 'platform_version' |
                          'platform_machine' | 'platform_python_implementation' |
                          'implementation_name' | 'implementation_version' |
-                         'extra' # ONLY when defined by a containing layer
+                         'python_implementation' | 'extra'
+                         # ONLY when defined by a containing layer
                          ):varname -> lookup(varname)
         marker_var    = wsp* (env_var | python_str)
         marker_expr   = marker_var:l marker_op:o marker_var:r -> (o, l, r)
@@ -132,9 +133,9 @@ class RequirementParser:
         name_req      = (name:n wsp* extras?:e wsp* versionspec?:v wsp* quoted_marker?:m
                          -> (n, e or [], v or [], m))
         url_req       = (name:n wsp* extras?:e wsp* urlspec:v (wsp+ | end) quoted_marker?:m
-                         -> (n, e or [], v, m))
+                         -> (n, e or [], v or [], m))
         url_req_pip_style = (('-e' wsp+)? (('hg+' | 'git+')?:p <URI_reference_pip_style>:s -> p or "" + s):v
-                            '#egg=' name:n -> (n, [], v, None))
+                            '#egg=' name:n -> (n, [], v or [], None))
         specification = wsp* ( url_req_pip_style | url_req | name_req ):s wsp* -> s
         # The result is a tuple - name, list-of-extras,
         # list-of-version-constraints-or-a-url, marker-ast or None
@@ -225,6 +226,7 @@ class RequirementParser:
             "os_name": os.name,
             "platform_machine": platform.machine(),
             "platform_python_implementation": platform.python_implementation(),
+            "python_implementation": platform.python_implementation(),
             "platform_release": platform.release(),
             "platform_system": platform.system(),
             "platform_version": platform.version(),
