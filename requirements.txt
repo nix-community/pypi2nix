@@ -4,3 +4,4 @@ requests
 nix-prefetch-github
 toml
 Parsley
+attrs

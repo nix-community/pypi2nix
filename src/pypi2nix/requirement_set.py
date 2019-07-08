@@ -17,9 +17,9 @@ class RequirementSet:
     def __len__(self):
         return len(self.requirements)
 
-    def to_file(self, project_dir):
+    def to_file(self, project_dir, target_platform):
         return RequirementsFile.from_lines(
-            self.requirements_file_content(), project_dir
+            self.requirements_file_content(target_platform), project_dir
         )
 
     @classmethod
@@ -44,11 +44,11 @@ class RequirementSet:
                 sources.add(requirement.name, requirement.source)
         return sources
 
-    def requirements_file_content(self):
+    def requirements_file_content(self, target_platform):
         return [
             requirement.to_line()
             for requirement in self.requirements.values()
-            if requirement.applies_to_system()
+            if requirement.applies_to_target(target_platform)
         ]
 
     def __add__(self, other):

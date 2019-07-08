@@ -8,7 +8,7 @@ class Flake8Test(IntegrationTest, TestCase):
         return "flake8"
 
     def requirements(self):
-        return ["flake8"]
+        return ["flake8 == 3.7.7"]
 
     def python_version(self):
         return "3.5"

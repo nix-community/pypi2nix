@@ -28,6 +28,7 @@ class Pip:
         extra_env,
         verbose: int,
         wheels_cache,
+        target_platform,
     ):
         self.nix = nix
         self.project_directory = project_directory
@@ -37,6 +38,7 @@ class Pip:
         self.build_output = ""
         self.verbose = verbose
         self.wheels_cache = wheels_cache
+        self.target_platform = target_platform
 
         output = self.nix.evaluate_expression(
             'let pkgs = import <nixpkgs> {}; in "%s"' % escape_double_quotes(extra_env)
@@ -57,12 +59,12 @@ class Pip:
             return
         requirements_files = [
             requirements.to_file(
-                self.project_directory
+                self.project_directory, self.target_platform
             ).processed_requirements_file_path()
         ]
         constraints_files = [
             constraints.to_file(
-                self.project_directory
+                self.project_directory, self.target_platform
             ).processed_requirements_file_path()
         ]
         self.build_from_nix_file(
@@ -88,7 +90,7 @@ class Pip:
             return
         requirements_files = [
             requirements.to_file(
-                self.project_directory
+                self.project_directory, self.target_platform
             ).processed_requirements_file_path()
         ]
         self.build_from_nix_file(
@@ -112,7 +114,7 @@ class Pip:
             target_directory = self.default_lib_directory
         requirements_files = [
             requirements.to_file(
-                self.project_directory
+                self.project_directory, self.target_platform
             ).processed_requirements_file_path()
         ]
         self.build_from_nix_file(

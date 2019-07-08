@@ -49,8 +49,10 @@ def test_that_flit_pyproject_toml_is_recognized(flit_distribution):
 
 
 @nix
-def test_that_flit_build_dependencies_contains_requests(flit_distribution):
-    assert "requests" in flit_distribution.build_dependencies()
+def test_that_flit_build_dependencies_contains_requests(
+    flit_distribution, current_platform
+):
+    assert "requests" in flit_distribution.build_dependencies(current_platform)
 
 
 @nix

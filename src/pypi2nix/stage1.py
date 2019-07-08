@@ -33,7 +33,9 @@ class WheelBuilder:
         if not uninspected_distributions:
             return detected_dependencies
         for distribution in uninspected_distributions:
-            detected_dependencies += distribution.build_dependencies()
+            detected_dependencies += distribution.build_dependencies(
+                self.pip.target_platform
+            )
         return detected_dependencies + self.detect_additional_build_dependencies(
             detected_dependencies
         )

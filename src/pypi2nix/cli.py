@@ -14,6 +14,7 @@ from pypi2nix.pip import Pip
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements_file import RequirementsFile
 from pypi2nix.sources import Sources
+from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.utils import md5_sum_of_files_with_file_names
 
 
@@ -160,6 +161,7 @@ def main(
         executable_directory=nix_executable_directory,
         verbose=verbose != 0,
     )
+    platform_generator = PlatformGenerator(nix=nix)
 
     if default_overrides:
         overrides += tuple(
@@ -177,6 +179,7 @@ def main(
         click.echo(pypi2nix_version)
         return
 
+    python_version_argument = python_version
     python_versions = pypi2nix.utils.PYTHON_VERSIONS.keys()
     if not python_version:
         raise click.exceptions.UsageError(
@@ -258,6 +261,7 @@ def main(
         extra_build_inputs=extra_build_inputs,
         verbose=verbose,
         wheels_cache=wheels_cache,
+        target_platform=platform_generator.from_python_version(python_version_argument),
     )
     wheel_builder = pypi2nix.stage1.WheelBuilder(pip=pip, project_directory=project_dir)
     wheels = wheel_builder.build(

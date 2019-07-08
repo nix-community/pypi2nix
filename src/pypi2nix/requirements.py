@@ -49,11 +49,19 @@ class Requirement:
                 self._source = UrlSource(url=self.url)
         return self._source
 
-    def applies_to_system(self):
+    def applies_to_target(self, target_platform):
+        mapping = {
+            RequirementParser.PYTHON_VERSION: ".".join(
+                target_platform.version.split(".")[:2]
+            )
+        }
+
         def evaluate_marker(marker):
             if not isinstance(marker, tuple):
                 return marker
             operation, left, right = marker
+            left = mapping.get(left, left)
+            right = mapping.get(right, right)
             if operation == "or":
                 return evaluate_marker(left) or evaluate_marker(right)
             elif operation == "and":
@@ -219,7 +227,6 @@ class RequirementParser:
         else:
             implementation_version = "0"
             implementation_name = ""
-        python_version = ".".join(platform.python_version().split(".")[:2])
         bindings = {
             "implementation_name": implementation_name,
             "implementation_version": implementation_version,
@@ -231,7 +238,7 @@ class RequirementParser:
             "platform_system": platform.system(),
             "platform_version": platform.version(),
             "python_full_version": platform.python_version(),
-            "python_version": python_version,
+            "python_version": RequirementParser.PYTHON_VERSION,
             "sys_platform": sys.platform,
         }
         return bindings
@@ -250,6 +257,8 @@ class RequirementParser:
             return self.compiled_grammar()(line).specification()
         except parsley.ParseError as e:
             raise ParsingFailed("{message}".format(message=e.formatError()))
+
+    PYTHON_VERSION = object()
 
 
 requirement_parser = RequirementParser()

@@ -25,6 +25,7 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     install_requires=[
+        "attrs",
         "click",
         "jinja2",
         "requests",

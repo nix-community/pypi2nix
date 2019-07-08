@@ -80,7 +80,7 @@ class SourceDistribution:
         else:
             return None
 
-    def build_dependencies(self):
+    def build_dependencies(self, target_platform):
         requirement_set = RequirementSet()
         if self.pyproject_toml is None:
             pass
@@ -89,6 +89,6 @@ class SourceDistribution:
                 "requires", []
             ):
                 requirement = Requirement.from_line(build_input)
-                if requirement.applies_to_system():
+                if requirement.applies_to_target(target_platform):
                     requirement_set.add(requirement)
         return requirement_set

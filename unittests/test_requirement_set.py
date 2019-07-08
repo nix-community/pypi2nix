@@ -21,8 +21,10 @@ def test_length_is_one_after_adding_same_requirement_twice():
     assert len(requirement_set) == 1
 
 
-def test_to_file_outputs_a_requirements_file_object(project_dir):
-    assert isinstance(RequirementSet().to_file(project_dir), RequirementsFile)
+def test_to_file_outputs_a_requirements_file_object(project_dir, current_platform):
+    assert isinstance(
+        RequirementSet().to_file(project_dir, current_platform), RequirementsFile
+    )
 
 
 def test_sources_contains_a_source_per_git_requirement():

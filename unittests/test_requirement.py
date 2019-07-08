@@ -44,14 +44,14 @@ def test_requirement_can_handle_environment_marker():
     assert requirement.name == "pypi2nix"
 
 
-def test_applies_to_system_works_properly_with_positiv_marker():
+def test_applies_to_target_works_properly_with_positiv_marker(current_platform):
     requirement = Requirement.from_line("pypi2nix; os_name == '%s'" % os.name)
-    assert requirement.applies_to_system()
+    assert requirement.applies_to_target(current_platform)
 
 
-def test_applies_to_system_works_properly_with_negative_marker():
+def test_applies_to_target_works_properly_with_negative_marker(current_platform):
     requirement = Requirement.from_line("pypi2nix; os_name != '%s'" % os.name)
-    assert not requirement.applies_to_system()
+    assert not requirement.applies_to_target(current_platform)
 
 
 def test_names_of_requirements_are_canonicalized():
@@ -84,8 +84,8 @@ def test_from_line_accepts_requirement_with_marker_including_in_operator():
     assert requirement.name == "zipfile36"
 
 
-def test_that_applies_to_system_works_with_in_keyword(python_version):
+def test_that_applies_to_target_works_with_in_keyword(python_version, current_platform):
     requirement = Requirement.from_line(
         "pypi2nix; python_version in '{}'".format(python_version)
     )
-    assert requirement.applies_to_system()
+    assert requirement.applies_to_target(current_platform)

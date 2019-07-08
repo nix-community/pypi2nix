@@ -8,6 +8,7 @@ from pypi2nix.pip import Pip
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
 from pypi2nix.stage1 import WheelBuilder
+from pypi2nix.target_platform import PlatformGenerator
 
 
 @pytest.fixture
@@ -42,7 +43,7 @@ def wheels_dir(project_dir):
 
 
 @pytest.fixture
-def pip(nix, project_dir):
+def pip(nix, project_dir, current_platform):
     return Pip(
         nix=nix,
         project_directory=project_dir,
@@ -51,6 +52,7 @@ def pip(nix, project_dir):
         extra_env="",
         verbose=3,
         wheels_cache=[],
+        target_platform=current_platform,
     )
 
 
@@ -110,3 +112,13 @@ def source_distribution_file(pip, requirement, download_dir):
             return os.path.join(download_dir, file_name)
     else:
         assert False
+
+
+@pytest.fixture
+def platform_generator(nix):
+    return PlatformGenerator(nix)
+
+
+@pytest.fixture
+def current_platform(platform_generator):
+    return platform_generator.current_platform()
