@@ -42,7 +42,17 @@ class Wheel:
 
     def add_build_dependencies(self, dependencies):
         for dependency in dependencies:
-            self.build_dependencies.add(canonicalize_name(dependency))
+            if self.valid_dependency(dependency):
+                self.build_dependencies.add(canonicalize_name(dependency))
+
+    def valid_dependency(self, dependency):
+        canonicalized_dependency = canonicalize_name(dependency)
+        return all(
+            [
+                canonicalized_dependency != self.name,
+                canonicalized_dependency not in TO_IGNORE,
+            ]
+        )
 
     @classmethod
     def from_wheel_directory_path(

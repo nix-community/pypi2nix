@@ -45,11 +45,10 @@ def main(
                     [
                         '        self."{}"'.format(name)
                         for name in item.build_dependencies
-                        if name != item.name
                     ]
                 )
             )
-            buildInputs = "[\n" + buildInputs + "\n        ]"
+            buildInputs = "[\n" + buildInputs + "\n      ]"
         else:
             buildInputs = "[ ]"
         propagatedBuildInputs = "[ ]"
