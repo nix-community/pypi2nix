@@ -1,5 +1,4 @@
 import os.path
-import platform
 
 import pytest
 
@@ -40,17 +39,3 @@ def test_that_target_platform_can_be_constructed_from_python_version(
         derivation_path=python_3_environment_nix,
     ).splitlines()[0]
     assert platform.version == python_3_version
-
-
-@nix
-@pytest.mark.xfail
-def test_that_target_platfrm_can_be_constructed_from_pypy(platform_generator):
-    platform = platform_generator.from_python_version("pypy")
-    assert platform.version == "pypy"
-
-
-def test_that_we_can_generate_a_platform_from_the_current_environment(
-    platform_generator
-):
-    current_platform = platform_generator.current_platform()
-    assert current_platform.version == platform.python_version()
