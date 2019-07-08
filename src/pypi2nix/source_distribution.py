@@ -1,9 +1,7 @@
 import email
 import os
-import tarfile
-import tempfile
-import zipfile
 
+import setupcfg
 import toml
 from setuptools._vendor.packaging.utils import canonicalize_name
 
@@ -11,19 +9,15 @@ from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
 
 
-class UnpackingFailed(Exception):
-    pass
-
-
 class SourceDistribution:
-    def __init__(self, name, pyproject_toml):
+    def __init__(self, name, pyproject_toml=None, setup_cfg=None):
         self.name = canonicalize_name(name)
         self.pyproject_toml = pyproject_toml
+        self.setup_cfg = setup_cfg
 
     @classmethod
-    def from_archive(source_distribution, tarball_path):
-        with tempfile.TemporaryDirectory() as extraction_directory:
-            source_distribution.unpack_archive(tarball_path, extraction_directory)
+    def from_archive(source_distribution, archive):
+        with archive.contents() as extraction_directory:
             extracted_files = [
                 os.path.join(directory_path, file_name)
                 for directory_path, _, file_names in os.walk(extraction_directory)
@@ -33,22 +27,12 @@ class SourceDistribution:
                 extracted_files
             )
             pyproject_toml = source_distribution.get_pyproject_toml(extracted_files)
+            setup_cfg = source_distribution.get_setup_cfg(extracted_files)
         return source_distribution(
-            name=metadata.get("name"), pyproject_toml=pyproject_toml
+            name=metadata.get("name"),
+            pyproject_toml=pyproject_toml,
+            setup_cfg=setup_cfg,
         )
-
-    @classmethod
-    def unpack_archive(_, archive_path, target_directory):
-        if archive_path.endswith(".tar.gz"):
-            with tarfile.open(archive_path, "r:gz") as tar:
-                tar.extractall(path=target_directory)
-        elif archive_path.endswith(".zip"):
-            with zipfile.ZipFile(archive_path) as archive:
-                archive.extractall(path=target_directory)
-        else:
-            raise UnpackingFailed(
-                "Could not detect archive format for file {}".format(archive_path)
-            )
 
     @classmethod
     def metadata_from_uncompressed_distribution(_, extracted_files):
@@ -74,7 +58,23 @@ class SourceDistribution:
         else:
             return None
 
+    @classmethod
+    def get_setup_cfg(_, extracted_files):
+        setup_cfg_candidates = [
+            filepath for filepath in extracted_files if filepath.endswith("setup.cfg")
+        ]
+        if setup_cfg_candidates:
+            return setupcfg.load(setup_cfg_candidates)
+
     def build_dependencies(self, target_platform):
+        if self.pyproject_toml is not None:
+            return self.build_dependencies_from_pyproject_toml(target_platform)
+        elif self.setup_cfg is not None:
+            return self.build_dependencies_from_setup_cfg(target_platform)
+        else:
+            return RequirementSet()
+
+    def build_dependencies_from_pyproject_toml(self, target_platform):
         requirement_set = RequirementSet()
         if self.pyproject_toml is None:
             pass
@@ -86,3 +86,15 @@ class SourceDistribution:
                 if requirement.applies_to_target(target_platform):
                     requirement_set.add(requirement)
         return requirement_set
+
+    def build_dependencies_from_setup_cfg(self, target_platform):
+        setup_requires = self.setup_cfg.get("options", {}).get("setup_requires")
+        requirements = RequirementSet()
+        if isinstance(setup_requires, str):
+            requirements.add(Requirement.from_line(setup_requires))
+        elif isinstance(setup_requires, list):
+            for requirement_string in setup_requires:
+                requirement = Requirement.from_line(requirement_string)
+                if requirement.applies_to_target(target_platform):
+                    requirements.add(requirement)
+        return requirements

@@ -3,6 +3,7 @@ import os.path
 import zipfile
 from collections import defaultdict
 
+from pypi2nix.archive import Archive
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.source_distribution import SourceDistribution
 
@@ -45,7 +46,7 @@ class WheelBuilder:
     def get_uninspected_source_distributions(self):
         return list(
             map(
-                SourceDistribution.from_archive,
+                lambda path: SourceDistribution.from_archive(Archive(path=path)),
                 filter(
                     lambda path: path not in self.inspected_source_distribution_files,
                     list_files(self.download_directory),

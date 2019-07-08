@@ -28,9 +28,10 @@ setup(
         "attrs",
         "click",
         "jinja2",
-        "requests",
         "nix-prefetch-github",
-        "toml",
         "Parsley",
+        "requests",
+        "setupcfg",
+        "toml",
     ],
 )

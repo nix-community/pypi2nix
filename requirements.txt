@@ -1,7 +1,8 @@
+attrs
 Click
 Jinja2
-requests
 nix-prefetch-github
-toml
 Parsley
-attrs
+requests
+setupcfg
+toml

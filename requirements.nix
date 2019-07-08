@@ -376,10 +376,10 @@ let
     };
 
     "flake8" = python.mkDerivation {
-      name = "flake8-3.7.7";
+      name = "flake8-3.7.8";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/23/e7/80626da76ff2b4c94ac9bcd92898a1011d1c891e0ba1343f24109923462d/flake8-3.7.7.tar.gz";
-        sha256 = "859996073f341f2670741b51ec1e67a01da142831aa1fdc6242dbf88dffbe661";
+        url = "https://files.pythonhosted.org/packages/8d/a7/99222c9200af533c1ecb1120d99adbd1c033b57296ac5cb39d121db007a8/flake8-3.7.8.tar.gz";
+        sha256 = "19241c1cbc971b9962473e4438a2ca19749a7dd002dd1a946eaba171b4114548";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -564,22 +564,6 @@ let
       };
     };
 
-    "markerlib" = python.mkDerivation {
-      name = "markerlib-0.6.0";
-      src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/d1/ba/ce29589707d8679b648517d936a2f08e3e18143d49822339d3cc35819c92/markerlib-0.6.0.tar.gz";
-        sha256 = "2fdb3939441f5bf4f090b1979a34f84a11d33eed6c0e3995de88ae5c06b6e3ae";
-};
-      doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
-        homepage = "http://bitbucket.org/dholth/markerlib/";
-        license = "MIT";
-        description = "A compiler for PEP 345 environment markers.";
-      };
-    };
-
     "mccabe" = python.mkDerivation {
       name = "mccabe-0.6.1";
       src = pkgs.fetchurl {
@@ -593,6 +577,25 @@ let
         homepage = "https://github.com/pycqa/mccabe";
         license = "Expat license";
         description = "McCabe checker, plugin for flake8";
+      };
+    };
+
+    "mkdir" = python.mkDerivation {
+      name = "mkdir-2019.4.13";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/a2/2d/b20c487f9598fc9923af5604f2fc8b7d0d8c34a760f2dd4a4a716c6969d1/mkdir-2019.4.13.tar.gz";
+        sha256 = "ae21efef763812741af5e88f2bea8a885037a557cdc8a994f8272ee0e6a9ac71";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."public"
+        self."values"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/looking-for-a-job/mkdir.py";
+        license = "UNKNOWN";
+        description = "UNKNOWN";
       };
     };
 
@@ -668,6 +671,24 @@ let
       };
     };
 
+    "orderdict" = python.mkDerivation {
+      name = "orderdict-2019.4.13";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/da/c9/4ee29607001d6eabc4b3fe19405e285afb670acb73757fac3162424f5edf/orderdict-2019.4.13.tar.gz";
+        sha256 = "6158b2c09522728a9ce92cfe1e1d8dc465d47ebc6852a535f6d438bbd6522dba";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."public"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/looking-for-a-job/orderdict.py";
+        license = "UNKNOWN";
+        description = "UNKNOWN";
+      };
+    };
+
     "packaging" = python.mkDerivation {
       name = "packaging-19.0";
       src = pkgs.fetchurl {
@@ -723,6 +744,22 @@ let
         homepage = "https://github.com/pytest-dev/pluggy";
         license = "MIT license";
         description = "plugin and hook calling mechanisms for python";
+      };
+    };
+
+    "public" = python.mkDerivation {
+      name = "public-2019.4.13";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/54/4d/b40004cc6c07665e48af22cfe1e631f219bf4282e15fa76a5b6364f6885c/public-2019.4.13.tar.gz";
+        sha256 = "e1436a8a99693a9849dfe40b9158f3837b7c309c163b2d3f5b8e9fce23876db1";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/looking-for-a-job/public.py";
+        license = "UNKNOWN";
+        description = "UNKNOWN";
       };
     };
 
@@ -791,10 +828,10 @@ let
     };
 
     "pytest" = python.mkDerivation {
-      name = "pytest-5.0.0";
+      name = "pytest-5.0.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/b7/a9/e64eae45880d383120ef258e23136c74ecd0757ecae84491b578eabaa562/pytest-5.0.0.tar.gz";
-        sha256 = "95b700cf21ed5b7e91bce7a6b5a573b2e3ef7b3643d00f681d8f9c4672f9fbdf";
+        url = "https://files.pythonhosted.org/packages/60/23/de5604e58f4eba7a90f70486c8d4ece25f1a404bae29683903ffd2aea425/pytest-5.0.1.tar.gz";
+        sha256 = "6ef6d06de77ce2961156013e9dff62f1b2688aa04d0dc244299fe7d67e09370d";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -888,6 +925,27 @@ let
         homepage = "http://python-requests.org";
         license = licenses.asl20;
         description = "Python HTTP for Humans.";
+      };
+    };
+
+    "setupcfg" = python.mkDerivation {
+      name = "setupcfg-2019.4.13";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/d2/00/c5354219e9af10fc68ff2b340dda13086638407143fb59389e8bb9940f4c/setupcfg-2019.4.13.tar.gz";
+        sha256 = "9caffb32d109259cd1b2101659dc933595b14fface09b19fc039bc12eb9a42fc";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."Click"
+        self."orderdict"
+        self."public"
+        self."write"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/looking-for-a-job/setupcfg.py";
+        license = "UNKNOWN";
+        description = "UNKNOWN";
       };
     };
 
@@ -990,6 +1048,24 @@ let
       };
     };
 
+    "values" = python.mkDerivation {
+      name = "values-2019.4.13";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/77/b0/d18090a912c8782bc97fe20d6b452b12f5847745726ffa80db07500e9a70/values-2019.4.13.tar.gz";
+        sha256 = "8490feebec95cbdb61ee2992355f064371a70ab0a3d9f725a5450987ebf891ad";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."public"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/looking-for-a-job/values.py";
+        license = "UNKNOWN";
+        description = "UNKNOWN";
+      };
+    };
+
     "wcwidth" = python.mkDerivation {
       name = "wcwidth-0.1.7";
       src = pkgs.fetchurl {
@@ -1022,11 +1098,30 @@ let
       };
     };
 
-    "zipp" = python.mkDerivation {
-      name = "zipp-0.5.1";
+    "write" = python.mkDerivation {
+      name = "write-2019.4.13";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/f9/c4/15a1260171956ed4f8190962b1771c7dbca4a39360c15f9c2b77e667a489/zipp-0.5.1.tar.gz";
-        sha256 = "ca943a7e809cc12257001ccfb99e3563da9af99d52f261725e96dfe0f9275bc3";
+        url = "https://files.pythonhosted.org/packages/63/ba/5135eb62a2acab46d64c046948300fc8505ab74ed92822ba6725d4dba0e2/write-2019.4.13.tar.gz";
+        sha256 = "9d184079b7708813d340d97b5ee795303edef7a5055561784dbc928a6b5c5d39";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."mkdir"
+        self."public"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/looking-for-a-job/write.py";
+        license = "UNKNOWN";
+        description = "UNKNOWN";
+      };
+    };
+
+    "zipp" = python.mkDerivation {
+      name = "zipp-0.5.2";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/66/ae/1d6693cde3b3e3c14e95cf3408f24d0e869ead42a79993b611d8817d929a/zipp-0.5.2.tar.gz";
+        sha256 = "4970c3758f4e89a7857a973b1e2a5d75bcdc47794442f2e2dd4fe8e0466e809a";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];

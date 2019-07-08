@@ -2,17 +2,17 @@ import os
 
 import pytest
 
+from pypi2nix.archive import Archive
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
 from pypi2nix.source_distribution import SourceDistribution
-from pypi2nix.source_distribution import UnpackingFailed
 
 from .switches import nix
 
 
 @pytest.fixture
-def source_distribution(six_source_distribution):
-    return SourceDistribution.from_archive(six_source_distribution)
+def source_distribution(six_source_distribution_archive):
+    return SourceDistribution.from_archive(six_source_distribution_archive)
 
 
 @pytest.fixture
@@ -25,10 +25,11 @@ def flit_requirements():
 @pytest.fixture
 def flit_distribution(pip, project_dir, download_dir, flit_requirements):
     pip.download_sources(flit_requirements, download_dir)
-    distributions = [
-        SourceDistribution.from_archive(os.path.join(download_dir, filename))
+    archives = [
+        Archive(path=os.path.join(download_dir, filename))
         for filename in os.listdir(download_dir)
     ]
+    distributions = list(map(SourceDistribution.from_archive, archives))
     for distribution in distributions:
         if distribution.name == "flit":
             return distribution
@@ -41,7 +42,7 @@ def test_from_archive_picks_up_on_name(source_distribution):
 
 @nix
 def test_that_a_source_distributions_name_is_canonicalized():
-    distribution = SourceDistribution("NaMe_teSt", None)
+    distribution = SourceDistribution(name="NaMe_teSt")
     assert distribution.name == "name-test"
 
 
@@ -63,15 +64,13 @@ def test_that_flit_build_dependencies_contains_requests(
 
 
 @nix
-def test_that_we_can_generate_objects_from_source_archives(source_distribution_file):
-    SourceDistribution.from_archive(source_distribution_file)
+def test_that_we_can_generate_objects_from_source_archives(source_distribution_archive):
+    SourceDistribution.from_archive(source_distribution_archive)
 
 
-def test_that_constructing_source_distribution_from_txt_file_throws_unpack_failed(
-    tmp_path
+@nix
+def test_that_we_can_detect_setup_requirements_for_setup_cfg_projects(
+    distribution_archive_for_jsonschema, current_platform
 ):
-    path = os.path.join(tmp_path, "txt_file")
-    with open(path, "w") as f:
-        f.write("text file")
-    with pytest.raises(UnpackingFailed):
-        SourceDistribution.from_archive(path)
+    distribution = SourceDistribution.from_archive(distribution_archive_for_jsonschema)
+    assert "setuptools-scm" in distribution.build_dependencies(current_platform)

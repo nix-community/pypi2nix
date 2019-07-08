@@ -3,6 +3,7 @@ import os.path
 import platform
 
 import pytest
+from pypi2nix.archive import Archive
 from pypi2nix.nix import Nix
 from pypi2nix.pip import Pip
 from pypi2nix.requirement_set import RequirementSet
@@ -81,14 +82,32 @@ def default_environment(pip):
 
 
 @pytest.fixture
-def six_source_distribution(pip, download_dir, six_requirements):
+def six_source_distribution_archive(pip, download_dir, six_requirements):
     pip.download_sources(
         six_requirements,
         download_dir,
     )
     for file_name in os.listdir(download_dir):
         if 'six' in file_name:
-            return os.path.join(download_dir, file_name)
+            return Archive(path=os.path.join(download_dir, file_name))
+
+
+@pytest.fixture
+def requirements_for_jsonschema():
+    requirements = RequirementSet()
+    requirements.add(Requirement.from_line('jsonschema == 3.0.1'))
+    return requirements
+
+
+@pytest.fixture
+def distribution_archive_for_jsonschema(pip, download_dir, requirements_for_jsonschema):
+    pip.download_sources(
+        requirements_for_jsonschema,
+        download_dir,
+    )
+    for file_name in os.listdir(download_dir):
+        if 'jsonschema' in file_name:
+            return Archive(path=os.path.join(download_dir, file_name))
 
 
 @pytest.fixture(params=(
@@ -100,7 +119,7 @@ def requirement(request):
 
 
 @pytest.fixture
-def source_distribution_file(pip, requirement, download_dir):
+def source_distribution_archive(pip, requirement, download_dir):
     requirement_set = RequirementSet()
     requirement_set.add(requirement)
     pip.download_sources(
@@ -109,7 +128,7 @@ def source_distribution_file(pip, requirement, download_dir):
     )
     for file_name in os.listdir(download_dir):
         if file_name.startswith(requirement.name):
-            return os.path.join(download_dir, file_name)
+            return Archive(path=os.path.join(download_dir, file_name))
     else:
         assert False
 
