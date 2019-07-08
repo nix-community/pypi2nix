@@ -6,6 +6,8 @@ from pypi2nix.package_source import GitSource
 from pypi2nix.requirements import ParsingFailed
 from pypi2nix.requirements import Requirement
 
+from .switches import nix
+
 
 def test_requirement_cannot_be_constructed_from_line_containing_newline():
     with pytest.raises(ParsingFailed):
@@ -93,6 +95,24 @@ def test_that_applies_to_target_works_with_in_keyword(python_version, current_pl
 
 def test_that_mercurial_source_url_gets_detected():
     requirement = Requirement.from_line(
-        "hg+https://bitbucket.org/tarek/flake8@a29fb6#egg=flake8"
+        "hg+https://bitbucket.org/tarek/flake8@a209fb6#egg=flake8"
     )
-    assert requirement.url == "hg+https://bitbucket.org/tarek/flake8@a29fb6"
+    assert requirement.url == "hg+https://bitbucket.org/tarek/flake8@a209fb6"
+
+
+@nix
+def test_that_mercurial_source_extracted_is_valid():
+    requirement = Requirement.from_line(
+        "hg+https://bitbucket.org/tarek/flake8@a209fb6#egg=flake8"
+    )
+    # We only want this to not throw
+    requirement.source.nix_expression()
+
+
+@nix
+def test_that_git_source_extracted_is_valid():
+    requirement = Requirement.from_line(
+        "git+https://github.com/nix-community/pypi2nix.git@5c65345a2ce7f2f1c376f983d20e935c09c15995#egg=pypi2nix"
+    )
+    # We only want this to not throw
+    requirement.source.nix_expression()

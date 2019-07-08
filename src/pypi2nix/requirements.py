@@ -40,14 +40,30 @@ class Requirement:
             if self.url is None:
                 pass
             elif self.url.startswith("git+"):
-                self._source = GitSource(url=self.url[4:])
+                self.handle_git_source(self.url[4:])
             elif self.url.startswith("git://"):
-                self._source = GitSource(url=self.url)
+                self.handle_git_source(self.url)
             elif self.url.startswith("hg+"):
-                self._source = HgSource(url=self.url[3:])
+                self.handle_hg_source(self.url[3:])
             else:
                 self._source = UrlSource(url=self.url)
         return self._source
+
+    def handle_hg_source(self, url):
+        try:
+            url, rev = url.split("@")
+        except ValueError:
+            self._source = HgSource(url=url)
+        else:
+            self._source = HgSource(url=url, revision=rev)
+
+    def handle_git_source(self, url):
+        try:
+            url, rev = url.split("@")
+        except ValueError:
+            self._source = GitSource(url=url)
+        else:
+            self._source = GitSource(url=url, revision=rev)
 
     def applies_to_target(self, target_platform):
         mapping = {
