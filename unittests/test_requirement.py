@@ -89,3 +89,10 @@ def test_that_applies_to_target_works_with_in_keyword(python_version, current_pl
         "pypi2nix; python_version in '{}'".format(python_version)
     )
     assert requirement.applies_to_target(current_platform)
+
+
+def test_that_mercurial_source_url_gets_detected():
+    requirement = Requirement.from_line(
+        "hg+https://bitbucket.org/tarek/flake8@a29fb6#egg=flake8"
+    )
+    assert requirement.url == "hg+https://bitbucket.org/tarek/flake8@a29fb6"

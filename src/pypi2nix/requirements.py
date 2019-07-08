@@ -142,7 +142,7 @@ class RequirementParser:
                          -> (n, e or [], v or [], m))
         url_req       = (name:n wsp* extras?:e wsp* urlspec:v (wsp+ | end) quoted_marker?:m
                          -> (n, e or [], v or [], m))
-        url_req_pip_style = (('-e' wsp+)? (('hg+' | 'git+')?:p <URI_reference_pip_style>:s -> p or "" + s):v
+        url_req_pip_style = (('-e' wsp+)? (('hg+' | 'git+')?:p <URI_reference_pip_style>:s -> (p or "") + s):v
                             '#egg=' name:n -> (n, [], v or [], None))
         specification = wsp* ( url_req_pip_style | url_req | name_req ):s wsp* -> s
         # The result is a tuple - name, list-of-extras,
