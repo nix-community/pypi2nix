@@ -11,13 +11,23 @@ from pypi2nix.utils import safe
 
 
 class Wheel:
-    def __init__(self, name, version, deps, homepage, license, description):
+    def __init__(
+        self,
+        name,
+        version,
+        deps,
+        homepage,
+        license,
+        description,
+        build_dependencies=set(),
+    ):
         self.name = canonicalize_name(name)
         self.version = version
         self.deps = set(map(canonicalize_name, deps))
         self.homepage = homepage
         self.license = license
         self.description = description
+        self.build_dependencies = set(map(canonicalize_name, build_dependencies))
 
     def to_dict(self):
         return {
@@ -27,7 +37,12 @@ class Wheel:
             "homepage": self.homepage,
             "license": self.license,
             "description": self.description,
+            "build_dependencies": list(self.build_dependencies),
         }
+
+    def add_build_dependencies(self, dependencies):
+        for dependency in dependencies:
+            self.build_dependencies.add(canonicalize_name(dependency))
 
     @classmethod
     def from_wheel_directory_path(

@@ -66,8 +66,12 @@ class Stage2:
                         click.echo("    SKIPPING")
                     continue
                 if wheel_metadata.name in additional_dependencies:
-                    for requirement in additional_dependencies[wheel_metadata.name]:
-                        wheel_metadata.deps.add(requirement.name)
+                    wheel_metadata.add_build_dependencies(
+                        map(
+                            lambda dependency: dependency.name,
+                            additional_dependencies[wheel_metadata.name],
+                        )
+                    )
 
                 wheels.append(wheel_metadata)
 

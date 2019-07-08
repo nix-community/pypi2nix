@@ -12,6 +12,3 @@ class FlitTest(IntegrationTest, TestCase):
 
     def requirements(self):
         return ["flit"]
-
-    def setup_requires(self):
-        return ["intreehooks"]

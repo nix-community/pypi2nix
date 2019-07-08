@@ -1,6 +1,7 @@
 import os
 import os.path
 import zipfile
+from collections import defaultdict
 
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.source_distribution import SourceDistribution
@@ -13,9 +14,8 @@ class WheelBuilder:
         self.wheel_directory = os.path.join(project_directory, "wheel")
         self.extracted_wheels_directory = os.path.join(project_directory, "wheelhouse")
         self.project_directory = project_directory
-        self.indexes = [self.wheel_directory]
-        self.deps = dict()
         self.inspected_source_distribution_files = set()
+        self.additional_build_dependencies = defaultdict(RequirementSet)
 
     def build(self, requirements, setup_requirements=RequirementSet()):
         requirements = requirements + setup_requirements
@@ -33,9 +33,11 @@ class WheelBuilder:
         if not uninspected_distributions:
             return detected_dependencies
         for distribution in uninspected_distributions:
-            detected_dependencies += distribution.build_dependencies(
+            build_dependencies = distribution.build_dependencies(
                 self.pip.target_platform
             )
+            self.additional_build_dependencies[distribution.name] += build_dependencies
+            detected_dependencies += build_dependencies
         return detected_dependencies + self.detect_additional_build_dependencies(
             detected_dependencies
         )

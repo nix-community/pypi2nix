@@ -40,6 +40,12 @@ def test_from_archive_picks_up_on_name(source_distribution):
 
 
 @nix
+def test_that_a_source_distributions_name_is_canonicalized():
+    distribution = SourceDistribution("NaMe_teSt", None)
+    assert distribution.name == "name-test"
+
+
+@nix
 def test_six_package_has_no_pyproject_toml(source_distribution):
     assert source_distribution.pyproject_toml is None
 

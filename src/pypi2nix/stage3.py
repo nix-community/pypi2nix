@@ -39,7 +39,19 @@ def main(
 
     generated_packages_metadata = []
     for item in sorted(packages_metadata, key=lambda x: x.name):
-        buildInputs = "[ ]"
+        if item.build_dependencies:
+            buildInputs = "\n".join(
+                sorted(
+                    [
+                        '        self."{}"'.format(name)
+                        for name in item.build_dependencies
+                        if name != item.name
+                    ]
+                )
+            )
+            buildInputs = "[\n" + buildInputs + "\n        ]"
+        else:
+            buildInputs = "[ ]"
         propagatedBuildInputs = "[ ]"
         if item.deps:
             deps = [

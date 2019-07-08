@@ -5,6 +5,7 @@ import tempfile
 import zipfile
 
 import toml
+from setuptools._vendor.packaging.utils import canonicalize_name
 
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
@@ -16,7 +17,7 @@ class UnpackingFailed(Exception):
 
 class SourceDistribution:
     def __init__(self, name, pyproject_toml):
-        self.name = name
+        self.name = canonicalize_name(name)
         self.pyproject_toml = pyproject_toml
 
     @classmethod

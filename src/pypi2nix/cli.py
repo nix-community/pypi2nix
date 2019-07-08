@@ -269,7 +269,7 @@ def main(
     )
     requirements_frozen = wheel_builder.get_frozen_requirements()
     default_environment = pip.default_environment()
-    additional_dependency_graph = wheel_builder.deps
+    additional_dependency_graph = wheel_builder.additional_build_dependencies
 
     click.echo("Stage2: Extracting metadata from pypi.python.org ...")
 

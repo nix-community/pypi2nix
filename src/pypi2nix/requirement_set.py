@@ -61,3 +61,6 @@ class RequirementSet:
 
     def __contains__(self, name):
         return name in self.requirements
+
+    def __iter__(self):
+        yield from self.requirements.values()
