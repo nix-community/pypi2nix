@@ -5,6 +5,7 @@ import pytest
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
 from pypi2nix.source_distribution import SourceDistribution
+from pypi2nix.source_distribution import UnpackingFailed
 
 from .switches import nix
 
@@ -58,3 +59,13 @@ def test_that_flit_build_dependencies_contains_requests(
 @nix
 def test_that_we_can_generate_objects_from_source_archives(source_distribution_file):
     SourceDistribution.from_archive(source_distribution_file)
+
+
+def test_that_constructing_source_distribution_from_txt_file_throws_unpack_failed(
+    tmp_path
+):
+    path = os.path.join(tmp_path, "txt_file")
+    with open(path, "w") as f:
+        f.write("text file")
+    with pytest.raises(UnpackingFailed):
+        SourceDistribution.from_archive(path)

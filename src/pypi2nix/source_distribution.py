@@ -21,24 +21,17 @@ class SourceDistribution:
 
     @classmethod
     def from_archive(source_distribution, tarball_path):
-        try:
-            with tempfile.TemporaryDirectory() as extraction_directory:
-                source_distribution.unpack_archive(tarball_path, extraction_directory)
-                extracted_files = [
-                    os.path.join(directory_path, file_name)
-                    for directory_path, _, file_names in os.walk(extraction_directory)
-                    for file_name in file_names
-                ]
-                metadata = source_distribution.metadata_from_uncompressed_distribution(
-                    extracted_files
-                )
-                pyproject_toml = source_distribution.get_pyproject_toml(extracted_files)
-        except tarfile.ReadError:
-            raise UnpackingFailed(
-                "Failed to unpack compressed file {} as a .tar.gz file type".format(
-                    tarball_path
-                )
+        with tempfile.TemporaryDirectory() as extraction_directory:
+            source_distribution.unpack_archive(tarball_path, extraction_directory)
+            extracted_files = [
+                os.path.join(directory_path, file_name)
+                for directory_path, _, file_names in os.walk(extraction_directory)
+                for file_name in file_names
+            ]
+            metadata = source_distribution.metadata_from_uncompressed_distribution(
+                extracted_files
             )
+            pyproject_toml = source_distribution.get_pyproject_toml(extracted_files)
         return source_distribution(
             name=metadata.get("name"), pyproject_toml=pyproject_toml
         )
