@@ -16,7 +16,8 @@ class Flake8MercurialTest(IntegrationTest, TestCase):
         return [
             "-e hg+https://bitbucket.org/tarek/flake8@{revision}#egg=flake8".format(
                 revision=REVISION
-            )
+            ),
+            "pep8",
         ]
 
     def setup_requires(self):
