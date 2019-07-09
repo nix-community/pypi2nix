@@ -116,3 +116,9 @@ def test_that_git_source_extracted_is_valid():
     )
     # We only want this to not throw
     requirement.source.nix_expression()
+
+
+def test_that_from_line_to_line_preserves_urls():
+    line = "git+https://example.test/#egg=testegg"
+    requirement = Requirement.from_line(line)
+    assert requirement.to_line() == line

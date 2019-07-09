@@ -9,6 +9,10 @@ from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
 
 
+class DistributionNotDetected(Exception):
+    pass
+
+
 class SourceDistribution:
     def __init__(self, name, pyproject_toml=None, setup_cfg=None):
         self.name = canonicalize_name(name)
@@ -24,7 +28,7 @@ class SourceDistribution:
                 for file_name in file_names
             ]
             metadata = source_distribution.metadata_from_uncompressed_distribution(
-                extracted_files
+                extracted_files, archive
             )
             pyproject_toml = source_distribution.get_pyproject_toml(extracted_files)
             setup_cfg = source_distribution.get_setup_cfg(extracted_files)
@@ -35,11 +39,16 @@ class SourceDistribution:
         )
 
     @classmethod
-    def metadata_from_uncompressed_distribution(_, extracted_files):
+    def metadata_from_uncompressed_distribution(_, extracted_files, archive):
         pkg_info_files = [
             filepath for filepath in extracted_files if filepath.endswith("PKG-INFO")
         ]
-        assert pkg_info_files
+        if not pkg_info_files:
+            raise DistributionNotDetected(
+                "`{}` does not appear to be a python source distribution, Could not find PKG-INFO file".format(
+                    archive.path
+                )
+            )
         pkg_info_file = pkg_info_files[0]
         with open(pkg_info_file) as f:
             metadata = email.parser.Parser().parse(f)

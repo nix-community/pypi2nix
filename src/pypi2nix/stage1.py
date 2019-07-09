@@ -5,6 +5,7 @@ from collections import defaultdict
 
 from pypi2nix.archive import Archive
 from pypi2nix.requirement_set import RequirementSet
+from pypi2nix.source_distribution import DistributionNotDetected
 from pypi2nix.source_distribution import SourceDistribution
 
 
@@ -44,15 +45,18 @@ class WheelBuilder:
         )
 
     def get_uninspected_source_distributions(self):
-        return list(
-            map(
-                lambda path: SourceDistribution.from_archive(Archive(path=path)),
-                filter(
-                    lambda path: path not in self.inspected_source_distribution_files,
-                    list_files(self.download_directory),
-                ),
-            )
-        )
+        archives = [
+            Archive(path=path)
+            for path in list_files(self.download_directory)
+            if path not in self.inspected_source_distribution_files
+        ]
+        distributions = list()
+        for archive in archives:
+            try:
+                distributions.append(SourceDistribution.from_archive(archive))
+            except DistributionNotDetected:
+                continue
+        return distributions
 
     def register_all_source_distributions(self):
         for path in list_files(self.download_directory):

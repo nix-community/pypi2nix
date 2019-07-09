@@ -5,6 +5,7 @@ import pytest
 from pypi2nix.archive import Archive
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
+from pypi2nix.source_distribution import DistributionNotDetected
 from pypi2nix.source_distribution import SourceDistribution
 
 from .switches import nix
@@ -74,3 +75,11 @@ def test_that_we_can_detect_setup_requirements_for_setup_cfg_projects(
 ):
     distribution = SourceDistribution.from_archive(distribution_archive_for_jsonschema)
     assert "setuptools-scm" in distribution.build_dependencies(current_platform)
+
+
+def test_that_trying_to_create_source_distribution_from_random_zip_throws(
+    test_zip_path
+):
+    archive = Archive(path=test_zip_path)
+    with pytest.raises(DistributionNotDetected):
+        SourceDistribution.from_archive(archive)

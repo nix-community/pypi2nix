@@ -99,8 +99,10 @@ class Requirement:
         )
 
     def to_line(self):
-        line = self.name
-        if self.version:
+        if self.url:
+            line = self.url + "#egg=" + self.name
+        elif self.version:
+            line = self.name
             versions_line = ",".join(
                 [
                     " {operator} {version}".format(operator=operator, version=version)
@@ -108,6 +110,8 @@ class Requirement:
                 ]
             )
             line += versions_line
+        else:
+            line = self.name
         return line
 
 
