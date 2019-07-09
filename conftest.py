@@ -11,7 +11,6 @@ from pypi2nix.requirements import Requirement
 from pypi2nix.stage1 import WheelBuilder
 from pypi2nix.target_platform import PlatformGenerator
 
-
 DATA_DIRECTORY = os.path.join(os.path.dirname(__file__), "unittests", "data")
 
 
@@ -161,3 +160,7 @@ def test_tar_gz_path():
 @pytest.fixture
 def test_zip_path():
     return os.path.join(DATA_DIRECTORY, "test.zip")
+
+@pytest.fixture
+def test_tar_bz2_path():
+    return os.path.join(DATA_DIRECTORY, 'test.tar.bz2')

@@ -6,10 +6,12 @@ import pytest
 from pypi2nix.archive import Archive
 
 
-@pytest.fixture(params=("tar", "zip"))
-def archive(request, test_zip_path, test_tar_gz_path):
+@pytest.fixture(params=("tar", "zip", "bz2"))
+def archive(request, test_zip_path, test_tar_gz_path, test_tar_bz2_path):
     if request.param == "tar":
         return Archive(path=test_tar_gz_path)
+    elif request.param == "bz2":
+        return Archive(path=test_tar_bz2_path)
     else:
         return Archive(path=test_zip_path)
 

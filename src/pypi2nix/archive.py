@@ -25,6 +25,9 @@ class Archive:
         elif self.path.endswith(".zip"):
             with zipfile.ZipFile(self.path) as archive:
                 archive.extractall(path=target_directory)
+        elif self.path.endswith(".tar.bz2"):
+            with tarfile.open(self.path, "r:bz2") as tar:
+                tar.extractall(path=target_directory)
         else:
             raise UnpackingFailed(
                 "Could not detect archive format for file {}".format(self.path)
