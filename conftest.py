@@ -11,6 +11,7 @@ from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
 from pypi2nix.stage1 import WheelBuilder
 from pypi2nix.target_platform import PlatformGenerator
+from pypi2nix.wheel import Wheel
 
 DATA_DIRECTORY = os.path.join(os.path.dirname(__file__), "unittests", "data")
 
@@ -66,8 +67,11 @@ def wheel_builder(pip, project_dir):
 @pytest.fixture
 def extracted_six_package(six_requirements, wheel_builder):
     wheels = wheel_builder.build(six_requirements)
-    assert len(wheels) == 1
-    return wheels[0]
+    for wheel_directory in wheels:
+        wheel = Wheel.from_wheel_directory_path(wheel_directory)
+        if wheel.name == "six":
+            return wheel_directory
+    raise Exception('Error when trying to build wheel for "six == 1.12.0"')
 
 
 @pytest.fixture
