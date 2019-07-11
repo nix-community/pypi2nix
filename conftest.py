@@ -73,7 +73,7 @@ def extracted_six_package(six_requirements, wheel_builder):
 @pytest.fixture
 def six_requirements(project_dir):
     requirements = RequirementSet()
-    requirements.add(Requirement.from_line("six"))
+    requirements.add(Requirement.from_line("six == 1.12.0"))
     return requirements
 
 
@@ -105,7 +105,7 @@ def distribution_archive_for_jsonschema(pip, download_dir, requirements_for_json
             return Archive(path=os.path.join(download_dir, file_name))
 
 
-@pytest.fixture(params=("six", "setuptools == 41.0.1"))
+@pytest.fixture(params=("six == 1.12.0", "setuptools == 41.0.1"))
 def requirement(request):
     return Requirement.from_line(request.param)
 
