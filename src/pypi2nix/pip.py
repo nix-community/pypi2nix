@@ -8,7 +8,6 @@ import urllib
 import click
 
 from pypi2nix.nix import EvaluationFailed
-from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.utils import escape_double_quotes
 
 HERE = os.path.dirname(__file__)
@@ -52,18 +51,11 @@ class Pip:
             self.project_directory, "cache", "download"
         )
 
-    def download_sources(
-        self, requirements, target_directory, constraints=RequirementSet()
-    ):
+    def download_sources(self, requirements, target_directory):
         if not requirements:
             return
         requirements_files = [
             requirements.to_file(
-                self.project_directory, self.target_platform
-            ).processed_requirements_file_path()
-        ]
-        constraints_files = [
-            constraints.to_file(
                 self.project_directory, self.target_platform
             ).processed_requirements_file_path()
         ]
@@ -75,17 +67,10 @@ class Pip:
                 destination_directory=target_directory,
                 editable_sources_directory=self.editable_sources_directory(),
                 build_directory=self.build_directory(),
-                constraint_files=constraints_files,
             ),
         )
 
-    def build_wheels(
-        self,
-        requirements,
-        target_directory,
-        source_directories,
-        constraints=RequirementSet(),
-    ):
+    def build_wheels(self, requirements, target_directory, source_directories):
         if not requirements:
             return
         requirements_files = [

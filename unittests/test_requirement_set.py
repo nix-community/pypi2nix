@@ -84,3 +84,47 @@ def test_elements_from_both_sets_can_be_found_in_sum_of_sets():
     sum = left + right
     assert "test1" in sum
     assert "test2" in sum
+
+
+def test_requirement_set_respects_constraints_when_reading_from_requirement_file(
+    tmpdir, project_dir, current_platform
+):
+    requirements_txt = tmpdir.join("requirements.txt")
+    constraints_txt = tmpdir.join("constraints.txt")
+    with open(requirements_txt, "w") as f:
+        print("test-requirement", file=f)
+        print("-c " + str(constraints_txt), file=f)
+    with open(constraints_txt, "w") as f:
+        print("test-requirement <= 1.0", file=f)
+
+    original_requirements_file = RequirementsFile(str(requirements_txt), project_dir)
+    original_requirements_file.process()
+
+    requirement_set = RequirementSet.from_file(original_requirements_file)
+    print(requirement_set.requirements["test-requirement"].version)
+
+    new_requirements_file = requirement_set.to_file(project_dir, current_platform)
+
+    assert "test-requirement <= 1.0" in new_requirements_file.read()
+
+
+def test_constraints_without_requirement_will_not_show_up_in_generated_requirement_file(
+    tmpdir, project_dir, current_platform
+):
+    requirements_txt = tmpdir.join("requirements.txt")
+    constraints_txt = tmpdir.join("constraints.txt")
+
+    with open(requirements_txt, "w") as f:
+        print("test-requirement", file=f)
+        print("-c " + str(constraints_txt), file=f)
+    with open(constraints_txt, "w") as f:
+        print("test-constraint == 1.0", file=f)
+
+    original_requirements_file = RequirementsFile(str(requirements_txt), project_dir)
+    original_requirements_file.process()
+
+    requirement_set = RequirementSet.from_file(original_requirements_file)
+
+    new_requirements_file = requirement_set.to_file(project_dir, current_platform)
+
+    assert "test-constraint" not in new_requirements_file.read()

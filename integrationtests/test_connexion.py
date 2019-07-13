@@ -14,14 +14,9 @@ class ConnexionTest(IntegrationTest, TestCase):
         return "3.7"
 
     def setup_requires(self):
-        return [
-            "flake8",
-            "flit",
-            "pytest-runner",
-            "setuptools-scm",
-            "vcversioner",
-            "intreehooks",
-        ]
+        return ["flit", "pytest-runner", "setuptools-scm", "vcversioner", "flake8"]
 
     def code_for_testing(self):
         return ["import connexion"]
+
+    constraints = ["clickclick == 1.2.1", "flake8 == 3.7.7"]

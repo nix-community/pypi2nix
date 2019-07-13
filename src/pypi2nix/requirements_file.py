@@ -65,11 +65,15 @@ class RequirementsFile:
         return line.startswith("-r ") or line.startswith("-c ")
 
     def handle_include_line(self, line):
-        # this include '-r ' and '-c ' lines
-        requirements_file = os.path.abspath(
-            os.path.join(os.path.dirname(self.original_path), line[3:])
-        )
-        new_requirements_file = RequirementsFile(self.project_dir, requirements_file)
+        # this includes '-r ' and '-c ' lines
+        original_file_path = line[2:].strip()
+        if os.path.isabs(original_file_path):
+            included_file_path = original_file_path
+        else:
+            included_file_path = os.path.abspath(
+                os.path.join(os.path.dirname(self.original_path), original_file_path)
+            )
+        new_requirements_file = RequirementsFile(included_file_path, self.project_dir)
         new_requirements_file.process()
         return line[0:3] + new_requirements_file.processed_requirements_file_path()
 

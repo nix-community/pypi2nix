@@ -48,6 +48,7 @@
 /result*
 /src/pypi2nix.egg-info/
 /integrationtests/*/requirements.nix
+/integrationtests/*/constraints.txt
 /integrationtests/*/requirements.txt
 /integrationtests/*/requirements_frozen.txt
 /integrationtests/*/result

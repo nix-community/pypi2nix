@@ -1,3 +1,6 @@
+import os.path
+import tempfile
+
 from pypi2nix.requirements import ParsingFailed
 from pypi2nix.requirements import Requirement
 from pypi2nix.requirements_file import RequirementsFile
@@ -7,10 +10,15 @@ from pypi2nix.sources import Sources
 class RequirementSet:
     def __init__(self):
         self.requirements = dict()
+        self.constraints = dict()
 
     def add(self, requirement):
         if requirement.name in self.requirements:
             self.requirements[requirement.name].version += requirement.version
+        elif requirement.name in self.constraints:
+            self.requirements[requirement.name] = self.constraints[requirement.name]
+            del self.constraints[requirement.name]
+            self.add(requirement)
         else:
             self.requirements[requirement.name] = requirement
 
@@ -18,9 +26,33 @@ class RequirementSet:
         return len(self.requirements)
 
     def to_file(self, project_dir, target_platform):
-        return RequirementsFile.from_lines(
-            self.requirements_file_content(target_platform), project_dir
-        )
+        with tempfile.TemporaryDirectory() as directory:
+            requirements_txt = os.path.join(directory, "requirements.txt")
+            constraints_txt = os.path.join(directory, "constraints.txt")
+            with open(requirements_txt, "w") as f:
+                print(self.requirements_file_content(target_platform), file=f)
+                print("-c " + constraints_txt, file=f)
+            with open(constraints_txt, "w") as f:
+                print(self.constraints_file_content(target_platform), file=f)
+            requirements_file = RequirementsFile(requirements_txt, project_dir)
+            requirements_file.process()
+        return requirements_file
+
+    def add_constraint(self, requirement):
+        if requirement.name in self.requirements:
+            self.add(requirement)
+        elif requirement.name in self.constraints:
+            self.constraints[requirement.name].version += requirement.version
+        else:
+            self.constraints[requirement.name] = requirement
+
+    def to_constraints_only(self):
+        new_requirement_set = RequirementSet()
+        for requirement in list(self.requirements.values()) + list(
+            self.constraints.values()
+        ):
+            new_requirement_set.add_constraint(requirement)
+        return new_requirement_set
 
     @classmethod
     def from_file(constructor, requirements_file):
@@ -30,9 +62,23 @@ class RequirementSet:
             try:
                 requirement = Requirement.from_line(line)
             except ParsingFailed:
-                continue
-            requirements_set.add(requirement)
+                detected_requirements = constructor.handle_non_requirement_line(line)
+                requirements_set += detected_requirements
+            else:
+                requirements_set.add(requirement)
         return requirements_set
+
+    @classmethod
+    def handle_non_requirement_line(constructor, line):
+        line = line.strip()
+        if line.startswith("-c "):
+            include_path = line[2:].strip()
+            with tempfile.TemporaryDirectory() as project_directory:
+                requirements_file = RequirementsFile(include_path, project_directory)
+                requirements_file.process()
+                return constructor.from_file(requirements_file).to_constraints_only()
+        else:
+            return constructor()
 
     @property
     def sources(self):
@@ -45,19 +91,39 @@ class RequirementSet:
         return sources
 
     def requirements_file_content(self, target_platform):
-        return [
-            requirement.to_line()
-            for requirement in self.requirements.values()
-            if requirement.applies_to_target(target_platform)
-        ]
+        return self.requirements_to_file_content(
+            self.requirements.values(), target_platform
+        )
+
+    def constraints_file_content(self, target_platform):
+        return self.requirements_to_file_content(
+            self.constraints.values(), target_platform
+        )
+
+    @classmethod
+    def requirements_to_file_content(_, requirements, target_platform):
+        return "\n".join(
+            [
+                requirement.to_line()
+                for requirement in requirements
+                if requirement.applies_to_target(target_platform)
+            ]
+        )
 
     def __add__(self, other):
-        requirements = RequirementSet()
-        for requirement in self.requirements.values():
-            requirements.add(requirement)
-        for requirement in other.requirements.values():
-            requirements.add(requirement)
-        return requirements
+        requirement_set = RequirementSet()
+
+        requirements = list(self.requirements.values()) + list(
+            other.requirements.values()
+        )
+        for requirement in requirements:
+            requirement_set.add(requirement)
+
+        constraints = list(self.constraints.values()) + list(other.constraints.values())
+        for constraint in constraints:
+            requirement_set.add_constraint(constraint)
+
+        return requirement_set
 
     def __contains__(self, name):
         return name in self.requirements

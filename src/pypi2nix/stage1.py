@@ -32,7 +32,7 @@ class WheelBuilder:
         self, requirements, constraints=RequirementSet()
     ):
         self.pip.download_sources(
-            requirements, self.download_directory, constraints=constraints
+            requirements + constraints.to_constraints_only(), self.download_directory
         )
         uninspected_distributions = self.get_uninspected_source_distributions()
         self.register_all_source_distributions()
@@ -46,7 +46,8 @@ class WheelBuilder:
             self.additional_build_dependencies[distribution.name] += build_dependencies
             detected_dependencies += build_dependencies
         return detected_dependencies + self.detect_additional_build_dependencies(
-            detected_dependencies, constraints=requirements + constraints
+            detected_dependencies,
+            constraints=(requirements + constraints).to_constraints_only(),
         )
 
     def get_uninspected_source_distributions(self):
