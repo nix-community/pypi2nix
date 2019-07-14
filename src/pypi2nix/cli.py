@@ -11,8 +11,10 @@ import pypi2nix.stage3
 import pypi2nix.utils
 from pypi2nix.nix import Nix
 from pypi2nix.pip import Pip
+from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements_file import RequirementsFile
 from pypi2nix.sources import Sources
+from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.utils import md5_sum_of_files_with_file_names
 
 
@@ -159,6 +161,7 @@ def main(
         executable_directory=nix_executable_directory,
         verbose=verbose != 0,
     )
+    platform_generator = PlatformGenerator(nix=nix)
 
     if default_overrides:
         overrides += tuple(
@@ -176,6 +179,7 @@ def main(
         click.echo(pypi2nix_version)
         return
 
+    python_version_argument = python_version
     python_versions = pypi2nix.utils.PYTHON_VERSIONS.keys()
     if not python_version:
         raise click.exceptions.UsageError(
@@ -183,6 +187,7 @@ def main(
             + (", ".join(python_versions))
         )
     python_version = pypi2nix.utils.PYTHON_VERSIONS[python_version]
+    target_platform = platform_generator.from_python_version(python_version_argument)
 
     extra_build_inputs = pypi2nix.utils.args_as_list(extra_build_inputs)
     setup_requires = pypi2nix.utils.args_as_list(setup_requires)
@@ -236,12 +241,15 @@ def main(
     for requirements_path in requirements:
         requirements_file = RequirementsFile(requirements_path, project_dir)
         requirements_file.process()
-        sources.update(requirements_file.sources)
         requirements_files.append(requirements_file)
 
-    setup_requirements_files = [
-        RequirementsFile.from_lines(setup_requires, project_dir)
-    ]
+    requirement_set = RequirementSet.from_file(requirements_file, target_platform)
+    sources.update(requirement_set.sources())
+
+    setup_requirements_file = RequirementsFile.from_lines(setup_requires, project_dir)
+    setup_requirements = RequirementSet.from_file(
+        setup_requirements_file, target_platform
+    )
 
     click.echo("pypi2nix v{} running ...".format(pypi2nix_version))
     click.echo("")
@@ -251,19 +259,19 @@ def main(
     pip = Pip(
         nix=nix,
         project_directory=project_dir,
-        python_version=python_version,
         extra_env=extra_env,
         extra_build_inputs=extra_build_inputs,
         verbose=verbose,
         wheels_cache=wheels_cache,
+        target_platform=target_platform,
     )
     wheel_builder = pypi2nix.stage1.WheelBuilder(pip=pip, project_directory=project_dir)
     wheels = wheel_builder.build(
-        requirements_files=requirements_files,
-        setup_requirements_files=setup_requirements_files,
+        requirements=requirement_set, setup_requirements=setup_requirements
     )
     requirements_frozen = wheel_builder.get_frozen_requirements()
     default_environment = pip.default_environment()
+    additional_dependency_graph = wheel_builder.additional_build_dependencies
 
     click.echo("Stage2: Extracting metadata from pypi.python.org ...")
 
@@ -273,6 +281,7 @@ def main(
         wheel_paths=wheels,
         default_environment=default_environment,
         wheel_cache_dir=wheel_cache_dir,
+        additional_dependencies=additional_dependency_graph,
     )
     click.echo("Stage3: Generating Nix expressions ...")
 

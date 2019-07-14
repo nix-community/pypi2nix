@@ -1,14 +1,18 @@
 import os
 import os.path
 
-from pypi2nix.requirements_file import RequirementsFile
+from pypi2nix.requirement_set import RequirementSet
+from pypi2nix.requirements import Requirement
 
 from ..switches import nix
 
 
 @nix
-def test_install_six_yields_non_empty_freeze_output(pip, project_dir, download_dir):
-    requirements = [RequirementsFile.from_lines(["six"], project_dir)]
+def test_install_six_yields_non_empty_freeze_output(
+    pip, project_dir, download_dir, current_platform
+):
+    requirements = RequirementSet(current_platform)
+    requirements.add(Requirement.from_line("six"))
     pip.download_sources(requirements, download_dir)
     pip.install(requirements, source_directories=[download_dir])
     assert pip.freeze()
@@ -16,9 +20,10 @@ def test_install_six_yields_non_empty_freeze_output(pip, project_dir, download_d
 
 @nix
 def test_install_to_target_directory_does_not_install_to_default_directory(
-    pip, project_dir, download_dir
+    pip, project_dir, download_dir, current_platform
 ):
-    requirements = [RequirementsFile.from_lines(["six"], project_dir)]
+    requirements = RequirementSet(current_platform)
+    requirements.add(Requirement.from_line("six"))
     target_directory = os.path.join(project_dir, "target-directory")
     os.makedirs(target_directory)
     pip.download_sources(requirements, download_dir)

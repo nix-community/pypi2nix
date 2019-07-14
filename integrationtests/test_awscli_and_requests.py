@@ -14,9 +14,6 @@ class AwscliAndRequestsTest(IntegrationTest, TestCase):
     def python_version(self):
         return "2.7"
 
-    def setup_requires(self):
-        return ["setuptools-scm"]
-
     def code_for_testing(self):
         return ["import awscli", "import requests"]
 

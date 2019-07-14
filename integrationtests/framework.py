@@ -33,6 +33,7 @@ class IntegrationTest:
     external_dependencies() -- default: []
     default_overrides -- default: false
     requirements_file_check(content) -- default: (lambda content: None)
+    constraints -- default []
     """
 
     def setUp(self):
@@ -252,7 +253,19 @@ class IntegrationTest:
         return environment_variables
 
     def generate_requirements_file_content(self):
-        return "\n".join(self.requirements())
+        if self.constraints:
+            self.generate_constraints_txt()
+            requirements_txt_extra_content = ["-c " + self.constraints_txt_path()]
+        else:
+            requirements_txt_extra_content = []
+        return "\n".join(self.requirements() + requirements_txt_extra_content)
+
+    def generate_constraints_txt(self):
+        with open(self.constraints_txt_path(), "w") as f:
+            f.write("\n".join(self.constraints))
+
+    def constraints_txt_path(self):
+        return os.path.join(self.example_directory(), "constraints.txt")
 
     def write_requirements_file(self, content):
         shutil.os.makedirs(
@@ -271,6 +284,7 @@ class IntegrationTest:
         pass
 
     default_overrides = False
+    constraints = []
 
 
 @attrs

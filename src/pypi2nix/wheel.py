@@ -3,6 +3,7 @@ import os.path
 
 import click
 import setuptools._vendor.packaging.requirements
+from setuptools._vendor.packaging.utils import canonicalize_name
 
 from pypi2nix.license import find_license
 from pypi2nix.utils import TO_IGNORE
@@ -10,23 +11,48 @@ from pypi2nix.utils import safe
 
 
 class Wheel:
-    def __init__(self, name, version, deps, homepage, license, description):
-        self.name = name
+    def __init__(
+        self,
+        name,
+        version,
+        deps,
+        homepage,
+        license,
+        description,
+        build_dependencies=set(),
+    ):
+        self.name = canonicalize_name(name)
         self.version = version
-        self.deps = deps
+        self.deps = set(map(canonicalize_name, deps))
         self.homepage = homepage
         self.license = license
         self.description = description
+        self.build_dependencies = set(map(canonicalize_name, build_dependencies))
 
     def to_dict(self):
         return {
             "name": self.name,
             "version": self.version,
-            "deps": self.deps,
+            "deps": list(self.deps),
             "homepage": self.homepage,
             "license": self.license,
             "description": self.description,
+            "build_dependencies": list(self.build_dependencies),
         }
+
+    def add_build_dependencies(self, dependencies):
+        for dependency in dependencies:
+            if self.valid_dependency(dependency):
+                self.build_dependencies.add(canonicalize_name(dependency))
+
+    def valid_dependency(self, dependency):
+        canonicalized_dependency = canonicalize_name(dependency)
+        return all(
+            [
+                canonicalized_dependency != self.name,
+                canonicalized_dependency not in TO_IGNORE,
+            ]
+        )
 
     @classmethod
     def from_wheel_directory_path(

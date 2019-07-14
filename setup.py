@@ -24,5 +24,14 @@ setup(
     packages=["pypi2nix"],
     package_dir={"": "src"},
     include_package_data=True,
-    install_requires=["click", "jinja2", "requests", "nix-prefetch-github"],
+    install_requires=[
+        "attrs",
+        "click",
+        "jinja2",
+        "nix-prefetch-github",
+        "Parsley",
+        "requests",
+        "setupcfg",
+        "toml",
+    ],
 )

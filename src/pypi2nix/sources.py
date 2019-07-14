@@ -16,3 +16,6 @@ class Sources:
 
     def items(self):
         return tuple(self.sources.items())
+
+    def __len__(self):
+        return len(self.sources)

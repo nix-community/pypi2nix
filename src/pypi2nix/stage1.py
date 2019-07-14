@@ -1,6 +1,12 @@
 import os
 import os.path
 import zipfile
+from collections import defaultdict
+
+from pypi2nix.archive import Archive
+from pypi2nix.requirement_set import RequirementSet
+from pypi2nix.source_distribution import DistributionNotDetected
+from pypi2nix.source_distribution import SourceDistribution
 
 
 class WheelBuilder:
@@ -9,38 +15,65 @@ class WheelBuilder:
         self.download_directory = os.path.join(project_directory, "download")
         self.wheel_directory = os.path.join(project_directory, "wheel")
         self.extracted_wheels_directory = os.path.join(project_directory, "wheelhouse")
-        self.indexes = [self.wheel_directory]
-
-    def build(self, requirements_files, setup_requirements_files):
-        self.pip.download_sources(
-            requirements=setup_requirements_files,
-            constraints=requirements_files,
-            target_directory=self.download_directory,
-        )
-        self.pip.build_wheels(
-            requirements=setup_requirements_files,
-            target_directory=self.wheel_directory,
-            source_directories=[self.download_directory],
-        )
-        self.pip.install(
-            requirements=setup_requirements_files, source_directories=self.indexes
+        self.project_directory = project_directory
+        self.inspected_source_distribution_files = set()
+        self.additional_build_dependencies = defaultdict(
+            lambda: RequirementSet(pip.target_platform)
         )
 
-        self.pip.download_sources(
-            requirements=requirements_files, target_directory=self.download_directory
-        )
+    def build(self, requirements, setup_requirements=None):
+        if setup_requirements is None:
+            setup_requirements = RequirementSet(self.pip.target_platform)
+        requirements = requirements + setup_requirements
+        detected_requirements = self.detect_additional_build_dependencies(requirements)
+        updated_requirements = detected_requirements + requirements
         self.pip.build_wheels(
-            requirements=requirements_files,
-            target_directory=self.wheel_directory,
-            source_directories=[self.download_directory],
+            updated_requirements, self.wheel_directory, [self.download_directory]
         )
         return self.extract_wheels()
 
+    def detect_additional_build_dependencies(self, requirements, constraints=None):
+        if constraints is None:
+            constraints = RequirementSet(self.pip.target_platform)
+        self.pip.download_sources(
+            requirements + constraints.to_constraints_only(), self.download_directory
+        )
+        uninspected_distributions = self.get_uninspected_source_distributions()
+        self.register_all_source_distributions()
+        detected_dependencies = RequirementSet(self.pip.target_platform)
+        if not uninspected_distributions:
+            return detected_dependencies
+        for distribution in uninspected_distributions:
+            build_dependencies = distribution.build_dependencies(
+                self.pip.target_platform
+            )
+            self.additional_build_dependencies[distribution.name] += build_dependencies
+            detected_dependencies += build_dependencies
+        return detected_dependencies + self.detect_additional_build_dependencies(
+            detected_dependencies,
+            constraints=(requirements + constraints).to_constraints_only(),
+        )
+
+    def get_uninspected_source_distributions(self):
+        archives = [
+            Archive(path=path)
+            for path in list_files(self.download_directory)
+            if path not in self.inspected_source_distribution_files
+        ]
+        distributions = list()
+        for archive in archives:
+            try:
+                distributions.append(SourceDistribution.from_archive(archive))
+            except DistributionNotDetected:
+                continue
+        return distributions
+
+    def register_all_source_distributions(self):
+        for path in list_files(self.download_directory):
+            self.inspected_source_distribution_files.add(path)
+
     def extract_wheels(self):
-        try:
-            os.makedirs(self.extracted_wheels_directory)
-        except FileExistsError:
-            pass
+        self.ensure_extracted_wheels_directory_exists()
 
         wheels = [
             file_path
@@ -62,6 +95,18 @@ class WheelBuilder:
 
     def get_frozen_requirements(self):
         return self.pip.freeze(python_path=[self.extracted_wheels_directory])
+
+    def ensure_download_directory_exists(self):
+        try:
+            os.makedirs(self.download_directory)
+        except FileExistsError:
+            pass
+
+    def ensure_extracted_wheels_directory_exists(self):
+        try:
+            os.makedirs(self.extracted_wheels_directory)
+        except FileExistsError:
+            pass
 
 
 def list_files(path):

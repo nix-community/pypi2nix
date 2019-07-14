@@ -4,7 +4,7 @@ import sys
 
 import click
 import jinja2
-import setuptools._vendor.packaging.utils
+from setuptools._vendor.packaging.utils import canonicalize_name
 
 HERE = os.path.dirname(__file__)
 
@@ -35,21 +35,28 @@ def main(
         version = f.read()
     version = version.strip()
 
-    metadata_by_name = {
-        setuptools._vendor.packaging.utils.canonicalize_name(x.name): x
-        for x in packages_metadata
-    }
+    metadata_by_name = {x.name: x for x in packages_metadata}
 
     generated_packages_metadata = []
     for item in sorted(packages_metadata, key=lambda x: x.name):
-        buildInputs = "[ ]"
+        if item.build_dependencies:
+            buildInputs = "\n".join(
+                sorted(
+                    [
+                        '        self."{}"'.format(name)
+                        for name in item.build_dependencies
+                    ]
+                )
+            )
+            buildInputs = "[\n" + buildInputs + "\n      ]"
+        else:
+            buildInputs = "[ ]"
         propagatedBuildInputs = "[ ]"
         if item.deps:
             deps = [
-                setuptools._vendor.packaging.utils.canonicalize_name(x)
+                canonicalize_name(x)
                 for x in item.deps
-                if setuptools._vendor.packaging.utils.canonicalize_name(x)
-                in metadata_by_name.keys()
+                if canonicalize_name(x) in metadata_by_name.keys()
             ]
             if deps:
                 propagatedBuildInputs = "[\n%s\n      ]" % (

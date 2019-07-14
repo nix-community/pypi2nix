@@ -4,7 +4,6 @@
 , python_version
 , extra_env
 , requirements_files
-, constraint_files
 , destination_directory
 , editable_sources_directory
 , build_directory
@@ -20,7 +19,6 @@ pip_base.override( old: {
   shellHook = old.shellHook + ''
     ${extra_env} pip download \
       ${requirements_files_option} \
-      ${builtins.concatStringsSep " " (map (x: "-c ${x} ") constraint_files)} \
       --dest ${destination_directory} \
       --src ${editable_sources_directory} \
       --build ${build_directory} \

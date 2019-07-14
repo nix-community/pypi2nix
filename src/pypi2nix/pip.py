@@ -23,19 +23,19 @@ class Pip:
         nix,
         project_directory,
         extra_build_inputs,
-        python_version,
         extra_env,
         verbose: int,
         wheels_cache,
+        target_platform,
     ):
         self.nix = nix
         self.project_directory = project_directory
         self.extra_build_inputs = extra_build_inputs
-        self.python_version = python_version
         self.extra_env = extra_env
         self.build_output = ""
         self.verbose = verbose
         self.wheels_cache = wheels_cache
+        self.target_platform = target_platform
 
         output = self.nix.evaluate_expression(
             'let pkgs = import <nixpkgs> {}; in "%s"' % escape_double_quotes(extra_env)
@@ -49,15 +49,14 @@ class Pip:
             self.project_directory, "cache", "download"
         )
 
-    def download_sources(self, requirements, target_directory, constraints=[]):
+    def download_sources(self, requirements, target_directory):
         if not requirements:
             return
-        requirements_files = list(
-            map(lambda r: r.processed_requirements_file_path(), requirements)
-        )
-        constraints_files = list(
-            map(lambda c: c.processed_requirements_file_path(), constraints)
-        )
+        requirements_files = [
+            requirements.to_file(
+                self.project_directory, self.target_platform
+            ).processed_requirements_file_path()
+        ]
         self.build_from_nix_file(
             command="exit",
             file_path=DOWNLOAD_NIX,
@@ -66,18 +65,17 @@ class Pip:
                 destination_directory=target_directory,
                 editable_sources_directory=self.editable_sources_directory(),
                 build_directory=self.build_directory(),
-                constraint_files=constraints_files,
             ),
         )
 
-    def build_wheels(
-        self, requirements, target_directory, source_directories, constraints=[]
-    ):
+    def build_wheels(self, requirements, target_directory, source_directories):
         if not requirements:
             return
-        requirements_files = list(
-            map(lambda r: r.processed_requirements_file_path(), requirements)
-        )
+        requirements_files = [
+            requirements.to_file(
+                self.project_directory, self.target_platform
+            ).processed_requirements_file_path()
+        ]
         self.build_from_nix_file(
             command="exit",
             file_path=WHEEL_NIX,
@@ -97,9 +95,11 @@ class Pip:
             return
         if target_directory is None:
             target_directory = self.default_lib_directory
-        requirements_files = list(
-            map(lambda r: r.processed_requirements_file_path(), requirements)
-        )
+        requirements_files = [
+            requirements.to_file(
+                self.project_directory, self.target_platform
+            ).processed_requirements_file_path()
+        ]
         self.build_from_nix_file(
             command="exit",
             file_path=INSTALL_NIX,
@@ -145,7 +145,7 @@ class Pip:
                 download_cache_dir=self.download_cache_directory,
                 extra_build_inputs=self.extra_build_inputs,
                 project_dir=self.project_directory,
-                python_version=self.python_version,
+                python_version=self.target_platform.nixpkgs_derivation_name,
                 extra_env=self.extra_env,
             ),
             **arguments,

@@ -29,7 +29,9 @@ class Stage2:
         self.verbose = verbose
         self.index = index
 
-    def main(self, wheel_paths, default_environment, wheel_cache_dir):
+    def main(
+        self, wheel_paths, default_environment, wheel_cache_dir, additional_dependencies
+    ):
         """Extract packages metadata from wheels dist-info folders.
         """
         output = ""
@@ -63,6 +65,13 @@ class Stage2:
                     if self.verbose > 0:
                         click.echo("    SKIPPING")
                     continue
+                if wheel_metadata.name in additional_dependencies:
+                    wheel_metadata.add_build_dependencies(
+                        map(
+                            lambda dependency: dependency.name,
+                            additional_dependencies[wheel_metadata.name],
+                        )
+                    )
 
                 wheels.append(wheel_metadata)
 

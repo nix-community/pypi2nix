@@ -42,3 +42,7 @@ def test_items_returns_empty_tuple_for_empty_sources(sources):
 def test_items_returns_length_on_tuple_for_one_entry(sources):
     sources.add("testitem", PathSource("/test/path"))
     assert len(sources.items()) == 1
+
+
+def test_empty_sources_has_length_0(sources):
+    assert len(sources) == 0
