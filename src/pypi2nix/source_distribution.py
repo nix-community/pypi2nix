@@ -1,5 +1,6 @@
 import email
 import os
+import os.path
 
 import setupcfg
 import toml
@@ -21,7 +22,7 @@ class SourceDistribution:
 
     @classmethod
     def from_archive(source_distribution, archive):
-        with archive.contents() as extraction_directory:
+        with archive.extracted_files() as extraction_directory:
             extracted_files = [
                 os.path.join(directory_path, file_name)
                 for directory_path, _, file_names in os.walk(extraction_directory)
@@ -59,7 +60,7 @@ class SourceDistribution:
         pyproject_toml_candidates = [
             filepath
             for filepath in extracted_files
-            if filepath.endswith("pyproject.toml")
+            if os.path.basename(filepath) == "pyproject.toml"
         ]
         if pyproject_toml_candidates:
             with open(pyproject_toml_candidates[0]) as f:
@@ -70,7 +71,9 @@ class SourceDistribution:
     @classmethod
     def get_setup_cfg(_, extracted_files):
         setup_cfg_candidates = [
-            filepath for filepath in extracted_files if filepath.endswith("setup.cfg")
+            filepath
+            for filepath in extracted_files
+            if os.path.basename(filepath) == "setup.cfg"
         ]
         if setup_cfg_candidates:
             return setupcfg.load(setup_cfg_candidates)
@@ -81,10 +84,10 @@ class SourceDistribution:
         elif self.setup_cfg is not None:
             return self.build_dependencies_from_setup_cfg(target_platform)
         else:
-            return RequirementSet()
+            return RequirementSet(target_platform)
 
     def build_dependencies_from_pyproject_toml(self, target_platform):
-        requirement_set = RequirementSet()
+        requirement_set = RequirementSet(target_platform)
         if self.pyproject_toml is None:
             pass
         else:
@@ -98,7 +101,7 @@ class SourceDistribution:
 
     def build_dependencies_from_setup_cfg(self, target_platform):
         setup_requires = self.setup_cfg.get("options", {}).get("setup_requires")
-        requirements = RequirementSet()
+        requirements = RequirementSet(target_platform)
         if isinstance(setup_requires, str):
             requirements.add(Requirement.from_line(setup_requires))
         elif isinstance(setup_requires, list):

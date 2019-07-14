@@ -14,14 +14,60 @@ class ParsingFailed(Exception):
     pass
 
 
+class IncompatibleRequirements(Exception):
+    pass
+
+
 class Requirement:
     def __init__(self, name, extras=[], version=[], environment_markers=None, url=None):
-        assert not (bool(version) and bool(url))
+        if bool(version) and bool(url):
+            raise ParsingFailed(
+                "Cannot construct requirement `{name}` with version and url specifier set at the same time".format(
+                    name=name
+                )
+            )
         self.name = canonicalize_name(name)
+        self.extras = extras
         self.version = version
         self.environment_markers = environment_markers
         self.url = url
         self._source = None
+
+    def add(self, other, target_platform):
+        if not self.applies_to_target(target_platform):
+            return other
+        if not other.applies_to_target(target_platform):
+            return self
+        if self.name != other.name:
+            raise IncompatibleRequirements(
+                "Cannot add requirements with different names, given `{}` and `{}`".format(
+                    self.name, other.name
+                )
+            )
+        if self.url and other.url:
+            if self.url == other.url:
+                url = self.url
+                version = []
+            else:
+                raise IncompatibleRequirements(
+                    "Cannot add requirements with different URLs, given `{}` and `{}`".format(
+                        self.url, other.url
+                    )
+                )
+        elif self.url or other.url:
+            version = []
+            url = self.url or other.url
+        else:
+            version = self.version + other.version
+            url = None
+        environment_marker = None
+        return Requirement(
+            name=self.name,
+            extras=self.extras + other.extras,
+            version=version,
+            environment_markers=environment_marker,
+            url=url,
+        )
 
     @classmethod
     def from_line(constructor, line):

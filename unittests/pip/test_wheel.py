@@ -15,10 +15,12 @@ def list_files(dirname):
 
 
 @nix
-def test_pip_can_install_wheels_previously_downloaded(pip, project_dir):
+def test_pip_can_install_wheels_previously_downloaded(
+    pip, project_dir, current_platform
+):
     download_directory = os.path.join(project_dir, "download")
     target_directory = os.path.join(project_dir, "wheels")
-    requirements = RequirementSet()
+    requirements = RequirementSet(current_platform)
     requirements.add(Requirement.from_line("six"))
     pip.download_sources(requirements, download_directory)
     pip.build_wheels(

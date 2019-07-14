@@ -8,13 +8,16 @@ from pypi2nix.sources import Sources
 
 
 class RequirementSet:
-    def __init__(self):
+    def __init__(self, target_platform):
         self.requirements = dict()
         self.constraints = dict()
+        self.target_platform = target_platform
 
     def add(self, requirement):
         if requirement.name in self.requirements:
-            self.requirements[requirement.name].version += requirement.version
+            self.requirements[requirement.name] = self.requirements[
+                requirement.name
+            ].add(requirement, self.target_platform)
         elif requirement.name in self.constraints:
             self.requirements[requirement.name] = self.constraints[requirement.name]
             del self.constraints[requirement.name]
@@ -42,12 +45,14 @@ class RequirementSet:
         if requirement.name in self.requirements:
             self.add(requirement)
         elif requirement.name in self.constraints:
-            self.constraints[requirement.name].version += requirement.version
+            self.constraints[requirement.name] = self.constraints[requirement.name].add(
+                requirement, self.target_platform
+            )
         else:
             self.constraints[requirement.name] = requirement
 
     def to_constraints_only(self):
-        new_requirement_set = RequirementSet()
+        new_requirement_set = RequirementSet(self.target_platform)
         for requirement in list(self.requirements.values()) + list(
             self.constraints.values()
         ):
@@ -55,32 +60,41 @@ class RequirementSet:
         return new_requirement_set
 
     @classmethod
-    def from_file(constructor, requirements_file):
+    def from_file(constructor, requirements_file, target_platform):
         file_lines = requirements_file.read().splitlines()
-        requirements_set = constructor()
+        requirements_set = constructor(target_platform)
         for line in file_lines:
             try:
                 requirement = Requirement.from_line(line)
             except ParsingFailed:
-                detected_requirements = constructor.handle_non_requirement_line(line)
+                detected_requirements = constructor.handle_non_requirement_line(
+                    line, target_platform
+                )
                 requirements_set += detected_requirements
             else:
                 requirements_set.add(requirement)
         return requirements_set
 
     @classmethod
-    def handle_non_requirement_line(constructor, line):
+    def handle_non_requirement_line(constructor, line, target_platform):
         line = line.strip()
         if line.startswith("-c "):
             include_path = line[2:].strip()
             with tempfile.TemporaryDirectory() as project_directory:
                 requirements_file = RequirementsFile(include_path, project_directory)
                 requirements_file.process()
-                return constructor.from_file(requirements_file).to_constraints_only()
+                return constructor.from_file(
+                    requirements_file, target_platform
+                ).to_constraints_only()
+        elif line.startswith("-r "):
+            include_path = line[2:].strip()
+            with tempfile.TemporaryDirectory() as project_directory:
+                requirements_file = RequirementsFile(include_path, project_directory)
+                requirements_file.process()
+                return constructor.from_file(requirements_file, target_platform)
         else:
-            return constructor()
+            return constructor(target_platform)
 
-    @property
     def sources(self):
         sources = Sources()
         for requirement in self.requirements.values():
@@ -111,7 +125,7 @@ class RequirementSet:
         )
 
     def __add__(self, other):
-        requirement_set = RequirementSet()
+        requirement_set = RequirementSet(self.target_platform)
 
         requirements = list(self.requirements.values()) + list(
             other.requirements.values()

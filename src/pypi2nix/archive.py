@@ -13,7 +13,7 @@ class Archive:
         self.path = path
 
     @contextmanager
-    def contents(self):
+    def extracted_files(self):
         with tempfile.TemporaryDirectory() as directory:
             self.unpack_archive(directory)
             yield directory

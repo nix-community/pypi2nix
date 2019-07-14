@@ -15,11 +15,14 @@ class PlatformGenerator:
 
     def from_python_version(self, version):
         with self.python_environment_nix(version) as nix_file:
-            version = self.nix.shell(
+            detected_version = self.nix.shell(
                 command='python -c "from platform import python_version; print(python_version())"',
                 derivation_path=nix_file,
             ).splitlines()[0]
-        return TargetPlatform(version)
+        return TargetPlatform(
+            version=detected_version,
+            nixpkgs_derivation_name=self.derivation_from_version_specifier(version),
+        )
 
     @contextmanager
     def python_environment_nix(self, version):
@@ -39,10 +42,20 @@ class PlatformGenerator:
     def derivation_from_version_specifier(self, version):
         return PYTHON_VERSIONS[version]
 
+    def derivation_name_from_python_version(self, version):
+        return self.derivation_from_version_specifier(version[:3])
+
     def current_platform(self):
-        return TargetPlatform(version=platform.python_version())
+        current_version = platform.python_version()
+        return TargetPlatform(
+            version=current_version,
+            nixpkgs_derivation_name=self.derivation_name_from_python_version(
+                current_version
+            ),
+        )
 
 
 @attrs
 class TargetPlatform:
     version = attrib()
+    nixpkgs_derivation_name = attrib()

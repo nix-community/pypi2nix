@@ -3,6 +3,7 @@ import os
 import pytest
 
 from pypi2nix.package_source import GitSource
+from pypi2nix.requirements import IncompatibleRequirements
 from pypi2nix.requirements import ParsingFailed
 from pypi2nix.requirements import Requirement
 
@@ -19,7 +20,7 @@ def test_requirement_finds_name_of_pypi_packages():
     assert requirement.name == "pypi2nix"
 
 
-def test_rqeuirement_detects_source_of_pypi_package_as_none():
+def test_requirement_detects_source_of_pypi_package_as_none():
     requirement = Requirement.from_line("pypi2nix")
     assert requirement.source is None
 
@@ -86,9 +87,9 @@ def test_from_line_accepts_requirement_with_marker_including_in_operator():
     assert requirement.name == "zipfile36"
 
 
-def test_that_applies_to_target_works_with_in_keyword(python_version, current_platform):
+def test_that_applies_to_target_works_with_in_keyword(current_platform):
     requirement = Requirement.from_line(
-        "pypi2nix; python_version in '{}'".format(python_version)
+        "pypi2nix; python_version in '{}'".format(current_platform.version)
     )
     assert requirement.applies_to_target(current_platform)
 
@@ -122,3 +123,58 @@ def test_that_from_line_to_line_preserves_urls():
     line = "git+https://example.test/#egg=testegg"
     requirement = Requirement.from_line(line)
     assert requirement.to_line() == line
+
+
+def test_that_requirements_can_be_added_together_adding_version_constraints(
+    current_platform
+):
+    req1 = Requirement.from_line("req >= 1.0")
+    req2 = Requirement.from_line("req >= 2.0")
+    sum_requirement = req1.add(req2, current_platform)
+    assert len(sum_requirement.version) == len(req1.version) + len(req2.version)
+
+
+def test_that_adding_requirements_with_different_names_throws(current_platform):
+    req1 = Requirement.from_line("req1")
+    req2 = Requirement.from_line("req2")
+    with pytest.raises(IncompatibleRequirements):
+        req1.add(req2, current_platform)
+
+
+def test_that_adding_requirements_with_a_version_and_a_url_leaves_only_url_in_result(
+    current_platform
+):
+    for direction in ["forward", "reverse"]:
+        req1 = Requirement.from_line("req1 >= 1.0")
+        req2 = Requirement.from_line("git+https://test.test/path#egg=req1")
+        if direction == "forward":
+            sum_requirement = req1.add(req2, current_platform)
+        else:
+            sum_requirement = req2.add(req1, current_platform)
+
+        assert not sum_requirement.version
+        assert sum_requirement.url == "git+https://test.test/path"
+
+
+def test_that_adding_requirements_with_different_urls_raises(current_platform):
+    req1 = Requirement.from_line("https://url1.test#egg=req")
+    req2 = Requirement.from_line("https://url2.test#egg=req")
+    with pytest.raises(IncompatibleRequirements):
+        req1.add(req2, current_platform)
+
+
+def test_that_adding_requirements_with_the_same_url_works(current_platform):
+    req1 = Requirement.from_line("https://url.test#egg=req")
+    req2 = Requirement.from_line("https://url.test#egg=req")
+    assert (req1.add(req2, current_platform)).url == "https://url.test"
+
+
+def test_that_adding_requirements_where_one_does_not_apply_to_system_yields_the_other(
+    current_platform
+):
+    req1 = Requirement.from_line("req1")
+    req2 = Requirement.from_line(
+        'req1 >= 1.0; python_version == "1.0"'
+    )  # definitly not true
+    sum_requirement = req1.add(req2, current_platform)
+    assert not sum_requirement.version

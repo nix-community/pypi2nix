@@ -17,8 +17,8 @@ def source_distribution(six_source_distribution_archive):
 
 
 @pytest.fixture
-def flit_requirements():
-    requirements = RequirementSet()
+def flit_requirements(current_platform):
+    requirements = RequirementSet(current_platform)
     requirements.add(Requirement.from_line("flit == 1.3"))
     return requirements
 
@@ -34,6 +34,7 @@ def flit_distribution(pip, project_dir, download_dir, flit_requirements):
     for distribution in distributions:
         if distribution.name == "flit":
             return distribution
+    raise Exception("Could not download source distribution for `flit`")
 
 
 @nix

@@ -13,10 +13,10 @@ def test_freeze_on_empty_environment_yields_empty_file(pip):
 
 
 @nix
-def test_freeze_respects_additional_python_path(pip, project_dir):
+def test_freeze_respects_additional_python_path(pip, project_dir, current_platform):
     prefix = os.path.join(project_dir, "custom-prefix")
     download_dir = os.path.join(project_dir, "download")
-    requirements = RequirementSet()
+    requirements = RequirementSet(current_platform)
     requirements.add(Requirement.from_line("six"))
     pip.download_sources(requirements, download_dir)
     pip.install(

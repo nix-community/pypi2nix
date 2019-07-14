@@ -23,7 +23,6 @@ class Pip:
         nix,
         project_directory,
         extra_build_inputs,
-        python_version,
         extra_env,
         verbose: int,
         wheels_cache,
@@ -32,7 +31,6 @@ class Pip:
         self.nix = nix
         self.project_directory = project_directory
         self.extra_build_inputs = extra_build_inputs
-        self.python_version = python_version
         self.extra_env = extra_env
         self.build_output = ""
         self.verbose = verbose
@@ -147,7 +145,7 @@ class Pip:
                 download_cache_dir=self.download_cache_directory,
                 extra_build_inputs=self.extra_build_inputs,
                 project_dir=self.project_directory,
-                python_version=self.python_version,
+                python_version=self.target_platform.nixpkgs_derivation_name,
                 extra_env=self.extra_env,
             ),
             **arguments,

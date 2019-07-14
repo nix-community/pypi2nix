@@ -1,6 +1,5 @@
 import os
 import os.path
-import platform
 
 import pytest
 
@@ -14,11 +13,6 @@ from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.wheel import Wheel
 
 DATA_DIRECTORY = os.path.join(os.path.dirname(__file__), "unittests", "data")
-
-
-@pytest.fixture
-def python_version():
-    return ".".join(platform.python_version().split(".")[:2])
 
 
 @pytest.fixture
@@ -51,7 +45,6 @@ def pip(nix, project_dir, current_platform):
         nix=nix,
         project_directory=project_dir,
         extra_build_inputs=[],
-        python_version="python3",
         extra_env="",
         verbose=3,
         wheels_cache=[],
@@ -65,18 +58,18 @@ def wheel_builder(pip, project_dir):
 
 
 @pytest.fixture
-def extracted_six_package(six_requirements, wheel_builder):
+def extracted_six_package(six_requirements, wheel_builder, default_environment):
     wheels = wheel_builder.build(six_requirements)
     for wheel_directory in wheels:
-        wheel = Wheel.from_wheel_directory_path(wheel_directory)
+        wheel = Wheel.from_wheel_directory_path(wheel_directory, default_environment)
         if wheel.name == "six":
             return wheel_directory
     raise Exception('Error when trying to build wheel for "six == 1.12.0"')
 
 
 @pytest.fixture
-def six_requirements(project_dir):
-    requirements = RequirementSet()
+def six_requirements(project_dir, current_platform):
+    requirements = RequirementSet(current_platform)
     requirements.add(Requirement.from_line("six == 1.12.0"))
     return requirements
 
@@ -92,11 +85,12 @@ def six_source_distribution_archive(pip, download_dir, six_requirements):
     for file_name in os.listdir(download_dir):
         if "six" in file_name:
             return Archive(path=os.path.join(download_dir, file_name))
+    raise Exception("Could not create source archive for `six`")
 
 
 @pytest.fixture
-def requirements_for_jsonschema():
-    requirements = RequirementSet()
+def requirements_for_jsonschema(current_platform):
+    requirements = RequirementSet(current_platform)
     requirements.add(Requirement.from_line("jsonschema == 3.0.1"))
     return requirements
 
@@ -107,6 +101,7 @@ def distribution_archive_for_jsonschema(pip, download_dir, requirements_for_json
     for file_name in os.listdir(download_dir):
         if "jsonschema" in file_name:
             return Archive(path=os.path.join(download_dir, file_name))
+    raise Exception("Could not download source distribution for `jsonschema`")
 
 
 @pytest.fixture(params=("six == 1.12.0", "setuptools == 41.0.1"))
@@ -115,15 +110,17 @@ def requirement(request):
 
 
 @pytest.fixture
-def source_distribution_archive(pip, requirement, download_dir):
-    requirement_set = RequirementSet()
+def source_distribution_archive(pip, requirement, download_dir, current_platform):
+    requirement_set = RequirementSet(current_platform)
     requirement_set.add(requirement)
     pip.download_sources(requirement_set, download_dir)
     for file_name in os.listdir(download_dir):
         if file_name.startswith(requirement.name):
             return Archive(path=os.path.join(download_dir, file_name))
     else:
-        assert False
+        raise Exception(
+            "Could not download source distribution for `{}`".format(requirement.name)
+        )
 
 
 @pytest.fixture

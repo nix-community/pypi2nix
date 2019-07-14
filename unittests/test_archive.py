@@ -17,6 +17,6 @@ def archive(request, test_zip_path, test_tar_gz_path, test_tar_bz2_path):
 
 
 def test_that_we_can_inspect_the_content_of_an_archive(archive):
-    with archive.contents() as directory:
+    with archive.extracted_files() as directory:
         files = tuple(os.listdir(directory))
         assert files == ("test.txt",)
