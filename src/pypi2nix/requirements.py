@@ -317,8 +317,11 @@ class RequirementParser:
         return self._compiled_grammar
 
     def parse(self, line):
+        line = line.strip()
         if "\n" in line:
-            raise ParsingFailed()
+            raise ParsingFailed(
+                "Failed to parse requirement from string `{}`".format(line)
+            )
         try:
             return self.compiled_grammar()(line).specification()
         except parsley.ParseError as e:

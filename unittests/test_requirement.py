@@ -12,7 +12,7 @@ from .switches import nix
 
 def test_requirement_cannot_be_constructed_from_line_containing_newline():
     with pytest.raises(ParsingFailed):
-        Requirement.from_line("pypi2nix\n")
+        Requirement.from_line("pypi2nix\n >= 1.0")
 
 
 def test_requirement_finds_name_of_pypi_packages():

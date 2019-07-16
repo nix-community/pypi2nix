@@ -11,8 +11,7 @@ import pypi2nix.stage3
 import pypi2nix.utils
 from pypi2nix.nix import Nix
 from pypi2nix.pip import Pip
-from pypi2nix.requirement_set import RequirementSet
-from pypi2nix.requirements_file import RequirementsFile
+from pypi2nix.requirements_collector import RequirementsCollector
 from pypi2nix.sources import Sources
 from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.utils import md5_sum_of_files_with_file_names
@@ -189,8 +188,14 @@ def main(
     python_version = pypi2nix.utils.PYTHON_VERSIONS[python_version]
     target_platform = platform_generator.from_python_version(python_version_argument)
 
+    requirement_collector = RequirementsCollector(target_platform)
+    setup_requirement_collector = RequirementsCollector(target_platform)
+
     extra_build_inputs = pypi2nix.utils.args_as_list(extra_build_inputs)
     setup_requires = pypi2nix.utils.args_as_list(setup_requires)
+
+    for build_input in setup_requires:
+        setup_requirement_collector.add_line(build_input)
 
     # temporary pypi2nix folder and make sure it exists
     tmp_dir = os.path.join(tempfile.gettempdir(), "pypi2nix")
@@ -222,34 +227,26 @@ def main(
     os.makedirs(project_dir)
 
     if editable:
-        editable_file = os.path.join(project_dir, "editable.txt")
-        with open(editable_file, "w+") as f:
-            for item in editable:
-                item_path = item.split("[")[0].split("#")[0]
-                if item_path.startswith("."):
-                    item_path = os.path.abspath(
-                        os.path.join(current_dir, item_path)
-                    )  # noqa
-                if os.path.isdir(item_path):
-                    f.write("-e %s\n" % item)
-                else:
-                    f.write("%s\n" % item)
-        requirements += requirements + (editable_file,)
+        for item in editable:
+            item_path = item.split("[")[0].split("#")[0]
+            if item_path.startswith("."):
+                item_path = os.path.abspath(
+                    os.path.join(current_dir, item_path)
+                )  # noqa
+            if os.path.isdir(item_path):
+                build_input = "-e %s\n" % item
+            else:
+                build_input = "%s\n" % item
+            requirement_collector.add_line(build_input)
+    for requirement_file_path in requirements:
+        requirement_collector.add_file(requirement_file_path)
+
+    requirement_set = requirement_collector.requirements()
+    setup_requirements = setup_requirement_collector.requirements()
 
     sources = Sources()
-    requirements_files = []
-    for requirements_path in requirements:
-        requirements_file = RequirementsFile(requirements_path, project_dir)
-        requirements_file.process()
-        requirements_files.append(requirements_file)
-
-    requirement_set = RequirementSet.from_file(requirements_file, target_platform)
     sources.update(requirement_set.sources())
-
-    setup_requirements_file = RequirementsFile.from_lines(setup_requires, project_dir)
-    setup_requirements = RequirementSet.from_file(
-        setup_requirements_file, target_platform
-    )
+    sources.update(setup_requirements.sources())
 
     click.echo("pypi2nix v{} running ...".format(pypi2nix_version))
     click.echo("")
@@ -289,7 +286,6 @@ def main(
         packages_metadata=packages_metadata,
         sources=sources,
         requirements_name=requirements_name,
-        requirements_files=requirements_files,
         requirements_frozen=requirements_frozen,
         extra_build_inputs=extra_build_inputs,
         enable_tests=enable_tests,

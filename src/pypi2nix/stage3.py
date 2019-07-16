@@ -13,7 +13,6 @@ def main(
     packages_metadata,
     sources,
     requirements_name,
-    requirements_files,
     requirements_frozen,
     extra_build_inputs,
     enable_tests,
