@@ -178,3 +178,9 @@ def test_that_adding_requirements_where_one_does_not_apply_to_system_yields_the_
     )  # definitly not true
     sum_requirement = req1.add(req2, current_platform)
     assert not sum_requirement.version
+
+
+def test_that_we_parse_requirements_with_file_paths():
+    requirement = Requirement.from_line("path/to/egg#egg=testegg")
+    assert requirement.name == "testegg"
+    assert requirement.url == "path/to/egg"

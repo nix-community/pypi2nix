@@ -7,6 +7,7 @@ from setuptools._vendor.packaging.utils import canonicalize_name
 
 from pypi2nix.package_source import GitSource
 from pypi2nix.package_source import HgSource
+from pypi2nix.package_source import PathSource
 from pypi2nix.package_source import UrlSource
 
 
@@ -91,8 +92,13 @@ class Requirement:
                 self.handle_git_source(self.url)
             elif self.url.startswith("hg+"):
                 self.handle_hg_source(self.url[3:])
-            else:
+            elif self.url.startswith("http://"):
                 self._source = UrlSource(url=self.url)
+            elif self.url.startswith("https://"):
+                self._source = UrlSource(url=self.url)
+            else:
+                self._source = PathSource(path=self.url)
+
         return self._source
 
     def handle_hg_source(self, url):
@@ -208,13 +214,24 @@ class RequirementParser:
                          -> (n, e or [], v or [], m))
         url_req       = (name:n wsp* extras?:e wsp* urlspec:v (wsp+ | end) quoted_marker?:m
                          -> (n, e or [], v or [], m))
-        url_req_pip_style = (('-e' wsp+)? (('hg+' | 'git+')?:p <URI_reference_pip_style>:s -> (p or "") + s):v
-                            '#egg=' name:n -> (n, [], v or [], None))
+        url_req_pip_style = ('-e' wsp+)?
+                            ( ( <file_path>:v egg_name:n
+                              | < ('hg+' | 'git+')?
+                                  <URI_reference_pip_style>
+                                >:v
+                                egg_name:n
+                              )
+                            )
+                            -> (n, [], v or [], None)
+        egg_name = '#egg=' name:n -> n
         specification = wsp* ( url_req_pip_style | url_req | name_req ):s wsp* -> s
         # The result is a tuple - name, list-of-extras,
         # list-of-version-constraints-or-a-url, marker-ast or None
 
 
+        file_path     = <('./' | '/')? file_path_segment ('/' file_path_segment)* '/'?>
+        file_path_segment = file_path_segment_character+
+        file_path_segment_character = ~('#'|'/') anything
         URI_reference = <URI | relative_ref>
         URI_reference_pip_style = <URI_pip_style | relative_ref>
         URI           = scheme ':' hier_part ('?' query )? ( '#' fragment)?

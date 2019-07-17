@@ -1,6 +1,8 @@
 import os.path
 import tempfile
 
+from setuptools._vendor.packaging.utils import canonicalize_name
+
 from pypi2nix.requirements import ParsingFailed
 from pypi2nix.requirements import Requirement
 from pypi2nix.requirements_file import RequirementsFile
@@ -25,18 +27,15 @@ class RequirementSet:
         else:
             self.requirements[requirement.name] = requirement
 
-    def __len__(self):
-        return len(self.requirements)
-
     def to_file(self, project_dir, target_platform):
         with tempfile.TemporaryDirectory() as directory:
             requirements_txt = os.path.join(directory, "requirements.txt")
             constraints_txt = os.path.join(directory, "constraints.txt")
             with open(requirements_txt, "w") as f:
-                print(self.requirements_file_content(target_platform), file=f)
+                print(self._requirements_file_content(target_platform), file=f)
                 print("-c " + constraints_txt, file=f)
             with open(constraints_txt, "w") as f:
-                print(self.constraints_file_content(target_platform), file=f)
+                print(self._constraints_file_content(target_platform), file=f)
             requirements_file = RequirementsFile(requirements_txt, project_dir)
             requirements_file.process()
         return requirements_file
@@ -67,33 +66,13 @@ class RequirementSet:
             try:
                 requirement = Requirement.from_line(line)
             except ParsingFailed:
-                detected_requirements = constructor.handle_non_requirement_line(
+                detected_requirements = constructor._handle_non_requirement_line(
                     line, target_platform
                 )
                 requirements_set += detected_requirements
             else:
                 requirements_set.add(requirement)
         return requirements_set
-
-    @classmethod
-    def handle_non_requirement_line(constructor, line, target_platform):
-        line = line.strip()
-        if line.startswith("-c "):
-            include_path = line[2:].strip()
-            with tempfile.TemporaryDirectory() as project_directory:
-                requirements_file = RequirementsFile(include_path, project_directory)
-                requirements_file.process()
-                return constructor.from_file(
-                    requirements_file, target_platform
-                ).to_constraints_only()
-        elif line.startswith("-r "):
-            include_path = line[2:].strip()
-            with tempfile.TemporaryDirectory() as project_directory:
-                requirements_file = RequirementsFile(include_path, project_directory)
-                requirements_file.process()
-                return constructor.from_file(requirements_file, target_platform)
-        else:
-            return constructor(target_platform)
 
     def sources(self):
         sources = Sources()
@@ -104,25 +83,14 @@ class RequirementSet:
                 sources.add(requirement.name, requirement.source)
         return sources
 
-    def requirements_file_content(self, target_platform):
-        return self.requirements_to_file_content(
-            self.requirements.values(), target_platform
-        )
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
 
-    def constraints_file_content(self, target_platform):
-        return self.requirements_to_file_content(
-            self.constraints.values(), target_platform
-        )
-
-    @classmethod
-    def requirements_to_file_content(_, requirements, target_platform):
-        return "\n".join(
-            [
-                requirement.to_line()
-                for requirement in requirements
-                if requirement.applies_to_target(target_platform)
-            ]
-        )
+    def __len__(self):
+        return len(self.requirements)
 
     def __add__(self, other):
         requirement_set = RequirementSet(self.target_platform)
@@ -144,3 +112,46 @@ class RequirementSet:
 
     def __iter__(self):
         yield from self.requirements.values()
+
+    def __getitem__(self, key):
+        return self.requirements[canonicalize_name(key)]
+
+    def _requirements_file_content(self, target_platform):
+        return self._requirements_to_file_content(
+            self.requirements.values(), target_platform
+        )
+
+    def _constraints_file_content(self, target_platform):
+        return self._requirements_to_file_content(
+            self.constraints.values(), target_platform
+        )
+
+    @classmethod
+    def _requirements_to_file_content(_, requirements, target_platform):
+        return "\n".join(
+            [
+                requirement.to_line()
+                for requirement in requirements
+                if requirement.applies_to_target(target_platform)
+            ]
+        )
+
+    @classmethod
+    def _handle_non_requirement_line(constructor, line, target_platform):
+        line = line.strip()
+        if line.startswith("-c "):
+            include_path = line[2:].strip()
+            with tempfile.TemporaryDirectory() as project_directory:
+                requirements_file = RequirementsFile(include_path, project_directory)
+                requirements_file.process()
+                return constructor.from_file(
+                    requirements_file, target_platform
+                ).to_constraints_only()
+        elif line.startswith("-r "):
+            include_path = line[2:].strip()
+            with tempfile.TemporaryDirectory() as project_directory:
+                requirements_file = RequirementsFile(include_path, project_directory)
+                requirements_file.process()
+                return constructor.from_file(requirements_file, target_platform)
+        else:
+            return constructor(target_platform)

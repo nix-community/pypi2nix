@@ -1,7 +1,14 @@
+import pytest
+
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
 from pypi2nix.requirements_file import RequirementsFile
 from pypi2nix.sources import Sources
+
+
+@pytest.fixture
+def requirement_set(current_platform):
+    return RequirementSet(current_platform)
 
 
 def test_length_of_empty_requirement_set_is_0(current_platform):
@@ -149,3 +156,30 @@ def test_include_lines_are_respected_when_generating_from_file(
     requirement_set = RequirementSet.from_file(requirements_file, current_platform)
 
     assert "test-requirement" in requirement_set
+
+
+def test_that_we_can_query_for_added_requirements(requirement_set):
+    requirement = Requirement.from_line("pytest")
+    requirement_set.add(requirement)
+    assert requirement_set[requirement.name] == requirement
+
+
+def test_that_querying_for_non_existing_requirement_raises_key_error(requirement_set):
+    with pytest.raises(KeyError):
+        requirement_set["non-existing"]
+
+
+def test_that_queries_into_set_are_canonicalized(requirement_set):
+    requirement = Requirement.from_line("pytest")
+    requirement_set.add(requirement)
+    assert requirement_set["PyTest"] == requirement
+
+
+def test_that_get_method_returns_none_if_key_not_found(requirement_set):
+    assert requirement_set.get("not-found") is None
+
+
+def test_that_get_method_returns_specified_default_value_when_not_found(
+    requirement_set
+):
+    assert requirement_set.get("not-found", 0) == 0

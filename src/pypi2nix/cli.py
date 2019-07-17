@@ -228,15 +228,6 @@ def main(
 
     if editable:
         for item in editable:
-            item_path = item.split("[")[0].split("#")[0]
-            if item_path.startswith("."):
-                item_path = os.path.abspath(
-                    os.path.join(current_dir, item_path)
-                )  # noqa
-            if os.path.isdir(item_path):
-                build_input = "-e %s\n" % item
-            else:
-                build_input = "%s\n" % item
             requirement_collector.add_line(build_input)
     for requirement_file_path in requirements:
         requirement_collector.add_file(requirement_file_path)
