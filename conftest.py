@@ -115,11 +115,11 @@ def source_distribution_archive(pip, requirement, download_dir, current_platform
     requirement_set.add(requirement)
     pip.download_sources(requirement_set, download_dir)
     for file_name in os.listdir(download_dir):
-        if file_name.startswith(requirement.name):
+        if file_name.startswith(requirement.name()):
             return Archive(path=os.path.join(download_dir, file_name))
     else:
         raise Exception(
-            "Could not download source distribution for `{}`".format(requirement.name)
+            "Could not download source distribution for `{}`".format(requirement.name())
         )
 
 

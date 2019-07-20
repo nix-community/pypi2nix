@@ -17,14 +17,14 @@ def test_length_of_empty_requirement_set_is_0(current_platform):
 
 def test_length_is_one_after_adding_one_requirement(current_platform):
     requirement_set = RequirementSet(current_platform)
-    requirement_set.add(Requirement("pypi2nix"))
+    requirement_set.add(Requirement.from_line("pypi2nix"))
     assert len(requirement_set) == 1
 
 
 def test_length_is_one_after_adding_same_requirement_twice(current_platform):
     requirement_set = RequirementSet(current_platform)
-    requirement_set.add(Requirement("pypi2nix"))
-    requirement_set.add(Requirement("pypi2nix"))
+    requirement_set.add(Requirement.from_line("pypi2nix"))
+    requirement_set.add(Requirement.from_line("pypi2nix"))
     assert len(requirement_set) == 1
 
 
@@ -47,7 +47,7 @@ def test_versions_add_if_same_requirement_is_added_twice(current_platform):
     requirement_set.add(Requirement.from_line("pypi2nix <= 2.0"))
     requirement_set.add(Requirement.from_line("pypi2nix >= 1.9"))
     requirement = requirement_set.requirements["pypi2nix"]
-    assert len(requirement.version) == 2
+    assert len(requirement.version()) == 2
 
 
 def test_from_file_handles_empty_lines(project_dir, current_platform):
@@ -161,7 +161,7 @@ def test_include_lines_are_respected_when_generating_from_file(
 def test_that_we_can_query_for_added_requirements(requirement_set):
     requirement = Requirement.from_line("pytest")
     requirement_set.add(requirement)
-    assert requirement_set[requirement.name] == requirement
+    assert requirement_set[requirement.name()] == requirement
 
 
 def test_that_querying_for_non_existing_requirement_raises_key_error(requirement_set):

@@ -1,8 +1,13 @@
 import os
 import platform
 import sys
+from abc import ABCMeta
+from abc import abstractmethod
 
 import parsley
+from attr import attrib
+from attr import attrs
+from attr import evolve
 from setuptools._vendor.packaging.utils import canonicalize_name
 
 from pypi2nix.package_source import GitSource
@@ -19,103 +24,26 @@ class IncompatibleRequirements(Exception):
     pass
 
 
-class Requirement:
-    def __init__(self, name, extras=[], version=[], environment_markers=None, url=None):
-        if bool(version) and bool(url):
-            raise ParsingFailed(
-                "Cannot construct requirement `{name}` with version and url specifier set at the same time".format(
-                    name=name
-                )
-            )
-        self.name = canonicalize_name(name)
-        self.extras = extras
-        self.version = version
-        self.environment_markers = environment_markers
-        self.url = url
-        self._source = None
+class Requirement(metaclass=ABCMeta):
+    @abstractmethod
+    def name(self):
+        pass
 
+    @abstractmethod
+    def extras(self):
+        pass
+
+    @abstractmethod
     def add(self, other, target_platform):
-        if not self.applies_to_target(target_platform):
-            return other
-        if not other.applies_to_target(target_platform):
-            return self
-        if self.name != other.name:
-            raise IncompatibleRequirements(
-                "Cannot add requirements with different names, given `{}` and `{}`".format(
-                    self.name, other.name
-                )
-            )
-        if self.url and other.url:
-            if self.url == other.url:
-                url = self.url
-                version = []
-            else:
-                raise IncompatibleRequirements(
-                    "Cannot add requirements with different URLs, given `{}` and `{}`".format(
-                        self.url, other.url
-                    )
-                )
-        elif self.url or other.url:
-            version = []
-            url = self.url or other.url
-        else:
-            version = self.version + other.version
-            url = None
-        environment_marker = None
-        return Requirement(
-            name=self.name,
-            extras=self.extras + other.extras,
-            version=version,
-            environment_markers=environment_marker,
-            url=url,
-        )
+        pass
 
-    @classmethod
-    def from_line(constructor, line):
-        name, extras, versions_or_url, markers = requirement_parser.parse(line)
-        if isinstance(versions_or_url, list):
-            versions = versions_or_url
-            url = None
-        else:
-            versions = []
-            url = versions_or_url
-        return constructor(name, extras, versions, markers, url)
-
-    @property
+    @abstractmethod
     def source(self):
-        if self._source is None:
-            if self.url is None:
-                pass
-            elif self.url.startswith("git+"):
-                self.handle_git_source(self.url[4:])
-            elif self.url.startswith("git://"):
-                self.handle_git_source(self.url)
-            elif self.url.startswith("hg+"):
-                self.handle_hg_source(self.url[3:])
-            elif self.url.startswith("http://"):
-                self._source = UrlSource(url=self.url)
-            elif self.url.startswith("https://"):
-                self._source = UrlSource(url=self.url)
-            else:
-                self._source = PathSource(path=self.url)
+        pass
 
-        return self._source
-
-    def handle_hg_source(self, url):
-        try:
-            url, rev = url.split("@")
-        except ValueError:
-            self._source = HgSource(url=url)
-        else:
-            self._source = HgSource(url=url, revision=rev)
-
-    def handle_git_source(self, url):
-        try:
-            url, rev = url.split("@")
-        except ValueError:
-            self._source = GitSource(url=url)
-        else:
-            self._source = GitSource(url=url, revision=rev)
+    @abstractmethod
+    def environment_markers(self):
+        pass
 
     def applies_to_target(self, target_platform):
         mapping = {
@@ -144,27 +72,217 @@ class Requirement:
                 return evaluate_marker(left) != evaluate_marker(right)
             raise Exception("Unknown operation: {}".format(operation))
 
+        environment_markers = self.environment_markers()
         return (
             True
-            if self.environment_markers is None
-            else evaluate_marker(self.environment_markers)
+            if environment_markers is None
+            else evaluate_marker(environment_markers)
         )
 
+    @classmethod
+    def from_line(constructor, line):
+        return requirement_parser.parse(line)
+
+    @abstractmethod
     def to_line(self):
-        if self.url:
-            line = self.url + "#egg=" + self.name
-        elif self.version:
-            line = self.name
-            versions_line = ",".join(
-                [
-                    " {operator} {version}".format(operator=operator, version=version)
-                    for operator, version in self.version
-                ]
+        pass
+
+
+@attrs
+class UrlRequirement(Requirement):
+    _name = attrib()
+    _url = attrib()
+    _extras = attrib()
+    _environment_markers = attrib()
+
+    def name(self):
+        return canonicalize_name(self._name)
+
+    def extras(self):
+        return self._extras
+
+    def add(self, other, target_platform):
+        if not self.applies_to_target(target_platform):
+            return other
+        elif not other.applies_to_target(target_platform):
+            return self
+        elif self.name() != other.name():
+            raise IncompatibleRequirements(
+                "Cannot add requirments with different names `{name1}` and `{name2}`".format(
+                    name1=self.name(), name2=other.name()
+                )
             )
-            line += versions_line
         else:
-            line = self.name
-        return line
+            if isinstance(other, VersionRequirement):
+                return self
+            elif isinstance(other, PathRequirement):
+                raise IncompatibleRequirements(
+                    "Cannot combine requirements with with url `{url}` and path `{path}`".format(
+                        url=self.url, path=other.path
+                    )
+                )
+            elif self.url != other.url:
+                raise IncompatibleRequirements(
+                    "Cannot combine requirements with different urls `{url1}` and `{url2}`".format(
+                        url1=self.url, url2=other.url
+                    )
+                )
+            else:
+                return self
+
+    def source(self):
+        if self._url.startswith("git+"):
+            return self._handle_git_source(self._url[4:])
+        elif self._url.startswith("git://"):
+            return self._handle_git_source(self._url)
+        elif self._url.startswith("hg+"):
+            return self._handle_hg_source(self._url[3:])
+        elif self._url.startswith("http://"):
+            return UrlSource(url=self._url)
+        elif self._url.startswith("https://"):
+            return UrlSource(url=self._url)
+        else:
+            return PathSource(path=self._url)
+
+    def environment_markers(self):
+        return self._environment_markers
+
+    def _handle_hg_source(self, url):
+        try:
+            url, rev = url.split("@")
+        except ValueError:
+            return HgSource(url=url)
+        else:
+            return HgSource(url=url, revision=rev)
+
+    def _handle_git_source(self, url):
+        try:
+            url, rev = url.split("@")
+        except ValueError:
+            return GitSource(url=url)
+        else:
+            return GitSource(url=url, revision=rev)
+
+    def to_line(self):
+        return "{url}#egg={name}".format(url=self._url, name=self.name())
+
+    def url(self):
+        return self._url
+
+
+@attrs
+class PathRequirement(Requirement):
+    _name = attrib()
+    _path = attrib()
+    _extras = attrib()
+    _environment_markers = attrib()
+
+    def name(self):
+        return canonicalize_name(self._name)
+
+    def extras(self):
+        return self._extras
+
+    def add(self, other, target_platform):
+        if not self.applies_to_target(target_platform):
+            return other
+        elif not other.applies_to_target(target_platform):
+            return self
+        elif self.name() != other.name():
+            raise IncompatibleRequirements(
+                "Cannot add requirements with different names `{name1}` and `{name2}`".format(
+                    name1=self.name(), name2=other.name()
+                )
+            )
+        else:
+            if isinstance(other, VersionRequirement):
+                return self
+            elif isinstance(other, UrlRequirement):
+                raise IncompatibleRequirements(
+                    "Cannot combine requirements with path `{path} and url `{url}`".format(
+                        path=self.path, url=other.url
+                    )
+                )
+            else:
+                if self.path != other.path:
+                    raise IncompatibleRequirements(
+                        "Cannot combine requirements with different paths `{path1}` and `{path2}`".format(
+                            path1=self.path, path2=other.path
+                        )
+                    )
+                else:
+                    return self
+
+    def source(self):
+        return PathSource(path=self._path)
+
+    def environment_markers(self):
+        return self._environment_markers
+
+    def to_line(self):
+        return "{path}#egg={name}".format(path=self._path, name=self.name)
+
+    def path(self):
+        return self._path
+
+    def change_path(self, mapping):
+        return evolve(self, path=mapping(self._path))
+
+
+@attrs
+class VersionRequirement(Requirement):
+    _name = attrib()
+    _versions = attrib()
+    _extras = attrib()
+    _environment_markers = attrib()
+
+    def name(self):
+        return canonicalize_name(self._name)
+
+    def extras(self):
+        return self._extras
+
+    def add(self, other, target_platform):
+        if not self.applies_to_target(target_platform):
+            return other
+        elif not other.applies_to_target(target_platform):
+            return self
+        elif self.name() != other.name():
+            raise IncompatibleRequirements(
+                "Cannot add requirments with different names `{name1}` and `{name2}`".format(
+                    name1=self.name(), name2=other.name()
+                )
+            )
+        else:
+            if isinstance(other, PathRequirement):
+                return other
+            elif isinstance(other, UrlRequirement):
+                return other
+            else:
+                return VersionRequirement(
+                    name=self.name(),
+                    extras=self._extras.union(other._extras),
+                    versions=self.version() + other.version(),
+                    environment_markers=None,
+                )
+
+    def source(self):
+        return None
+
+    def environment_markers(self):
+        return self._environment_markers
+
+    def version(self):
+        return self._versions
+
+    def to_line(self):
+        version = ", ".join(
+            [
+                "{operator} {specifier}".format(operator=operator, specifier=specifier)
+                for operator, specifier in self._versions
+            ]
+        )
+        return "{name} {version}".format(name=self._name, version=version)
 
 
 class RequirementParser:
@@ -210,24 +328,18 @@ class RequirementParser:
         name          = identifier
         extras_list   = identifier:i (wsp* ',' wsp* identifier)*:ids -> [i] + ids
         extras        = '[' wsp* extras_list?:e wsp* ']' -> e
-        name_req      = (name:n wsp* extras?:e wsp* versionspec?:v wsp* quoted_marker?:m
-                         -> (n, e or [], v or [], m))
-        url_req       = (name:n wsp* extras?:e wsp* urlspec:v (wsp+ | end) quoted_marker?:m
-                         -> (n, e or [], v or [], m))
-        url_req_pip_style = ('-e' wsp+)?
-                            ( ( <file_path>:v egg_name:n
-                              | < ('hg+' | 'git+')?
-                                  <URI_reference_pip_style>
-                                >:v
-                                egg_name:n
-                              )
-                            )
-                            -> (n, [], v or [], None)
+        editable = '-e'
         egg_name = '#egg=' name:n -> n
-        specification = wsp* ( url_req_pip_style | url_req | name_req ):s wsp* -> s
-        # The result is a tuple - name, list-of-extras,
-        # list-of-version-constraints-or-a-url, marker-ast or None
 
+        name_req      = (name:n wsp* extras?:e wsp* versionspec?:v wsp* quoted_marker?:m
+                         -> VersionRequirement(name=n, extras=set(e or []), versions=v or [], environment_markers=m))
+        url_req       = name:n wsp* extras?:e wsp* urlspec:v (wsp+ | end) quoted_marker?:m
+                        -> UrlRequirement(name=n, extras=set(e or []), url=v or [], environment_markers=m)
+        path_req_pip_style = (editable wsp+)? <file_path>:path egg_name:name extras?:e (wsp* | end) quoted_marker?:marker
+                             -> PathRequirement(name=name, path=path, environment_markers=marker, extras=set(e or []))
+        url_req_pip_style = (editable wsp+)? <('hg+' | 'git+')? URI_reference_pip_style>:url egg_name:name extras?:e (wsp* | end) quoted_marker?:marker
+                            -> UrlRequirement(name=name, url=url, extras=set(e or []), environment_markers=marker)
+        specification = wsp* ( path_req_pip_style | url_req_pip_style | url_req | name_req ):s wsp* -> s
 
         file_path     = <('./' | '/')? file_path_segment ('/' file_path_segment)* '/'?>
         file_path_segment = file_path_segment_character+
@@ -329,7 +441,13 @@ class RequirementParser:
     def compiled_grammar(self):
         if self._compiled_grammar is None:
             self._compiled_grammar = parsley.makeGrammar(
-                self.requirement_grammar, {"lookup": self.environment_bindings().get}
+                self.requirement_grammar,
+                {
+                    "lookup": self.environment_bindings().get,
+                    "VersionRequirement": VersionRequirement,
+                    "UrlRequirement": UrlRequirement,
+                    "PathRequirement": PathRequirement,
+                },
             )
         return self._compiled_grammar
 

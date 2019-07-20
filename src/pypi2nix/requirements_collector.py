@@ -6,6 +6,7 @@ import os.path
 import tempfile
 
 from pypi2nix.requirement_set import RequirementSet
+from pypi2nix.requirements import PathRequirement
 from pypi2nix.requirements import Requirement
 from pypi2nix.requirements_file import RequirementsFile
 
@@ -20,8 +21,8 @@ class RequirementsCollector:
 
     def add_line(self, line):
         requirement = Requirement.from_line(line)
-        if requirement.url:
-            requirement.url = os.path.abspath(requirement.url)
+        if isinstance(requirement, PathRequirement):
+            requirement = requirement.change_path(os.path.abspath)
         self.requirement_set.add(requirement)
 
     def add_file(self, file_path):

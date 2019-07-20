@@ -36,8 +36,8 @@ def test_that_path_with_hashpound_is_not_recognized(path):
 
 
 def test_that_we_can_parse_pip_style_requirement_with_file_path():
-    name, extras, path, marker = requirement_parser.compiled_grammar()(
+    requirement = requirement_parser.compiled_grammar()(
         "path/to/egg#egg=testegg"
-    ).url_req_pip_style()
-    assert name == "testegg"
-    assert path == "path/to/egg"
+    ).path_req_pip_style()
+    assert requirement.name() == "testegg"
+    assert requirement.path() == "path/to/egg"

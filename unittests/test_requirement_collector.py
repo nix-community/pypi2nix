@@ -40,4 +40,4 @@ def test_that_requirements_with_relative_paths_are_absolute_paths_after_adding(
 ):
     collector.add_line("./path/to/egg#egg=testegg")
     requirement = collector.requirements().get("testegg")
-    assert os.path.isabs(requirement.url)
+    assert os.path.isabs(requirement.path())

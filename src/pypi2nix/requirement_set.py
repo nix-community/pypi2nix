@@ -16,16 +16,16 @@ class RequirementSet:
         self.target_platform = target_platform
 
     def add(self, requirement):
-        if requirement.name in self.requirements:
-            self.requirements[requirement.name] = self.requirements[
-                requirement.name
+        if requirement.name() in self.requirements:
+            self.requirements[requirement.name()] = self.requirements[
+                requirement.name()
             ].add(requirement, self.target_platform)
-        elif requirement.name in self.constraints:
-            self.requirements[requirement.name] = self.constraints[requirement.name]
-            del self.constraints[requirement.name]
+        elif requirement.name() in self.constraints:
+            self.requirements[requirement.name()] = self.constraints[requirement.name()]
+            del self.constraints[requirement.name()]
             self.add(requirement)
         else:
-            self.requirements[requirement.name] = requirement
+            self.requirements[requirement.name()] = requirement
 
     def to_file(self, project_dir, target_platform):
         with tempfile.TemporaryDirectory() as directory:
@@ -41,14 +41,14 @@ class RequirementSet:
         return requirements_file
 
     def add_constraint(self, requirement):
-        if requirement.name in self.requirements:
+        if requirement.name() in self.requirements:
             self.add(requirement)
-        elif requirement.name in self.constraints:
-            self.constraints[requirement.name] = self.constraints[requirement.name].add(
-                requirement, self.target_platform
-            )
+        elif requirement.name() in self.constraints:
+            self.constraints[requirement.name()] = self.constraints[
+                requirement.name()
+            ].add(requirement, self.target_platform)
         else:
-            self.constraints[requirement.name] = requirement
+            self.constraints[requirement.name()] = requirement
 
     def to_constraints_only(self):
         new_requirement_set = RequirementSet(self.target_platform)
@@ -77,10 +77,10 @@ class RequirementSet:
     def sources(self):
         sources = Sources()
         for requirement in self.requirements.values():
-            if requirement.source is None:
+            if requirement.source() is None:
                 continue
             else:
-                sources.add(requirement.name, requirement.source)
+                sources.add(requirement.name(), requirement.source())
         return sources
 
     def get(self, key, default=None):
