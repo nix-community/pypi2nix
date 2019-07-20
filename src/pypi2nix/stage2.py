@@ -68,7 +68,7 @@ class Stage2:
                 if wheel_metadata.name in additional_dependencies:
                     wheel_metadata.add_build_dependencies(
                         map(
-                            lambda dependency: dependency.name,
+                            lambda dependency: dependency.name(),
                             additional_dependencies[wheel_metadata.name],
                         )
                     )

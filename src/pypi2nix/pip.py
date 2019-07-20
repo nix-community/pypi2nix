@@ -3,11 +3,18 @@ import os.path
 import shlex
 import shutil
 import sys
-import urllib
+import urllib.parse
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
 
 import click
 
 from pypi2nix.nix import EvaluationFailed
+from pypi2nix.nix import Nix
+from pypi2nix.requirement_set import RequirementSet
+from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.utils import escape_double_quotes
 
 HERE = os.path.dirname(__file__)
@@ -20,13 +27,13 @@ BASE_NIX = os.path.join(HERE, "pip", "base.nix")
 class Pip:
     def __init__(
         self,
-        nix,
-        project_directory,
-        extra_build_inputs,
-        extra_env,
+        nix: Nix,
+        project_directory: str,
+        extra_build_inputs: List[str],
+        extra_env: str,
         verbose: int,
-        wheels_cache,
-        target_platform,
+        wheels_cache: List[str],
+        target_platform: TargetPlatform,
     ):
         self.nix = nix
         self.project_directory = project_directory
@@ -49,7 +56,9 @@ class Pip:
             self.project_directory, "cache", "download"
         )
 
-    def download_sources(self, requirements, target_directory):
+    def download_sources(
+        self, requirements: RequirementSet, target_directory: str
+    ) -> None:
         if not requirements:
             return
         requirements_files = [
@@ -68,7 +77,12 @@ class Pip:
             ),
         )
 
-    def build_wheels(self, requirements, target_directory, source_directories):
+    def build_wheels(
+        self,
+        requirements: RequirementSet,
+        target_directory: str,
+        source_directories: List[str],
+    ) -> None:
         if not requirements:
             return
         requirements_files = [
@@ -90,7 +104,12 @@ class Pip:
             ),
         )
 
-    def install(self, requirements, source_directories, target_directory=None):
+    def install(
+        self,
+        requirements: RequirementSet,
+        source_directories: List[str],
+        target_directory: Optional[str] = None,
+    ) -> None:
         if not requirements:
             return
         if target_directory is None:
@@ -111,10 +130,10 @@ class Pip:
             ),
         )
 
-    def freeze(self, python_path=[]):
+    def freeze(self, python_path: List[str] = []) -> str:
         additional_paths = ":".join(map(shlex.quote, python_path))
 
-        output = self.nix.shell(
+        output: str = self.nix.shell(
             "{PYTHONPATH} pip freeze".format(
                 PYTHONPATH="PYTHONPATH=" + additional_paths + ':"$PYTHONPATH"'
                 if python_path
@@ -125,7 +144,7 @@ class Pip:
         )
         return "\n".join(map(lambda x: x.strip(), output.splitlines()))
 
-    def default_environment(self):
+    def default_environment(self) -> Any:
         output = self.nix.shell(
             'python -c "import json; from setuptools._vendor.packaging.markers import default_environment; print(json.dumps(default_environment(), indent=2, sort_keys=True))"',
             BASE_NIX,
@@ -133,13 +152,13 @@ class Pip:
         )
         return json.loads(output)
 
-    def editable_sources_directory(self):
+    def editable_sources_directory(self) -> str:
         return os.path.join(self.project_directory, "editable_sources")
 
-    def build_directory(self):
+    def build_directory(self) -> str:
         return os.path.join(self.project_directory, "build")
 
-    def nix_arguments(self, **arguments):
+    def nix_arguments(self, **arguments) -> Dict[str, Any]:  # type: ignore
         return dict(
             dict(
                 download_cache_dir=self.download_cache_directory,
@@ -151,7 +170,9 @@ class Pip:
             **arguments,
         )
 
-    def build_from_nix_file(self, file_path, command, nix_arguments):
+    def build_from_nix_file(
+        self, file_path: str, command: str, nix_arguments: Any
+    ) -> None:
         self.create_download_cache_if_missing()
         self.create_wheel_cache_dir_if_missing()
         self.delete_build_directory()
@@ -166,25 +187,25 @@ class Pip:
             is_failure = False
         self.handle_build_error(is_failure=is_failure)
 
-    def create_download_cache_if_missing(self):
+    def create_download_cache_if_missing(self) -> None:
         if os.path.exists(self.download_cache_directory):
             pass
         else:
             os.makedirs(self.download_cache_directory)
 
-    def create_wheel_cache_dir_if_missing(self):
+    def create_wheel_cache_dir_if_missing(self) -> None:
         if os.path.exists(self.wheel_cache_dir):
             pass
         else:
             os.makedirs(self.wheel_cache_dir)
 
-    def delete_build_directory(self):
+    def delete_build_directory(self) -> None:
         try:
             shutil.rmtree(self.build_directory())
         except FileNotFoundError:
             pass
 
-    def handle_build_error(self, is_failure):
+    def handle_build_error(self, is_failure: bool) -> None:
         if not is_failure:
             if not self.build_output.endswith(
                 "ERROR: Failed to build one or more wheels"
@@ -217,7 +238,7 @@ class Pip:
 
         raise click.ClickException(message)
 
-    def send_crash_report(self):
+    def send_crash_report(self) -> None:
         if click.confirm(
             "Do you want to report above issue (a browser "
             "will open with prefilled details of issue)?"

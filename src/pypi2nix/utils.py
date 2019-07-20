@@ -3,10 +3,17 @@ import json
 import os
 import shlex
 import subprocess
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
 import click
 import requests
 from nix_prefetch_github import nix_prefetch_github
+
+NixOption = Union[str, List[str], bool]
 
 HERE = os.path.dirname(__file__)
 
@@ -26,7 +33,7 @@ PYTHON_VERSIONS = {
 }
 
 
-def pretty_option(option):
+def pretty_option(option: Optional[str]) -> str:
     if option is None:
         return ""
     else:
@@ -35,11 +42,15 @@ def pretty_option(option):
         )
 
 
-def safe(string):
+def safe(string: str) -> str:
     return string.replace('"', '\\"')
 
 
-def cmd(command, verbose=False, stderr=subprocess.STDOUT):
+def cmd(
+    command: Union[str, List[str]],
+    verbose: bool = False,
+    stderr: int = subprocess.STDOUT,
+) -> Tuple[int, str]:
 
     if isinstance(command, str):
         command = shlex.split(command)
@@ -67,7 +78,9 @@ def cmd(command, verbose=False, stderr=subprocess.STDOUT):
     return p.returncode, "\n".join(out)
 
 
-def create_command_options(options, list_form=False):
+def create_command_options(
+    options: Dict[str, NixOption], list_form: bool = False
+) -> Union[str, List[str]]:
     command_options = []
     for name, value in options.items():
         if isinstance(value, str):
@@ -86,11 +99,11 @@ def create_command_options(options, list_form=False):
     return command_options if list_form else " ".join(command_options)
 
 
-def args_as_list(inputs):
+def args_as_list(inputs: List[str]) -> List[str]:
     return list(filter(lambda x: x != "", (" ".join(inputs)).split(" ")))
 
 
-def prefetch_git(url, rev=None):
+def prefetch_git(url: str, rev: Optional[str] = None) -> Dict[str, str]:
     command = ["nix-prefetch-git", url]
 
     if rev is not None:
@@ -124,10 +137,12 @@ def prefetch_git(url, rev=None):
             )
         )
     repo_data = json.loads(completed_proc.stdout)
-    return repo_data
+    return repo_data  # type: ignore
 
 
-def prefetch_hg(url, rev=None, verbose=False):
+def prefetch_hg(
+    url: str, rev: Optional[str] = None, verbose: bool = False
+) -> Dict[str, str]:
     command = ["nix-prefetch-hg", url] + ([rev] if rev else [])
     return_code, output = cmd(command, verbose)
     if return_code != 0:
@@ -163,20 +178,20 @@ def prefetch_hg(url, rev=None, verbose=False):
     return {"sha256": hash_value, "revision": revision}
 
 
-def prefetch_github(owner, repo, rev=None):
-    return nix_prefetch_github(owner, repo, rev=rev)
+def prefetch_github(owner: str, repo: str, rev: Optional[str] = None) -> Dict[str, str]:
+    return nix_prefetch_github(owner, repo, rev=rev)  # type: ignore
 
 
-def escape_double_quotes(text):
+def escape_double_quotes(text: str) -> str:
     return text.replace('"', '\\"')
 
 
-def prefetch_url(url, verbose=False):
+def prefetch_url(url: str, verbose: bool = False) -> str:
     returncode, output = cmd(["nix-prefetch-url", url], verbose=verbose)
     return output.splitlines()[2]
 
 
-def download_file(url, filename, chunk_size=2048):
+def download_file(url: str, filename: str, chunk_size: int = 2048) -> None:
     r = requests.get(url, stream=True, timeout=None)
     r.raise_for_status()  # TODO: handle this nicer
 
@@ -185,7 +200,7 @@ def download_file(url, filename, chunk_size=2048):
             fd.write(chunk)
 
 
-def md5_sum_of_files_with_file_names(paths):
+def md5_sum_of_files_with_file_names(paths: List[str]) -> str:
     hash_sum = hashlib.md5()
     for path in paths:
         hash_sum.update(path.encode())

@@ -220,7 +220,7 @@ class PathRequirement(Requirement):
         return self._environment_markers
 
     def to_line(self):
-        return "{path}#egg={name}".format(path=self._path, name=self.name)
+        return "{path}".format(path=self._path)
 
     def path(self):
         return self._path

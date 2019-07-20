@@ -1,8 +1,8 @@
 attrs
-Click
-Jinja2
+click
+jinja2
 nix-prefetch-github
-Parsley
+parsley
 requests
 setupcfg
 toml

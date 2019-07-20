@@ -94,7 +94,7 @@ from pypi2nix.utils import md5_sum_of_files_with_file_names
     "--editable",
     multiple=True,
     required=False,
-    default=None,
+    default=[],
     type=str,
     help=u"location/url to editable locations",
 )
@@ -194,6 +194,8 @@ def main(
     extra_build_inputs = pypi2nix.utils.args_as_list(extra_build_inputs)
     setup_requires = pypi2nix.utils.args_as_list(setup_requires)
 
+    for item in editable:
+        requirement_collector.add_line(item)
     for build_input in setup_requires:
         setup_requirement_collector.add_line(build_input)
 
@@ -226,9 +228,6 @@ def main(
         shutil.rmtree(project_dir)
     os.makedirs(project_dir)
 
-    if editable:
-        for item in editable:
-            requirement_collector.add_line(build_input)
     for requirement_file_path in requirements:
         requirement_collector.add_file(requirement_file_path)
 

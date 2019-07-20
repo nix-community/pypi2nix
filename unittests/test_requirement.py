@@ -136,6 +136,12 @@ def test_that_from_line_to_line_preserves_urls():
     assert requirement.to_line() == line
 
 
+def test_that_to_line_reproduces_path_correctly():
+    line = "path/to/requirement#egg=test-requirement"
+    requirement = Requirement.from_line(line)
+    assert requirement.to_line() == "path/to/requirement"
+
+
 def test_that_requirements_can_be_added_together_adding_version_constraints(
     current_platform
 ):

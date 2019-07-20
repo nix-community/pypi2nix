@@ -1,4 +1,7 @@
 import re
+from typing import Dict
+from typing import List
+from typing import Optional
 
 from pypi2nix.utils import safe
 
@@ -71,23 +74,37 @@ all_classifiers = {
     "License :: Repoze Public License": None,
 }
 
-LICENSE_PATTERNS = {
-    "licenses.zpl21": map(re.escape, ["LGPL with exceptions or ZPL", "ZPL 2.1"]),
-    "licenses.bsd3": map(re.escape, ["3-Clause BSD License"]),
-    "licenses.mit": map(
-        re.escape,
-        ["MIT", "MIT License", "MIT or Apache License, Version 2.0", "The MIT License"],
+
+def escape_regex(text: str) -> str:
+    return re.escape(text)
+
+
+LICENSE_PATTERNS: Dict[str, List[str]] = {
+    "licenses.zpl21": list(
+        map(escape_regex, ["LGPL with exceptions or ZPL", "ZPL 2.1"])
+    ),
+    "licenses.bsd3": list(map(escape_regex, ["3-Clause BSD License"])),
+    "licenses.mit": list(
+        map(
+            escape_regex,
+            [
+                "MIT",
+                "MIT License",
+                "MIT or Apache License, Version 2.0",
+                "The MIT License",
+            ],
+        )
     ),
     "licenses.bsdOriginal": list(
         map(
-            re.escape,
+            escape_regex,
             ["BSD", "BSD License", "BSD-like", "BSD or Apache License, Version 2.0"],
         )
     )
     + ["BSD -.*"],
     "licenses.asl20": list(
         map(
-            re.escape,
+            escape_regex,
             [
                 "Apache 2.0",
                 "Apache License 2.0",
@@ -98,20 +115,23 @@ LICENSE_PATTERNS = {
         )
     ),
     "licenses.lgpl3": list(
-        map(re.escape, ["GNU Lesser General Public License (LGPL), Version 3", "LGPL"])
+        map(
+            escape_regex,
+            ["GNU Lesser General Public License (LGPL), Version 3", "LGPL"],
+        )
     ),
-    "licenses.lgpl3Plus": list(map(re.escape, ["LGPLv3+"])),
+    "licenses.lgpl3Plus": list(map(escape_regex, ["LGPLv3+"])),
     "licenses.mpl20": list(
         map(
-            re.escape,
+            escape_regex,
             ["MPL2", "MPL 2.0", "MPL 2.0 (Mozilla Public License)", "MPL-2.0"],
         )
     ),
-    "licenses.psfl": list(map(re.escape, ["Python Software Foundation License"])),
+    "licenses.psfl": list(map(escape_regex, ["Python Software Foundation License"])),
 }
 
 
-def recognized_nix_license_from_classifiers(classifiers):
+def recognized_nix_license_from_classifiers(classifiers: List[str],) -> Optional[str]:
     all_classifiers_keys = all_classifiers.keys()
     license_classifiers = [
         i for i in filter(lambda x: x in all_classifiers_keys, classifiers)
@@ -120,23 +140,26 @@ def recognized_nix_license_from_classifiers(classifiers):
         license_nix = all_classifiers[license_classifier]
         if license_nix is not None:
             return license_nix
-            break
+    return None
 
 
-def first_license_classifier_from_list(classifiers):
+def first_license_classifier_from_list(classifiers: List[str]) -> Optional[str]:
     for classifier in classifiers:
         if classifier in all_classifiers:
-            return '"' + safe(classifier) + '"'
+            escaped_classifier: str = safe(classifier)
+            return '"' + escaped_classifier + '"'
+    return None
 
 
-def license_from_string(license_string):
+def license_from_string(license_string: str) -> Optional[str]:
     for nix_license, license_patterns in LICENSE_PATTERNS.items():
         for pattern in license_patterns:
             if re.match("^" + pattern + "$", license_string):
                 return nix_license
+    return None
 
 
-def find_license(classifiers, license_string):
+def find_license(classifiers: List[str], license_string: str) -> Optional[str]:
     return (
         recognized_nix_license_from_classifiers(classifiers)
         or license_from_string(license_string)

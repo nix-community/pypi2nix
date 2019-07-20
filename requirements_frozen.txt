@@ -52,9 +52,9 @@ mccabe==0.6.1
 
 mkdir==2019.4.13
 
-more-itertools==7.1.0
+more-itertools==7.2.0
 
-mypy==0.711
+mypy==0.720
 
 mypy-extensions==0.4.1
 
@@ -103,6 +103,8 @@ testfixtures==6.10.0
 toml==0.10.0
 
 typed-ast==1.4.0
+
+typing-extensions==3.7.4
 
 urllib3==1.25.3
 
