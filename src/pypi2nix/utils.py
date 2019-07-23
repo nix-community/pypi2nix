@@ -64,7 +64,7 @@ def cmd(command, verbose=False, stderr=None):
         raise
     finally:
         p.communicate()
-    return p.returncode, "\n".join(out)
+    return p.returncode, "".join(out)
 
 
 def create_command_options(options, list_form=False):
