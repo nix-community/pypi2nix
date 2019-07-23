@@ -39,7 +39,7 @@ def safe(string):
     return string.replace('"', '\\"')
 
 
-def cmd(command, verbose=False, stderr=subprocess.STDOUT):
+def cmd(command, verbose=False, stderr=None):
 
     if isinstance(command, str):
         command = shlex.split(command)
