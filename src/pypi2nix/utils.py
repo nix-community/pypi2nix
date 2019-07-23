@@ -129,15 +129,15 @@ def prefetch_git(url, rev=None):
 
 def prefetch_hg(url, rev=None, verbose=False):
     command = ["nix-prefetch-hg", url] + ([rev] if rev else [])
-    return_code, output = cmd(command, verbose)
+    return_code, output = cmd(command, verbose, stderr=subprocess.STDOUT)
     if return_code != 0:
         raise click.ClickException(
             " ".join(
                 [
                     "Could not fetch hg repository at {url}, returncode was {code}."
-                    "stdout:\n {stdout}"
+                    "output:\n {output}"
                 ]
-            ).format(url=url, code=return_code, stdout=output)
+            ).format(url=url, code=return_code, output=output)
         )
     HASH_PREFIX = "hash is "
     REV_PREFIX = "hg revision is "
