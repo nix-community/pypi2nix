@@ -3,6 +3,7 @@ import shutil
 import tempfile
 
 import click
+from click.types import StringParamType
 
 import pypi2nix.overrides
 import pypi2nix.stage1
@@ -18,6 +19,10 @@ from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.utils import md5_sum_of_files_with_file_names
 
 
+class NixPathParamType(StringParamType):
+    envvar_list_splitter = ":"
+
+
 @click.command("pypi2nix")
 @click.option("--version", is_flag=True, help=u"Show version of pypi2nix")
 @click.option("-v", "--verbose", count=True)
@@ -27,6 +32,7 @@ from pypi2nix.utils import md5_sum_of_files_with_file_names
     envvar="NIX_PATH",
     multiple=True,
     default=None,
+    type=NixPathParamType(),
     help=u"Add a path to the Nix expression search path. This "
     u"option may be given multiple times. See the NIX_PATH "
     u"environment variable for information on the semantics "
