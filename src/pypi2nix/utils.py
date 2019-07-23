@@ -172,8 +172,10 @@ def escape_double_quotes(text):
 
 
 def prefetch_url(url, verbose=False):
-    returncode, output = cmd(["nix-prefetch-url", url], verbose=verbose)
-    return output.splitlines()[2]
+    returncode, output = cmd(
+        ["nix-prefetch-url", url], verbose=verbose, stderr=subprocess.DEVNULL
+    )
+    return output.rstrip()
 
 
 def download_file(url, filename, chunk_size=2048):
