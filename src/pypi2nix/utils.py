@@ -72,7 +72,7 @@ def cmd(
         raise
     finally:
         p.communicate()
-    return p.returncode, "\n".join(out)
+    return p.returncode, "".join(out)
 
 
 def create_command_options(options: Dict[str, NixOption],) -> List[str]:
