@@ -1,6 +1,8 @@
 import os
 import shutil
 import tempfile
+from typing import List
+from typing import Optional
 
 import click
 
@@ -10,6 +12,7 @@ import pypi2nix.stage2
 import pypi2nix.stage3
 import pypi2nix.utils
 from pypi2nix.nix import Nix
+from pypi2nix.overrides import AnyOverrides
 from pypi2nix.pip import Pip
 from pypi2nix.requirements_collector import RequirementsCollector
 from pypi2nix.sources import Sources
@@ -132,29 +135,31 @@ from pypi2nix.utils import md5_sum_of_files_with_file_names
     help=u"An url where trusted wheels are located. eg. https://travis.garbas.si/wheels-cache",  # noqa
 )
 def main(
-    version,
-    verbose,
-    nix_shell,
-    nix_path,
-    basename,
-    cache_dir,
-    extra_build_inputs,
-    extra_env,
-    enable_tests,
-    python_version,
-    requirements,
-    editable,
-    setup_requires,
-    overrides,
-    default_overrides,
-    wheels_cache,
-):
+    version: str,
+    verbose: int,
+    nix_shell: str,
+    nix_path: List[str],
+    basename: str,
+    cache_dir: str,
+    extra_build_inputs: List[str],
+    extra_env: str,
+    enable_tests: bool,
+    python_version: str,
+    requirements: List[str],
+    editable: List[str],
+    setup_requires: List[str],
+    overrides: List[AnyOverrides],
+    default_overrides: bool,
+    wheels_cache: List[str],
+) -> None:
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
-    if os.path.exists(nix_shell):
-        nix_executable_directory = os.path.abspath(os.path.dirname(nix_shell))
-    else:
-        nix_executable_directory = None
+    nix_executable_directory: Optional[str] = (
+        os.path.abspath(os.path.dirname(nix_shell))
+        if os.path.exists(nix_shell)
+        else None
+    )
+
     nix = Nix(
         nix_path=nix_path,
         executable_directory=nix_executable_directory,

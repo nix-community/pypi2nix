@@ -1,4 +1,8 @@
 import subprocess
+from typing import Dict
+from typing import Optional
+from typing import Union
+from typing import no_type_check
 from urllib.parse import urldefrag
 from urllib.parse import urlparse
 
@@ -13,18 +17,21 @@ class UnsupportedUrlError(Exception):
     pass
 
 
+AnyOverrides = Union["OverridesFile", "OverridesUrl", "OverridesGit", "OverridesGithub"]
+
+
 class OverridesFile(object):
-    def __init__(self, path):
+    def __init__(self, path: str) -> None:
         self.path = path
 
     expression_template = "import %(path)s { inherit pkgs python ; }"
 
-    def nix_expression(self):
+    def nix_expression(self) -> str:
         return self.expression_template % dict(path=self.path)
 
 
 class OverridesUrl(object):
-    def __init__(self, url):
+    def __init__(self, url: str) -> None:
         self.url = url
 
     expression_template = (
@@ -34,7 +41,7 @@ class OverridesUrl(object):
         + 'import "${src}" { inherit pkgs python ; }'
     )
 
-    def nix_expression(self):
+    def nix_expression(self) -> str:
         command = "nix-prefetch-url {url}".format(url=self.url)
 
         return_code, output = cmd(command, verbose=False, stderr=subprocess.DEVNULL)
@@ -47,7 +54,7 @@ class OverridesUrl(object):
 
 
 class OverridesGit(object):
-    def __init__(self, repo_url, path, rev=None):
+    def __init__(self, repo_url: str, path: str, rev: Optional[str] = None) -> None:
         self.repo_url = repo_url
         self.path = path
         self.rev = rev
@@ -61,7 +68,7 @@ class OverridesGit(object):
         + '} ; in import "${src}/%(path)s" { inherit pkgs python; }'
     )
 
-    def nix_expression(self):
+    def nix_expression(self) -> str:
         repo_data = prefetch_git(self.repo_url, self.rev)
         return self.expression_template % dict(
             url=repo_data["url"],
@@ -72,13 +79,15 @@ class OverridesGit(object):
 
 
 class OverridesGithub(object):
-    def __init__(self, owner, repo, path, rev=None):
+    def __init__(
+        self, owner: str, repo: str, path: str, rev: Optional[str] = None
+    ) -> None:
         self.owner = owner
         self.repo = repo
         self.path = path
         self.rev = rev
 
-    def nix_expression(self):
+    def nix_expression(self) -> str:
         prefetch_data = prefetch_github(self.owner, self.repo, self.rev)
         template = " ".join(
             [
@@ -102,7 +111,7 @@ class OverridesGithub(object):
         )
 
 
-def url_to_overrides(url_string):
+def url_to_overrides(url_string: str) -> AnyOverrides:
     url = urlparse(url_string)
     if url.scheme == "":
         return OverridesFile(url.path)
@@ -118,7 +127,18 @@ def url_to_overrides(url_string):
                     " {url}."
                 ).format(url=url_string)
             )
-        fragments = dict(map(lambda x: x.split("="), url.fragment.split("&")))
+        fragments: Dict[str, str] = dict()
+        for fragment_item in url.fragment.split("&"):
+            try:
+                fragment_name, fragment_value = fragment_item.split()
+            except ValueError:
+                raise UnsupportedUrlError(
+                    "Encountered deformed URL fragment `{}` in url `{}`".format(
+                        fragment_item, url_string
+                    )
+                )
+            else:
+                fragments[fragment_name] = fragment_value
         return OverridesGit(
             repo_url=urldefrag(url.geturl()[4:])[0],
             path=fragments["path"],
@@ -131,6 +151,7 @@ def url_to_overrides(url_string):
 class OverridesUrlParam(click.ParamType):
     name = "url"
 
+    @no_type_check
     def convert(self, value, param, ctx):
         try:
             return url_to_overrides(value)

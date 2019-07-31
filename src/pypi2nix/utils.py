@@ -19,7 +19,7 @@ HERE = os.path.dirname(__file__)
 
 TO_IGNORE = ["pip", "setuptools", "wheel", "zc.buildout", "zc.recipe.egg"]
 
-PYTHON_VERSIONS = {
+PYTHON_VERSIONS: Dict[str, str] = {
     "2.6": "python26Full",
     "2.7": "python27Full",
     "3.2": "python32",
@@ -78,25 +78,23 @@ def cmd(
     return p.returncode, "\n".join(out)
 
 
-def create_command_options(
-    options: Dict[str, NixOption], list_form: bool = False
-) -> Union[str, List[str]]:
+def create_command_options(options: Dict[str, NixOption],) -> List[str]:
     command_options = []
     for name, value in options.items():
         if isinstance(value, str):
             command_options.append("--argstr")
             command_options.append(name)
-            command_options.append(value if list_form else '"{}"'.format(value))
+            command_options.append(value)
         elif isinstance(value, list) or isinstance(value, tuple):
             value = "[ %s ]" % (" ".join(['"%s"' % x for x in value]))
             command_options.append("--arg")
             command_options.append(name)
-            command_options.append(value if list_form else "'{}'".format(value))
+            command_options.append(value)
         elif isinstance(value, bool):
             command_options.append("--arg")
             command_options.append(name)
             command_options.append("true" if value else "false")
-    return command_options if list_form else " ".join(command_options)
+    return command_options
 
 
 def args_as_list(inputs: List[str]) -> List[str]:

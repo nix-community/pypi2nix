@@ -39,7 +39,7 @@ class Pip:
         self.project_directory = project_directory
         self.extra_build_inputs = extra_build_inputs
         self.extra_env = extra_env
-        self.build_output = ""
+        self.build_output: str = ""
         self.verbose = verbose
         self.wheels_cache = wheels_cache
         self.target_platform = target_platform
@@ -181,7 +181,8 @@ class Pip:
                 command=command, derivation_path=file_path, nix_arguments=nix_arguments
             )
         except EvaluationFailed as error:
-            self.build_output += error.output
+            if error.output is not None:
+                self.build_output += error.output
             is_failure = True
         else:
             is_failure = False

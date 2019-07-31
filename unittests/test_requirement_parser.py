@@ -1,7 +1,7 @@
 import pytest
 from parsley import ParseError
 
-from pypi2nix.requirements import requirement_parser
+from pypi2nix.requirement_parser import requirement_parser
 
 
 def test_parses_pip_style_url():

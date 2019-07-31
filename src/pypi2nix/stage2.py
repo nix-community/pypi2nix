@@ -6,13 +6,19 @@ import hashlib
 import json
 import os.path
 import tempfile
+from typing import Any
+from typing import Dict
+from typing import Iterable
+from typing import List
 
 import click
 import requests
 import setuptools._vendor.packaging.requirements
 
 from pypi2nix.package_source import find_release
+from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
+from pypi2nix.sources import Sources
 from pypi2nix.utils import TO_IGNORE
 from pypi2nix.utils import cmd
 from pypi2nix.utils import prefetch_git
@@ -24,18 +30,22 @@ INDEX_URL = "https://pypi.python.org/pypi"
 
 
 class Stage2:
-    def __init__(self, sources, verbose, index=INDEX_URL):
+    def __init__(self, sources: Sources, verbose: int, index: str = INDEX_URL) -> None:
         self.sources = sources
         self.verbose = verbose
         self.index = index
 
     def main(
-        self, wheel_paths, default_environment, wheel_cache_dir, additional_dependencies
-    ):
+        self,
+        wheel_paths: Iterable[str],
+        default_environment: Any,
+        wheel_cache_dir: str,
+        additional_dependencies: Dict[str, RequirementSet],
+    ) -> List[Wheel]:
         """Extract packages metadata from wheels dist-info folders.
         """
         output = ""
-        metadata = []
+        metadata: List[Wheel] = []
 
         if self.verbose > 1:
             click.echo(
@@ -86,7 +96,7 @@ class Stage2:
                         "--------------------------------------------------------------------------"
                     )
 
-                self.process_wheel(wheel_cache_dir, wheel_metadata)
+                self.process_wheel(wheel_metadata)
         except Exception as e:
             if self.verbose == 0:
                 click.echo(output)
@@ -94,7 +104,7 @@ class Stage2:
 
         return wheels
 
-    def process_wheel(self, wheel_cache_dir, wheel, chunk_size=2048):
+    def process_wheel(self, wheel: Wheel, chunk_size: int = 2048) -> None:
         if wheel.name not in self.sources:
             url = "{}/{}/json".format(self.index, wheel.name)
             r = requests.get(url, timeout=None)
@@ -103,9 +113,7 @@ class Stage2:
 
             if not wheel_data.get("releases"):
                 raise click.ClickException(
-                    "Unable to find releases for packge {name}".format(**wheel)
+                    "Unable to find releases for packge {name}".format(name=wheel.name)
                 )
 
-            self.sources.add(
-                wheel.name, find_release(wheel_cache_dir, wheel, wheel_data)
-            )
+            self.sources.add(wheel.name, find_release(wheel, wheel_data))

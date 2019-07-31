@@ -75,10 +75,14 @@ class Wheel:
                 metadata_file, "r", encoding="ascii", errors="surrogateescape"
             ) as headers:
                 metadata = email.parser.Parser().parse(headers)
-            license_string = metadata.get("license", "")
+            license_string = str_from_message(metadata, "license")
+            if license_string is None:
+                license_string = ""
+            classifiers = list_from_message(metadata, "classifiers")
+            if classifiers is None:
+                classifiers = []
             license = find_license(
-                classifiers=metadata.get("classifiers", []),
-                license_string=license_string,
+                classifiers=classifiers, license_string=license_string
             )
 
             if license is None:
@@ -97,9 +101,13 @@ class Wheel:
             if version is None:
                 raise Exception("Could not extract version from wheel metadata")
 
-            dependencies = list_from_metadata(metadata, "requires-dist")
+            dependencies = list_from_message(metadata, "requires-dist")
             if dependencies is None:
                 dependencies = []
+
+            description = str_from_message(metadata, "summary")
+            if description is None:
+                description = ""
 
             return wheel_class(
                 name=name,
@@ -107,7 +115,7 @@ class Wheel:
                 deps=extract_deps(dependencies, default_environment),
                 homepage=safe(find_homepage(metadata)),
                 license=license,
-                description=safe(metadata.get("summary", "")),
+                description=safe(description),
             )
 
         raise click.ClickException(
@@ -178,7 +186,7 @@ def str_from_message(metadata: Message, key: str) -> Optional[str]:
         return None
 
 
-def list_from_metadata(metadata: Message, key: str) -> Optional[List[str]]:
+def list_from_message(metadata: Message, key: str) -> Optional[List[str]]:
     maybe_value = metadata.get_all(key)
     if isinstance(maybe_value, list):
         return [str(item) if isinstance(item, Header) else item for item in maybe_value]

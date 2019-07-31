@@ -6,8 +6,8 @@ import pytest
 from pypi2nix.archive import Archive
 from pypi2nix.nix import Nix
 from pypi2nix.pip import Pip
+from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirement_set import RequirementSet
-from pypi2nix.requirements import Requirement
 from pypi2nix.stage1 import WheelBuilder
 from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.wheel import Wheel
@@ -70,7 +70,7 @@ def extracted_six_package(six_requirements, wheel_builder, default_environment):
 @pytest.fixture
 def six_requirements(project_dir, current_platform):
     requirements = RequirementSet(current_platform)
-    requirements.add(Requirement.from_line("six == 1.12.0"))
+    requirements.add(requirement_parser.parse("six == 1.12.0"))
     return requirements
 
 
@@ -91,7 +91,7 @@ def six_source_distribution_archive(pip, download_dir, six_requirements):
 @pytest.fixture
 def requirements_for_jsonschema(current_platform):
     requirements = RequirementSet(current_platform)
-    requirements.add(Requirement.from_line("jsonschema == 3.0.1"))
+    requirements.add(requirement_parser.parse("jsonschema == 3.0.1"))
     return requirements
 
 
@@ -106,7 +106,7 @@ def distribution_archive_for_jsonschema(pip, download_dir, requirements_for_json
 
 @pytest.fixture(params=("six == 1.12.0", "setuptools == 41.0.1"))
 def requirement(request):
-    return Requirement.from_line(request.param)
+    return requirement_parser.parse(request.param)
 
 
 @pytest.fixture

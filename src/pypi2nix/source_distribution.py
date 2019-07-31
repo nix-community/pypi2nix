@@ -1,13 +1,19 @@
 import email
 import os
 import os.path
+from email.header import Header
+from email.message import Message
+from typing import Any
+from typing import Iterable
 
 import setupcfg
 import toml
 from setuptools._vendor.packaging.utils import canonicalize_name
 
+from pypi2nix.archive import Archive
+from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirement_set import RequirementSet
-from pypi2nix.requirements import Requirement
+from pypi2nix.target_platform import TargetPlatform
 
 
 class DistributionNotDetected(Exception):
@@ -15,13 +21,15 @@ class DistributionNotDetected(Exception):
 
 
 class SourceDistribution:
-    def __init__(self, name, pyproject_toml=None, setup_cfg=None):
+    def __init__(
+        self, name: str, pyproject_toml: Any = None, setup_cfg: Any = None
+    ) -> None:
         self.name = canonicalize_name(name)
         self.pyproject_toml = pyproject_toml
         self.setup_cfg = setup_cfg
 
     @classmethod
-    def from_archive(source_distribution, archive):
+    def from_archive(source_distribution, archive: Archive) -> "SourceDistribution":
         with archive.extracted_files() as extraction_directory:
             extracted_files = [
                 os.path.join(directory_path, file_name)
@@ -33,14 +41,19 @@ class SourceDistribution:
             )
             pyproject_toml = source_distribution.get_pyproject_toml(extracted_files)
             setup_cfg = source_distribution.get_setup_cfg(extracted_files)
+        name = metadata.get("name")
+        if isinstance(name, Header):
+            raise DistributionNotDetected(
+                "Could not parse source distribution metadata, name detection failed"
+            )
         return source_distribution(
-            name=metadata.get("name"),
-            pyproject_toml=pyproject_toml,
-            setup_cfg=setup_cfg,
+            name=name, pyproject_toml=pyproject_toml, setup_cfg=setup_cfg
         )
 
     @classmethod
-    def metadata_from_uncompressed_distribution(_, extracted_files, archive):
+    def metadata_from_uncompressed_distribution(
+        _, extracted_files: Iterable[str], archive: Archive
+    ) -> Message:
         pkg_info_files = [
             filepath for filepath in extracted_files if filepath.endswith("PKG-INFO")
         ]
@@ -56,7 +69,7 @@ class SourceDistribution:
         return metadata
 
     @classmethod
-    def get_pyproject_toml(_, extracted_files):
+    def get_pyproject_toml(_, extracted_files: Iterable[str]) -> Any:
         pyproject_toml_candidates = [
             filepath
             for filepath in extracted_files
@@ -69,7 +82,7 @@ class SourceDistribution:
             return None
 
     @classmethod
-    def get_setup_cfg(_, extracted_files):
+    def get_setup_cfg(_, extracted_files: Iterable[str]) -> Any:
         setup_cfg_candidates = [
             filepath
             for filepath in extracted_files
@@ -78,7 +91,7 @@ class SourceDistribution:
         if setup_cfg_candidates:
             return setupcfg.load(setup_cfg_candidates)
 
-    def build_dependencies(self, target_platform):
+    def build_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
         if self.pyproject_toml is not None:
             return self.build_dependencies_from_pyproject_toml(target_platform)
         elif self.setup_cfg is not None:
@@ -86,7 +99,9 @@ class SourceDistribution:
         else:
             return RequirementSet(target_platform)
 
-    def build_dependencies_from_pyproject_toml(self, target_platform):
+    def build_dependencies_from_pyproject_toml(
+        self, target_platform: TargetPlatform
+    ) -> RequirementSet:
         requirement_set = RequirementSet(target_platform)
         if self.pyproject_toml is None:
             pass
@@ -94,19 +109,21 @@ class SourceDistribution:
             for build_input in self.pyproject_toml.get("build-system", {}).get(
                 "requires", []
             ):
-                requirement = Requirement.from_line(build_input)
+                requirement = requirement_parser.parse(build_input)
                 if requirement.applies_to_target(target_platform):
                     requirement_set.add(requirement)
         return requirement_set
 
-    def build_dependencies_from_setup_cfg(self, target_platform):
+    def build_dependencies_from_setup_cfg(
+        self, target_platform: TargetPlatform
+    ) -> RequirementSet:
         setup_requires = self.setup_cfg.get("options", {}).get("setup_requires")
         requirements = RequirementSet(target_platform)
         if isinstance(setup_requires, str):
-            requirements.add(Requirement.from_line(setup_requires))
+            requirements.add(requirement_parser.parse(setup_requires))
         elif isinstance(setup_requires, list):
             for requirement_string in setup_requires:
-                requirement = Requirement.from_line(requirement_string)
+                requirement = requirement_parser.parse(requirement_string)
                 if requirement.applies_to_target(target_platform):
                     requirements.add(requirement)
         return requirements

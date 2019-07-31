@@ -371,26 +371,6 @@ let
       };
     };
 
-    "flake8-mypy" = python.mkDerivation {
-      name = "flake8-mypy-17.8.0";
-      src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/97/9a/cddd1363d7314bb4eb452089c6fb3092ed9fda9f3350683d1978522a30ec/flake8-mypy-17.8.0.tar.gz";
-        sha256 = "47120db63aff631ee1f84bac6fe8e64731dc66da3efc1c51f85e15ade4a3ba18";
-};
-      doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [
-        self."attrs"
-        self."flake8"
-        self."mypy"
-      ];
-      meta = with pkgs.stdenv.lib; {
-        homepage = "https://github.com/ambv/flake8-mypy";
-        license = licenses.mit;
-        description = "A plugin for flake8 integrating mypy.";
-      };
-    };
-
     "flake8-quotes" = python.mkDerivation {
       name = "flake8-quotes-2.0.1";
       src = pkgs.fetchurl {

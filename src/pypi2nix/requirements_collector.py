@@ -5,9 +5,9 @@ given to pypi2nix
 import os.path
 import tempfile
 
+from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import PathRequirement
-from pypi2nix.requirements import Requirement
 from pypi2nix.requirements_file import RequirementsFile
 from pypi2nix.target_platform import TargetPlatform
 
@@ -21,7 +21,7 @@ class RequirementsCollector:
         return self.requirement_set
 
     def add_line(self, line: str) -> None:
-        requirement = Requirement.from_line(line)
+        requirement = requirement_parser.parse(line)
         if isinstance(requirement, PathRequirement):
             requirement = requirement.change_path(os.path.abspath)
         self.requirement_set.add(requirement)
