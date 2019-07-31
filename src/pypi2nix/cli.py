@@ -24,7 +24,6 @@ from pypi2nix.utils import md5_sum_of_files_with_file_names
 @click.option(
     "-I",
     "--nix-path",
-    envvar="NIX_PATH",
     multiple=True,
     default=None,
     help=u"Add a path to the Nix expression search path. This "
