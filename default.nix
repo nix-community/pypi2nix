@@ -39,9 +39,10 @@ in python.mkDerivation {
   doCheck = true;
   checkPhase = ''
     echo "Running black ..."
-    black --check --diff -v setup.py src/ integrationtests/ unittests/
+    black --check --diff -v setup.py src/ integrationtests/ unittests/ mypy/
     echo "Running flake8 ..."
     flake8 -v setup.py src/ integrationtests/ unittests/
+    mypy --config-file setup.cfg src/
     echo "Running pytest ..."
     PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v unittests/ -m 'not nix'
   '';

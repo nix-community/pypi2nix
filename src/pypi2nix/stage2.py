@@ -13,7 +13,6 @@ from typing import List
 
 import click
 import requests
-import setuptools._vendor.packaging.requirements
 
 from pypi2nix.package_source import find_release
 from pypi2nix.requirement_set import RequirementSet

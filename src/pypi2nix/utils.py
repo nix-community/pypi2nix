@@ -47,11 +47,8 @@ def safe(string: str) -> str:
 
 
 def cmd(
-    command: Union[str, List[str]],
-    verbose: bool = False,
-    stderr: int = subprocess.STDOUT,
+    command: Union[str, List[str]], verbose: bool = False, stderr: Optional[int] = None
 ) -> Tuple[int, str]:
-
     if isinstance(command, str):
         command = shlex.split(command)
 
@@ -142,15 +139,15 @@ def prefetch_hg(
     url: str, rev: Optional[str] = None, verbose: bool = False
 ) -> Dict[str, str]:
     command = ["nix-prefetch-hg", url] + ([rev] if rev else [])
-    return_code, output = cmd(command, verbose)
+    return_code, output = cmd(command, verbose, stderr=subprocess.STDOUT)
     if return_code != 0:
         raise click.ClickException(
             " ".join(
                 [
                     "Could not fetch hg repository at {url}, returncode was {code}."
-                    "stdout:\n {stdout}"
+                    "output:\n {output}"
                 ]
-            ).format(url=url, code=return_code, stdout=output)
+            ).format(url=url, code=return_code, output=output)
         )
     HASH_PREFIX = "hash is "
     REV_PREFIX = "hg revision is "
@@ -177,7 +174,7 @@ def prefetch_hg(
 
 
 def prefetch_github(owner: str, repo: str, rev: Optional[str] = None) -> Dict[str, str]:
-    return nix_prefetch_github(owner, repo, rev=rev)  # type: ignore
+    return nix_prefetch_github(owner, repo, rev=rev)
 
 
 def escape_double_quotes(text: str) -> str:
@@ -185,8 +182,10 @@ def escape_double_quotes(text: str) -> str:
 
 
 def prefetch_url(url: str, verbose: bool = False) -> str:
-    returncode, output = cmd(["nix-prefetch-url", url], verbose=verbose)
-    return output.splitlines()[2]
+    returncode, output = cmd(
+        ["nix-prefetch-url", url], verbose=verbose, stderr=subprocess.DEVNULL
+    )
+    return output.rstrip()
 
 
 def download_file(url: str, filename: str, chunk_size: int = 2048) -> None:

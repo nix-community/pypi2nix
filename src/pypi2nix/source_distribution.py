@@ -89,7 +89,7 @@ class SourceDistribution:
             if os.path.basename(filepath) == "setup.cfg"
         ]
         if setup_cfg_candidates:
-            return setupcfg.load(setup_cfg_candidates)
+            return setupcfg.load(setup_cfg_candidates[0])
 
     def build_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
         if self.pyproject_toml is not None:
