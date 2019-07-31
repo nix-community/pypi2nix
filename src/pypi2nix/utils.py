@@ -39,7 +39,7 @@ def safe(string):
     return string.replace('"', '\\"')
 
 
-def cmd(command, verbose=False, stderr=subprocess.STDOUT):
+def cmd(command, verbose=False, stderr=None):
 
     if isinstance(command, str):
         command = shlex.split(command)
@@ -129,15 +129,15 @@ def prefetch_git(url, rev=None):
 
 def prefetch_hg(url, rev=None, verbose=False):
     command = ["nix-prefetch-hg", url] + ([rev] if rev else [])
-    return_code, output = cmd(command, verbose)
+    return_code, output = cmd(command, verbose, stderr=subprocess.STDOUT)
     if return_code != 0:
         raise click.ClickException(
             " ".join(
                 [
                     "Could not fetch hg repository at {url}, returncode was {code}."
-                    "stdout:\n {stdout}"
+                    "output:\n {output}"
                 ]
-            ).format(url=url, code=return_code, stdout=output)
+            ).format(url=url, code=return_code, output=output)
         )
     HASH_PREFIX = "hash is "
     REV_PREFIX = "hg revision is "
@@ -172,8 +172,10 @@ def escape_double_quotes(text):
 
 
 def prefetch_url(url, verbose=False):
-    returncode, output = cmd(["nix-prefetch-url", url], verbose=verbose)
-    return output.splitlines()[2]
+    returncode, output = cmd(
+        ["nix-prefetch-url", url], verbose=verbose, stderr=subprocess.DEVNULL
+    )
+    return output.rstrip()
 
 
 def download_file(url, filename, chunk_size=2048):
