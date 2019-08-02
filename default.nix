@@ -43,6 +43,7 @@ in python.mkDerivation {
     echo "Running flake8 ..."
     flake8 -v setup.py src/ integrationtests/ unittests/
     mypy --config-file setup.cfg src/
+    mypy --config-file setup.cfg unittests/ integrationtests/  --allow-untyped-defs --ignore-missing-imports
     echo "Running pytest ..."
     PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v unittests/ -m 'not nix'
   '';

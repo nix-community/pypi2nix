@@ -1,4 +1,5 @@
 import os.path
+from typing import List
 
 from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirement_set import RequirementSet
@@ -6,7 +7,7 @@ from pypi2nix.requirement_set import RequirementSet
 from ..switches import nix
 
 
-def list_files(dirname):
+def list_files(dirname: str) -> List[str]:
     return [
         candidate
         for candidate in os.listdir(dirname)

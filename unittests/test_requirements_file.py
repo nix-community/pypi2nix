@@ -30,8 +30,3 @@ def test_requirements_file_handles_empty_lines(requirements_file_from_lines):
 
 def test_requirements_file_can_be_created_from_requirements_lines(project_dir):
     RequirementsFile.from_lines(["pytest"], project_dir=project_dir)
-
-
-def test_requirements_file_from_lines_throws_when_given_a_string(project_dir):
-    with pytest.raises(Exception):
-        RequirementsFile.from_lines("pytest", project_dir=project_dir)

@@ -2,6 +2,7 @@ import pytest
 
 from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirement_set import RequirementSet
+from pypi2nix.requirements import VersionRequirement
 from pypi2nix.requirements_file import RequirementsFile
 from pypi2nix.sources import Sources
 
@@ -49,6 +50,7 @@ def test_versions_add_if_same_requirement_is_added_twice(current_platform):
     requirement_set.add(requirement_parser.parse("pypi2nix <= 2.0"))
     requirement_set.add(requirement_parser.parse("pypi2nix >= 1.9"))
     requirement = requirement_set.requirements["pypi2nix"]
+    assert isinstance(requirement, VersionRequirement)
     assert len(requirement.version()) == 2
 
 

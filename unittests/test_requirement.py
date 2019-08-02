@@ -3,11 +3,13 @@ import os
 import pytest
 
 from pypi2nix.package_source import GitSource
+from pypi2nix.package_source import HgSource
 from pypi2nix.requirement_parser import ParsingFailed
 from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirements import IncompatibleRequirements
 from pypi2nix.requirements import PathRequirement
 from pypi2nix.requirements import UrlRequirement
+from pypi2nix.requirements import VersionRequirement
 
 from .switches import nix
 
@@ -109,6 +111,7 @@ def test_that_mercurial_source_url_gets_detected():
     requirement = requirement_parser.parse(
         "hg+https://bitbucket.org/tarek/flake8@a209fb6#egg=flake8"
     )
+    assert isinstance(requirement, UrlRequirement)
     assert requirement.url() == "hg+https://bitbucket.org/tarek/flake8@a209fb6"
 
 
@@ -117,8 +120,9 @@ def test_that_mercurial_source_extracted_is_valid():
     requirement = requirement_parser.parse(
         "hg+https://bitbucket.org/tarek/flake8@a209fb6#egg=flake8"
     )
-    # We only want this to not throw
-    requirement.source().nix_expression()
+    source = requirement.source()
+    assert isinstance(source, HgSource)
+    source.nix_expression()
 
 
 @nix
@@ -126,8 +130,9 @@ def test_that_git_source_extracted_is_valid():
     requirement = requirement_parser.parse(
         "git+https://github.com/nix-community/pypi2nix.git@5c65345a2ce7f2f1c376f983d20e935c09c15995#egg=pypi2nix"
     )
-    # We only want this to not throw
-    requirement.source().nix_expression()
+    source = requirement.source()
+    assert isinstance(source, GitSource)
+    source.nix_expression()
 
 
 def test_that_from_line_to_line_preserves_urls():
@@ -146,8 +151,11 @@ def test_that_requirements_can_be_added_together_adding_version_constraints(
     current_platform
 ):
     req1 = requirement_parser.parse("req >= 1.0")
+    assert isinstance(req1, VersionRequirement)
     req2 = requirement_parser.parse("req >= 2.0")
+    assert isinstance(req2, VersionRequirement)
     sum_requirement = req1.add(req2, current_platform)
+    assert isinstance(sum_requirement, VersionRequirement)
     assert len(sum_requirement.version()) == len(req1.version()) + len(req2.version())
 
 
@@ -183,7 +191,10 @@ def test_that_adding_requirements_with_different_urls_raises(current_platform):
 def test_that_adding_requirements_with_the_same_url_works(current_platform):
     req1 = requirement_parser.parse("https://url.test#egg=req")
     req2 = requirement_parser.parse("https://url.test#egg=req")
-    assert (req1.add(req2, current_platform)).url() == "https://url.test"
+    sum_requirement = req1.add(req2, current_platform)
+
+    assert isinstance(sum_requirement, UrlRequirement)
+    assert sum_requirement.url() == "https://url.test"
 
 
 def test_that_adding_requirements_where_one_does_not_apply_to_system_yields_the_other(
@@ -194,11 +205,13 @@ def test_that_adding_requirements_where_one_does_not_apply_to_system_yields_the_
         'req1 >= 1.0; python_version == "1.0"'
     )  # definitly not true
     sum_requirement = req1.add(req2, current_platform)
+    assert isinstance(sum_requirement, VersionRequirement)
     assert not sum_requirement.version()
 
 
 def test_that_we_parse_requirements_with_file_paths():
     requirement = requirement_parser.parse("path/to/egg#egg=testegg")
+    assert isinstance(requirement, PathRequirement)
     assert requirement.name() == "testegg"
     assert requirement.path() == "path/to/egg"
 
@@ -321,6 +334,7 @@ def test_that_we_can_add_path_requirements_with_same_path(current_platform,):
 
 def test_that_we_can_change_path_of_path_requirements():
     requirement = requirement_parser.parse("path/to/requirement#egg=test-req")
+    assert isinstance(requirement, PathRequirement)
     requirement = requirement.change_path(lambda p: os.path.join("changed", p))
     assert requirement.path() == "changed/path/to/requirement"
 
