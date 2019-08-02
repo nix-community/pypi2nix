@@ -227,10 +227,10 @@ let
     };
 
     "coverage" = python.mkDerivation {
-      name = "coverage-4.5.3";
+      name = "coverage-4.5.4";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/82/70/2280b5b29a0352519bb95ab0ef1ea942d40466ca71c53a2085bdeff7b0eb/coverage-4.5.3.tar.gz";
-        sha256 = "9de60893fb447d1e797f6bf08fdf0dbcda0c1e34c1b06c92bd3a363c0ea8c609";
+        url = "https://files.pythonhosted.org/packages/85/d5/818d0e603685c4a613d56f065a721013e942088047ff1027a632948bdae6/coverage-4.5.4.tar.gz";
+        sha256 = "e07d9f1a23e9e93ab5c62902833bf3e4b1f65502927379148b6622686223125c";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -243,10 +243,10 @@ let
     };
 
     "docutils" = python.mkDerivation {
-      name = "docutils-0.14";
+      name = "docutils-0.15.2";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/84/f4/5771e41fdf52aabebbadecc9381d11dea0fa34e4759b4071244fa094804c/docutils-0.14.tar.gz";
-        sha256 = "51e64ef2ebfb29cae1faa133b3710143496eca21c530f3f71424d77687764274";
+        url = "https://files.pythonhosted.org/packages/93/22/953e071b589b0b1fee420ab06a0d15e5aa0c7470eb9966d60393ce58ad61/docutils-0.15.2.tar.gz";
+        sha256 = "a2aeea129088da402665e92e0b25b04b073c04b2dce4ab65caaa38b7ce2e1a99";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -372,10 +372,10 @@ let
     };
 
     "flake8-quotes" = python.mkDerivation {
-      name = "flake8-quotes-2.0.1";
+      name = "flake8-quotes-2.1.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/a2/40/d2b123f28b0dd38cf1ac4a98c80e0dfdaf0529a505f4b123d7f5b78901ee/flake8-quotes-2.0.1.tar.gz";
-        sha256 = "10c9af6b472d4302a8e721c5260856c3f985c5c082b04841aefd2f808ac02038";
+        url = "https://files.pythonhosted.org/packages/18/f9/3323327526354c90fa0e6ff0f043133ae13dd2b89c5b638189cfd5fc9027/flake8-quotes-2.1.0.tar.gz";
+        sha256 = "5dbaf668887873f28346fb87943d6da2e4b9f77ce9f2169cff21764a0a4934ed";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -431,10 +431,10 @@ let
     };
 
     "importlib-metadata" = python.mkDerivation {
-      name = "importlib-metadata-0.18";
+      name = "importlib-metadata-0.19";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/fd/5c/9caf9fe3d92afc3c0296c97b0fd72cacfcaf20e8b2c42306840914e052fa/importlib_metadata-0.18.tar.gz";
-        sha256 = "cb6ee23b46173539939964df59d3d72c3e0c1b5d54b84f1d8a7e912fe43612db";
+        url = "https://files.pythonhosted.org/packages/27/49/58d50a592d99a6bf58c4c1b02b203a48357a74e33922a9d021fda07d4ce3/importlib_metadata-0.19.tar.gz";
+        sha256 = "23d3d873e008a513952355379d93cbcab874c58f4f034ff657c7a87422fa64e8";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -648,14 +648,15 @@ let
     };
 
     "packaging" = python.mkDerivation {
-      name = "packaging-19.0";
+      name = "packaging-19.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/16/51/d72654dbbaa4a4ffbf7cb0ecd7d12222979e0a660bf3f42acc47550bf098/packaging-19.0.tar.gz";
-        sha256 = "0c98a5d0be38ed775798ece1b9727178c4469d9c3b4ada66e8e6b7849f8732af";
+        url = "https://files.pythonhosted.org/packages/8b/3a/5bfe64c319be5775ed7ea3bc1a8e5667e0d57a740cc0498ce03e032eaf93/packaging-19.1.tar.gz";
+        sha256 = "c491ca87294da7cc01902edbe30a5bc6c4c28172b5138ab4e4aa1b9d7bfaeafe";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [
+        self."attrs"
         self."pyparsing"
         self."six"
       ];
@@ -804,10 +805,10 @@ let
     };
 
     "pyparsing" = python.mkDerivation {
-      name = "pyparsing-2.4.0";
+      name = "pyparsing-2.4.2";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/5d/3a/24d275393f493004aeb15a1beae2b4a3043526e8b692b65b4a9341450ebe/pyparsing-2.4.0.tar.gz";
-        sha256 = "1873c03321fc118f4e9746baf201ff990ceb915f433f23b395f5580d1840cb2a";
+        url = "https://files.pythonhosted.org/packages/7e/24/eaa8d7003aee23eda270099eeec754d7bf4399f75c6a011ef948304f66a2/pyparsing-2.4.2.tar.gz";
+        sha256 = "6f98a7b9397e206d78cc01df10131398f1c8b8510a2f4d97d9abd82e1aacdd80";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -888,10 +889,10 @@ let
     };
 
     "pytoml" = python.mkDerivation {
-      name = "pytoml-0.1.20";
+      name = "pytoml-0.1.21";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/35/35/da1123673c54b6d701453fcd20f751d6a1fae43339b3993ae458875576e4/pytoml-0.1.20.tar.gz";
-        sha256 = "ca2d0cb127c938b8b76a9a0d0f855cf930c1d50cc3a0af6d3595b566519a1013";
+        url = "https://files.pythonhosted.org/packages/f4/ba/98ee2054a2d7b8bebd367d442e089489250b6dc2aee558b000e961467212/pytoml-0.1.21.tar.gz";
+        sha256 = "8eecf7c8d0adcff3b375b09fe403407aa9b645c499e5ab8cac670ac4a35f61e7";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
