@@ -3,8 +3,8 @@ import os
 import pytest
 
 from pypi2nix.archive import Archive
+from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirement_set import RequirementSet
-from pypi2nix.requirements import Requirement
 from pypi2nix.source_distribution import DistributionNotDetected
 from pypi2nix.source_distribution import SourceDistribution
 
@@ -19,7 +19,7 @@ def source_distribution(six_source_distribution_archive):
 @pytest.fixture
 def flit_requirements(current_platform):
     requirements = RequirementSet(current_platform)
-    requirements.add(Requirement.from_line("flit == 1.3"))
+    requirements.add(requirement_parser.parse("flit == 1.3"))
     return requirements
 
 

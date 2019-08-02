@@ -1,0 +1,6 @@
+from typing import Dict
+from typing import Optional
+
+def nix_prefetch_github(
+    owner: str, repo: str, prefetch: bool = ..., rev: Optional[str] = ...
+) -> Dict[str, str]: ...

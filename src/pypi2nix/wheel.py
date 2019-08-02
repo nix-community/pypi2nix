@@ -1,5 +1,14 @@
-import email
+import email.parser
 import os.path
+from email.header import Header
+from email.message import Message
+from typing import Any
+from typing import Dict
+from typing import Iterable
+from typing import List
+from typing import Optional
+from typing import Set
+from typing import Type
 
 import click
 import setuptools._vendor.packaging.requirements
@@ -13,13 +22,13 @@ from pypi2nix.utils import safe
 class Wheel:
     def __init__(
         self,
-        name,
-        version,
-        deps,
-        homepage,
-        license,
-        description,
-        build_dependencies=set(),
+        name: str,
+        version: str,
+        deps: Iterable[str],
+        homepage: str,
+        license: str,
+        description: str,
+        build_dependencies: Set[str] = set(),
     ):
         self.name = canonicalize_name(name)
         self.version = version
@@ -29,7 +38,7 @@ class Wheel:
         self.description = description
         self.build_dependencies = set(map(canonicalize_name, build_dependencies))
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "version": self.version,
@@ -40,12 +49,12 @@ class Wheel:
             "build_dependencies": list(self.build_dependencies),
         }
 
-    def add_build_dependencies(self, dependencies):
+    def add_build_dependencies(self, dependencies: Iterable[str]) -> None:
         for dependency in dependencies:
             if self.valid_dependency(dependency):
                 self.build_dependencies.add(canonicalize_name(dependency))
 
-    def valid_dependency(self, dependency):
+    def valid_dependency(self, dependency: str) -> bool:
         canonicalized_dependency = canonicalize_name(dependency)
         return all(
             [
@@ -56,18 +65,24 @@ class Wheel:
 
     @classmethod
     def from_wheel_directory_path(
-        wheel_class, wheel_directory_path, default_environment
-    ):
+        wheel_class: "Type[Wheel]",
+        wheel_directory_path: str,
+        default_environment: Dict[str, Any],
+    ) -> "Wheel":
         metadata_file = os.path.join(wheel_directory_path, "METADATA")
         if os.path.exists(metadata_file):
             with open(
                 metadata_file, "r", encoding="ascii", errors="surrogateescape"
             ) as headers:
                 metadata = email.parser.Parser().parse(headers)
-            license_string = metadata.get("license", "")
+            license_string = str_from_message(metadata, "license")
+            if license_string is None:
+                license_string = ""
+            classifiers = list_from_message(metadata, "classifiers")
+            if classifiers is None:
+                classifiers = []
             license = find_license(
-                classifiers=metadata.get("classifiers", []),
-                license_string=license_string,
+                classifiers=classifiers, license_string=license_string
             )
 
             if license is None:
@@ -78,17 +93,29 @@ class Wheel:
                     )
                 )
 
+            name = str_from_message(metadata, "name")
+            if name is None:
+                raise Exception("Could not extract name from wheel metadata")
+
+            version = str_from_message(metadata, "version")
+            if version is None:
+                raise Exception("Could not extract version from wheel metadata")
+
+            dependencies = list_from_message(metadata, "requires-dist")
+            if dependencies is None:
+                dependencies = []
+
+            description = str_from_message(metadata, "summary")
+            if description is None:
+                description = ""
+
             return wheel_class(
-                **{
-                    "name": metadata["name"],
-                    "version": metadata["version"],
-                    "deps": extract_deps(
-                        metadata.get_all("requires-dist", []), default_environment
-                    ),
-                    "homepage": safe(find_homepage(metadata)),
-                    "license": license,
-                    "description": safe(metadata.get("summary", "")),
-                }
+                name=name,
+                version=version,
+                deps=extract_deps(dependencies, default_environment),
+                homepage=safe(find_homepage(metadata)),
+                license=license,
+                description=safe(description),
             )
 
         raise click.ClickException(
@@ -96,7 +123,7 @@ class Wheel:
         )
 
 
-def extract_deps(deps, default_environment):
+def extract_deps(deps: Iterable[str], default_environment: Dict[str, Any]) -> List[str]:
     """Get dependent packages from metadata.
 
     Note that this is currently very rough stuff. I consider only the
@@ -143,14 +170,25 @@ def extract_deps(deps, default_environment):
     return list(set(extracted_deps))
 
 
-def find_homepage(item):
-    homepage = ""
-    if (
-        "extensions" in item
-        and "python.details" in item["extensions"]
-        and "project_urls" in item["extensions"]["python.details"]
-    ):
-        homepage = item["extensions"]["python.details"]["project_urls"].get("Home", "")
-    elif "home-page" in item:
-        homepage = item["home-page"]
-    return homepage
+def find_homepage(item: Message) -> str:
+    homepage = str_from_message(item, "home-page")
+    if homepage:
+        return homepage
+    else:
+        return ""
+
+
+def str_from_message(metadata: Message, key: str) -> Optional[str]:
+    maybe_value = metadata.get(key)
+    if isinstance(maybe_value, str):
+        return maybe_value
+    else:
+        return None
+
+
+def list_from_message(metadata: Message, key: str) -> Optional[List[str]]:
+    maybe_value = metadata.get_all(key)
+    if isinstance(maybe_value, list):
+        return [str(item) if isinstance(item, Header) else item for item in maybe_value]
+    else:
+        return None

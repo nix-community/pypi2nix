@@ -12,7 +12,7 @@ def wheel():
         version="1.0",
         deps=set(),
         homepage="https://example.test",
-        license=None,
+        license="",
         description="description",
     )
 

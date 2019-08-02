@@ -1,7 +1,15 @@
+import pytest
+
+from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirement_set import RequirementSet
-from pypi2nix.requirements import Requirement
+from pypi2nix.requirements import VersionRequirement
 from pypi2nix.requirements_file import RequirementsFile
 from pypi2nix.sources import Sources
+
+
+@pytest.fixture
+def requirement_set(current_platform):
+    return RequirementSet(current_platform)
 
 
 def test_length_of_empty_requirement_set_is_0(current_platform):
@@ -10,14 +18,14 @@ def test_length_of_empty_requirement_set_is_0(current_platform):
 
 def test_length_is_one_after_adding_one_requirement(current_platform):
     requirement_set = RequirementSet(current_platform)
-    requirement_set.add(Requirement("pypi2nix"))
+    requirement_set.add(requirement_parser.parse("pypi2nix"))
     assert len(requirement_set) == 1
 
 
 def test_length_is_one_after_adding_same_requirement_twice(current_platform):
     requirement_set = RequirementSet(current_platform)
-    requirement_set.add(Requirement("pypi2nix"))
-    requirement_set.add(Requirement("pypi2nix"))
+    requirement_set.add(requirement_parser.parse("pypi2nix"))
+    requirement_set.add(requirement_parser.parse("pypi2nix"))
     assert len(requirement_set) == 1
 
 
@@ -30,17 +38,20 @@ def test_to_file_outputs_a_requirements_file_object(project_dir, current_platfor
 
 def test_sources_contains_a_source_per_git_requirement(current_platform):
     requirement_set = RequirementSet(current_platform)
-    requirement_set.add(Requirement.from_line("no-git-source"))
-    requirement_set.add(Requirement.from_line("git+https://url.test/path#egg=test-egg"))
+    requirement_set.add(requirement_parser.parse("no-git-source"))
+    requirement_set.add(
+        requirement_parser.parse("git+https://url.test/path#egg=test-egg")
+    )
     assert len(requirement_set.sources()) == 1
 
 
 def test_versions_add_if_same_requirement_is_added_twice(current_platform):
     requirement_set = RequirementSet(current_platform)
-    requirement_set.add(Requirement.from_line("pypi2nix <= 2.0"))
-    requirement_set.add(Requirement.from_line("pypi2nix >= 1.9"))
+    requirement_set.add(requirement_parser.parse("pypi2nix <= 2.0"))
+    requirement_set.add(requirement_parser.parse("pypi2nix >= 1.9"))
     requirement = requirement_set.requirements["pypi2nix"]
-    assert len(requirement.version) == 2
+    assert isinstance(requirement, VersionRequirement)
+    assert len(requirement.version()) == 2
 
 
 def test_from_file_handles_empty_lines(project_dir, current_platform):
@@ -69,7 +80,7 @@ def test_adding_two_empty_sets_results_in_an_empty_set(current_platform):
 
 def test_can_find_requirement_in_requirement_set(current_platform):
     requirements = RequirementSet(current_platform)
-    requirements.add(Requirement.from_line("pypi2nix"))
+    requirements.add(requirement_parser.parse("pypi2nix"))
     assert "pypi2nix" in requirements
 
 
@@ -79,9 +90,9 @@ def test_cannot_find_name_in_empty_requirement_set(current_platform):
 
 def test_elements_from_both_sets_can_be_found_in_sum_of_sets(current_platform):
     left = RequirementSet(current_platform)
-    left.add(Requirement.from_line("test1"))
+    left.add(requirement_parser.parse("test1"))
     right = RequirementSet(current_platform)
-    right.add(Requirement.from_line("test2"))
+    right.add(requirement_parser.parse("test2"))
     sum = left + right
     assert "test1" in sum
     assert "test2" in sum
@@ -149,3 +160,30 @@ def test_include_lines_are_respected_when_generating_from_file(
     requirement_set = RequirementSet.from_file(requirements_file, current_platform)
 
     assert "test-requirement" in requirement_set
+
+
+def test_that_we_can_query_for_added_requirements(requirement_set):
+    requirement = requirement_parser.parse("pytest")
+    requirement_set.add(requirement)
+    assert requirement_set[requirement.name()] == requirement
+
+
+def test_that_querying_for_non_existing_requirement_raises_key_error(requirement_set):
+    with pytest.raises(KeyError):
+        requirement_set["non-existing"]
+
+
+def test_that_queries_into_set_are_canonicalized(requirement_set):
+    requirement = requirement_parser.parse("pytest")
+    requirement_set.add(requirement)
+    assert requirement_set["PyTest"] == requirement
+
+
+def test_that_get_method_returns_none_if_key_not_found(requirement_set):
+    assert requirement_set.get("not-found") is None
+
+
+def test_that_get_method_returns_specified_default_value_when_not_found(
+    requirement_set
+):
+    assert requirement_set.get("not-found", 0) == 0

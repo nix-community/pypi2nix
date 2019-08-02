@@ -1,7 +1,8 @@
 import os
 import os.path
-import shutil
 import subprocess
+from typing import Dict
+from typing import List
 
 from attr import attrib
 from attr import attrs
@@ -268,9 +269,7 @@ class IntegrationTest:
         return os.path.join(self.example_directory(), "constraints.txt")
 
     def write_requirements_file(self, content):
-        shutil.os.makedirs(
-            os.path.dirname(self.requirements_file_path()), exist_ok=True
-        )
+        os.makedirs(os.path.dirname(self.requirements_file_path()), exist_ok=True)
         with open(self.requirements_file_path(), "w") as f:
             f.write(content)
 
@@ -284,10 +283,10 @@ class IntegrationTest:
         pass
 
     default_overrides = False
-    constraints = []
+    constraints: List[str] = []
 
 
 @attrs
 class TestCommand:
     command = attrib()
-    env = attrib(default=dict())
+    env: Dict[str, str] = attrib(default=dict())

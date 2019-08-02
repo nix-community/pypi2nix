@@ -1,12 +1,13 @@
 import os.path
+from typing import List
 
+from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirement_set import RequirementSet
-from pypi2nix.requirements import Requirement
 
 from ..switches import nix
 
 
-def list_files(dirname):
+def list_files(dirname: str) -> List[str]:
     return [
         candidate
         for candidate in os.listdir(dirname)
@@ -21,7 +22,7 @@ def test_pip_can_install_wheels_previously_downloaded(
     download_directory = os.path.join(project_dir, "download")
     target_directory = os.path.join(project_dir, "wheels")
     requirements = RequirementSet(current_platform)
-    requirements.add(Requirement.from_line("six"))
+    requirements.add(requirement_parser.parse("six"))
     pip.download_sources(requirements, download_directory)
     pip.build_wheels(
         requirements=requirements,

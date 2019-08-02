@@ -2,26 +2,35 @@ import os
 import os.path
 import zipfile
 from collections import defaultdict
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Set
 
 from pypi2nix.archive import Archive
+from pypi2nix.pip import Pip
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.source_distribution import DistributionNotDetected
 from pypi2nix.source_distribution import SourceDistribution
 
 
 class WheelBuilder:
-    def __init__(self, pip, project_directory):
+    def __init__(self, pip: Pip, project_directory: str) -> None:
         self.pip = pip
         self.download_directory = os.path.join(project_directory, "download")
         self.wheel_directory = os.path.join(project_directory, "wheel")
         self.extracted_wheels_directory = os.path.join(project_directory, "wheelhouse")
         self.project_directory = project_directory
-        self.inspected_source_distribution_files = set()
-        self.additional_build_dependencies = defaultdict(
+        self.inspected_source_distribution_files: Set[str] = set()
+        self.additional_build_dependencies: Dict[str, RequirementSet] = defaultdict(
             lambda: RequirementSet(pip.target_platform)
         )
 
-    def build(self, requirements, setup_requirements=None):
+    def build(
+        self,
+        requirements: RequirementSet,
+        setup_requirements: Optional[RequirementSet] = None,
+    ) -> List[str]:
         if setup_requirements is None:
             setup_requirements = RequirementSet(self.pip.target_platform)
         requirements = requirements + setup_requirements
@@ -32,7 +41,9 @@ class WheelBuilder:
         )
         return self.extract_wheels()
 
-    def detect_additional_build_dependencies(self, requirements, constraints=None):
+    def detect_additional_build_dependencies(
+        self, requirements: RequirementSet, constraints: Optional[RequirementSet] = None
+    ) -> RequirementSet:
         if constraints is None:
             constraints = RequirementSet(self.pip.target_platform)
         self.pip.download_sources(
@@ -54,7 +65,7 @@ class WheelBuilder:
             constraints=(requirements + constraints).to_constraints_only(),
         )
 
-    def get_uninspected_source_distributions(self):
+    def get_uninspected_source_distributions(self) -> List[SourceDistribution]:
         archives = [
             Archive(path=path)
             for path in list_files(self.download_directory)
@@ -68,11 +79,11 @@ class WheelBuilder:
                 continue
         return distributions
 
-    def register_all_source_distributions(self):
+    def register_all_source_distributions(self) -> None:
         for path in list_files(self.download_directory):
             self.inspected_source_distribution_files.add(path)
 
-    def extract_wheels(self):
+    def extract_wheels(self) -> List[str]:
         self.ensure_extracted_wheels_directory_exists()
 
         wheels = [
@@ -93,21 +104,21 @@ class WheelBuilder:
             if dist_info.endswith(".dist-info")
         ]
 
-    def get_frozen_requirements(self):
+    def get_frozen_requirements(self) -> str:
         return self.pip.freeze(python_path=[self.extracted_wheels_directory])
 
-    def ensure_download_directory_exists(self):
+    def ensure_download_directory_exists(self) -> None:
         try:
             os.makedirs(self.download_directory)
         except FileExistsError:
             pass
 
-    def ensure_extracted_wheels_directory_exists(self):
+    def ensure_extracted_wheels_directory_exists(self) -> None:
         try:
             os.makedirs(self.extracted_wheels_directory)
         except FileExistsError:
             pass
 
 
-def list_files(path):
-    return map(lambda f: os.path.join(path, f), os.listdir(path))
+def list_files(path: str) -> List[str]:
+    return list(map(lambda f: os.path.join(path, f), os.listdir(path)))

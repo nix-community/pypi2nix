@@ -1,26 +1,30 @@
 import os
 import shlex
 import sys
+from typing import Iterable
 
 import click
 import jinja2
 from setuptools._vendor.packaging.utils import canonicalize_name
 
+from pypi2nix.overrides import AnyOverrides
+from pypi2nix.sources import Sources
+from pypi2nix.wheel import Wheel
+
 HERE = os.path.dirname(__file__)
 
 
 def main(
-    packages_metadata,
-    sources,
-    requirements_name,
-    requirements_files,
-    requirements_frozen,
-    extra_build_inputs,
-    enable_tests,
-    python_version,
-    current_dir,
-    common_overrides=[],
-):
+    packages_metadata: Iterable[Wheel],
+    sources: Sources,
+    requirements_name: str,
+    requirements_frozen: str,
+    extra_build_inputs: Iterable[str],
+    enable_tests: bool,
+    python_version: str,
+    current_dir: str,
+    common_overrides: Iterable[AnyOverrides] = [],
+) -> None:
     """Create Nix expressions.
     """
 
