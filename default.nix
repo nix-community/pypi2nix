@@ -30,6 +30,7 @@ let
     builtins.map (name: builtins.getAttr name pythonPackages)
       (builtins.filter (x: x != "")
         (builtins.foldl' applyTransform (readLines file) transforms));
+  maybeIntegrationTestsDir = pkgs.lib.optionalString (! excludeIntegrationTests) "integrationtests/";
 in python.mkDerivation {
   name = "pypi2nix-${version}";
   src = nix-gitignore.gitignoreSource additionalIgnores ./.;
@@ -39,11 +40,16 @@ in python.mkDerivation {
   doCheck = true;
   checkPhase = ''
     echo "Running black ..."
-    black --check --diff -v setup.py src/ integrationtests/ unittests/ mypy/
+    black --check --diff -v setup.py src/  unittests/ mypy/ ${maybeIntegrationTestsDir}
     echo "Running flake8 ..."
-    flake8 -v setup.py src/ integrationtests/ unittests/
+    flake8 -v setup.py src/ ${maybeIntegrationTestsDir} unittests/
     mypy --config-file setup.cfg src/
-    mypy --config-file setup.cfg unittests/ integrationtests/  --allow-untyped-defs --ignore-missing-imports
+    mypy \
+        --config-file setup.cfg \
+        unittests/ \
+        ${maybeIntegrationTestsDir} \
+        --allow-untyped-defs \
+        --ignore-missing-imports
     echo "Running pytest ..."
     PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v unittests/ -m 'not nix'
   '';
