@@ -47,6 +47,7 @@ in python.mkDerivation {
     mypy \
         --config-file setup.cfg \
         unittests/ \
+        conftest.py \
         ${maybeIntegrationTestsDir} \
         --allow-untyped-defs \
         --ignore-missing-imports

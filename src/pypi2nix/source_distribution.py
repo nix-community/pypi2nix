@@ -11,6 +11,8 @@ import toml
 from setuptools._vendor.packaging.utils import canonicalize_name
 
 from pypi2nix.archive import Archive
+from pypi2nix.logger import Logger
+from pypi2nix.requirement_parser import ParsingFailed
 from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
@@ -22,14 +24,21 @@ class DistributionNotDetected(Exception):
 
 class SourceDistribution:
     def __init__(
-        self, name: str, pyproject_toml: Any = None, setup_cfg: Any = None
+        self,
+        name: str,
+        logger: Logger,
+        pyproject_toml: Any = None,
+        setup_cfg: Any = None,
     ) -> None:
         self.name = canonicalize_name(name)
         self.pyproject_toml = pyproject_toml
         self.setup_cfg = setup_cfg
+        self.logger = logger
 
     @classmethod
-    def from_archive(source_distribution, archive: Archive) -> "SourceDistribution":
+    def from_archive(
+        source_distribution, archive: Archive, logger: Logger
+    ) -> "SourceDistribution":
         with archive.extracted_files() as extraction_directory:
             extracted_files = [
                 os.path.join(directory_path, file_name)
@@ -47,7 +56,7 @@ class SourceDistribution:
                 "Could not parse source distribution metadata, name detection failed"
             )
         return source_distribution(
-            name=name, pyproject_toml=pyproject_toml, setup_cfg=setup_cfg
+            name=name, pyproject_toml=pyproject_toml, setup_cfg=setup_cfg, logger=logger
         )
 
     @classmethod
@@ -109,9 +118,20 @@ class SourceDistribution:
             for build_input in self.pyproject_toml.get("build-system", {}).get(
                 "requires", []
             ):
-                requirement = requirement_parser.parse(build_input)
-                if requirement.applies_to_target(target_platform):
-                    requirement_set.add(requirement)
+                try:
+                    requirement = requirement_parser.parse(build_input)
+                except ParsingFailed as e:
+                    self.logger.warning(
+                        "Failed to parse build dependency of `{name}`".format(
+                            name=self.name
+                        )
+                    )
+                    self.logger.warning(
+                        "Possible reason: `{reason}`".format(reason=e.reason)
+                    )
+                else:
+                    if requirement.applies_to_target(target_platform):
+                        requirement_set.add(requirement)
         return requirement_set
 
     def build_dependencies_from_setup_cfg(
@@ -123,7 +143,18 @@ class SourceDistribution:
             requirements.add(requirement_parser.parse(setup_requires))
         elif isinstance(setup_requires, list):
             for requirement_string in setup_requires:
-                requirement = requirement_parser.parse(requirement_string)
-                if requirement.applies_to_target(target_platform):
-                    requirements.add(requirement)
+                try:
+                    requirement = requirement_parser.parse(requirement_string)
+                except ParsingFailed as e:
+                    self.logger.warning(
+                        "Failed to parse build dependency of `{name}`".format(
+                            name=self.name
+                        )
+                    )
+                    self.logger.warning(
+                        "Possible reason: `{reason}`".format(reason=e.reason)
+                    )
+                else:
+                    if requirement.applies_to_target(target_platform):
+                        requirements.add(requirement)
         return requirements

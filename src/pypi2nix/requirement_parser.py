@@ -14,7 +14,11 @@ from pypi2nix.requirements import VersionRequirement
 
 
 class ParsingFailed(Exception):
-    pass
+    def __init__(self, reason: str) -> None:
+        self.reason = reason
+
+    def __str__(self) -> str:
+        return self.reason
 
 
 class RequirementParser:

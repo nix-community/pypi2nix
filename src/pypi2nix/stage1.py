@@ -8,6 +8,7 @@ from typing import Optional
 from typing import Set
 
 from pypi2nix.archive import Archive
+from pypi2nix.logger import Logger
 from pypi2nix.pip import Pip
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.source_distribution import DistributionNotDetected
@@ -15,7 +16,7 @@ from pypi2nix.source_distribution import SourceDistribution
 
 
 class WheelBuilder:
-    def __init__(self, pip: Pip, project_directory: str) -> None:
+    def __init__(self, pip: Pip, project_directory: str, logger: Logger) -> None:
         self.pip = pip
         self.download_directory = os.path.join(project_directory, "download")
         self.wheel_directory = os.path.join(project_directory, "wheel")
@@ -25,6 +26,7 @@ class WheelBuilder:
         self.additional_build_dependencies: Dict[str, RequirementSet] = defaultdict(
             lambda: RequirementSet(pip.target_platform)
         )
+        self.logger = logger
 
     def build(
         self,
@@ -74,7 +76,9 @@ class WheelBuilder:
         distributions = list()
         for archive in archives:
             try:
-                distributions.append(SourceDistribution.from_archive(archive))
+                distributions.append(
+                    SourceDistribution.from_archive(archive, self.logger)
+                )
             except DistributionNotDetected:
                 continue
         return distributions
