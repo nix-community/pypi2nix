@@ -1,9 +1,11 @@
 import os
 import os.path
+from io import StringIO
 
 import pytest
 
 from pypi2nix.archive import Archive
+from pypi2nix.logger import Logger
 from pypi2nix.nix import Nix
 from pypi2nix.pip import Pip
 from pypi2nix.requirement_parser import requirement_parser
@@ -53,8 +55,8 @@ def pip(nix, project_dir, current_platform):
 
 
 @pytest.fixture
-def wheel_builder(pip, project_dir):
-    return WheelBuilder(pip, project_dir)
+def wheel_builder(pip, project_dir, logger):
+    return WheelBuilder(pip, project_dir, logger)
 
 
 @pytest.fixture
@@ -153,3 +155,14 @@ def test_zip_path():
 @pytest.fixture
 def test_tar_bz2_path():
     return os.path.join(DATA_DIRECTORY, "test.tar.bz2")
+
+
+@pytest.fixture
+def data_directory():
+    return DATA_DIRECTORY
+
+
+@pytest.fixture
+def logger():
+    with StringIO() as f:
+        yield Logger(output=f)

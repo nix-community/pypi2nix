@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 import tempfile
 from typing import List
 from typing import Optional
@@ -11,6 +12,7 @@ import pypi2nix.stage1
 import pypi2nix.stage2
 import pypi2nix.stage3
 import pypi2nix.utils
+from pypi2nix.logger import Logger
 from pypi2nix.nix import Nix
 from pypi2nix.overrides import AnyOverrides
 from pypi2nix.pip import Pip
@@ -153,6 +155,8 @@ def main(
 ) -> None:
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
+
+    logger = Logger(output=sys.stdout)
     nix_executable_directory: Optional[str] = (
         os.path.abspath(os.path.dirname(nix_shell))
         if os.path.exists(nix_shell)
@@ -256,7 +260,9 @@ def main(
         wheels_cache=wheels_cache,
         target_platform=target_platform,
     )
-    wheel_builder = pypi2nix.stage1.WheelBuilder(pip=pip, project_directory=project_dir)
+    wheel_builder = pypi2nix.stage1.WheelBuilder(
+        pip=pip, project_directory=project_dir, logger=logger
+    )
     wheels = wheel_builder.build(
         requirements=requirement_set, setup_requirements=setup_requirements
     )
