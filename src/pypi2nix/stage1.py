@@ -33,8 +33,19 @@ class WheelBuilder:
         requirements: RequirementSet,
         setup_requirements: Optional[RequirementSet] = None,
     ) -> List[str]:
+        self.ensure_download_directory_exists()
         if setup_requirements is None:
+            self.logger.info("No setup requirements detected")
             setup_requirements = RequirementSet(self.pip.target_platform)
+        else:
+            self.logger.info("Instal setup requirements")
+            setup_requirements = (
+                self.detect_additional_build_dependencies(setup_requirements)
+                + setup_requirements
+            )
+            self.pip.install(
+                setup_requirements, source_directories=[self.download_directory]
+            )
         requirements = requirements + setup_requirements
         detected_requirements = self.detect_additional_build_dependencies(requirements)
         updated_requirements = detected_requirements + requirements
