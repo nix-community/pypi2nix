@@ -55,8 +55,8 @@ in python.mkDerivation {
     PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v unittests/ -m 'not nix'
   '';
   meta = {
-    homepage = https://github.com/garbas/pypi2nix;
+    homepage = https://github.com/nix-community/pypi2nix;
     description = "A tool that generates nix expressions for your python packages, so you don't have to.";
-    maintainers = with pkgs.lib.maintainers; [ garbas ];
+    maintainers = with pkgs.lib.maintainers; [ seppeljordan garbas ];
   };
 }

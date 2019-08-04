@@ -8,14 +8,14 @@ from pypi2nix.package_source import UrlSource
 
 from .switches import nix
 
-URL_SOURCE_URL = "https://github.com/garbas/pypi2nix/archive/4e85fe7505dd7e703aacc18d9ef45f7e47947a6a.zip"
+URL_SOURCE_URL = "https://github.com/nix-community/pypi2nix/archive/4e85fe7505dd7e703aacc18d9ef45f7e47947a6a.zip"
 URL_SOURCE_HASH = "1x3dzqlnryplmxm3z1lnl40y0i2g8n6iynlngq2kkknxj9knjyhv"
 
 
 @pytest.fixture
 def git_source():
     return GitSource(
-        url="https://github.com/garbas/pypi2nix.git",
+        url="https://github.com/nix-community/pypi2nix.git",
         revision="4e85fe7505dd7e703aacc18d9ef45f7e47947a6a",
     )
 
