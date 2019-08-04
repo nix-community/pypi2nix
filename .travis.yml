@@ -17,6 +17,7 @@ env:
     - TEST_FILE=pillow
     - TEST_FILE=rss2email
     - TEST_FILE=scipy
+    - TEST_FILE=serpy_0_1_1
     - TEST_FILE=tornado
 install:
 - sudo mount -o remount,exec,size=4G,mode=755 /run/user || true
