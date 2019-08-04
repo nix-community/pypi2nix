@@ -301,5 +301,5 @@ def main(
     click.echo("    nix-shell requirements.nix -A interpreter")
     click.echo("")
     click.echo("More information you can find at")
-    click.echo("    https://github.com/garbas/pypi2nix")
+    click.echo("    https://github.com/nix-community/pypi2nix")
     click.echo("")

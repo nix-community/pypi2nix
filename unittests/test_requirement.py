@@ -31,7 +31,7 @@ def test_requirement_detects_source_of_pypi_package_as_none():
 
 def test_requirement_finds_name_of_git_package():
     requirement = requirement_parser.parse(
-        "git+https://github.com/garbas/pypi2nix.git#egg=pypi2nix"
+        "git+https://github.com/nix-community/pypi2nix.git#egg=pypi2nix"
     )
     assert requirement.name() == "pypi2nix"
 

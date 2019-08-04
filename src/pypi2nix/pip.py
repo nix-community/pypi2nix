@@ -254,6 +254,6 @@ class Pip:
             body += "% pypi2nix " + " ".join(sys.argv[1:]) + "\n"
             body += self.build_output + "\n```\n"
             click.launch(
-                "https://github.com/garbas/pypi2nix/issues/new?%s"
+                "https://github.com/nix-community/pypi2nix/issues/new?%s"
                 % (urllib.parse.urlencode(dict(title=title, body=body)))
             )
