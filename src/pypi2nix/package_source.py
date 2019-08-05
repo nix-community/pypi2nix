@@ -6,6 +6,7 @@ from typing import Union
 import click
 import pkg_resources
 
+from pypi2nix.logger import Logger
 from pypi2nix.utils import prefetch_git
 from pypi2nix.utils import prefetch_hg
 from pypi2nix.utils import prefetch_url
@@ -52,10 +53,13 @@ class GitSource:
 
 
 class HgSource:
-    def __init__(self, url: str, revision: Optional[str] = None) -> None:
+    def __init__(
+        self, url: str, logger: Logger, revision: Optional[str] = None
+    ) -> None:
         self.url = url
         self._revision = revision
         self._prefetch_data: Optional[Dict[str, str]] = None
+        self.logger = logger
 
     def nix_expression(self) -> str:
         return "\n".join(
@@ -76,15 +80,18 @@ class HgSource:
 
     def prefetch_data(self) -> Dict[str, str]:
         if self._prefetch_data is None:
-            self._prefetch_data = prefetch_hg(self.url, self._revision)
+            self._prefetch_data = prefetch_hg(self.url, self.logger, self._revision)
         return self._prefetch_data
 
 
 class UrlSource:
-    def __init__(self, url: str, hash_value: Optional[str] = None) -> None:
+    def __init__(
+        self, url: str, logger: Logger, hash_value: Optional[str] = None
+    ) -> None:
         self.url = url
         self._hash_value = hash_value
         self.chunk_size = 2048
+        self.logger = logger
 
     def nix_expression(self) -> str:
         return "\n".join(
@@ -102,7 +109,7 @@ class UrlSource:
         return self._hash_value
 
     def calculate_hash_value(self) -> str:
-        return prefetch_url(self.url)
+        return prefetch_url(self.url, self.logger)
 
 
 class PathSource:

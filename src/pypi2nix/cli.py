@@ -13,9 +13,11 @@ import pypi2nix.stage2
 import pypi2nix.stage3
 import pypi2nix.utils
 from pypi2nix.logger import Logger
+from pypi2nix.logger import verbosity_from_int
 from pypi2nix.nix import Nix
 from pypi2nix.overrides import AnyOverrides
 from pypi2nix.pip import Pip
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements_collector import RequirementsCollector
 from pypi2nix.sources import Sources
 from pypi2nix.target_platform import PlatformGenerator
@@ -157,16 +159,17 @@ def main(
     """
 
     logger = Logger(output=sys.stdout)
+    verbosity = verbosity_from_int(verbose)
+    logger.set_verbosity(verbosity)
     nix_executable_directory: Optional[str] = (
         os.path.abspath(os.path.dirname(nix_shell))
         if os.path.exists(nix_shell)
         else None
     )
+    requirement_parser = RequirementParser(logger)
 
     nix = Nix(
-        nix_path=nix_path,
-        executable_directory=nix_executable_directory,
-        verbose=verbose != 0,
+        nix_path=nix_path, executable_directory=nix_executable_directory, logger=logger
     )
     platform_generator = PlatformGenerator(nix=nix)
 
@@ -196,8 +199,10 @@ def main(
     python_version = pypi2nix.utils.PYTHON_VERSIONS[python_version]
     target_platform = platform_generator.from_python_version(python_version_argument)
 
-    requirement_collector = RequirementsCollector(target_platform)
-    setup_requirement_collector = RequirementsCollector(target_platform)
+    requirement_collector = RequirementsCollector(target_platform, requirement_parser)
+    setup_requirement_collector = RequirementsCollector(
+        target_platform, requirement_parser
+    )
 
     extra_build_inputs = pypi2nix.utils.args_as_list(extra_build_inputs)
     setup_requires = pypi2nix.utils.args_as_list(setup_requires)
@@ -261,7 +266,10 @@ def main(
         target_platform=target_platform,
     )
     wheel_builder = pypi2nix.stage1.WheelBuilder(
-        pip=pip, project_directory=project_dir, logger=logger
+        pip=pip,
+        project_directory=project_dir,
+        logger=logger,
+        requirement_parser=requirement_parser,
     )
     wheels = wheel_builder.build(
         requirements=requirement_set, setup_requirements=setup_requirements
@@ -291,6 +299,7 @@ def main(
         enable_tests=enable_tests,
         python_version=python_version,
         current_dir=current_dir,
+        logger=logger,
         common_overrides=overrides,
     )
 

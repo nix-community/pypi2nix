@@ -8,7 +8,7 @@ from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
 from pypi2nix.nix import Nix
 from pypi2nix.pip import Pip
-from pypi2nix.requirement_parser import requirement_parser
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.stage1 import WheelBuilder
 from pypi2nix.target_platform import PlatformGenerator
@@ -18,8 +18,8 @@ DATA_DIRECTORY = os.path.join(os.path.dirname(__file__), "unittests", "data")
 
 
 @pytest.fixture
-def nix():
-    return Nix(verbose=True)
+def nix(logger):
+    return Nix(logger)
 
 
 @pytest.fixture
@@ -55,8 +55,8 @@ def pip(nix, project_dir, current_platform):
 
 
 @pytest.fixture
-def wheel_builder(pip, project_dir, logger):
-    return WheelBuilder(pip, project_dir, logger)
+def wheel_builder(pip, project_dir, logger, requirement_parser):
+    return WheelBuilder(pip, project_dir, logger, requirement_parser)
 
 
 @pytest.fixture
@@ -70,7 +70,7 @@ def extracted_six_package(six_requirements, wheel_builder, default_environment):
 
 
 @pytest.fixture
-def six_requirements(project_dir, current_platform):
+def six_requirements(project_dir, current_platform, requirement_parser):
     requirements = RequirementSet(current_platform)
     requirements.add(requirement_parser.parse("six == 1.12.0"))
     return requirements
@@ -91,7 +91,7 @@ def six_source_distribution_archive(pip, download_dir, six_requirements):
 
 
 @pytest.fixture
-def requirements_for_jsonschema(current_platform):
+def requirements_for_jsonschema(current_platform, requirement_parser):
     requirements = RequirementSet(current_platform)
     requirements.add(requirement_parser.parse("jsonschema == 3.0.1"))
     return requirements
@@ -107,7 +107,7 @@ def distribution_archive_for_jsonschema(pip, download_dir, requirements_for_json
 
 
 @pytest.fixture(params=("six == 1.12.0", "setuptools == 41.0.1"))
-def requirement(request):
+def requirement(request, requirement_parser):
     return requirement_parser.parse(request.param)
 
 
@@ -166,3 +166,8 @@ def data_directory():
 def logger():
     with StringIO() as f:
         yield Logger(output=f)
+
+
+@pytest.fixture
+def requirement_parser(logger):
+    return RequirementParser(logger=logger)

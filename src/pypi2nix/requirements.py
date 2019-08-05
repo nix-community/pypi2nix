@@ -12,6 +12,7 @@ from attr import evolve
 from setuptools._vendor.packaging.utils import canonicalize_name
 
 from pypi2nix.environment_marker import EnvironmentMarker
+from pypi2nix.logger import Logger
 from pypi2nix.package_source import GitSource
 from pypi2nix.package_source import HgSource
 from pypi2nix.package_source import PackageSource
@@ -66,6 +67,7 @@ class UrlRequirement(Requirement):
     _url: str = attrib()
     _extras: Set[str] = attrib()
     _environment_markers: Optional[EnvironmentMarker] = attrib()
+    _logger: Logger = attrib()
 
     def name(self) -> str:
         return canonicalize_name(self._name)
@@ -115,9 +117,9 @@ class UrlRequirement(Requirement):
         elif self._url.startswith("hg+"):
             return self._handle_hg_source(self._url[3:])
         elif self._url.startswith("http://"):
-            return UrlSource(url=self._url)
+            return UrlSource(url=self._url, logger=self._logger)
         elif self._url.startswith("https://"):
-            return UrlSource(url=self._url)
+            return UrlSource(url=self._url, logger=self._logger)
         else:
             return PathSource(path=self._url)
 
@@ -128,9 +130,9 @@ class UrlRequirement(Requirement):
         try:
             url, rev = url.split("@")
         except ValueError:
-            return HgSource(url=url)
+            return HgSource(url=url, logger=self._logger)
         else:
-            return HgSource(url=url, revision=rev)
+            return HgSource(url=url, revision=rev, logger=self._logger)
 
     def _handle_git_source(self, url: str) -> GitSource:
         try:

@@ -13,6 +13,8 @@ import click
 import requests
 from nix_prefetch_github import nix_prefetch_github
 
+from pypi2nix.logger import Logger
+
 NixOption = Union[str, List[str], bool]
 
 HERE = os.path.dirname(__file__)
@@ -47,13 +49,12 @@ def safe(string: str) -> str:
 
 
 def cmd(
-    command: Union[str, List[str]], verbose: bool = False, stderr: Optional[int] = None
+    command: Union[str, List[str]], logger: Logger, stderr: Optional[int] = None
 ) -> Tuple[int, str]:
     if isinstance(command, str):
         command = shlex.split(command)
 
-    if verbose:
-        click.echo("|-> " + " ".join(map(shlex.quote, command)))
+    logger.info("|-> " + " ".join(map(shlex.quote, command)))
 
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=stderr)
 
@@ -64,8 +65,7 @@ def cmd(
             if line == "" and p.poll() is not None:
                 break
             if line != "":
-                if verbose:
-                    click.echo("    " + line.rstrip("\n"))
+                logger.info("    " + line.rstrip("\n"))
                 out.append(line)
     except Exception:
         p.kill()
@@ -135,11 +135,9 @@ def prefetch_git(url: str, rev: Optional[str] = None) -> Dict[str, str]:
     return repo_data  # type: ignore
 
 
-def prefetch_hg(
-    url: str, rev: Optional[str] = None, verbose: bool = False
-) -> Dict[str, str]:
+def prefetch_hg(url: str, logger: Logger, rev: Optional[str] = None) -> Dict[str, str]:
     command = ["nix-prefetch-hg", url] + ([rev] if rev else [])
-    return_code, output = cmd(command, verbose, stderr=subprocess.STDOUT)
+    return_code, output = cmd(command, logger, stderr=subprocess.STDOUT)
     if return_code != 0:
         raise click.ClickException(
             " ".join(
@@ -181,9 +179,9 @@ def escape_double_quotes(text: str) -> str:
     return text.replace('"', '\\"')
 
 
-def prefetch_url(url: str, verbose: bool = False) -> str:
+def prefetch_url(url: str, logger: Logger) -> str:
     returncode, output = cmd(
-        ["nix-prefetch-url", url], verbose=verbose, stderr=subprocess.DEVNULL
+        ["nix-prefetch-url", url], logger, stderr=subprocess.DEVNULL
     )
     return output.rstrip()
 

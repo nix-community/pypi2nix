@@ -7,6 +7,7 @@ import parsley
 
 from pypi2nix.environment_marker import EnvironmentMarker
 from pypi2nix.environment_marker import MarkerToken
+from pypi2nix.requirements import Logger
 from pypi2nix.requirements import PathRequirement
 from pypi2nix.requirements import Requirement
 from pypi2nix.requirements import UrlRequirement
@@ -22,8 +23,9 @@ class ParsingFailed(Exception):
 
 
 class RequirementParser:
-    def __init__(self) -> None:
+    def __init__(self, logger: Logger) -> None:
         self._compiled_grammar = None
+        self.logger = logger
 
     requirement_grammar = """
         wsp           = ' ' | '\t'
@@ -70,11 +72,11 @@ class RequirementParser:
         name_req      = (name:n wsp* extras?:e wsp* versionspec?:v wsp* quoted_marker?:m
                          -> VersionRequirement(name=n, extras=set(e or []), versions=v or [], environment_markers=m))
         url_req       = name:n wsp* extras?:e wsp* urlspec:v (wsp+ | end) quoted_marker?:m
-                        -> UrlRequirement(name=n, extras=set(e or []), url=v or [], environment_markers=m)
+                        -> UrlRequirement(name=n, extras=set(e or []), url=v or [], environment_markers=m, logger=logger)
         path_req_pip_style = (editable wsp+)? <file_path>:path egg_name:name extras?:e (wsp* | end) quoted_marker?:marker
                              -> PathRequirement(name=name, path=path, environment_markers=marker, extras=set(e or []))
         url_req_pip_style = (editable wsp+)? <('hg+' | 'git+')? URI_reference_pip_style>:url egg_name:name extras?:e (wsp* | end) quoted_marker?:marker
-                            -> UrlRequirement(name=name, url=url, extras=set(e or []), environment_markers=marker)
+                            -> UrlRequirement(name=name, url=url, extras=set(e or []), environment_markers=marker, logger=logger)
         specification = wsp* ( path_req_pip_style | url_req_pip_style | url_req | name_req ):s wsp* -> s
 
         file_path     = <('./' | '/')? file_path_segment ('/' file_path_segment)* '/'?>
@@ -187,6 +189,7 @@ class RequirementParser:
                     "UrlRequirement": UrlRequirement,
                     "PathRequirement": PathRequirement,
                     "EnvironmentMarker": EnvironmentMarker,
+                    "logger": self.logger,
                 },
             )
         return self._compiled_grammar
@@ -201,6 +204,3 @@ class RequirementParser:
             return self.compiled_grammar()(line).specification()  # type: ignore
         except parsley.ParseError as e:
             raise ParsingFailed("{message}".format(message=e.formatError()))
-
-
-requirement_parser = RequirementParser()

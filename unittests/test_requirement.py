@@ -5,7 +5,6 @@ import pytest
 from pypi2nix.package_source import GitSource
 from pypi2nix.package_source import HgSource
 from pypi2nix.requirement_parser import ParsingFailed
-from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirements import IncompatibleRequirements
 from pypi2nix.requirements import PathRequirement
 from pypi2nix.requirements import UrlRequirement
@@ -14,49 +13,55 @@ from pypi2nix.requirements import VersionRequirement
 from .switches import nix
 
 
-def test_requirement_cannot_be_constructed_from_line_containing_newline():
+def test_requirement_cannot_be_constructed_from_line_containing_newline(
+    requirement_parser
+):
     with pytest.raises(ParsingFailed):
         requirement_parser.parse("pypi2nix\n >= 1.0")
 
 
-def test_requirement_finds_name_of_pypi_packages():
+def test_requirement_finds_name_of_pypi_packages(requirement_parser):
     requirement = requirement_parser.parse("pypi2nix")
     assert requirement.name() == "pypi2nix"
 
 
-def test_requirement_detects_source_of_pypi_package_as_none():
+def test_requirement_detects_source_of_pypi_package_as_none(requirement_parser):
     requirement = requirement_parser.parse("pypi2nix")
     assert requirement.source() is None
 
 
-def test_requirement_finds_name_of_git_package():
+def test_requirement_finds_name_of_git_package(requirement_parser):
     requirement = requirement_parser.parse(
         "git+https://github.com/nix-community/pypi2nix.git#egg=pypi2nix"
     )
     assert requirement.name() == "pypi2nix"
 
 
-def test_requirement_finds_name_of_hg_package():
+def test_requirement_finds_name_of_hg_package(requirement_parser):
     requirement = requirement_parser.parse("hg+https://url.test/repo#egg=testegg")
     assert requirement.name() == "testegg"
 
 
-def test_requirement_finds_name_of_url_package():
+def test_requirement_finds_name_of_url_package(requirement_parser):
     requirement = requirement_parser.parse("https://url.test/repo#egg=testegg")
     assert requirement.name() == "testegg"
 
 
-def test_requirement_can_handle_environment_marker():
+def test_requirement_can_handle_environment_marker(requirement_parser):
     requirement = requirement_parser.parse("pypi2nix; os_name == '%s'" % os.name)
     assert requirement.name() == "pypi2nix"
 
 
-def test_applies_to_target_works_properly_with_positiv_marker(current_platform):
+def test_applies_to_target_works_properly_with_positiv_marker(
+    current_platform, requirement_parser
+):
     requirement = requirement_parser.parse("pypi2nix; os_name == '%s'" % os.name)
     assert requirement.applies_to_target(current_platform)
 
 
-def test_applies_to_target_works_properly_with_negative_marker(current_platform):
+def test_applies_to_target_works_properly_with_negative_marker(
+    current_platform, requirement_parser
+):
     requirement = requirement_parser.parse("pypi2nix; os_name != '%s'" % os.name)
     assert not requirement.applies_to_target(current_platform)
 
@@ -70,44 +75,48 @@ def test_applies_to_target_works_properly_with_negative_marker(current_platform)
         ("https://test.test#egg=Test_Req", "test-req"),
     ],
 )
-def test_names_of_requirements_are_canonicalized(line, expected):
+def test_names_of_requirements_are_canonicalized(line, expected, requirement_parser):
     requirement = requirement_parser.parse(line)
     assert requirement.name() == expected
 
 
-def test_to_line_reproduces_canonicalized_name():
+def test_to_line_reproduces_canonicalized_name(requirement_parser):
     name = "pypi2nix"
     requirement = requirement_parser.parse(name)
     assert name in requirement.to_line()
 
 
-def test_to_line_reproduces_version_specifier():
+def test_to_line_reproduces_version_specifier(requirement_parser):
     line = "pypi2nix < 2.0, >= 1.9"
     requirement = requirement_parser.parse(line)
     assert "< 2.0" in requirement.to_line()
     assert ">= 1.9" in requirement.to_line()
 
 
-def test_from_line_recognizes_git_sources():
+def test_from_line_recognizes_git_sources(requirement_parser):
     line = "git+https://test.test/test#egg=test-egg"
     requirement = requirement_parser.parse(line)
     assert requirement.name() == "test-egg"
     assert isinstance(requirement.source(), GitSource)
 
 
-def test_from_line_accepts_requirement_with_marker_including_in_operator():
+def test_from_line_accepts_requirement_with_marker_including_in_operator(
+    requirement_parser
+):
     requirement = requirement_parser.parse("zipfile36; python_version in '3.3 3.4 3.5'")
     assert requirement.name() == "zipfile36"
 
 
-def test_that_applies_to_target_works_with_in_keyword(current_platform):
+def test_that_applies_to_target_works_with_in_keyword(
+    current_platform, requirement_parser
+):
     requirement = requirement_parser.parse(
         "pypi2nix; python_version in '{}'".format(current_platform.version)
     )
     assert requirement.applies_to_target(current_platform)
 
 
-def test_that_mercurial_source_url_gets_detected():
+def test_that_mercurial_source_url_gets_detected(requirement_parser):
     requirement = requirement_parser.parse(
         "hg+https://bitbucket.org/tarek/flake8@a209fb6#egg=flake8"
     )
@@ -116,7 +125,7 @@ def test_that_mercurial_source_url_gets_detected():
 
 
 @nix
-def test_that_mercurial_source_extracted_is_valid():
+def test_that_mercurial_source_extracted_is_valid(requirement_parser):
     requirement = requirement_parser.parse(
         "hg+https://bitbucket.org/tarek/flake8@a209fb6#egg=flake8"
     )
@@ -126,7 +135,7 @@ def test_that_mercurial_source_extracted_is_valid():
 
 
 @nix
-def test_that_git_source_extracted_is_valid():
+def test_that_git_source_extracted_is_valid(requirement_parser):
     requirement = requirement_parser.parse(
         "git+https://github.com/nix-community/pypi2nix.git@5c65345a2ce7f2f1c376f983d20e935c09c15995#egg=pypi2nix"
     )
@@ -135,20 +144,20 @@ def test_that_git_source_extracted_is_valid():
     source.nix_expression()
 
 
-def test_that_from_line_to_line_preserves_urls():
+def test_that_from_line_to_line_preserves_urls(requirement_parser):
     line = "git+https://example.test/#egg=testegg"
     requirement = requirement_parser.parse(line)
     assert requirement.to_line() == line
 
 
-def test_that_to_line_reproduces_path_correctly():
+def test_that_to_line_reproduces_path_correctly(requirement_parser):
     line = "path/to/requirement#egg=test-requirement"
     requirement = requirement_parser.parse(line)
     assert requirement.to_line() == "path/to/requirement"
 
 
 def test_that_requirements_can_be_added_together_adding_version_constraints(
-    current_platform
+    current_platform, requirement_parser
 ):
     req1 = requirement_parser.parse("req >= 1.0")
     assert isinstance(req1, VersionRequirement)
@@ -159,7 +168,9 @@ def test_that_requirements_can_be_added_together_adding_version_constraints(
     assert len(sum_requirement.version()) == len(req1.version()) + len(req2.version())
 
 
-def test_that_adding_requirements_with_different_names_throws(current_platform):
+def test_that_adding_requirements_with_different_names_throws(
+    current_platform, requirement_parser
+):
     req1 = requirement_parser.parse("req1")
     req2 = requirement_parser.parse("req2")
     with pytest.raises(IncompatibleRequirements):
@@ -167,7 +178,7 @@ def test_that_adding_requirements_with_different_names_throws(current_platform):
 
 
 def test_that_adding_requirements_with_a_version_and_a_url_results_in_url_requirement(
-    current_platform
+    current_platform, requirement_parser
 ):
     for direction in ["forward", "reverse"]:
         req1 = requirement_parser.parse("req1 >= 1.0")
@@ -181,14 +192,18 @@ def test_that_adding_requirements_with_a_version_and_a_url_results_in_url_requir
         assert sum_requirement.url() == "git+https://test.test/path"
 
 
-def test_that_adding_requirements_with_different_urls_raises(current_platform):
+def test_that_adding_requirements_with_different_urls_raises(
+    current_platform, requirement_parser
+):
     req1 = requirement_parser.parse("https://url1.test#egg=req")
     req2 = requirement_parser.parse("https://url2.test#egg=req")
     with pytest.raises(IncompatibleRequirements):
         req1.add(req2, current_platform)
 
 
-def test_that_adding_requirements_with_the_same_url_works(current_platform):
+def test_that_adding_requirements_with_the_same_url_works(
+    current_platform, requirement_parser
+):
     req1 = requirement_parser.parse("https://url.test#egg=req")
     req2 = requirement_parser.parse("https://url.test#egg=req")
     sum_requirement = req1.add(req2, current_platform)
@@ -198,7 +213,7 @@ def test_that_adding_requirements_with_the_same_url_works(current_platform):
 
 
 def test_that_adding_requirements_where_one_does_not_apply_to_system_yields_the_other(
-    current_platform
+    current_platform, requirement_parser
 ):
     req1 = requirement_parser.parse("req1")
     req2 = requirement_parser.parse(
@@ -209,7 +224,7 @@ def test_that_adding_requirements_where_one_does_not_apply_to_system_yields_the_
     assert not sum_requirement.version()
 
 
-def test_that_we_parse_requirements_with_file_paths():
+def test_that_we_parse_requirements_with_file_paths(requirement_parser):
     requirement = requirement_parser.parse("path/to/egg#egg=testegg")
     assert isinstance(requirement, PathRequirement)
     assert requirement.name() == "testegg"
@@ -221,7 +236,9 @@ def test_that_we_parse_requirements_with_file_paths():
     ["req", "req <= 1.0", "https://test.test#egg=req", "path/to/egg#egg=req"],
 )
 @pytest.mark.parametrize("req_line_2", ["req", "req <= 2.0"])
-def test_that_we_can_add_two(req_line_1, req_line_2, current_platform):
+def test_that_we_can_add_two(
+    req_line_1, req_line_2, current_platform, requirement_parser
+):
     requirement1 = requirement_parser.parse(req_line_1)
     requirement2 = requirement_parser.parse(req_line_2)
     requirement1.add(requirement2, current_platform)
@@ -241,7 +258,10 @@ def test_that_we_can_add_two(req_line_1, req_line_2, current_platform):
     ("path/to/req#egg=test-req", "path/to/req#egg=test-req[extra]"),
 )
 def test_that_we_can_add_version_with_path_requirement_result_is_path_requirement(
-    version_requirement_line, path_requirement_line, current_platform
+    version_requirement_line,
+    path_requirement_line,
+    current_platform,
+    requirement_parser,
 ):
     req1 = requirement_parser.parse(version_requirement_line)
     req2 = requirement_parser.parse(path_requirement_line)
@@ -266,7 +286,7 @@ def test_that_we_can_add_version_with_path_requirement_result_is_path_requiremen
     ("https://test.test/#egg=test-req", "https://test.test/#egg=test-req[extra]"),
 )
 def test_can_add_version_requirement_with_url_requirement(
-    version_requirement_line, url_requirement_line, current_platform
+    version_requirement_line, url_requirement_line, current_platform, requirement_parser
 ):
     req1 = requirement_parser.parse(version_requirement_line)
     req2 = requirement_parser.parse(url_requirement_line)
@@ -286,7 +306,7 @@ def test_can_add_version_requirement_with_url_requirement(
     ("path/to/req#egg=test-req", "path/to/req#egg=test-req[extra2]"),
 )
 def test_cannot_add_path_and_url_requirement(
-    path_requirement_line, url_requirement_line, current_platform
+    path_requirement_line, url_requirement_line, current_platform, requirement_parser
 ):
     req1 = requirement_parser.parse(path_requirement_line)
     req2 = requirement_parser.parse(url_requirement_line)
@@ -297,7 +317,9 @@ def test_cannot_add_path_and_url_requirement(
         req2.add(req1, current_platform)
 
 
-def test_cannot_add_requirements_with_different_paths(current_platform):
+def test_cannot_add_requirements_with_different_paths(
+    current_platform, requirement_parser
+):
     req1 = requirement_parser.parse("path/1#egg=test-req")
     req2 = requirement_parser.parse("path/2#egg=test-req")
 
@@ -305,7 +327,9 @@ def test_cannot_add_requirements_with_different_paths(current_platform):
         req1.add(req2, current_platform)
 
 
-def test_that_we_cannot_add_path_requirements_with_different_names(current_platform):
+def test_that_we_cannot_add_path_requirements_with_different_names(
+    current_platform, requirement_parser
+):
     req1 = requirement_parser.parse("path/to/req#egg=req1")
     req2 = requirement_parser.parse("path/to/req#egg=req2")
 
@@ -314,7 +338,7 @@ def test_that_we_cannot_add_path_requirements_with_different_names(current_platf
 
 
 def test_adding_path_requirements_where_one_requirement_does_not_apply(
-    current_platform
+    current_platform, requirement_parser
 ):
     req1 = requirement_parser.parse("path/to/req#egg=test-req")
     req2 = requirement_parser.parse(
@@ -325,21 +349,25 @@ def test_adding_path_requirements_where_one_requirement_does_not_apply(
     assert req2.add(req1, current_platform) == req1
 
 
-def test_that_we_can_add_path_requirements_with_same_path(current_platform,):
+def test_that_we_can_add_path_requirements_with_same_path(
+    current_platform, requirement_parser
+):
     req1 = requirement_parser.parse("path/to/requirement#egg=test-req")
     req2 = requirement_parser.parse("path/to/requirement#egg=test-req")
 
     assert req1.add(req2, current_platform) == req1
 
 
-def test_that_we_can_change_path_of_path_requirements():
+def test_that_we_can_change_path_of_path_requirements(requirement_parser):
     requirement = requirement_parser.parse("path/to/requirement#egg=test-req")
     assert isinstance(requirement, PathRequirement)
     requirement = requirement.change_path(lambda p: os.path.join("changed", p))
     assert requirement.path() == "changed/path/to/requirement"
 
 
-def test_that_we_can_add_url_requirements_where_one_does_not_apply(current_platform):
+def test_that_we_can_add_url_requirements_where_one_does_not_apply(
+    current_platform, requirement_parser
+):
     req1 = requirement_parser.parse("https://test.test#egg=test-req")
     req2 = requirement_parser.parse(
         'https://other.test#egg=test-req; "python_version" == "1.0"'
@@ -348,7 +376,9 @@ def test_that_we_can_add_url_requirements_where_one_does_not_apply(current_platf
     assert req2.add(req1, current_platform) == req1
 
 
-def test_cannot_add_url_requirements_with_different_names(current_platform):
+def test_cannot_add_url_requirements_with_different_names(
+    current_platform, requirement_parser
+):
     req1 = requirement_parser.parse("https://test.test#egg=req1")
     req2 = requirement_parser.parse("https://test.test#egg=req2")
     with pytest.raises(IncompatibleRequirements):

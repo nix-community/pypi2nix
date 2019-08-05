@@ -5,7 +5,7 @@ given to pypi2nix
 import os.path
 import tempfile
 
-from pypi2nix.requirement_parser import requirement_parser
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import PathRequirement
 from pypi2nix.requirements_file import RequirementsFile
@@ -13,15 +13,16 @@ from pypi2nix.target_platform import TargetPlatform
 
 
 class RequirementsCollector:
-    def __init__(self, platform: TargetPlatform):
+    def __init__(self, platform: TargetPlatform, requirement_parser: RequirementParser):
         self.platform = platform
         self.requirement_set = RequirementSet(platform)
+        self.requirement_parser = requirement_parser
 
     def requirements(self) -> RequirementSet:
         return self.requirement_set
 
     def add_line(self, line: str) -> None:
-        requirement = requirement_parser.parse(line)
+        requirement = self.requirement_parser.parse(line)
         if isinstance(requirement, PathRequirement):
             requirement = requirement.change_path(os.path.abspath)
         self.requirement_set.add(requirement)
@@ -31,6 +32,6 @@ class RequirementsCollector:
             requirements_file = RequirementsFile(file_path, project_directory)
             requirements_file.process()
             added_requirements = RequirementSet.from_file(
-                requirements_file, self.platform
+                requirements_file, self.platform, self.requirement_parser
             )
         self.requirement_set += added_requirements

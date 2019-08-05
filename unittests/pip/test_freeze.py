@@ -1,6 +1,5 @@
 import os.path
 
-from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirement_set import RequirementSet
 
 from ..switches import nix
@@ -13,7 +12,9 @@ def test_freeze_on_empty_environment_yields_empty_file(pip):
 
 
 @nix
-def test_freeze_respects_additional_python_path(pip, project_dir, current_platform):
+def test_freeze_respects_additional_python_path(
+    pip, project_dir, current_platform, requirement_parser
+):
     prefix = os.path.join(project_dir, "custom-prefix")
     download_dir = os.path.join(project_dir, "download")
     requirements = RequirementSet(current_platform)

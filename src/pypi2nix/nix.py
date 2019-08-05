@@ -3,6 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from pypi2nix.logger import Logger
 from pypi2nix.utils import NixOption
 from pypi2nix.utils import cmd
 from pypi2nix.utils import create_command_options
@@ -21,13 +22,13 @@ class EvaluationFailed(Exception):
 class Nix:
     def __init__(
         self,
+        logger: Logger,
         nix_path: List[str] = [],
         executable_directory: Optional[str] = None,
-        verbose: bool = False,
     ):
         self.nix_path = nix_path
         self.executable_directory = executable_directory
-        self.verbose = verbose
+        self.logger = logger
 
     def evaluate_expression(self, expression: str) -> str:
         output = self.run_nix_command(
@@ -86,7 +87,7 @@ class Nix:
         returncode: int
         output: str
         try:
-            returncode, output = cmd(final_command, verbose=self.verbose)
+            returncode, output = cmd(final_command, self.logger)
         except FileNotFoundError:
             raise ExecutableNotFound(
                 "Could not find executable '{program}'".format(program=binary_name)

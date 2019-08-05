@@ -13,7 +13,7 @@ from setuptools._vendor.packaging.utils import canonicalize_name
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
 from pypi2nix.requirement_parser import ParsingFailed
-from pypi2nix.requirement_parser import requirement_parser
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
 
@@ -100,16 +100,22 @@ class SourceDistribution:
         if setup_cfg_candidates:
             return setupcfg.load(setup_cfg_candidates[0])
 
-    def build_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
+    def build_dependencies(
+        self, target_platform: TargetPlatform, requirement_parser: RequirementParser
+    ) -> RequirementSet:
         if self.pyproject_toml is not None:
-            return self.build_dependencies_from_pyproject_toml(target_platform)
+            return self.build_dependencies_from_pyproject_toml(
+                target_platform, requirement_parser
+            )
         elif self.setup_cfg is not None:
-            return self.build_dependencies_from_setup_cfg(target_platform)
+            return self.build_dependencies_from_setup_cfg(
+                target_platform, requirement_parser
+            )
         else:
             return RequirementSet(target_platform)
 
     def build_dependencies_from_pyproject_toml(
-        self, target_platform: TargetPlatform
+        self, target_platform: TargetPlatform, requirement_parser: RequirementParser
     ) -> RequirementSet:
         requirement_set = RequirementSet(target_platform)
         if self.pyproject_toml is None:
@@ -135,7 +141,7 @@ class SourceDistribution:
         return requirement_set
 
     def build_dependencies_from_setup_cfg(
-        self, target_platform: TargetPlatform
+        self, target_platform: TargetPlatform, requirement_parser: RequirementParser
     ) -> RequirementSet:
         setup_requires = self.setup_cfg.get("options", {}).get("setup_requires")
         requirements = RequirementSet(target_platform)

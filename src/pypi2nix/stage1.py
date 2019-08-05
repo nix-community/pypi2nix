@@ -10,13 +10,20 @@ from typing import Set
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
 from pypi2nix.pip import Pip
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.source_distribution import DistributionNotDetected
 from pypi2nix.source_distribution import SourceDistribution
 
 
 class WheelBuilder:
-    def __init__(self, pip: Pip, project_directory: str, logger: Logger) -> None:
+    def __init__(
+        self,
+        pip: Pip,
+        project_directory: str,
+        logger: Logger,
+        requirement_parser: RequirementParser,
+    ) -> None:
         self.pip = pip
         self.download_directory = os.path.join(project_directory, "download")
         self.wheel_directory = os.path.join(project_directory, "wheel")
@@ -27,6 +34,7 @@ class WheelBuilder:
             lambda: RequirementSet(pip.target_platform)
         )
         self.logger = logger
+        self.requirement_parser = requirement_parser
 
     def build(
         self,
@@ -67,7 +75,7 @@ class WheelBuilder:
             return detected_dependencies
         for distribution in uninspected_distributions:
             build_dependencies = distribution.build_dependencies(
-                self.pip.target_platform
+                self.pip.target_platform, self.requirement_parser
             )
             self.additional_build_dependencies[distribution.name] += build_dependencies
             detected_dependencies += build_dependencies
