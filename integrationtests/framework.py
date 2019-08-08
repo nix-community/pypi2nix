@@ -40,7 +40,7 @@ class IntegrationTest:
     """
 
     def setUp(self):
-        self.logger = StreamLogger(output=sys.output)
+        self.logger = StreamLogger(output=sys.stdout)
         self.nix = Nix(nix_path=[NIX_PATH], logger=self.logger)
 
     def test_build_example(self):
