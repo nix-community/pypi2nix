@@ -119,4 +119,4 @@ class Stage2:
                     "Unable to find releases for packge {name}".format(name=wheel.name)
                 )
 
-            self.sources.add(wheel.name, find_release(wheel, wheel_data))
+            self.sources.add(wheel.name, find_release(wheel, wheel_data, self.logger))

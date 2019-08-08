@@ -120,7 +120,7 @@ class PathSource:
         return self.path
 
 
-def find_release(wheel: Wheel, wheel_data: Dict[str, Any]) -> UrlSource:
+def find_release(wheel: Wheel, wheel_data: Dict[str, Any], logger: Logger) -> UrlSource:
 
     wheel_release = None
 
@@ -169,6 +169,6 @@ def find_release(wheel: Wheel, wheel_data: Dict[str, Any]) -> UrlSource:
             "{version}".format(name=wheel.name, version=wheel.version)
         )
 
-    return UrlSource(
-        wheel_release["url"], wheel_release.get("digests", {}).get("sha256", None)
-    )
+    sha256_digest: str = wheel_release.get("digests", {}).get("sha256", None)
+    wheel_url: str = wheel_release["url"]
+    return UrlSource(wheel_url, logger, sha256_digest)
