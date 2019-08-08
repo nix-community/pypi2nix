@@ -3,17 +3,30 @@ from io import StringIO
 import pytest
 
 from pypi2nix.logger import Logger
+from pypi2nix.logger import LoggerNotConnected
+from pypi2nix.logger import ProxyLogger
+from pypi2nix.logger import StreamLogger
 from pypi2nix.logger import Verbosity
 from pypi2nix.logger import verbosity_from_int
 
 from .logger import get_logger_output
 
 
-@pytest.fixture
-def logger():
+@pytest.fixture(params=["proxy", "stream"])
+def logger(request):
     stream = StringIO("")
-    logger = Logger(output=stream)
-    return logger
+    stream_logger = StreamLogger(output=stream)
+    if request.param == "stream":
+        return stream_logger
+    elif request.param == "proxy":
+        proxy_logger = ProxyLogger()
+        proxy_logger.set_target_logger(stream_logger)
+        return proxy_logger
+
+
+@pytest.fixture
+def unconnected_proxy_logger():
+    return ProxyLogger()
 
 
 def test_can_log_warning(logger: Logger):
@@ -160,3 +173,18 @@ def test_that_high_number_gets_translated_into_debug_verbosity():
 
 def test_that_low_number_gets_translated_into_error_verbosity():
     assert verbosity_from_int(-10000) == Verbosity.ERROR
+
+
+def test_that_unconnect_proxy_logger_raises_proper_exception_on_logging(
+    unconnected_proxy_logger
+):
+    with pytest.raises(LoggerNotConnected):
+        unconnected_proxy_logger.debug("test")
+    with pytest.raises(LoggerNotConnected):
+        unconnected_proxy_logger.info("test")
+    with pytest.raises(LoggerNotConnected):
+        unconnected_proxy_logger.warning("test")
+    with pytest.raises(LoggerNotConnected):
+        unconnected_proxy_logger.error("test")
+    with pytest.raises(LoggerNotConnected):
+        unconnected_proxy_logger.set_verbosity(Verbosity.DEBUG)

@@ -12,7 +12,7 @@ import pypi2nix.stage1
 import pypi2nix.stage2
 import pypi2nix.stage3
 import pypi2nix.utils
-from pypi2nix.logger import Logger
+from pypi2nix.logger import StreamLogger
 from pypi2nix.logger import verbosity_from_int
 from pypi2nix.nix import Nix
 from pypi2nix.overrides import AnyOverrides
@@ -158,7 +158,7 @@ def main(
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
 
-    logger = Logger(output=sys.stdout)
+    logger = StreamLogger(output=sys.stdout)
     verbosity = verbosity_from_int(verbose)
     logger.set_verbosity(verbosity)
     nix_executable_directory: Optional[str] = (
@@ -280,7 +280,7 @@ def main(
 
     click.echo("Stage2: Extracting metadata from pypi.python.org ...")
 
-    stage2 = pypi2nix.stage2.Stage2(sources=sources, verbose=verbose)
+    stage2 = pypi2nix.stage2.Stage2(sources=sources, verbose=verbose, logger=logger)
 
     packages_metadata = stage2.main(
         wheel_paths=wheels,

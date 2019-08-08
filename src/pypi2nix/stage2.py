@@ -14,6 +14,7 @@ from typing import List
 import click
 import requests
 
+from pypi2nix.logger import Logger
 from pypi2nix.package_source import find_release
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
@@ -29,10 +30,13 @@ INDEX_URL = "https://pypi.python.org/pypi"
 
 
 class Stage2:
-    def __init__(self, sources: Sources, verbose: int, index: str = INDEX_URL) -> None:
+    def __init__(
+        self, sources: Sources, verbose: int, logger: Logger, index: str = INDEX_URL
+    ) -> None:
         self.sources = sources
         self.verbose = verbose
         self.index = index
+        self.logger = logger
 
     def main(
         self,
@@ -47,12 +51,12 @@ class Stage2:
         metadata: List[Wheel] = []
 
         if self.verbose > 1:
-            click.echo(
+            self.logger.info(
                 "-- sources ---------------------------------------------------------------"
             )
             for name, source in self.sources.items():
-                click.echo("{name}, {source}".format(name=name, source=name))
-            click.echo(
+                self.logger.info("{name}, {source}".format(name=name, source=name))
+            self.logger.info(
                 "--------------------------------------------------------------------------"
             )
 

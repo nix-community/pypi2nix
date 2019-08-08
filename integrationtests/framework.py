@@ -9,7 +9,7 @@ from attr import attrib
 from attr import attrs
 from attr import evolve
 
-from pypi2nix.logger import Logger
+from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
 
@@ -40,7 +40,7 @@ class IntegrationTest:
     """
 
     def setUp(self):
-        self.logger = Logger(output=sys.output)
+        self.logger = StreamLogger(output=sys.output)
         self.nix = Nix(nix_path=[NIX_PATH], logger=self.logger)
 
     def test_build_example(self):

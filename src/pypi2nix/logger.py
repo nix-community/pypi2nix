@@ -1,6 +1,13 @@
+from abc import ABCMeta
+from abc import abstractmethod
 from enum import Enum
 from enum import unique
+from typing import Optional
 from typing import TextIO
+
+
+class LoggerNotConnected(Exception):
+    pass
 
 
 @unique
@@ -25,7 +32,29 @@ def verbosity_from_int(n: int) -> Verbosity:
         return Verbosity.DEBUG
 
 
-class Logger:
+class Logger(metaclass=ABCMeta):
+    @abstractmethod
+    def error(self, text: str) -> None:
+        pass
+
+    @abstractmethod
+    def warning(self, text: str) -> None:
+        pass
+
+    @abstractmethod
+    def info(self, text: str) -> None:
+        pass
+
+    @abstractmethod
+    def debug(self, text: str) -> None:
+        pass
+
+    @abstractmethod
+    def set_verbosity(self, level: Verbosity) -> None:
+        pass
+
+
+class StreamLogger(Logger):
     def __init__(self, output: TextIO):
         self.output = output
         self.verbosity_level: Verbosity = Verbosity.DEBUG
@@ -51,3 +80,44 @@ class Logger:
 
     def set_verbosity(self, level: Verbosity) -> None:
         self.verbosity_level = level
+
+
+class ProxyLogger(Logger):
+    def __init__(self) -> None:
+        self._target_logger: Optional[Logger] = None
+
+    def info(self, text: str) -> None:
+        if self._target_logger is not None:
+            self._target_logger.info(text)
+        else:
+            raise LoggerNotConnected("Logger not connected")
+
+    def debug(self, text: str) -> None:
+        if self._target_logger is not None:
+            self._target_logger.debug(text)
+        else:
+            raise LoggerNotConnected("Logger not connected")
+
+    def warning(self, text: str) -> None:
+        if self._target_logger is not None:
+            self._target_logger.warning(text)
+        else:
+            raise LoggerNotConnected("Logger not connected")
+
+    def error(self, text: str) -> None:
+        if self._target_logger is not None:
+            self._target_logger.error(text)
+        else:
+            raise LoggerNotConnected("Logger not connected")
+
+    def set_verbosity(self, level: Verbosity) -> None:
+        if self._target_logger is not None:
+            self._target_logger.set_verbosity(level)
+        else:
+            raise LoggerNotConnected("Logger not connected")
+
+    def set_target_logger(self, target: Logger) -> None:
+        self._target_logger = target
+
+    def get_target_logger(self) -> Optional[Logger]:
+        return self._target_logger

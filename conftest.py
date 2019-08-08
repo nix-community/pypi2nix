@@ -5,7 +5,7 @@ from io import StringIO
 import pytest
 
 from pypi2nix.archive import Archive
-from pypi2nix.logger import Logger
+from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import Nix
 from pypi2nix.pip import Pip
 from pypi2nix.requirement_parser import RequirementParser
@@ -165,7 +165,7 @@ def data_directory():
 @pytest.fixture
 def logger():
     with StringIO() as f:
-        yield Logger(output=f)
+        yield StreamLogger(output=f)
 
 
 @pytest.fixture
