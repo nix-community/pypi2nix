@@ -82,28 +82,13 @@ def default_environment(pip):
 
 
 @pytest.fixture
-def six_source_distribution_archive(pip, download_dir, six_requirements):
-    pip.download_sources(six_requirements, download_dir)
-    for file_name in os.listdir(download_dir):
-        if "six" in file_name:
-            return Archive(path=os.path.join(download_dir, file_name))
-    raise Exception("Could not create source archive for `six`")
+def six_source_distribution_archive(data_directory):
+    return Archive(path=os.path.join(data_directory, "six-1.12.0.tar.gz"))
 
 
 @pytest.fixture
-def requirements_for_jsonschema(current_platform, requirement_parser):
-    requirements = RequirementSet(current_platform)
-    requirements.add(requirement_parser.parse("jsonschema == 3.0.1"))
-    return requirements
-
-
-@pytest.fixture
-def distribution_archive_for_jsonschema(pip, download_dir, requirements_for_jsonschema):
-    pip.download_sources(requirements_for_jsonschema, download_dir)
-    for file_name in os.listdir(download_dir):
-        if "jsonschema" in file_name:
-            return Archive(path=os.path.join(download_dir, file_name))
-    raise Exception("Could not download source distribution for `jsonschema`")
+def distribution_archive_for_jsonschema(data_directory):
+    return Archive(path=os.path.join(data_directory, "jsonschema-3.0.1.tar.gz"))
 
 
 @pytest.fixture(params=("six == 1.12.0", "setuptools == 41.0.1"))
@@ -111,18 +96,9 @@ def requirement(request, requirement_parser):
     return requirement_parser.parse(request.param)
 
 
-@pytest.fixture
-def source_distribution_archive(pip, requirement, download_dir, current_platform):
-    requirement_set = RequirementSet(current_platform)
-    requirement_set.add(requirement)
-    pip.download_sources(requirement_set, download_dir)
-    for file_name in os.listdir(download_dir):
-        if file_name.startswith(requirement.name()):
-            return Archive(path=os.path.join(download_dir, file_name))
-    else:
-        raise Exception(
-            "Could not download source distribution for `{}`".format(requirement.name())
-        )
+@pytest.fixture(params=("six-1.12.0.tar.gz", "jsonschema-3.0.1.tar.gz"))
+def source_distribution_archive(request, data_directory):
+    return Archive(path=os.path.join(data_directory, request.param))
 
 
 @pytest.fixture

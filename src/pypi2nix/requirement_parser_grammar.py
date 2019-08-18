@@ -14,7 +14,9 @@ from pypi2nix.requirements import UrlRequirement
 from pypi2nix.requirements import VersionRequirement
 
 
-class RequirementParserGrammar:
+class _RequirementParserGrammar:
+    """Do not instantiate this but import `requirement_parser_grammar` from this module."""
+
     @no_type_check
     def __init__(self) -> None:
         self._compiled_grammar = None
@@ -191,4 +193,4 @@ class RequirementParserGrammar:
         yield self._compiled_grammar
 
 
-requirement_parser_grammar = RequirementParserGrammar()
+requirement_parser_grammar = _RequirementParserGrammar()

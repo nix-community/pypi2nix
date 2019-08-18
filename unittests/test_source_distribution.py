@@ -5,7 +5,6 @@ import pytest
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
-from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.source_distribution import DistributionNotDetected
 from pypi2nix.source_distribution import SourceDistribution
 
@@ -19,26 +18,9 @@ def source_distribution(six_source_distribution_archive, logger):
 
 
 @pytest.fixture
-def flit_requirements(current_platform, requirement_parser):
-    requirements = RequirementSet(current_platform)
-    requirements.add(requirement_parser.parse("flit == 1.3"))
-    return requirements
-
-
-@pytest.fixture
-def flit_distribution(pip, project_dir, download_dir, flit_requirements, logger):
-    pip.download_sources(flit_requirements, download_dir)
-    archives = [
-        Archive(path=os.path.join(download_dir, filename))
-        for filename in os.listdir(download_dir)
-    ]
-    distributions = list(
-        map(lambda archive: SourceDistribution.from_archive(archive, logger), archives)
-    )
-    for distribution in distributions:
-        if distribution.name == "flit":
-            return distribution
-    raise Exception("Could not download source distribution for `flit`")
+def flit_distribution(data_directory, logger):
+    archive = Archive(os.path.join(data_directory, "flit-1.3.tar.gz"))
+    return SourceDistribution.from_archive(archive, logger)
 
 
 @nix
