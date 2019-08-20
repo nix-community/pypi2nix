@@ -20,7 +20,7 @@ all_classifiers = {
     "License :: Nokia Open Source License (NOKOS)": None,
     "License :: OSI Approved": None,
     "License :: OSI Approved :: Academic Free License (AFL)": "licenses.afl21",
-    "License :: OSI Approved :: Apache Software License": None,
+    "License :: OSI Approved :: Apache Software License": "licenses.asl20",
     "License :: OSI Approved :: Apple Public Source License": None,
     "License :: OSI Approved :: Artistic License": "licenses.artistic2",
     "License :: OSI Approved :: Attribution Assurance License": None,
@@ -83,7 +83,7 @@ LICENSE_PATTERNS: Dict[str, List[str]] = {
     "licenses.zpl21": list(
         map(escape_regex, ["LGPL with exceptions or ZPL", "ZPL 2.1"])
     ),
-    "licenses.bsd3": list(map(escape_regex, ["3-Clause BSD License"])),
+    "licenses.bsd3": list(map(escape_regex, ["3-Clause BSD License", "BSD-3-Clause"])),
     "licenses.mit": list(
         map(
             escape_regex,
@@ -92,6 +92,8 @@ LICENSE_PATTERNS: Dict[str, List[str]] = {
                 "MIT License",
                 "MIT or Apache License, Version 2.0",
                 "The MIT License",
+                "Expat license",
+                "MIT license",
             ],
         )
     ),
@@ -111,6 +113,7 @@ LICENSE_PATTERNS: Dict[str, List[str]] = {
                 "Apache 2",
                 "Apache License, Version 2.0",
                 "Apache License Version 2.0",
+                "http://www.apache.org/licenses/LICENSE-2.0",
             ],
         )
     ),
@@ -128,6 +131,7 @@ LICENSE_PATTERNS: Dict[str, List[str]] = {
         )
     ),
     "licenses.psfl": list(map(escape_regex, ["Python Software Foundation License"])),
+    "licenses.gpl2": list(map(escape_regex, ["GPL version 2"])),
 }
 
 
