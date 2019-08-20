@@ -5,8 +5,6 @@ import pytest
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
-from pypi2nix.requirement_parser import requirement_parser
-from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.source_distribution import DistributionNotDetected
 from pypi2nix.source_distribution import SourceDistribution
 
@@ -20,26 +18,9 @@ def source_distribution(six_source_distribution_archive, logger):
 
 
 @pytest.fixture
-def flit_requirements(current_platform):
-    requirements = RequirementSet(current_platform)
-    requirements.add(requirement_parser.parse("flit == 1.3"))
-    return requirements
-
-
-@pytest.fixture
-def flit_distribution(pip, project_dir, download_dir, flit_requirements, logger):
-    pip.download_sources(flit_requirements, download_dir)
-    archives = [
-        Archive(path=os.path.join(download_dir, filename))
-        for filename in os.listdir(download_dir)
-    ]
-    distributions = list(
-        map(lambda archive: SourceDistribution.from_archive(archive, logger), archives)
-    )
-    for distribution in distributions:
-        if distribution.name == "flit":
-            return distribution
-    raise Exception("Could not download source distribution for `flit`")
+def flit_distribution(data_directory, logger):
+    archive = Archive(os.path.join(data_directory, "flit-1.3.tar.gz"))
+    return SourceDistribution.from_archive(archive, logger)
 
 
 @nix
@@ -65,9 +46,11 @@ def test_that_flit_pyproject_toml_is_recognized(flit_distribution):
 
 @nix
 def test_that_flit_build_dependencies_contains_requests(
-    flit_distribution, current_platform
+    flit_distribution, current_platform, requirement_parser
 ):
-    assert "requests" in flit_distribution.build_dependencies(current_platform)
+    assert "requests" in flit_distribution.build_dependencies(
+        current_platform, requirement_parser
+    )
 
 
 @nix
@@ -79,12 +62,14 @@ def test_that_we_can_generate_objects_from_source_archives(
 
 @nix
 def test_that_we_can_detect_setup_requirements_for_setup_cfg_projects(
-    distribution_archive_for_jsonschema, current_platform, logger
+    distribution_archive_for_jsonschema, current_platform, logger, requirement_parser
 ):
     distribution = SourceDistribution.from_archive(
         distribution_archive_for_jsonschema, logger
     )
-    assert "setuptools-scm" in distribution.build_dependencies(current_platform)
+    assert "setuptools-scm" in distribution.build_dependencies(
+        current_platform, requirement_parser
+    )
 
 
 def test_that_trying_to_create_source_distribution_from_random_zip_throws(
@@ -96,7 +81,7 @@ def test_that_trying_to_create_source_distribution_from_random_zip_throws(
 
 
 def test_build_dependencies_for_invalid_deps_logs_warning(
-    data_directory, current_platform, logger: Logger
+    data_directory, current_platform, logger: Logger, requirement_parser
 ):
     spacy_distribution_path = os.path.join(data_directory, "spacy-2.1.0.tar.gz")
     archive = Archive(spacy_distribution_path)
@@ -104,12 +89,12 @@ def test_build_dependencies_for_invalid_deps_logs_warning(
     dist = SourceDistribution.from_archive(archive, logger)
 
     assert "WARNING:" not in get_logger_output(logger)
-    dist.build_dependencies(current_platform)
+    dist.build_dependencies(current_platform, requirement_parser)
     assert "WARNING:" in get_logger_output(logger)
 
 
 def test_invalid_build_dependencies_for_setupcfg_package_logs_warning(
-    data_directory, current_platform, logger
+    data_directory, current_platform, logger, requirement_parser
 ):
     distribution_path = os.path.join(
         data_directory, "setupcfg-package", "setupcfg-package.tar.gz"
@@ -119,5 +104,5 @@ def test_invalid_build_dependencies_for_setupcfg_package_logs_warning(
     dist = SourceDistribution.from_archive(archive, logger)
 
     assert "WARNING:" not in get_logger_output(logger)
-    dist.build_dependencies(current_platform)
+    dist.build_dependencies(current_platform, requirement_parser)
     assert "WARNING:" in get_logger_output(logger)

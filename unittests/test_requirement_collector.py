@@ -6,14 +6,14 @@ from pypi2nix.requirements_collector import RequirementsCollector
 
 
 @pytest.fixture
-def collector(current_platform):
-    return RequirementsCollector(current_platform)
+def collector(current_platform, requirement_parser):
+    return RequirementsCollector(current_platform, requirement_parser)
 
 
 def test_that_we_can_generate_an_empty_requirement_set_from_freshly_constructed_collector(
-    current_platform
+    current_platform, requirement_parser
 ):
-    collector = RequirementsCollector(current_platform)
+    collector = RequirementsCollector(current_platform, requirement_parser)
     requirements = collector.requirements()
     assert len(requirements) == 0
 

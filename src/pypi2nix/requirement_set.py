@@ -11,7 +11,7 @@ from typing import overload
 from setuptools._vendor.packaging.utils import canonicalize_name
 
 from pypi2nix.requirement_parser import ParsingFailed
-from pypi2nix.requirement_parser import requirement_parser
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements import Requirement
 from pypi2nix.requirements_file import RequirementsFile
 from pypi2nix.sources import Sources
@@ -76,6 +76,7 @@ class RequirementSet:
         constructor,
         requirements_file: RequirementsFile,
         target_platform: TargetPlatform,
+        requirement_parser: RequirementParser,
     ) -> "RequirementSet":
         file_lines = requirements_file.read().splitlines()
         requirements_set = constructor(target_platform)
@@ -84,7 +85,7 @@ class RequirementSet:
                 requirement = requirement_parser.parse(line)
             except ParsingFailed:
                 detected_requirements = constructor._handle_non_requirement_line(
-                    line, target_platform
+                    line, target_platform, requirement_parser
                 )
                 requirements_set += detected_requirements
             else:
@@ -168,7 +169,10 @@ class RequirementSet:
 
     @classmethod
     def _handle_non_requirement_line(
-        constructor, line: str, target_platform: TargetPlatform
+        constructor,
+        line: str,
+        target_platform: TargetPlatform,
+        requirement_parser: RequirementParser,
     ) -> "RequirementSet":
         line = line.strip()
         if line.startswith("-c "):
@@ -177,13 +181,15 @@ class RequirementSet:
                 requirements_file = RequirementsFile(include_path, project_directory)
                 requirements_file.process()
                 return constructor.from_file(
-                    requirements_file, target_platform
+                    requirements_file, target_platform, requirement_parser
                 ).to_constraints_only()
         elif line.startswith("-r "):
             include_path = line[2:].strip()
             with tempfile.TemporaryDirectory() as project_directory:
                 requirements_file = RequirementsFile(include_path, project_directory)
                 requirements_file.process()
-                return constructor.from_file(requirements_file, target_platform)
+                return constructor.from_file(
+                    requirements_file, target_platform, requirement_parser
+                )
         else:
             return constructor(target_platform)

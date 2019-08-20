@@ -8,6 +8,8 @@ from urllib.parse import urlparse
 
 import click
 
+from pypi2nix.logger import Logger
+
 from .utils import cmd
 from .utils import prefetch_git
 from .utils import prefetch_github
@@ -26,7 +28,7 @@ class OverridesFile(object):
 
     expression_template = "import %(path)s { inherit pkgs python ; }"
 
-    def nix_expression(self) -> str:
+    def nix_expression(self, logger: Logger) -> str:
         return self.expression_template % dict(path=self.path)
 
 
@@ -41,10 +43,10 @@ class OverridesUrl(object):
         + 'import "${src}" { inherit pkgs python ; }'
     )
 
-    def nix_expression(self) -> str:
+    def nix_expression(self, logger: Logger) -> str:
         command = "nix-prefetch-url {url}".format(url=self.url)
 
-        return_code, output = cmd(command, verbose=False, stderr=subprocess.DEVNULL)
+        return_code, output = cmd(command, logger, stderr=subprocess.DEVNULL)
         sha_sum = output.strip()
         if len(sha_sum) != 52 or return_code != 0:
             raise click.ClickException(
@@ -68,7 +70,7 @@ class OverridesGit(object):
         + '} ; in import "${src}/%(path)s" { inherit pkgs python; }'
     )
 
-    def nix_expression(self) -> str:
+    def nix_expression(self, logger: Logger) -> str:
         repo_data = prefetch_git(self.repo_url, self.rev)
         return self.expression_template % dict(
             url=repo_data["url"],
@@ -87,7 +89,7 @@ class OverridesGithub(object):
         self.path = path
         self.rev = rev
 
-    def nix_expression(self) -> str:
+    def nix_expression(self, logger: Logger) -> str:
         prefetch_data = prefetch_github(self.owner, self.repo, self.rev)
         template = " ".join(
             [

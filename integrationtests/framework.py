@@ -1,6 +1,7 @@
 import os
 import os.path
 import subprocess
+import sys
 from typing import Dict
 from typing import List
 
@@ -8,6 +9,7 @@ from attr import attrib
 from attr import attrs
 from attr import evolve
 
+from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
 
@@ -38,7 +40,8 @@ class IntegrationTest:
     """
 
     def setUp(self):
-        self.nix = Nix(nix_path=[NIX_PATH], verbose=True)
+        self.logger = StreamLogger(output=sys.stdout)
+        self.nix = Nix(nix_path=[NIX_PATH], logger=self.logger)
 
     def test_build_example(self):
         self.build_pypi2nix()

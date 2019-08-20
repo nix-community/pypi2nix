@@ -21,13 +21,15 @@ def git_source():
 
 
 @pytest.fixture
-def hg_source():
-    return HgSource(url="https://bitbucket.org/tarek/flake8", revision="a209fb69350c")
+def hg_source(logger):
+    return HgSource(
+        url="https://bitbucket.org/tarek/flake8", revision="a209fb69350c", logger=logger
+    )
 
 
 @pytest.fixture
-def url_source():
-    return UrlSource(url=URL_SOURCE_URL)
+def url_source(logger):
+    return UrlSource(url=URL_SOURCE_URL, logger=logger)
 
 
 @pytest.fixture
@@ -36,8 +38,8 @@ def path_source():
 
 
 @pytest.fixture
-def expression_evaluater():
-    nix_instance = Nix()
+def expression_evaluater(logger):
+    nix_instance = Nix(logger=logger)
     return lambda expression: nix_instance.evaluate_expression(
         "let pkgs = import <nixpkgs> {}; in " + expression
     )
@@ -79,12 +81,14 @@ def test_url_source_gives_valid_nix_expression(url_source, expression_evaluater)
 
 
 def test_url_source_nix_expression_contains_specified_hash_when_given(
-    expression_evaluater
+    expression_evaluater, logger
 ):
     # We specify the wrong hash on purpose to see that UrlSource just
     # "accepts" the given hash and puts it into the generated nix
     # expression
-    url_source = UrlSource(URL_SOURCE_URL, hash_value=URL_SOURCE_HASH + "1")
+    url_source = UrlSource(
+        URL_SOURCE_URL, hash_value=URL_SOURCE_HASH + "1", logger=logger
+    )
     assert URL_SOURCE_HASH + "1" in url_source.nix_expression()
 
 

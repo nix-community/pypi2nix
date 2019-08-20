@@ -12,10 +12,12 @@ import pypi2nix.stage1
 import pypi2nix.stage2
 import pypi2nix.stage3
 import pypi2nix.utils
-from pypi2nix.logger import Logger
+from pypi2nix.logger import StreamLogger
+from pypi2nix.logger import verbosity_from_int
 from pypi2nix.nix import Nix
 from pypi2nix.overrides import AnyOverrides
 from pypi2nix.pip import Pip
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements_collector import RequirementsCollector
 from pypi2nix.sources import Sources
 from pypi2nix.target_platform import PlatformGenerator
@@ -25,6 +27,7 @@ from pypi2nix.utils import md5_sum_of_files_with_file_names
 @click.command("pypi2nix")
 @click.option("--version", is_flag=True, help=u"Show version of pypi2nix")
 @click.option("-v", "--verbose", count=True)
+@click.option("-q", "--quiet", count=True)
 @click.option(
     "-I",
     "--nix-path",
@@ -138,6 +141,7 @@ from pypi2nix.utils import md5_sum_of_files_with_file_names
 def main(
     version: str,
     verbose: int,
+    quiet: int,
     nix_shell: str,
     nix_path: List[str],
     basename: str,
@@ -156,17 +160,18 @@ def main(
     """SPECIFICATION should be requirements.txt (output of pip freeze).
     """
 
-    logger = Logger(output=sys.stdout)
+    logger = StreamLogger(output=sys.stdout)
+    verbosity = verbosity_from_int(verbose - quiet + DEFAULT_VERBOSITY)
+    logger.set_verbosity(verbosity)
     nix_executable_directory: Optional[str] = (
         os.path.abspath(os.path.dirname(nix_shell))
         if os.path.exists(nix_shell)
         else None
     )
+    requirement_parser = RequirementParser(logger)
 
     nix = Nix(
-        nix_path=nix_path,
-        executable_directory=nix_executable_directory,
-        verbose=verbose != 0,
+        nix_path=nix_path, executable_directory=nix_executable_directory, logger=logger
     )
     platform_generator = PlatformGenerator(nix=nix)
 
@@ -196,8 +201,10 @@ def main(
     python_version = pypi2nix.utils.PYTHON_VERSIONS[python_version]
     target_platform = platform_generator.from_python_version(python_version_argument)
 
-    requirement_collector = RequirementsCollector(target_platform)
-    setup_requirement_collector = RequirementsCollector(target_platform)
+    requirement_collector = RequirementsCollector(target_platform, requirement_parser)
+    setup_requirement_collector = RequirementsCollector(
+        target_platform, requirement_parser
+    )
 
     extra_build_inputs = pypi2nix.utils.args_as_list(extra_build_inputs)
     setup_requires = pypi2nix.utils.args_as_list(setup_requires)
@@ -246,10 +253,10 @@ def main(
     sources.update(requirement_set.sources())
     sources.update(setup_requirements.sources())
 
-    click.echo("pypi2nix v{} running ...".format(pypi2nix_version))
-    click.echo("")
+    logger.info("pypi2nix v{} running ...".format(pypi2nix_version))
+    logger.info("")
 
-    click.echo("Stage1: Downloading wheels and creating wheelhouse ...")
+    logger.info("Stage1: Downloading wheels and creating wheelhouse ...")
 
     pip = Pip(
         nix=nix,
@@ -259,9 +266,13 @@ def main(
         verbose=verbose,
         wheels_cache=wheels_cache,
         target_platform=target_platform,
+        logger=logger,
     )
     wheel_builder = pypi2nix.stage1.WheelBuilder(
-        pip=pip, project_directory=project_dir, logger=logger
+        pip=pip,
+        project_directory=project_dir,
+        logger=logger,
+        requirement_parser=requirement_parser,
     )
     wheels = wheel_builder.build(
         requirements=requirement_set, setup_requirements=setup_requirements
@@ -270,9 +281,9 @@ def main(
     default_environment = pip.default_environment()
     additional_dependency_graph = wheel_builder.additional_build_dependencies
 
-    click.echo("Stage2: Extracting metadata from pypi.python.org ...")
+    logger.info("Stage2: Extracting metadata from pypi.python.org ...")
 
-    stage2 = pypi2nix.stage2.Stage2(sources=sources, verbose=verbose)
+    stage2 = pypi2nix.stage2.Stage2(sources=sources, verbose=verbose, logger=logger)
 
     packages_metadata = stage2.main(
         wheel_paths=wheels,
@@ -280,7 +291,7 @@ def main(
         wheel_cache_dir=wheel_cache_dir,
         additional_dependencies=additional_dependency_graph,
     )
-    click.echo("Stage3: Generating Nix expressions ...")
+    logger.info("Stage3: Generating Nix expressions ...")
 
     pypi2nix.stage3.main(
         packages_metadata=packages_metadata,
@@ -291,15 +302,25 @@ def main(
         enable_tests=enable_tests,
         python_version=python_version,
         current_dir=current_dir,
+        logger=logger,
         common_overrides=overrides,
     )
 
-    click.echo("")
-    click.echo("Nix expressions generated successfully.")
-    click.echo("")
-    click.echo("To start development run:")
-    click.echo("    nix-shell requirements.nix -A interpreter")
-    click.echo("")
-    click.echo("More information you can find at")
-    click.echo("    https://github.com/nix-community/pypi2nix")
-    click.echo("")
+    logger.info(
+        "\n".join(
+            [
+                "",
+                "Nix expressions generated successfully.",
+                "",
+                "To start development run:",
+                "    nix-shell requirements.nix -A interpreter",
+                "",
+                "More information you can find at",
+                "    https://github.com/nix-community/pypi2nix",
+                "",
+            ]
+        )
+    )
+
+
+DEFAULT_VERBOSITY = 1

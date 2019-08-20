@@ -3,10 +3,10 @@ import shlex
 import sys
 from typing import Iterable
 
-import click
 import jinja2
 from setuptools._vendor.packaging.utils import canonicalize_name
 
+from pypi2nix.logger import Logger
 from pypi2nix.overrides import AnyOverrides
 from pypi2nix.sources import Sources
 from pypi2nix.wheel import Wheel
@@ -23,6 +23,7 @@ def main(
     enable_tests: bool,
     python_version: str,
     current_dir: str,
+    logger: Logger,
     common_overrides: Iterable[AnyOverrides] = [],
 ) -> None:
     """Create Nix expressions.
@@ -99,7 +100,7 @@ def main(
     overrides = templates.get_template("overrides.nix.j2").render()
 
     common_overrides_expressions = [
-        "    (" + override.nix_expression() + ")" for override in common_overrides
+        "    (" + override.nix_expression(logger) + ")" for override in common_overrides
     ]
 
     default_template = templates.get_template("requirements.nix.j2")
@@ -125,7 +126,7 @@ def main(
     if not os.path.exists(overrides_file):
         with open(overrides_file, "w+") as f:
             f.write(overrides.strip())
-            click.echo("|-> writing %s" % overrides_file)
+            logger.info("|-> writing %s" % overrides_file)
 
     with open(default_file, "w+") as f:
         f.write(default.strip())

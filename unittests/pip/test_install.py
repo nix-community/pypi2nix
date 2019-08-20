@@ -1,7 +1,6 @@
 import os
 import os.path
 
-from pypi2nix.requirement_parser import requirement_parser
 from pypi2nix.requirement_set import RequirementSet
 
 from ..switches import nix
@@ -9,7 +8,7 @@ from ..switches import nix
 
 @nix
 def test_install_six_yields_non_empty_freeze_output(
-    pip, project_dir, download_dir, current_platform
+    pip, project_dir, download_dir, current_platform, requirement_parser
 ):
     requirements = RequirementSet(current_platform)
     requirements.add(requirement_parser.parse("six"))
@@ -20,7 +19,7 @@ def test_install_six_yields_non_empty_freeze_output(
 
 @nix
 def test_install_to_target_directory_does_not_install_to_default_directory(
-    pip, project_dir, download_dir, current_platform
+    pip, project_dir, download_dir, current_platform, requirement_parser
 ):
     requirements = RequirementSet(current_platform)
     requirements.add(requirement_parser.parse("six"))
