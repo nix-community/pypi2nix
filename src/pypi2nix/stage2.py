@@ -61,50 +61,40 @@ class Stage2:
             )
 
         wheels = []
-        try:
-            for wheel_path in wheel_paths:
+        for wheel_path in wheel_paths:
 
-                output += "|-> from %s" % os.path.basename(wheel_path)
-                if self.verbose > 0:
-                    click.echo("|-> from %s" % os.path.basename(wheel_path))
+            self.logger.debug("|-> from %s" % os.path.basename(wheel_path))
 
-                wheel_metadata = Wheel.from_wheel_directory_path(
-                    wheel_path, default_environment
+            wheel_metadata = Wheel.from_wheel_directory_path(
+                wheel_path, default_environment, self.logger
+            )
+            if not wheel_metadata:
+                continue
+
+            if wheel_metadata.name in TO_IGNORE:
+                self.logger.debug("    SKIPPING")
+                continue
+            if wheel_metadata.name in additional_dependencies:
+                wheel_metadata.add_build_dependencies(
+                    map(
+                        lambda dependency: dependency.name(),
+                        additional_dependencies[wheel_metadata.name],
+                    )
                 )
-                if not wheel_metadata:
-                    continue
 
-                if wheel_metadata.name in TO_IGNORE:
-                    if self.verbose > 0:
-                        click.echo("    SKIPPING")
-                    continue
-                if wheel_metadata.name in additional_dependencies:
-                    wheel_metadata.add_build_dependencies(
-                        map(
-                            lambda dependency: dependency.name(),
-                            additional_dependencies[wheel_metadata.name],
-                        )
-                    )
+            wheels.append(wheel_metadata)
 
-                wheels.append(wheel_metadata)
+            self.logger.debug(
+                "-- wheel_metadata --------------------------------------------------------"
+            )
+            self.logger.debug(
+                json.dumps(wheel_metadata.to_dict(), sort_keys=True, indent=4)
+            )
+            self.logger.debug(
+                "--------------------------------------------------------------------------"
+            )
 
-                if self.verbose > 1:
-                    click.echo(
-                        "-- wheel_metadata --------------------------------------------------------"
-                    )
-                    click.echo(
-                        json.dumps(wheel_metadata.to_dict(), sort_keys=True, indent=4)
-                    )
-                    click.echo(
-                        "--------------------------------------------------------------------------"
-                    )
-
-                self.process_wheel(wheel_metadata)
-        except Exception as e:
-            if self.verbose == 0:
-                click.echo(output)
-            raise
-
+            self.process_wheel(wheel_metadata)
         return wheels
 
     def process_wheel(self, wheel: Wheel, chunk_size: int = 2048) -> None:

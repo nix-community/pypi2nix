@@ -15,6 +15,7 @@ import setuptools._vendor.packaging.requirements
 from setuptools._vendor.packaging.utils import canonicalize_name
 
 from pypi2nix.license import find_license
+from pypi2nix.logger import Logger
 from pypi2nix.utils import TO_IGNORE
 from pypi2nix.utils import safe
 
@@ -68,6 +69,7 @@ class Wheel:
         wheel_class: "Type[Wheel]",
         wheel_directory_path: str,
         default_environment: Dict[str, Any],
+        logger: Logger,
     ) -> "Wheel":
         metadata_file = os.path.join(wheel_directory_path, "METADATA")
         if os.path.exists(metadata_file):
@@ -87,8 +89,8 @@ class Wheel:
 
             if license is None:
                 license = '"' + safe(license_string) + '"'
-                click.echo(
-                    "WARNING: Couldn't recognize license `{}` for `{}`".format(
+                logger.warning(
+                    "Couldn't recognize license `{}` for `{}`".format(
                         license_string, metadata.get("name")
                     )
                 )

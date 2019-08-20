@@ -54,7 +54,7 @@ def cmd(
     if isinstance(command, str):
         command = shlex.split(command)
 
-    logger.info("|-> " + " ".join(map(shlex.quote, command)))
+    logger.debug("|-> " + " ".join(map(shlex.quote, command)))
 
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=stderr)
 
@@ -65,7 +65,7 @@ def cmd(
             if line == "" and p.poll() is not None:
                 break
             if line != "":
-                logger.info("    " + line.rstrip("\n"))
+                logger.debug("    " + line.rstrip("\n"))
                 out.append(line)
     except Exception:
         p.kill()

@@ -3,7 +3,6 @@ import shlex
 import sys
 from typing import Iterable
 
-import click
 import jinja2
 from setuptools._vendor.packaging.utils import canonicalize_name
 
@@ -127,7 +126,7 @@ def main(
     if not os.path.exists(overrides_file):
         with open(overrides_file, "w+") as f:
             f.write(overrides.strip())
-            click.echo("|-> writing %s" % overrides_file)
+            logger.info("|-> writing %s" % overrides_file)
 
     with open(default_file, "w+") as f:
         f.write(default.strip())

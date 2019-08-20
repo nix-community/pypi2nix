@@ -11,6 +11,7 @@ from typing import Optional
 
 import click
 
+from pypi2nix.logger import Logger
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
 from pypi2nix.requirement_set import RequirementSet
@@ -34,6 +35,7 @@ class Pip:
         verbose: int,
         wheels_cache: List[str],
         target_platform: TargetPlatform,
+        logger: Logger,
     ):
         self.nix = nix
         self.project_directory = project_directory
@@ -43,6 +45,7 @@ class Pip:
         self.verbose = verbose
         self.wheels_cache = wheels_cache
         self.target_platform = target_platform
+        self.logger = logger
 
         output = self.nix.evaluate_expression(
             'let pkgs = import <nixpkgs> {}; in "%s"' % escape_double_quotes(extra_env)
@@ -213,8 +216,7 @@ class Pip:
             ):
                 return
 
-        if self.verbose > 0:
-            click.echo(self.build_output)
+        self.logger.error(self.build_output)
 
         message = "While trying to run the command something went wrong."
 
@@ -235,7 +237,7 @@ class Pip:
             try:
                 self.send_crash_report()
             except OSError:
-                click.echo("Failed to send crash report")
+                self.logger.error("Failed to send crash report")
 
         raise click.ClickException(message)
 

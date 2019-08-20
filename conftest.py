@@ -42,7 +42,7 @@ def wheels_dir(project_dir):
 
 
 @pytest.fixture
-def pip(nix, project_dir, current_platform):
+def pip(nix, project_dir, current_platform, logger):
     return Pip(
         nix=nix,
         project_directory=project_dir,
@@ -51,6 +51,7 @@ def pip(nix, project_dir, current_platform):
         verbose=3,
         wheels_cache=[],
         target_platform=current_platform,
+        logger=logger,
     )
 
 
@@ -60,10 +61,12 @@ def wheel_builder(pip, project_dir, logger, requirement_parser):
 
 
 @pytest.fixture
-def extracted_six_package(six_requirements, wheel_builder, default_environment):
+def extracted_six_package(six_requirements, wheel_builder, default_environment, logger):
     wheels = wheel_builder.build(six_requirements)
     for wheel_directory in wheels:
-        wheel = Wheel.from_wheel_directory_path(wheel_directory, default_environment)
+        wheel = Wheel.from_wheel_directory_path(
+            wheel_directory, default_environment, logger
+        )
         if wheel.name == "six":
             return wheel_directory
     raise Exception('Error when trying to build wheel for "six == 1.12.0"')
