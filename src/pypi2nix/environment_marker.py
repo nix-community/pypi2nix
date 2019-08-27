@@ -14,17 +14,27 @@ EnvironmentValue = Union["EnvironmentMarker", str, "MarkerToken"]
 @unique
 class MarkerToken(Enum):
     PYTHON_VERSION = 1
+    PYTHON_FULL_VERSION = 2
+    IMPLEMENTATION_VERSION = 3
+    OS_NAME = 4
 
 
 @attrs
 class EnvironmentMarker:
+    """We implement PEP 496.
+    Link to PEP 496: https://www.python.org/dev/peps/pep-0496/
+    """
+
     operation: str = attrib()
     left: EnvironmentValue = attrib()
     right: EnvironmentValue = attrib()
 
     def applies_to_platform(self, target_platform: TargetPlatform) -> bool:
         mapping: Dict[MarkerToken, str] = {
-            MarkerToken.PYTHON_VERSION: ".".join(target_platform.version.split(".")[:2])
+            MarkerToken.PYTHON_VERSION: target_platform.version,
+            MarkerToken.PYTHON_FULL_VERSION: target_platform.python_full_version,
+            MarkerToken.OS_NAME: target_platform.os_name,
+            MarkerToken.IMPLEMENTATION_VERSION: target_platform.implementation_version,
         }
 
         def evaluate_marker(marker: EnvironmentValue) -> Union[str, bool]:

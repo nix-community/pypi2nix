@@ -16,6 +16,7 @@ from setuptools._vendor.packaging.utils import canonicalize_name
 
 from pypi2nix.license import find_license
 from pypi2nix.logger import Logger
+from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.utils import TO_IGNORE
 from pypi2nix.utils import safe
 
@@ -68,7 +69,7 @@ class Wheel:
     def from_wheel_directory_path(
         wheel_class: "Type[Wheel]",
         wheel_directory_path: str,
-        default_environment: Dict[str, Any],
+        target_platform: TargetPlatform,
         logger: Logger,
     ) -> "Wheel":
         metadata_file = os.path.join(wheel_directory_path, "METADATA")
@@ -114,7 +115,7 @@ class Wheel:
             return wheel_class(
                 name=name,
                 version=version,
-                deps=extract_deps(dependencies, default_environment),
+                deps=extract_deps(dependencies, target_platform),
                 homepage=safe(find_homepage(metadata)),
                 license=license,
                 description=safe(description),
@@ -125,7 +126,7 @@ class Wheel:
         )
 
 
-def extract_deps(deps: Iterable[str], default_environment: Dict[str, Any]) -> List[str]:
+def extract_deps(deps: Iterable[str], target_platform: TargetPlatform) -> List[str]:
     """Get dependent packages from metadata.
 
     Note that this is currently very rough stuff. I consider only the
@@ -155,6 +156,7 @@ def extract_deps(deps: Iterable[str], default_environment: Dict[str, Any]) -> Li
                     extra = marker[2].value
                     break
 
+            default_environment = target_platform.environment_dictionary()
             if extra:
                 # this will save us from some cyclic dependencies until we have
                 # time to implement real solution

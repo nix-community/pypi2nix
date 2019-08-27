@@ -9,11 +9,12 @@ from typing import Set
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
-from pypi2nix.pip import Pip
+from pypi2nix.pip.interface import Pip
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.source_distribution import DistributionNotDetected
 from pypi2nix.source_distribution import SourceDistribution
+from pypi2nix.target_platform import TargetPlatform
 
 
 class WheelBuilder:
@@ -23,6 +24,7 @@ class WheelBuilder:
         project_directory: str,
         logger: Logger,
         requirement_parser: RequirementParser,
+        target_platform: TargetPlatform,
     ) -> None:
         self.pip = pip
         self.download_directory = os.path.join(project_directory, "download")
@@ -30,11 +32,13 @@ class WheelBuilder:
         self.extracted_wheels_directory = os.path.join(project_directory, "wheelhouse")
         self.project_directory = project_directory
         self.inspected_source_distribution_files: Set[str] = set()
+        self.target_platform = target_platform
         self.additional_build_dependencies: Dict[str, RequirementSet] = defaultdict(
-            lambda: RequirementSet(pip.target_platform)
+            lambda: RequirementSet(self.target_platform)
         )
         self.logger = logger
         self.requirement_parser = requirement_parser
+        self.lib_directory = os.path.join(self.project_directory, "lib")
 
     def build(
         self,
@@ -43,14 +47,16 @@ class WheelBuilder:
     ) -> List[str]:
         self.ensure_download_directory_exists()
         if not setup_requirements:
-            setup_requirements = RequirementSet(self.pip.target_platform)
+            setup_requirements = RequirementSet(self.target_platform)
         else:
             setup_requirements = (
                 self.detect_additional_build_dependencies(setup_requirements)
                 + setup_requirements
             )
             self.pip.install(
-                setup_requirements, source_directories=[self.download_directory]
+                setup_requirements,
+                target_directory=self.lib_directory,
+                source_directories=[self.download_directory],
             )
         requirements = requirements + setup_requirements
         detected_requirements = self.detect_additional_build_dependencies(requirements)
@@ -64,18 +70,18 @@ class WheelBuilder:
         self, requirements: RequirementSet, constraints: Optional[RequirementSet] = None
     ) -> RequirementSet:
         if constraints is None:
-            constraints = RequirementSet(self.pip.target_platform)
+            constraints = RequirementSet(self.target_platform)
         self.pip.download_sources(
             requirements + constraints.to_constraints_only(), self.download_directory
         )
         uninspected_distributions = self.get_uninspected_source_distributions()
         self.register_all_source_distributions()
-        detected_dependencies = RequirementSet(self.pip.target_platform)
+        detected_dependencies = RequirementSet(self.target_platform)
         if not uninspected_distributions:
             return detected_dependencies
         for distribution in uninspected_distributions:
             build_dependencies = distribution.build_dependencies(
-                self.pip.target_platform, self.requirement_parser
+                self.target_platform, self.requirement_parser
             )
             self.additional_build_dependencies[distribution.name] += build_dependencies
             detected_dependencies += build_dependencies

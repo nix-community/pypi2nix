@@ -1,4 +1,3 @@
-import json
 import os.path
 import shlex
 import shutil
@@ -14,25 +13,25 @@ import click
 from pypi2nix.logger import Logger
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
+from pypi2nix.pip.interface import Pip
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.utils import escape_double_quotes
 
 HERE = os.path.dirname(__file__)
-DOWNLOAD_NIX = os.path.join(HERE, "pip", "download.nix")
-WHEEL_NIX = os.path.join(HERE, "pip", "wheel.nix")
-INSTALL_NIX = os.path.join(HERE, "pip", "install.nix")
-BASE_NIX = os.path.join(HERE, "pip", "base.nix")
+DOWNLOAD_NIX = os.path.join(HERE, "download.nix")
+WHEEL_NIX = os.path.join(HERE, "wheel.nix")
+INSTALL_NIX = os.path.join(HERE, "install.nix")
+BASE_NIX = os.path.join(HERE, "base.nix")
 
 
-class Pip:
+class NixPip(Pip):
     def __init__(
         self,
         nix: Nix,
         project_directory: str,
         extra_build_inputs: List[str],
         extra_env: str,
-        verbose: int,
         wheels_cache: List[str],
         target_platform: TargetPlatform,
         logger: Logger,
@@ -42,7 +41,6 @@ class Pip:
         self.extra_build_inputs = extra_build_inputs
         self.extra_env = extra_env
         self.build_output: str = ""
-        self.verbose = verbose
         self.wheels_cache = wheels_cache
         self.target_platform = target_platform
         self.logger = logger
@@ -146,14 +144,6 @@ class Pip:
             nix_arguments=self.nix_arguments(),
         )
         return "\n".join(map(lambda x: x.strip(), output.splitlines()))
-
-    def default_environment(self) -> Any:
-        output = self.nix.shell(
-            'python -c "import json; from setuptools._vendor.packaging.markers import default_environment; print(json.dumps(default_environment(), indent=2, sort_keys=True))"',
-            BASE_NIX,
-            nix_arguments=self.nix_arguments(),
-        )
-        return json.loads(output)
 
     def editable_sources_directory(self) -> str:
         return os.path.join(self.project_directory, "editable_sources")

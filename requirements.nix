@@ -1,8 +1,8 @@
 # generated using pypi2nix tool (version: 2.0.0)
-# See more at: https://github.com/garbas/pypi2nix
+# See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -V 3 -r requirements.txt -r requirements-dev.txt
+#   pypi2nix -V 3 -r requirements.txt -r requirements-dev.txt -q
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -221,7 +221,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "http://github.com/codecov/codecov-python";
-        license = "http://www.apache.org/licenses/LICENSE-2.0";
+        license = licenses.asl20;
         description = "Hosted coverage reports for Github, Bitbucket and Gitlab";
       };
     };
@@ -366,7 +366,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/gforcada/flake8-isort";
-        license = "GPL version 2";
+        license = licenses.gpl2;
         description = "flake8 plugin that integrates isort .";
       };
     };
@@ -516,7 +516,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://palletsprojects.com/p/markupsafe/";
-        license = "BSD-3-Clause";
+        license = licenses.bsd3;
         description = "Safely add untrusted strings to HTML/XML markup.";
       };
     };
@@ -532,7 +532,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pycqa/mccabe";
-        license = "Expat license";
+        license = licenses.mit;
         description = "McCabe checker, plugin for flake8";
       };
     };
@@ -719,7 +719,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pytest-dev/pluggy";
-        license = "MIT license";
+        license = licenses.mit;
         description = "plugin and hook calling mechanisms for python";
       };
     };
@@ -751,7 +751,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "http://py.readthedocs.io/";
-        license = "MIT license";
+        license = licenses.mit;
         description = "library with cross-python path, ini-parsing, io, code, log facilities";
       };
     };
@@ -767,7 +767,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://pycodestyle.readthedocs.io/";
-        license = "Expat license";
+        license = licenses.mit;
         description = "Python style guide checker";
       };
     };
@@ -821,10 +821,10 @@ let
     };
 
     "pytest" = python.mkDerivation {
-      name = "pytest-5.0.1";
+      name = "pytest-5.1.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/60/23/de5604e58f4eba7a90f70486c8d4ece25f1a404bae29683903ffd2aea425/pytest-5.0.1.tar.gz";
-        sha256 = "6ef6d06de77ce2961156013e9dff62f1b2688aa04d0dc244299fe7d67e09370d";
+        url = "https://files.pythonhosted.org/packages/11/ea/4c8ae19a5f82e5374df087fff87b48bad9ec1f2ba2b41bac0181ab2da348/pytest-5.1.0.tar.gz";
+        sha256 = "3805d095f1ea279b9870c3eeae5dddf8a81b10952c8835cd628cf1875b0ef031";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -843,7 +843,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://docs.pytest.org/en/latest/";
-        license = "MIT license";
+        license = licenses.mit;
         description = "pytest: simple powerful testing with Python";
       };
     };

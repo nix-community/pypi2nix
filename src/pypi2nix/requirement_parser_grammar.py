@@ -1,6 +1,3 @@
-import os
-import platform
-import sys
 from contextlib import contextmanager
 from typing import no_type_check
 
@@ -39,11 +36,7 @@ class _RequirementParserGrammar:
         python_str    = (squote <(python_str_c | dquote)*>:s squote |
                          dquote <(python_str_c | squote)*>:s dquote) -> s
         env_var       = ('python_version' | 'python_full_version' |
-                         'os_name' | 'sys_platform' | 'platform_release' |
-                         'platform_system' | 'platform_version' |
-                         'platform_machine' | 'platform_python_implementation' |
-                         'implementation_name' | 'implementation_version' |
-                         'python_implementation' | 'extra'
+                         'implementation_version' | 'os_name' | 'extra'
                          # ONLY when defined by a containing layer
                          ):varname -> lookup(varname)
         marker_var    = wsp* (env_var | python_str)
@@ -148,30 +141,14 @@ class _RequirementParserGrammar:
         return version
 
     @no_type_check
-    def _environment_bindings(self):
-        if hasattr(sys, "implementation"):
-            implementation_version = self._format_full_version(
-                sys.implementation.version
-            )
-            implementation_name = sys.implementation.name
-        else:
-            implementation_version = "0"
-            implementation_name = ""
-        bindings = {
-            "implementation_name": implementation_name,
-            "implementation_version": implementation_version,
-            "os_name": os.name,
-            "platform_machine": platform.machine(),
-            "platform_python_implementation": platform.python_implementation(),
-            "python_implementation": platform.python_implementation(),
-            "platform_release": platform.release(),
-            "platform_system": platform.system(),
-            "platform_version": platform.version(),
-            "python_full_version": platform.python_version(),
+    def _environment_bindings(self, token):
+        lookup = {
+            "python_full_version": MarkerToken.PYTHON_FULL_VERSION,
             "python_version": MarkerToken.PYTHON_VERSION,
-            "sys_platform": sys.platform,
+            "implementation_version": MarkerToken.IMPLEMENTATION_VERSION,
+            "os_name": MarkerToken.OS_NAME,
         }
-        return bindings
+        return lookup[token]
 
     @no_type_check
     @contextmanager
@@ -180,7 +157,7 @@ class _RequirementParserGrammar:
             self._compiled_grammar = makeGrammar(
                 self.requirement_grammar,
                 {
-                    "lookup": self._environment_bindings().get,
+                    "lookup": self._environment_bindings,
                     "VersionRequirement": VersionRequirement,
                     "UrlRequirement": UrlRequirement,
                     "PathRequirement": PathRequirement,

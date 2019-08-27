@@ -383,3 +383,30 @@ def test_cannot_add_url_requirements_with_different_names(
     req2 = requirement_parser.parse("https://test.test#egg=req2")
     with pytest.raises(IncompatibleRequirements):
         req1.add(req2, current_platform)
+
+
+def test_can_handle_requirements_with_python_full_version_marker(
+    current_platform, requirement_parser
+):
+    requirement = requirement_parser.parse(
+        "req; python_full_version == '{}'".format(current_platform.python_full_version)
+    )
+    assert requirement.applies_to_target(current_platform)
+
+
+def test_rejects_requirements_with_wrong_python_full_version_for_platform(
+    current_platform, requirement_parser
+):
+    requirement = requirement_parser.parse(
+        "req; python_full_version == '{}'".format("1.0.0")
+    )
+    assert not requirement.applies_to_target(current_platform)
+
+
+def test_that_requirements_with_proper_os_name_applies_to_target(
+    current_platform, requirement_parser
+):
+    requirement = requirement_parser.parse(
+        "req; os_name == '{}'".format(current_platform.os_name)
+    )
+    assert requirement.applies_to_target(current_platform)

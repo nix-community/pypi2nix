@@ -19,9 +19,9 @@ def wheel():
 
 @nix
 def test_can_create_wheel_from_valid_directory(
-    extracted_six_package, default_environment, logger
+    extracted_six_package, current_platform, logger
 ):
-    Wheel.from_wheel_directory_path(extracted_six_package, default_environment, logger)
+    Wheel.from_wheel_directory_path(extracted_six_package, current_platform, logger)
 
 
 @nix
