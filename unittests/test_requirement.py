@@ -111,7 +111,7 @@ def test_that_applies_to_target_works_with_in_keyword(
     current_platform, requirement_parser
 ):
     requirement = requirement_parser.parse(
-        "pypi2nix; python_version in '{}'".format(current_platform.version)
+        "pypi2nix; python_version in '{}'".format(current_platform.python_version)
     )
     assert requirement.applies_to_target(current_platform)
 

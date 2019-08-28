@@ -1,13 +1,27 @@
 import json
+import os
 import os.path
+import platform
+import sys
+from collections import namedtuple
 
 import pytest
 from setuptools._vendor.packaging.markers import default_environment
 
+from pypi2nix.environment_marker import EnvironmentMarker
+from pypi2nix.environment_marker import MarkerToken
 from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.target_platform import TargetPlatform
 
 from .switches import nix
+
+
+def format_full_version(info):
+    version = "{0.major}.{0.minor}.{0.micro}".format(info)
+    kind = info.releaselevel
+    if kind != "final":
+        version += kind[0] + str(info.serial)
+    return version
 
 
 @pytest.fixture
@@ -47,6 +61,37 @@ def platform_generator(nix):
     return PlatformGenerator(nix=nix)
 
 
+MarkerDefinition = namedtuple("NamedTuple", ["name", "value"])
+
+
+@pytest.fixture(
+    params=(
+        MarkerDefinition("os_name", os.name),
+        MarkerDefinition("sys_platform", sys.platform),
+        MarkerDefinition("platform_machine", platform.machine()),
+        MarkerDefinition(
+            "platform_python_implementation", platform.python_implementation()
+        ),
+        MarkerDefinition("platform_release", platform.release()),
+        MarkerDefinition("platform_system", platform.system()),
+        MarkerDefinition("platform_version", platform.version()),
+        MarkerDefinition(
+            "python_version", ".".join(platform.python_version_tuple()[:2])
+        ),
+        MarkerDefinition("python_full_version", platform.python_version()),
+        MarkerDefinition("implementation_name", sys.implementation.name),
+        MarkerDefinition(
+            "implementation_version",
+            format_full_version(sys.implementation.version)
+            if hasattr(sys, "implementation")
+            else "0",
+        ),
+    )
+)
+def environment_marker_definition(request):
+    return request.param
+
+
 @nix
 def test_that_target_platform_can_be_constructed_from_python_version(
     platform_generator, nix, python_3_environment_nix
@@ -57,7 +102,7 @@ def test_that_target_platform_can_be_constructed_from_python_version(
         command='python -c "from platform import python_version; print(python_version()[:3])"',
         derivation_path=python_3_environment_nix,
     ).splitlines()[0]
-    assert platform.version == python_3_version
+    assert platform.python_version == python_3_version
 
 
 @nix
@@ -84,3 +129,21 @@ def test_that_generated_platform_environment_dictionary_respects_python_version(
     )
     output_json = json.loads(output_string)
     assert platform.environment_dictionary() == output_json
+
+
+def test_that_environment_marker_with_unknown_os_name_do_not_apply_to_current_platform(
+    current_platform: TargetPlatform
+):
+    marker = EnvironmentMarker(
+        operation="==", left=MarkerToken.OS_NAME, right="fake_os_inside_of_unittest"
+    )
+    assert not marker.applies_to_platform(current_platform)
+
+
+def test_that_environment_markers_from_pep_are_correct_for_current_platform(
+    environment_marker_definition: MarkerDefinition, current_platform: TargetPlatform
+):
+    assert (
+        getattr(current_platform, environment_marker_definition.name)
+        == environment_marker_definition.value
+    )

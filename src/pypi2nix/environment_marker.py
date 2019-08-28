@@ -13,16 +13,29 @@ EnvironmentValue = Union["EnvironmentMarker", str, "MarkerToken"]
 
 @unique
 class MarkerToken(Enum):
-    PYTHON_VERSION = 1
-    PYTHON_FULL_VERSION = 2
-    IMPLEMENTATION_VERSION = 3
-    OS_NAME = 4
+    PYTHON_VERSION = "python_version"
+    PYTHON_FULL_VERSION = "python_full_version"
+    IMPLEMENTATION_VERSION = "implementation_version"
+    OS_NAME = "os_name"
+    SYS_PLATFORM = "sys_platform"
+    PLATFORM_MACHINE = "platform_machine"
+    PLATFORM_PYTHON_IMPLEMENTATION = "platform_python_implementation"
+    PLATFORM_RELEASE = "platform_release"
+    PLATFORM_SYSTEM = "platform_system"
+    PLATFORM_VERSION = "platform_version"
+    IMPLEMENTATION_NAME = "implementation_name"
+    EXTRA = "extra"
+
+    @classmethod
+    def get_from_string(token_class, token: str) -> "MarkerToken":
+        mapping = {name.value: name for name in token_class}
+        return mapping[token]
 
 
 @attrs
 class EnvironmentMarker:
-    """We implement PEP 496.
-    Link to PEP 496: https://www.python.org/dev/peps/pep-0496/
+    """We implement PEP 508.
+    Link to PEP 508: https://www.python.org/dev/peps/pep-0508/#environment-markers
     """
 
     operation: str = attrib()
@@ -31,10 +44,9 @@ class EnvironmentMarker:
 
     def applies_to_platform(self, target_platform: TargetPlatform) -> bool:
         mapping: Dict[MarkerToken, str] = {
-            MarkerToken.PYTHON_VERSION: target_platform.version,
-            MarkerToken.PYTHON_FULL_VERSION: target_platform.python_full_version,
-            MarkerToken.OS_NAME: target_platform.os_name,
-            MarkerToken.IMPLEMENTATION_VERSION: target_platform.implementation_version,
+            name: getattr(target_platform, name.value)
+            for name in MarkerToken
+            if name is not MarkerToken.EXTRA
         }
 
         def evaluate_marker(marker: EnvironmentValue) -> Union[str, bool]:

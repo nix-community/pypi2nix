@@ -44,11 +44,20 @@ class PlatformGenerator:
     ) -> "TargetPlatform":
         default_environment = self._load_default_environment(json_string)
         return TargetPlatform(
-            version=default_environment["python_version"],
+            python_version=default_environment["python_version"],
             nixpkgs_derivation_name=derivation_name,
             python_full_version=default_environment["python_full_version"],
             implementation_version=default_environment["implementation_version"],
             os_name=default_environment["os_name"],
+            implementation_name=default_environment["implementation_name"],
+            sys_platform=default_environment["sys_platform"],
+            platform_machine=default_environment["platform_machine"],
+            platform_python_implementation=default_environment[
+                "platform_python_implementation"
+            ],
+            platform_release=default_environment["platform_release"],
+            platform_system=default_environment["platform_system"],
+            platform_version=default_environment["platform_version"],
         )
 
     def _load_default_environment(self, json_string: str) -> Dict[str, str]:
@@ -98,16 +107,32 @@ class PlatformGenerator:
 
 @attrs
 class TargetPlatform:
-    version: str = attrib()
+    python_version: str = attrib()
     nixpkgs_derivation_name: str = attrib()
     python_full_version: str = attrib()
     implementation_version: str = attrib()
     os_name: str = attrib()
+    sys_platform: str = attrib()
+    implementation_name: str = attrib()
+    platform_machine: str = attrib()
+    platform_python_implementation: str = attrib()
+    platform_release: str = attrib()
+    platform_system: str = attrib()
+    platform_version: str = attrib()
 
     def environment_dictionary(self) -> Dict[str, Any]:
-        dictionary = default_environment()
-        dictionary["python_version"] = self.version
+        dictionary = {}
+        dictionary["python_version"] = self.python_version
         dictionary["python_full_version"] = self.python_full_version
         dictionary["implementation_version"] = self.implementation_version
         dictionary["os_name"] = self.os_name
+        dictionary["sys_platform"] = self.sys_platform
+        dictionary["platform_machine"] = self.platform_machine
+        dictionary[
+            "platform_python_implementation"
+        ] = self.platform_python_implementation
+        dictionary["platform_release"] = self.platform_release
+        dictionary["platform_system"] = self.platform_system
+        dictionary["platform_version"] = self.platform_version
+        dictionary["implementation_name"] = self.implementation_name
         return dictionary

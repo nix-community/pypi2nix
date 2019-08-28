@@ -29,14 +29,13 @@ class _RequirementParserGrammar:
         urlspec       = '@' wsp* <URI_reference>
         python_str_c  = (wsp | letter | digit | '(' | ')' | '.' | '{' | '}' |
                          '-' | '_' | '*' | '#' | ':' | ';' | ',' | '/' | '?' |
-                         '[' | ']' | '!' | '~' | '`' | '@' | '$' | '%' | '^' |
+                         '[' | ']' | '!' | '~' | '`' | '@' | '$' | '%%' | '^' |
                          '&' | '=' | '+' | '|' | '<' | '>' )
         dquote        = '"'
         squote        = '\\''
         python_str    = (squote <(python_str_c | dquote)*>:s squote |
                          dquote <(python_str_c | squote)*>:s dquote) -> s
-        env_var       = ('python_version' | 'python_full_version' |
-                         'implementation_version' | 'os_name' | 'extra'
+        env_var       = (%s | 'extra'
                          # ONLY when defined by a containing layer
                          ):varname -> lookup(varname)
         marker_var    = wsp* (env_var | python_str)
@@ -104,7 +103,7 @@ class _RequirementParserGrammar:
                           | nz digit # 10-99
                           | '1' digit{2} # 100-199
                           | '2' ('0' | '1' | '2' | '3' | '4') digit # 200-249
-                          | '25' ('0' | '1' | '2' | '3' | '4' | '5') )# %250-255
+                          | '25' ('0' | '1' | '2' | '3' | '4' | '5') )# %%250-255
         reg_name = ( unreserved | pct_encoded | sub_delims)*
         path = (
                 path_abempty # begins with '/' or is empty
@@ -124,13 +123,15 @@ class _RequirementParserGrammar:
         pchar         = unreserved | pct_encoded | sub_delims | ':' | '@'
         query         = ( pchar | '/' | '?')*
         fragment      = ( pchar | '/' | '?')*
-        pct_encoded   = '%' hexdig
+        pct_encoded   = '%%' hexdig
         unreserved    = letter | digit | '-' | '.' | '_' | '~'
         reserved      = gen_delims | sub_delims
         gen_delims    = ':' | '/' | '?' | '#' | '(' | ')?' | '@'
         sub_delims    = '!' | '$' | '&' | '\\'' | '(' | ')' | '*' | '+' | ',' | ';' | '='
         hexdig        = digit | 'a' | 'A' | 'b' | 'B' | 'c' | 'C' | 'd' | 'D' | 'e' | 'E' | 'f' | 'F'
-    """
+    """ % (
+        " | ".join(["'{}'".format(name.value) for name in MarkerToken]),
+    )
 
     @no_type_check
     def _format_full_version(self, info) -> str:
@@ -142,13 +143,7 @@ class _RequirementParserGrammar:
 
     @no_type_check
     def _environment_bindings(self, token):
-        lookup = {
-            "python_full_version": MarkerToken.PYTHON_FULL_VERSION,
-            "python_version": MarkerToken.PYTHON_VERSION,
-            "implementation_version": MarkerToken.IMPLEMENTATION_VERSION,
-            "os_name": MarkerToken.OS_NAME,
-        }
-        return lookup[token]
+        return MarkerToken.get_from_string(token)
 
     @no_type_check
     @contextmanager
