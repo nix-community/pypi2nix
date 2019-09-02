@@ -20,7 +20,7 @@ class UnsupportedUrlError(Exception):
     pass
 
 
-class Overrides(meta=ABCMeta):
+class Overrides(metaclass=ABCMeta):
     @abstractmethod
     def nix_expression(self, logger: Logger) -> str:
         pass
