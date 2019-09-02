@@ -15,7 +15,7 @@ import click
 import requests
 
 from pypi2nix.logger import Logger
-from pypi2nix.package_source import find_release
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
 from pypi2nix.sources import Sources
@@ -25,6 +25,7 @@ from pypi2nix.utils import cmd
 from pypi2nix.utils import prefetch_git
 from pypi2nix.utils import safe
 from pypi2nix.wheel import Wheel
+from pypi2nix.wheel import find_release
 
 INDEX_URL = "https://pypi.io/pypi"
 INDEX_URL = "https://pypi.python.org/pypi"
@@ -32,12 +33,18 @@ INDEX_URL = "https://pypi.python.org/pypi"
 
 class Stage2:
     def __init__(
-        self, sources: Sources, verbose: int, logger: Logger, index: str = INDEX_URL
+        self,
+        sources: Sources,
+        verbose: int,
+        logger: Logger,
+        requirement_parser: RequirementParser,
+        index: str = INDEX_URL,
     ) -> None:
         self.sources = sources
         self.verbose = verbose
         self.index = index
         self.logger = logger
+        self.requirement_parser = requirement_parser
 
     def main(
         self,
@@ -67,7 +74,7 @@ class Stage2:
             self.logger.debug("|-> from %s" % os.path.basename(wheel_path))
 
             wheel_metadata = Wheel.from_wheel_directory_path(
-                wheel_path, target_platform, self.logger
+                wheel_path, target_platform, self.logger, self.requirement_parser
             )
             if not wheel_metadata:
                 continue
@@ -77,10 +84,7 @@ class Stage2:
                 continue
             if wheel_metadata.name in additional_dependencies:
                 wheel_metadata.add_build_dependencies(
-                    map(
-                        lambda dependency: dependency.name(),
-                        additional_dependencies[wheel_metadata.name],
-                    )
+                    additional_dependencies[wheel_metadata.name]
                 )
 
             wheels.append(wheel_metadata)

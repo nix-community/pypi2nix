@@ -2,7 +2,7 @@
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -V 3 -r requirements.txt -r requirements-dev.txt -q
+#   pypi2nix -r requirements.txt -r requirements-dev.txt -V 3 -v
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -389,6 +389,24 @@ let
       };
     };
 
+    "flake8-unused-arguments" = python.mkDerivation {
+      name = "flake8-unused-arguments-0.0.3";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/9b/e5/7ba4be2e85cda6377c47f71d6781934a2eefca9411e62b1f76328695e158/flake8-unused-arguments-0.0.3.tar.gz";
+        sha256 = "d98a924ebb1d710e4245adc2731d417662395c18232c45bee74a767f7dde7a30";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."flake8"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/nhoad/flake8-unused-arguments";
+        license = licenses.mit;
+        description = "flake8 extension to warn on unused function arguments";
+      };
+    };
+
     "flit" = python.mkDerivation {
       name = "flit-1.3";
       src = pkgs.fetchurl {
@@ -609,10 +627,10 @@ let
     };
 
     "nix-prefetch-github" = python.mkDerivation {
-      name = "nix-prefetch-github-2.3";
+      name = "nix-prefetch-github-2.3.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/bf/2c/4e6c80cfd66fa77d32310dcda1c01f249c4fb12d2820e96b259b5819eab2/nix-prefetch-github-2.3.tar.gz";
-        sha256 = "dd5dde8b8540983a119d96eaa941b8346a661f2f9606fd739aeed36fba385e7d";
+        url = "https://files.pythonhosted.org/packages/f5/6c/d77130438649b0140d9bb8da17c7457f5ee7649e31bbcd81a307c0e8c2b7/nix-prefetch-github-2.3.1.tar.gz";
+        sha256 = "3a61c48c44a37574189eda20ecef48d18711ec18cf1fb23470cec63e86ac7bca";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -821,10 +839,10 @@ let
     };
 
     "pytest" = python.mkDerivation {
-      name = "pytest-5.1.0";
+      name = "pytest-5.1.2";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/11/ea/4c8ae19a5f82e5374df087fff87b48bad9ec1f2ba2b41bac0181ab2da348/pytest-5.1.0.tar.gz";
-        sha256 = "3805d095f1ea279b9870c3eeae5dddf8a81b10952c8835cd628cf1875b0ef031";
+        url = "https://files.pythonhosted.org/packages/c3/66/228ce6dca2b4d2cd5f9c1244aca14e0b13c31e4dbdf39294e782a1c78f12/pytest-5.1.2.tar.gz";
+        sha256 = "b78fe2881323bd44fd9bd76e5317173d4316577e7b1cddebae9136a4495ec865";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -1131,16 +1149,18 @@ let
     };
 
     "zipp" = python.mkDerivation {
-      name = "zipp-0.5.2";
+      name = "zipp-0.6.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/66/ae/1d6693cde3b3e3c14e95cf3408f24d0e869ead42a79993b611d8817d929a/zipp-0.5.2.tar.gz";
-        sha256 = "4970c3758f4e89a7857a973b1e2a5d75bcdc47794442f2e2dd4fe8e0466e809a";
+        url = "https://files.pythonhosted.org/packages/57/dd/585d728479d97d25aeeb9aa470d36a4ad8d0ba5610f84e14770128ce6ff7/zipp-0.6.0.tar.gz";
+        sha256 = "3718b1cbcd963c7d4c5511a8240812904164b7f381b647143a89d3b98f9bcd8e";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
         self."setuptools-scm"
       ];
-      propagatedBuildInputs = [ ];
+      propagatedBuildInputs = [
+        self."more-itertools"
+      ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/jaraco/zipp";
         license = "UNKNOWN";

@@ -64,10 +64,7 @@ def test_pip_without_index_cannot_download_six(
 
 
 def test_pip_without_index_cannot_be_prepared_without_wheel_supplied(
-    logger: Logger,
-    current_platform: TargetPlatform,
-    project_dir: str,
-    wheel_distribution_archive_path: str,
+    logger: Logger, current_platform: TargetPlatform, project_dir: str
 ) -> None:
     pip = VirtualenvPip(
         logger=logger,

@@ -15,7 +15,7 @@ import pypi2nix.utils
 from pypi2nix.logger import StreamLogger
 from pypi2nix.logger import verbosity_from_int
 from pypi2nix.nix import Nix
-from pypi2nix.overrides import AnyOverrides
+from pypi2nix.overrides import Overrides
 from pypi2nix.pip.implementation import NixPip
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements_collector import RequirementsCollector
@@ -153,7 +153,7 @@ def main(
     requirements: List[str],
     editable: List[str],
     setup_requires: List[str],
-    overrides: List[AnyOverrides],
+    overrides: List[Overrides],
     default_overrides: bool,
     wheels_cache: List[str],
 ) -> None:
@@ -282,7 +282,12 @@ def main(
 
     logger.info("Stage2: Extracting metadata from pypi.python.org ...")
 
-    stage2 = pypi2nix.stage2.Stage2(sources=sources, verbose=verbose, logger=logger)
+    stage2 = pypi2nix.stage2.Stage2(
+        sources=sources,
+        verbose=verbose,
+        logger=logger,
+        requirement_parser=requirement_parser,
+    )
 
     packages_metadata = stage2.main(
         wheel_paths=wheels,

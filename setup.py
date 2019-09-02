@@ -21,8 +21,8 @@ setup(
         "License :: OSI Approved :: BSD License",
     ],
     entry_points={"console_scripts": ["pypi2nix = pypi2nix.cli:main"]},
-    packages=["pypi2nix"],
-    package_dir={"": "src"},
+    packages=["pypi2nix", "pypi2nix.pip"],
+    package_dir={"": "src", "pypi2nix.pip": "src/pypi2nix/pip"},
     include_package_data=True,
     install_requires=[
         "attrs",

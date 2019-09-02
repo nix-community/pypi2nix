@@ -1,7 +1,8 @@
 import subprocess
+from abc import ABCMeta
+from abc import abstractmethod
 from typing import Dict
 from typing import Optional
-from typing import Union
 from typing import no_type_check
 from urllib.parse import urldefrag
 from urllib.parse import urlparse
@@ -19,20 +20,23 @@ class UnsupportedUrlError(Exception):
     pass
 
 
-AnyOverrides = Union["OverridesFile", "OverridesUrl", "OverridesGit", "OverridesGithub"]
+class Overrides(meta=ABCMeta):
+    @abstractmethod
+    def nix_expression(self, logger: Logger) -> str:
+        pass
 
 
-class OverridesFile(object):
+class OverridesFile(Overrides):
     def __init__(self, path: str) -> None:
         self.path = path
 
     expression_template = "import %(path)s { inherit pkgs python ; }"
 
-    def nix_expression(self, logger: Logger) -> str:
+    def nix_expression(self, logger: Logger) -> str:  # noqa: U100
         return self.expression_template % dict(path=self.path)
 
 
-class OverridesUrl(object):
+class OverridesUrl(Overrides):
     def __init__(self, url: str) -> None:
         self.url = url
 
@@ -55,7 +59,7 @@ class OverridesUrl(object):
         return self.expression_template % dict(url=self.url, sha_string=sha_sum)
 
 
-class OverridesGit(object):
+class OverridesGit(Overrides):
     def __init__(self, repo_url: str, path: str, rev: Optional[str] = None) -> None:
         self.repo_url = repo_url
         self.path = path
@@ -70,7 +74,7 @@ class OverridesGit(object):
         + '} ; in import "${src}/%(path)s" { inherit pkgs python; }'
     )
 
-    def nix_expression(self, logger: Logger) -> str:
+    def nix_expression(self, logger: Logger) -> str:  # noqa: U100
         repo_data = prefetch_git(self.repo_url, self.rev)
         return self.expression_template % dict(
             url=repo_data["url"],
@@ -80,7 +84,7 @@ class OverridesGit(object):
         )
 
 
-class OverridesGithub(object):
+class OverridesGithub(Overrides):
     def __init__(
         self, owner: str, repo: str, path: str, rev: Optional[str] = None
     ) -> None:
@@ -89,7 +93,7 @@ class OverridesGithub(object):
         self.path = path
         self.rev = rev
 
-    def nix_expression(self, logger: Logger) -> str:
+    def nix_expression(self, logger: Logger) -> str:  # noqa: U100
         prefetch_data = prefetch_github(self.owner, self.repo, self.rev)
         template = " ".join(
             [
@@ -113,7 +117,7 @@ class OverridesGithub(object):
         )
 
 
-def url_to_overrides(url_string: str) -> AnyOverrides:
+def url_to_overrides(url_string: str) -> Overrides:
     url = urlparse(url_string)
     if url.scheme == "":
         return OverridesFile(url.path)

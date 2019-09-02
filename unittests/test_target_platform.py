@@ -89,6 +89,7 @@ MarkerDefinition = namedtuple("NamedTuple", ["name", "value"])
     )
 )
 def environment_marker_definition(request):
+    """This fixture has been generate from https://www.python.org/dev/peps/pep-0508/#environment-markers"""
     return request.param
 
 

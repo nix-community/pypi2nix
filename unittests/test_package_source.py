@@ -80,9 +80,7 @@ def test_url_source_gives_valid_nix_expression(url_source, expression_evaluater)
     expression_evaluater(url_source.nix_expression())
 
 
-def test_url_source_nix_expression_contains_specified_hash_when_given(
-    expression_evaluater, logger
-):
+def test_url_source_nix_expression_contains_specified_hash_when_given(logger):
     # We specify the wrong hash on purpose to see that UrlSource just
     # "accepts" the given hash and puts it into the generated nix
     # expression

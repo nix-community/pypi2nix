@@ -50,11 +50,13 @@ def wheel_builder(pip, project_dir, logger, requirement_parser, current_platform
 
 
 @pytest.fixture
-def extracted_six_package(six_requirements, wheel_builder, current_platform, logger):
+def extracted_six_package(
+    six_requirements, wheel_builder, current_platform, logger, requirement_parser
+):
     wheels = wheel_builder.build(six_requirements)
     for wheel_directory in wheels:
         wheel = Wheel.from_wheel_directory_path(
-            wheel_directory, current_platform, logger
+            wheel_directory, current_platform, logger, requirement_parser
         )
         if wheel.name == "six":
             return wheel_directory
@@ -62,7 +64,7 @@ def extracted_six_package(six_requirements, wheel_builder, current_platform, log
 
 
 @pytest.fixture
-def six_requirements(project_dir, current_platform, requirement_parser):
+def six_requirements(current_platform, requirement_parser):
     requirements = RequirementSet(current_platform)
     requirements.add(requirement_parser.parse("six == 1.12.0"))
     return requirements

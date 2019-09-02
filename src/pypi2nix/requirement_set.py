@@ -6,7 +6,6 @@ from typing import Iterator
 from typing import Optional
 from typing import TypeVar
 from typing import Union
-from typing import overload
 
 from setuptools._vendor.packaging.utils import canonicalize_name
 
@@ -102,17 +101,7 @@ class RequirementSet:
                 sources.add(requirement.name(), source)
         return sources
 
-    @overload
-    def get(self, key: str) -> Optional[Requirement]:
-        ...
-
-    @overload  # noqa: F811
-    def get(self, key: str, default: T) -> Union[Requirement, T]:
-        ...
-
-    def get(  # noqa: F811
-        self, key: str, default: Optional[T] = None
-    ) -> Union[Requirement, None, T]:
+    def get(self, key: str, default: Optional[T] = None) -> Union[Requirement, None, T]:
         try:
             return self[key]
         except KeyError:
