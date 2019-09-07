@@ -48,8 +48,8 @@ def main(
             buildInputs = "\n".join(
                 sorted(
                     [
-                        '        self."{}"'.format(name)
-                        for name in item.build_dependencies
+                        '        self."{}"'.format(dependency.name())
+                        for dependency in item.build_dependencies
                     ]
                 )
             )

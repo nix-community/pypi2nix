@@ -15,6 +15,7 @@ from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.source_distribution import DistributionNotDetected
 from pypi2nix.source_distribution import SourceDistribution
 from pypi2nix.target_platform import TargetPlatform
+from pypi2nix.utils import TO_IGNORE
 
 
 class WheelBuilder:
@@ -82,6 +83,9 @@ class WheelBuilder:
         for distribution in uninspected_distributions:
             build_dependencies = distribution.build_dependencies(
                 self.target_platform, self.requirement_parser
+            ).filter(
+                lambda requirement: requirement.name()
+                not in TO_IGNORE + [distribution.name]
             )
             self.additional_build_dependencies[distribution.name] += build_dependencies
             detected_dependencies += build_dependencies

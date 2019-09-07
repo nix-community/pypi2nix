@@ -29,12 +29,19 @@ stages:
 jobs:
   include:
   - stage: build
-    name: build
+    name: build-19.03
     os: linux
     env:
       - TEST_FILE=none
     script:
-    - nix build
+    - nix build -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.03.tar.gz
+  - stage: build
+    name: build-nixos-unstable
+    os: linux
+    env:
+      - TEST_FILE=none
+    script:
+    - nix build -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz
   - stage: build
     name: unittests
     os: linux

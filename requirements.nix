@@ -2,7 +2,7 @@
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -r requirements.txt -r requirements-dev.txt -V 3 -v
+#   pypi2nix -V 3 -r requirements.txt -r requirements-dev.txt
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -221,7 +221,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "http://github.com/codecov/codecov-python";
-        license = licenses.asl20;
+        license = "http://www.apache.org/licenses/LICENSE-2.0";
         description = "Hosted coverage reports for Github, Bitbucket and Gitlab";
       };
     };
@@ -366,7 +366,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/gforcada/flake8-isort";
-        license = licenses.gpl2;
+        license = "GPL version 2";
         description = "flake8 plugin that integrates isort .";
       };
     };
@@ -449,10 +449,10 @@ let
     };
 
     "importlib-metadata" = python.mkDerivation {
-      name = "importlib-metadata-0.19";
+      name = "importlib-metadata-0.20";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/27/49/58d50a592d99a6bf58c4c1b02b203a48357a74e33922a9d021fda07d4ce3/importlib_metadata-0.19.tar.gz";
-        sha256 = "23d3d873e008a513952355379d93cbcab874c58f4f034ff657c7a87422fa64e8";
+        url = "https://files.pythonhosted.org/packages/05/41/7d339dd7b507e97f67be812fdf29c4ad991ddd34b1ed0f3c54e8f1c4e0b3/importlib_metadata-0.20.tar.gz";
+        sha256 = "b7143592e374e50584564794fcb8aaf00a23025f9db866627f89a21491847a8d";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -494,10 +494,7 @@ let
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [
-        self."appdirs"
-        self."toml"
-      ];
+      propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/timothycrosley/isort";
         license = licenses.mit;
@@ -534,7 +531,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://palletsprojects.com/p/markupsafe/";
-        license = licenses.bsd3;
+        license = "BSD-3-Clause";
         description = "Safely add untrusted strings to HTML/XML markup.";
       };
     };
@@ -550,7 +547,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pycqa/mccabe";
-        license = licenses.mit;
+        license = "Expat license";
         description = "McCabe checker, plugin for flake8";
       };
     };
@@ -712,7 +709,6 @@ let
       propagatedBuildInputs = [
         self."fancycompleter"
         self."pygments"
-        self."pytest"
         self."wmctrl"
       ];
       meta = with pkgs.stdenv.lib; {
@@ -737,7 +733,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pytest-dev/pluggy";
-        license = licenses.mit;
+        license = "MIT license";
         description = "plugin and hook calling mechanisms for python";
       };
     };
@@ -769,7 +765,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "http://py.readthedocs.io/";
-        license = licenses.mit;
+        license = "MIT license";
         description = "library with cross-python path, ini-parsing, io, code, log facilities";
       };
     };
@@ -785,7 +781,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://pycodestyle.readthedocs.io/";
-        license = licenses.mit;
+        license = "Expat license";
         description = "Python style guide checker";
       };
     };
@@ -856,12 +852,11 @@ let
         self."packaging"
         self."pluggy"
         self."py"
-        self."requests"
         self."wcwidth"
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://docs.pytest.org/en/latest/";
-        license = licenses.mit;
+        license = "MIT license";
         description = "pytest: simple powerful testing with Python";
       };
     };
@@ -877,7 +872,6 @@ let
       propagatedBuildInputs = [
         self."coverage"
         self."pytest"
-        self."six"
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pytest-dev/pytest-cov";
@@ -896,9 +890,7 @@ let
       buildInputs = commonBuildInputs ++ [
         self."setuptools-scm"
       ];
-      propagatedBuildInputs = [
-        self."pytest"
-      ];
+      propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pytest-dev/pytest-runner/";
         license = "UNKNOWN";
@@ -1068,10 +1060,7 @@ let
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [
-        self."certifi"
-        self."idna"
-      ];
+      propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://urllib3.readthedocs.io/";
         license = licenses.mit;

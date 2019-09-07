@@ -206,3 +206,14 @@ def test_that_get_method_returns_specified_default_value_when_not_found(
     requirement_set
 ):
     assert requirement_set.get("not-found", 0) == 0
+
+
+def test_that_filter_works_by_name(requirement_parser, requirement_set):
+    requirement = requirement_parser.parse("test")
+    requirement_set.add(requirement)
+
+    assert len(requirement_set) == 1
+
+    filtered_requirement_set = requirement_set.filter(lambda req: req.name() != "test")
+
+    assert len(filtered_requirement_set) == 0

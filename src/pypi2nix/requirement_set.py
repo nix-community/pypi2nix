@@ -1,5 +1,6 @@
 import os.path
 import tempfile
+from typing import Callable
 from typing import Dict
 from typing import Iterable
 from typing import Iterator
@@ -61,6 +62,16 @@ class RequirementSet:
             ].add(requirement, self.target_platform)
         else:
             self.constraints[requirement.name()] = requirement
+
+    def filter(
+        self, filter_function: Callable[[Requirement], bool]
+    ) -> "RequirementSet":
+        filtered_requirement_set = RequirementSet(self.target_platform)
+        filtered_requirement_set.constraints = self.constraints
+        for requirement in self:
+            if filter_function(requirement):
+                filtered_requirement_set.add(requirement)
+        return filtered_requirement_set
 
     def to_constraints_only(self) -> "RequirementSet":
         new_requirement_set = RequirementSet(self.target_platform)

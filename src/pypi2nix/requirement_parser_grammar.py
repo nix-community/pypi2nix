@@ -57,11 +57,11 @@ class _RequirementParserGrammar:
         egg_name = '#egg=' name:n -> n
 
         name_req      = (name:n wsp* extras?:e wsp* versionspec?:v wsp* quoted_marker?:m
-                         -> VersionRequirement(name=n, extras=set(e or []), versions=v or [], environment_markers=m))
+                         -> VersionRequirement(name=n, extras=set(e or []), versions=v or [], environment_markers=m, logger=logger()))
         url_req       = name:n wsp* extras?:e wsp* urlspec:v (wsp+ | end) quoted_marker?:m
                         -> UrlRequirement(name=n, extras=set(e or []), url=v or [], environment_markers=m, logger=logger())
         path_req_pip_style = (editable wsp+)? <file_path>:path egg_name:name extras?:e (wsp* | end) quoted_marker?:marker
-                             -> PathRequirement(name=name, path=path, environment_markers=marker, extras=set(e or []))
+                             -> PathRequirement(name=name, path=path, environment_markers=marker, extras=set(e or []), logger=logger())
         url_req_pip_style = (editable wsp+)? <('hg+' | 'git+')? URI_reference_pip_style>:url egg_name:name extras?:e (wsp* | end) quoted_marker?:marker
                             -> UrlRequirement(name=name, url=url, extras=set(e or []), environment_markers=marker, logger=logger())
         specification = wsp* ( path_req_pip_style | url_req_pip_style | url_req | name_req ):s wsp* -> s

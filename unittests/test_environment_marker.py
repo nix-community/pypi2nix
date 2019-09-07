@@ -1,10 +1,12 @@
+import pytest
+
 from pypi2nix.environment_marker import EnvironmentMarker
 from pypi2nix.environment_marker import MarkerToken
 
 
-def test_environment_marker_respects_supplied_extra(current_platform):
+@pytest.mark.parametrize("operator", ("<", "<=", "==", "!=", ">", ">="))
+def test_that_version_comparisons_do_not_throw(operator, current_platform):
     marker = EnvironmentMarker(
-        operation="==", left=MarkerToken.EXTRA, right="testextra"
+        operation=operator, left="1.0", right=MarkerToken.PYTHON_VERSION
     )
-    assert marker.applies_to_platform(current_platform, extra="testextra")
-    assert not marker.applies_to_platform(current_platform, extra=None)
+    marker.applies_to_platform(current_platform)

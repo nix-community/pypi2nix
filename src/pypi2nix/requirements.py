@@ -12,6 +12,7 @@ from attr import evolve
 from setuptools._vendor.packaging.utils import canonicalize_name
 
 from pypi2nix.environment_marker import EnvironmentMarker
+from pypi2nix.environment_marker import MarkerEvaluationFailed
 from pypi2nix.logger import Logger
 from pypi2nix.package_source import GitSource
 from pypi2nix.package_source import HgSource
@@ -48,13 +49,25 @@ class Requirement(metaclass=ABCMeta):
     def environment_markers(self) -> Optional[EnvironmentMarker]:
         pass
 
+    @abstractmethod
+    def logger(self) -> Logger:
+        pass
+
     def applies_to_target(self, target_platform: TargetPlatform) -> bool:
         environment_markers = self.environment_markers()
-        return (
-            True
-            if environment_markers is None
-            else environment_markers.applies_to_platform(target_platform)
-        )
+        try:
+            return (
+                True
+                if environment_markers is None
+                else environment_markers.applies_to_platform(target_platform)
+            )
+        except MarkerEvaluationFailed as e:
+            self.logger().warning(
+                "Could not evaluate environment marker `{marker}`. Error message was `{message}`".format(
+                    marker=environment_markers, message=e.args
+                )
+            )
+            return False
 
     @abstractmethod
     def to_line(self) -> str:
@@ -74,6 +87,9 @@ class UrlRequirement(Requirement):
 
     def extras(self) -> Set[str]:
         return self._extras
+
+    def logger(self) -> Logger:
+        return self._logger
 
     def add(self, other: Requirement, target_platform: TargetPlatform) -> Requirement:
         if not self.applies_to_target(target_platform):
@@ -155,12 +171,16 @@ class PathRequirement(Requirement):
     _path: str = attrib()
     _extras: Set[str] = attrib()
     _environment_markers: Optional[EnvironmentMarker] = attrib()
+    _logger: Logger = attrib()
 
     def name(self) -> str:
         return canonicalize_name(self._name)
 
     def extras(self) -> Set[str]:
         return self._extras
+
+    def logger(self) -> Logger:
+        return self._logger
 
     def add(self, other: Requirement, target_platform: TargetPlatform) -> Requirement:
         if not self.applies_to_target(target_platform):
@@ -218,12 +238,16 @@ class VersionRequirement(Requirement):
     _versions: List[Tuple[str, str]] = attrib()
     _extras: Set[str] = attrib()
     _environment_markers: Optional[EnvironmentMarker] = attrib()
+    _logger: Logger = attrib()
 
     def name(self) -> str:
         return canonicalize_name(self._name)
 
     def extras(self) -> Set[str]:
         return self._extras
+
+    def logger(self) -> Logger:
+        return self._logger
 
     def add(self, other: Requirement, target_platform: TargetPlatform) -> Requirement:
         if not self.applies_to_target(target_platform):
@@ -247,6 +271,7 @@ class VersionRequirement(Requirement):
                     extras=self._extras.union(other._extras),
                     versions=self.version() + other.version(),
                     environment_markers=None,
+                    logger=self.logger(),
                 )
             else:
                 raise IncompatibleRequirements(
