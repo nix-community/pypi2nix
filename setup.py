@@ -29,6 +29,7 @@ setup(
         "click",
         "jinja2",
         "nix-prefetch-github",
+        "packaging",
         "Parsley",
         "requests",
         "setupcfg",

@@ -8,7 +8,7 @@ from typing import Optional
 from typing import TypeVar
 from typing import Union
 
-from setuptools._vendor.packaging.utils import canonicalize_name
+from packaging.utils import canonicalize_name
 
 from pypi2nix.requirement_parser import ParsingFailed
 from pypi2nix.requirement_parser import RequirementParser

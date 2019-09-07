@@ -11,7 +11,7 @@ from typing import Type
 
 import click
 import pkg_resources
-from setuptools._vendor.packaging.utils import canonicalize_name
+from packaging.utils import canonicalize_name
 
 from pypi2nix.license import find_license
 from pypi2nix.logger import Logger

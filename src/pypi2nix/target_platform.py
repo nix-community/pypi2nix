@@ -9,7 +9,7 @@ from typing import Iterator
 
 from attr import attrib
 from attr import attrs
-from setuptools._vendor.packaging.markers import default_environment
+from packaging.markers import default_environment
 
 from pypi2nix.nix import Nix
 from pypi2nix.utils import PYTHON_VERSIONS

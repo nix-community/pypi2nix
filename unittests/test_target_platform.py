@@ -6,7 +6,7 @@ import sys
 from collections import namedtuple
 
 import pytest
-from setuptools._vendor.packaging.markers import default_environment
+from packaging.markers import default_environment
 
 from pypi2nix.environment_marker import EnvironmentMarker
 from pypi2nix.environment_marker import MarkerToken

@@ -9,7 +9,7 @@ from typing import Tuple
 from attr import attrib
 from attr import attrs
 from attr import evolve
-from setuptools._vendor.packaging.utils import canonicalize_name
+from packaging.utils import canonicalize_name
 
 from pypi2nix.environment_marker import EnvironmentMarker
 from pypi2nix.environment_marker import MarkerEvaluationFailed

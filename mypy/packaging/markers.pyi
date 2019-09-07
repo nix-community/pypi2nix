@@ -1,0 +1,3 @@
+from typing import Dict
+
+def default_environment() -> Dict[str, str]: ...
