@@ -15,7 +15,7 @@ from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.utils import cmd
 
 HERE = os.path.dirname(__file__)
-PIP_WHEEL = os.path.join(HERE, "..", "wheels", "pip-19.3.dev0-py2.py3-none-any.whl")
+PIP_WHEEL = os.path.join(HERE, "..", "wheels", "pip.whl")
 
 
 class VirtualenvPip(Pip):
