@@ -20,23 +20,35 @@ class PlatformGenerator:
         self.nix = nix
 
     def from_python_version(self, version: str) -> "TargetPlatform":
-        python_command = ";".join(
-            [
-                "import json",
-                "from setuptools._vendor.packaging.markers import default_environment",
-                "print(json.dumps(default_environment()))",
-            ]
-        )
         with self._python_environment_nix(version) as nix_file:
             default_environment_string = self.nix.shell(
                 command="python -c {command}".format(
-                    command=shlex.quote(python_command)
+                    command=shlex.quote(self._python_command_for_default_environment())
                 ),
                 derivation_path=nix_file,
             )
         return self._target_platform_from_default_environment_string(
             default_environment_string,
             derivation_name=self._derivation_from_version_specifier(version),
+        )
+
+    def current_platform(self) -> "TargetPlatform":
+        environment_json_string = json.dumps(default_environment())
+        environment = self._load_default_environment(environment_json_string)
+        return self._target_platform_from_default_environment_string(
+            environment_json_string,
+            derivation_name=self._derivation_from_version_specifier(
+                environment["python_version"]
+            ),
+        )
+
+    def _python_command_for_default_environment(self) -> str:
+        return ";".join(
+            [
+                "import json",
+                "from setuptools._vendor.packaging.markers import default_environment",
+                "print(json.dumps(default_environment()))",
+            ]
         )
 
     def _target_platform_from_default_environment_string(
@@ -93,16 +105,6 @@ class PlatformGenerator:
 
     def _derivation_from_version_specifier(self, version: str) -> str:
         return PYTHON_VERSIONS[version]
-
-    def current_platform(self) -> "TargetPlatform":
-        environment_json_string = json.dumps(default_environment())
-        environment = self._load_default_environment(environment_json_string)
-        return self._target_platform_from_default_environment_string(
-            environment_json_string,
-            derivation_name=self._derivation_from_version_specifier(
-                environment["python_version"]
-            ),
-        )
 
 
 @attrs
