@@ -1,13 +1,13 @@
 import os
 import shlex
 import sys
+from typing import Dict
 from typing import Iterable
 
 import jinja2
-from setuptools._vendor.packaging.utils import canonicalize_name
 
 from pypi2nix.logger import Logger
-from pypi2nix.overrides import AnyOverrides
+from pypi2nix.overrides import Overrides
 from pypi2nix.sources import Sources
 from pypi2nix.wheel import Wheel
 
@@ -24,7 +24,7 @@ def main(
     python_version: str,
     current_dir: str,
     logger: Logger,
-    common_overrides: Iterable[AnyOverrides] = [],
+    common_overrides: Iterable[Overrides] = [],
 ) -> None:
     """Create Nix expressions.
     """
@@ -40,7 +40,7 @@ def main(
         version = f.read()
     version = version.strip()
 
-    metadata_by_name = {x.name: x for x in packages_metadata}
+    metadata_by_name: Dict[str, Wheel] = {x.name: x for x in packages_metadata}
 
     generated_packages_metadata = []
     for item in sorted(packages_metadata, key=lambda x: x.name):
@@ -48,8 +48,8 @@ def main(
             buildInputs = "\n".join(
                 sorted(
                     [
-                        '        self."{}"'.format(name)
-                        for name in item.build_dependencies
+                        '        self."{}"'.format(dependency.name())
+                        for dependency in item.build_dependencies
                     ]
                 )
             )
@@ -58,11 +58,7 @@ def main(
             buildInputs = "[ ]"
         propagatedBuildInputs = "[ ]"
         if item.deps:
-            deps = [
-                canonicalize_name(x)
-                for x in item.deps
-                if canonicalize_name(x) in metadata_by_name.keys()
-            ]
+            deps = [x.name() for x in item.deps if x.name() in metadata_by_name.keys()]
             if deps:
                 propagatedBuildInputs = "[\n%s\n      ]" % (
                     "\n".join(

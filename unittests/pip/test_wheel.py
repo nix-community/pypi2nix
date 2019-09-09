@@ -1,6 +1,7 @@
 import os.path
 from typing import List
 
+from pypi2nix.pip.interface import Pip
 from pypi2nix.requirement_set import RequirementSet
 
 from ..switches import nix
@@ -34,9 +35,11 @@ def test_pip_can_install_wheels_previously_downloaded(
 
 @nix
 def test_pip_wheel_does_not_build_wheels_if_requirements_are_empty(
-    pip, wheels_dir, download_dir
+    pip: Pip, wheels_dir, download_dir, current_platform
 ):
     pip.build_wheels(
-        requirements=[], target_directory=wheels_dir, source_directories=download_dir
+        requirements=RequirementSet(current_platform),
+        target_directory=wheels_dir,
+        source_directories=download_dir,
     )
     assert not list_files(wheels_dir)

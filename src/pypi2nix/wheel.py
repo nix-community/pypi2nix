@@ -7,15 +7,18 @@ from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Optional
-from typing import Set
 from typing import Type
 
 import click
-import setuptools._vendor.packaging.requirements
-from setuptools._vendor.packaging.utils import canonicalize_name
+import pkg_resources
+from packaging.utils import canonicalize_name
 
 from pypi2nix.license import find_license
 from pypi2nix.logger import Logger
+from pypi2nix.package_source import UrlSource
+from pypi2nix.requirement_parser import RequirementParser
+from pypi2nix.requirement_set import RequirementSet
+from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.utils import TO_IGNORE
 from pypi2nix.utils import safe
 
@@ -25,41 +28,42 @@ class Wheel:
         self,
         name: str,
         version: str,
-        deps: Iterable[str],
+        deps: RequirementSet,
         homepage: str,
         license: str,
         description: str,
-        build_dependencies: Set[str] = set(),
+        build_dependencies: RequirementSet,
     ):
         self.name = canonicalize_name(name)
         self.version = version
-        self.deps = set(map(canonicalize_name, deps))
+        self.deps = deps
         self.homepage = homepage
         self.license = license
         self.description = description
-        self.build_dependencies = set(map(canonicalize_name, build_dependencies))
+        self.build_dependencies: RequirementSet = build_dependencies
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "version": self.version,
-            "deps": list(self.deps),
+            "deps": [requirement.name() for requirement in self.deps],
             "homepage": self.homepage,
             "license": self.license,
             "description": self.description,
-            "build_dependencies": list(self.build_dependencies),
+            "build_dependencies": [
+                requirement.name() for requirement in self.build_dependencies
+            ],
         }
 
-    def add_build_dependencies(self, dependencies: Iterable[str]) -> None:
-        for dependency in dependencies:
-            if self.valid_dependency(dependency):
-                self.build_dependencies.add(canonicalize_name(dependency))
+    def add_build_dependencies(self, dependencies: RequirementSet) -> None:
+        self.build_dependencies += dependencies
 
-    def valid_dependency(self, dependency: str) -> bool:
+    @classmethod
+    def _valid_dependency(constructor, name: str, dependency: str) -> bool:
         canonicalized_dependency = canonicalize_name(dependency)
         return all(
             [
-                canonicalized_dependency != self.name,
+                canonicalized_dependency != name,
                 canonicalized_dependency not in TO_IGNORE,
             ]
         )
@@ -68,8 +72,9 @@ class Wheel:
     def from_wheel_directory_path(
         wheel_class: "Type[Wheel]",
         wheel_directory_path: str,
-        default_environment: Dict[str, Any],
+        target_platform: TargetPlatform,
         logger: Logger,
+        requirement_parser: RequirementParser,
     ) -> "Wheel":
         metadata_file = os.path.join(wheel_directory_path, "METADATA")
         if os.path.exists(metadata_file):
@@ -98,6 +103,8 @@ class Wheel:
             name = str_from_message(metadata, "name")
             if name is None:
                 raise Exception("Could not extract name from wheel metadata")
+            else:
+                name = canonicalize_name(name)
 
             version = str_from_message(metadata, "version")
             if version is None:
@@ -114,62 +121,46 @@ class Wheel:
             return wheel_class(
                 name=name,
                 version=version,
-                deps=extract_deps(dependencies, default_environment),
+                deps=wheel_class._extract_deps(
+                    dependencies,
+                    target_platform,
+                    requirement_parser,
+                    current_wheel_name=name,
+                ),
                 homepage=safe(find_homepage(metadata)),
                 license=license,
                 description=safe(description),
+                build_dependencies=RequirementSet(target_platform),
             )
 
         raise click.ClickException(
             "Unable to find METADATA in `%s` folder." % wheel_directory_path
         )
 
+    @classmethod
+    def _extract_deps(
+        constructor,
+        deps: Iterable[str],
+        target_platform: TargetPlatform,
+        requirement_parser: RequirementParser,
+        current_wheel_name: str,
+    ) -> RequirementSet:
+        """Get dependent packages from metadata.
 
-def extract_deps(deps: Iterable[str], default_environment: Dict[str, Any]) -> List[str]:
-    """Get dependent packages from metadata.
-
-    Note that this is currently very rough stuff. I consider only the
-    first 'requires' dataset in 'run_requires'. Other requirement sets
-    like 'test_requires' are completely ignored.
-    """
-    extracted_deps = []
-    for dep in deps:
-        req = setuptools._vendor.packaging.requirements.Requirement(dep)
-
-        if req.name.lower() in TO_IGNORE:
-            continue
-
-        if req.marker:
-
-            extra = None
-            for marker in req.marker._markers:
-                if len(marker) != 3:
-                    continue
-                if (
-                    type(marker[0]) == setuptools._vendor.packaging.markers.Variable
-                    and type(marker[1]) == setuptools._vendor.packaging.markers.Op
-                    and type(marker[2]) == setuptools._vendor.packaging.markers.Value
-                    and marker[0].value == "extra"
-                    and marker[1].value == "=="
-                ):
-                    extra = marker[2].value
-                    break
-
-            if extra:
-                # this will save us from some cyclic dependencies until we have
-                # time to implement real solution
-                if extra in ["test", "tests", "dev", "docs", "doc"]:
-                    continue
-                environment = dict(**default_environment, **dict(extra=extra))
-            else:
-                environment = dict(**default_environment)
-
-            if not req.marker.evaluate(environment):
+        Note that this is currently very rough stuff. I consider only the
+        first 'requires' dataset in 'run_requires'. Other requirement sets
+        like 'test_requires' are completely ignored.
+        """
+        extracted_deps = RequirementSet(target_platform)
+        for dep_string in deps:
+            dependency = requirement_parser.parse(dep_string)
+            if dependency.name() in TO_IGNORE:
                 continue
-
-        extracted_deps.append(req.name)
-
-    return list(set(extracted_deps))
+            if not constructor._valid_dependency(current_wheel_name, dependency.name()):
+                continue
+            if dependency.applies_to_target(target_platform):
+                extracted_deps.add(dependency)
+        return extracted_deps
 
 
 def find_homepage(item: Message) -> str:
@@ -194,3 +185,58 @@ def list_from_message(metadata: Message, key: str) -> Optional[List[str]]:
         return [str(item) if isinstance(item, Header) else item for item in maybe_value]
     else:
         return None
+
+
+def find_release(wheel: Wheel, wheel_data: Dict[str, Any], logger: Logger) -> UrlSource:
+    EXTENSIONS = [".tar.gz", ".tar.bz2", ".tar", ".zip", ".tgz"]
+
+    wheel_release = None
+
+    _releases = wheel_data["releases"].get(wheel.version, [])
+
+    # sometimes version in release list is not exact match and we need to use
+    # pkg_resources's parse_version function to detect which release list is
+    # correct
+    if not _releases:
+        for _version, _releases_tmp in wheel_data["releases"].items():
+            if pkg_resources.parse_version(
+                wheel.version
+            ) == pkg_resources.parse_version(_version):
+                _releases = _releases_tmp
+                break
+
+    # sometimes for some unknown reason release data is under other version.
+    # example: https://pypi.python.org/pypi/radiotherm/json
+    if not _releases:
+        _base_version = pkg_resources.parse_version(  # type: ignore
+            wheel.version
+        ).base_version
+        for _releases_tmp in wheel_data["releases"].values():
+            for _release_tmp in _releases_tmp:
+                for _ext in EXTENSIONS:
+                    if _release_tmp["filename"].endswith(wheel.version + _ext):
+                        _releases = [_release_tmp]
+                        break
+                    if _release_tmp["filename"].endswith(_base_version + _ext):
+                        _releases = [_release_tmp]
+                        break
+
+    # a release can come in different formats. formats we care about are
+    # listed in EXTENSIONS variable
+    for _release in _releases:
+        for _ext in EXTENSIONS:
+            if _release["filename"].endswith(_ext):
+                wheel_release = _release
+                break
+        if wheel_release:
+            break
+
+    if not wheel_release:
+        raise click.ClickException(
+            "Unable to find release for package {name} of version "
+            "{version}".format(name=wheel.name, version=wheel.version)
+        )
+
+    sha256_digest: str = wheel_release.get("digests", {}).get("sha256", None)
+    wheel_url: str = wheel_release["url"]
+    return UrlSource(wheel_url, logger, sha256_digest)

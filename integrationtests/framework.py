@@ -154,6 +154,7 @@ class IntegrationTest:
         test_command_line = [
             "nix",
             "run",
+            "--show-trace",
             "-f",
             os.path.join(self.example_directory(), "requirements.nix"),
             "interpreter",
@@ -209,6 +210,7 @@ class IntegrationTest:
         test_command_line = [
             "nix",
             "run",
+            "--show-trace",
             "-f",
             os.path.join(self.example_directory(), "requirements.nix"),
             "interpreter",

@@ -8,7 +8,7 @@ from typing import Iterable
 
 import setupcfg
 import toml
-from setuptools._vendor.packaging.utils import canonicalize_name
+from packaging.utils import canonicalize_name
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger

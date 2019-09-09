@@ -6,3 +6,6 @@ parsley
 requests
 setupcfg
 toml
+packaging
+
+-c constraints.txt

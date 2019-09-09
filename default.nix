@@ -25,6 +25,7 @@ let
   applyTransform = lines: transform: builtins.map transform lines;
   transforms =
     [ (removeAfter "#") # remove after comment
+      (removeAfter "-c ")
     ];
   fromRequirementsFile = file: pythonPackages:
     builtins.map (name: builtins.getAttr name pythonPackages)

@@ -4,6 +4,7 @@ flake8
 flake8-debugger
 flake8-isort
 flake8-quotes
+flake8-unused-arguments
 mypy
 
 # testing
@@ -18,3 +19,5 @@ pdbpp
 # setup requires
 pytest-runner
 setuptools-scm
+
+-c constraints.txt

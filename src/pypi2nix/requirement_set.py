@@ -1,14 +1,14 @@
 import os.path
 import tempfile
+from typing import Callable
 from typing import Dict
 from typing import Iterable
 from typing import Iterator
 from typing import Optional
 from typing import TypeVar
 from typing import Union
-from typing import overload
 
-from setuptools._vendor.packaging.utils import canonicalize_name
+from packaging.utils import canonicalize_name
 
 from pypi2nix.requirement_parser import ParsingFailed
 from pypi2nix.requirement_parser import RequirementParser
@@ -63,6 +63,16 @@ class RequirementSet:
         else:
             self.constraints[requirement.name()] = requirement
 
+    def filter(
+        self, filter_function: Callable[[Requirement], bool]
+    ) -> "RequirementSet":
+        filtered_requirement_set = RequirementSet(self.target_platform)
+        filtered_requirement_set.constraints = self.constraints
+        for requirement in self:
+            if filter_function(requirement):
+                filtered_requirement_set.add(requirement)
+        return filtered_requirement_set
+
     def to_constraints_only(self) -> "RequirementSet":
         new_requirement_set = RequirementSet(self.target_platform)
         for requirement in list(self.requirements.values()) + list(
@@ -102,17 +112,7 @@ class RequirementSet:
                 sources.add(requirement.name(), source)
         return sources
 
-    @overload
-    def get(self, key: str) -> Optional[Requirement]:
-        ...
-
-    @overload  # noqa: F811
-    def get(self, key: str, default: T) -> Union[Requirement, T]:
-        ...
-
-    def get(  # noqa: F811
-        self, key: str, default: Optional[T] = None
-    ) -> Union[Requirement, None, T]:
+    def get(self, key: str, default: Optional[T] = None) -> Union[Requirement, None, T]:
         try:
             return self[key]
         except KeyError:

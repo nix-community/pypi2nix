@@ -15,8 +15,8 @@ import pypi2nix.utils
 from pypi2nix.logger import StreamLogger
 from pypi2nix.logger import verbosity_from_int
 from pypi2nix.nix import Nix
-from pypi2nix.overrides import AnyOverrides
-from pypi2nix.pip import Pip
+from pypi2nix.overrides import Overrides
+from pypi2nix.pip.implementation import NixPip
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements_collector import RequirementsCollector
 from pypi2nix.sources import Sources
@@ -153,7 +153,7 @@ def main(
     requirements: List[str],
     editable: List[str],
     setup_requires: List[str],
-    overrides: List[AnyOverrides],
+    overrides: List[Overrides],
     default_overrides: bool,
     wheels_cache: List[str],
 ) -> None:
@@ -258,12 +258,11 @@ def main(
 
     logger.info("Stage1: Downloading wheels and creating wheelhouse ...")
 
-    pip = Pip(
+    pip = NixPip(
         nix=nix,
         project_directory=project_dir,
         extra_env=extra_env,
         extra_build_inputs=extra_build_inputs,
-        verbose=verbose,
         wheels_cache=wheels_cache,
         target_platform=target_platform,
         logger=logger,
@@ -273,21 +272,26 @@ def main(
         project_directory=project_dir,
         logger=logger,
         requirement_parser=requirement_parser,
+        target_platform=target_platform,
     )
     wheels = wheel_builder.build(
         requirements=requirement_set, setup_requirements=setup_requirements
     )
     requirements_frozen = wheel_builder.get_frozen_requirements()
-    default_environment = pip.default_environment()
     additional_dependency_graph = wheel_builder.additional_build_dependencies
 
     logger.info("Stage2: Extracting metadata from pypi.python.org ...")
 
-    stage2 = pypi2nix.stage2.Stage2(sources=sources, verbose=verbose, logger=logger)
+    stage2 = pypi2nix.stage2.Stage2(
+        sources=sources,
+        verbose=verbose,
+        logger=logger,
+        requirement_parser=requirement_parser,
+    )
 
     packages_metadata = stage2.main(
         wheel_paths=wheels,
-        default_environment=default_environment,
+        target_platform=target_platform,
         wheel_cache_dir=wheel_cache_dir,
         additional_dependencies=additional_dependency_graph,
     )

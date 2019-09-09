@@ -1,6 +1,3 @@
-import os
-import platform
-import sys
 from contextlib import contextmanager
 from typing import no_type_check
 
@@ -32,18 +29,13 @@ class _RequirementParserGrammar:
         urlspec       = '@' wsp* <URI_reference>
         python_str_c  = (wsp | letter | digit | '(' | ')' | '.' | '{' | '}' |
                          '-' | '_' | '*' | '#' | ':' | ';' | ',' | '/' | '?' |
-                         '[' | ']' | '!' | '~' | '`' | '@' | '$' | '%' | '^' |
+                         '[' | ']' | '!' | '~' | '`' | '@' | '$' | '%%' | '^' |
                          '&' | '=' | '+' | '|' | '<' | '>' )
         dquote        = '"'
         squote        = '\\''
         python_str    = (squote <(python_str_c | dquote)*>:s squote |
                          dquote <(python_str_c | squote)*>:s dquote) -> s
-        env_var       = ('python_version' | 'python_full_version' |
-                         'os_name' | 'sys_platform' | 'platform_release' |
-                         'platform_system' | 'platform_version' |
-                         'platform_machine' | 'platform_python_implementation' |
-                         'implementation_name' | 'implementation_version' |
-                         'python_implementation' | 'extra'
+        env_var       = (%s | 'extra'
                          # ONLY when defined by a containing layer
                          ):varname -> lookup(varname)
         marker_var    = wsp* (env_var | python_str)
@@ -65,11 +57,11 @@ class _RequirementParserGrammar:
         egg_name = '#egg=' name:n -> n
 
         name_req      = (name:n wsp* extras?:e wsp* versionspec?:v wsp* quoted_marker?:m
-                         -> VersionRequirement(name=n, extras=set(e or []), versions=v or [], environment_markers=m))
+                         -> VersionRequirement(name=n, extras=set(e or []), versions=v or [], environment_markers=m, logger=logger()))
         url_req       = name:n wsp* extras?:e wsp* urlspec:v (wsp+ | end) quoted_marker?:m
                         -> UrlRequirement(name=n, extras=set(e or []), url=v or [], environment_markers=m, logger=logger())
         path_req_pip_style = (editable wsp+)? <file_path>:path egg_name:name extras?:e (wsp* | end) quoted_marker?:marker
-                             -> PathRequirement(name=name, path=path, environment_markers=marker, extras=set(e or []))
+                             -> PathRequirement(name=name, path=path, environment_markers=marker, extras=set(e or []), logger=logger())
         url_req_pip_style = (editable wsp+)? <('hg+' | 'git+')? URI_reference_pip_style>:url egg_name:name extras?:e (wsp* | end) quoted_marker?:marker
                             -> UrlRequirement(name=name, url=url, extras=set(e or []), environment_markers=marker, logger=logger())
         specification = wsp* ( path_req_pip_style | url_req_pip_style | url_req | name_req ):s wsp* -> s
@@ -111,7 +103,7 @@ class _RequirementParserGrammar:
                           | nz digit # 10-99
                           | '1' digit{2} # 100-199
                           | '2' ('0' | '1' | '2' | '3' | '4') digit # 200-249
-                          | '25' ('0' | '1' | '2' | '3' | '4' | '5') )# %250-255
+                          | '25' ('0' | '1' | '2' | '3' | '4' | '5') )# %%250-255
         reg_name = ( unreserved | pct_encoded | sub_delims)*
         path = (
                 path_abempty # begins with '/' or is empty
@@ -131,13 +123,15 @@ class _RequirementParserGrammar:
         pchar         = unreserved | pct_encoded | sub_delims | ':' | '@'
         query         = ( pchar | '/' | '?')*
         fragment      = ( pchar | '/' | '?')*
-        pct_encoded   = '%' hexdig
+        pct_encoded   = '%%' hexdig
         unreserved    = letter | digit | '-' | '.' | '_' | '~'
         reserved      = gen_delims | sub_delims
         gen_delims    = ':' | '/' | '?' | '#' | '(' | ')?' | '@'
         sub_delims    = '!' | '$' | '&' | '\\'' | '(' | ')' | '*' | '+' | ',' | ';' | '='
         hexdig        = digit | 'a' | 'A' | 'b' | 'B' | 'c' | 'C' | 'd' | 'D' | 'e' | 'E' | 'f' | 'F'
-    """
+    """ % (
+        " | ".join(["'{}'".format(name.value) for name in MarkerToken]),
+    )
 
     @no_type_check
     def _format_full_version(self, info) -> str:
@@ -148,30 +142,8 @@ class _RequirementParserGrammar:
         return version
 
     @no_type_check
-    def _environment_bindings(self):
-        if hasattr(sys, "implementation"):
-            implementation_version = self._format_full_version(
-                sys.implementation.version
-            )
-            implementation_name = sys.implementation.name
-        else:
-            implementation_version = "0"
-            implementation_name = ""
-        bindings = {
-            "implementation_name": implementation_name,
-            "implementation_version": implementation_version,
-            "os_name": os.name,
-            "platform_machine": platform.machine(),
-            "platform_python_implementation": platform.python_implementation(),
-            "python_implementation": platform.python_implementation(),
-            "platform_release": platform.release(),
-            "platform_system": platform.system(),
-            "platform_version": platform.version(),
-            "python_full_version": platform.python_version(),
-            "python_version": MarkerToken.PYTHON_VERSION,
-            "sys_platform": sys.platform,
-        }
-        return bindings
+    def _environment_bindings(self, token):
+        return MarkerToken.get_from_string(token)
 
     @no_type_check
     @contextmanager
@@ -180,7 +152,7 @@ class _RequirementParserGrammar:
             self._compiled_grammar = makeGrammar(
                 self.requirement_grammar,
                 {
-                    "lookup": self._environment_bindings().get,
+                    "lookup": self._environment_bindings,
                     "VersionRequirement": VersionRequirement,
                     "UrlRequirement": UrlRequirement,
                     "PathRequirement": PathRequirement,

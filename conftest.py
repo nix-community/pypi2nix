@@ -1,17 +1,20 @@
 import os
 import os.path
+import venv
 from io import StringIO
 
 import pytest
 
 from pypi2nix.archive import Archive
+from pypi2nix.logger import Logger
 from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import Nix
-from pypi2nix.pip import Pip
+from pypi2nix.pip.virtualenv import VirtualenvPip
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.stage1 import WheelBuilder
 from pypi2nix.target_platform import PlatformGenerator
+from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.wheel import Wheel
 
 DATA_DIRECTORY = os.path.join(os.path.dirname(__file__), "unittests", "data")
@@ -42,30 +45,18 @@ def wheels_dir(project_dir):
 
 
 @pytest.fixture
-def pip(nix, project_dir, current_platform, logger):
-    return Pip(
-        nix=nix,
-        project_directory=project_dir,
-        extra_build_inputs=[],
-        extra_env="",
-        verbose=3,
-        wheels_cache=[],
-        target_platform=current_platform,
-        logger=logger,
-    )
+def wheel_builder(pip, project_dir, logger, requirement_parser, current_platform):
+    return WheelBuilder(pip, project_dir, logger, requirement_parser, current_platform)
 
 
 @pytest.fixture
-def wheel_builder(pip, project_dir, logger, requirement_parser):
-    return WheelBuilder(pip, project_dir, logger, requirement_parser)
-
-
-@pytest.fixture
-def extracted_six_package(six_requirements, wheel_builder, default_environment, logger):
+def extracted_six_package(
+    six_requirements, wheel_builder, current_platform, logger, requirement_parser
+):
     wheels = wheel_builder.build(six_requirements)
     for wheel_directory in wheels:
         wheel = Wheel.from_wheel_directory_path(
-            wheel_directory, default_environment, logger
+            wheel_directory, current_platform, logger, requirement_parser
         )
         if wheel.name == "six":
             return wheel_directory
@@ -73,15 +64,10 @@ def extracted_six_package(six_requirements, wheel_builder, default_environment, 
 
 
 @pytest.fixture
-def six_requirements(project_dir, current_platform, requirement_parser):
+def six_requirements(current_platform, requirement_parser):
     requirements = RequirementSet(current_platform)
     requirements.add(requirement_parser.parse("six == 1.12.0"))
     return requirements
-
-
-@pytest.fixture
-def default_environment(pip):
-    return pip.default_environment()
 
 
 @pytest.fixture
@@ -97,6 +83,27 @@ def distribution_archive_for_jsonschema(data_directory):
 @pytest.fixture(params=("six == 1.12.0", "setuptools == 41.0.1"))
 def requirement(request, requirement_parser):
     return requirement_parser.parse(request.param)
+
+
+@pytest.fixture
+def pip(
+    logger: Logger,
+    current_platform: TargetPlatform,
+    project_dir: str,
+    wheel_distribution_archive_path: str,
+    data_directory: str,
+) -> VirtualenvPip:
+    pip = VirtualenvPip(
+        logger=logger,
+        target_platform=current_platform,
+        target_directory=os.path.join(project_dir, "pip-without-index-venv"),
+        env_builder=venv.EnvBuilder(with_pip=True),
+        no_index=True,
+        wheel_distribution_path=wheel_distribution_archive_path,
+        find_links=[data_directory],
+    )
+    pip.prepare_virtualenv()
+    return pip
 
 
 @pytest.fixture(params=("six-1.12.0.tar.gz", "jsonschema-3.0.1.tar.gz"))
@@ -150,3 +157,8 @@ def logger():
 @pytest.fixture
 def requirement_parser(logger):
     return RequirementParser(logger=logger)
+
+
+@pytest.fixture
+def wheel_distribution_archive_path(data_directory):
+    return os.path.join(data_directory, "wheel-0.33.6-py2.py3-none-any.whl")

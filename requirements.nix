@@ -1,5 +1,5 @@
 # generated using pypi2nix tool (version: 2.0.0)
-# See more at: https://github.com/garbas/pypi2nix
+# See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
 #   pypi2nix -V 3 -r requirements.txt -r requirements-dev.txt
@@ -389,6 +389,24 @@ let
       };
     };
 
+    "flake8-unused-arguments" = python.mkDerivation {
+      name = "flake8-unused-arguments-0.0.3";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/9b/e5/7ba4be2e85cda6377c47f71d6781934a2eefca9411e62b1f76328695e158/flake8-unused-arguments-0.0.3.tar.gz";
+        sha256 = "d98a924ebb1d710e4245adc2731d417662395c18232c45bee74a767f7dde7a30";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."flake8"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/nhoad/flake8-unused-arguments";
+        license = licenses.mit;
+        description = "flake8 extension to warn on unused function arguments";
+      };
+    };
+
     "flit" = python.mkDerivation {
       name = "flit-1.3";
       src = pkgs.fetchurl {
@@ -431,10 +449,10 @@ let
     };
 
     "importlib-metadata" = python.mkDerivation {
-      name = "importlib-metadata-0.19";
+      name = "importlib-metadata-0.20";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/27/49/58d50a592d99a6bf58c4c1b02b203a48357a74e33922a9d021fda07d4ce3/importlib_metadata-0.19.tar.gz";
-        sha256 = "23d3d873e008a513952355379d93cbcab874c58f4f034ff657c7a87422fa64e8";
+        url = "https://files.pythonhosted.org/packages/05/41/7d339dd7b507e97f67be812fdf29c4ad991ddd34b1ed0f3c54e8f1c4e0b3/importlib_metadata-0.20.tar.gz";
+        sha256 = "b7143592e374e50584564794fcb8aaf00a23025f9db866627f89a21491847a8d";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -476,10 +494,7 @@ let
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [
-        self."appdirs"
-        self."toml"
-      ];
+      propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/timothycrosley/isort";
         license = licenses.mit;
@@ -609,10 +624,10 @@ let
     };
 
     "nix-prefetch-github" = python.mkDerivation {
-      name = "nix-prefetch-github-2.3";
+      name = "nix-prefetch-github-2.3.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/bf/2c/4e6c80cfd66fa77d32310dcda1c01f249c4fb12d2820e96b259b5819eab2/nix-prefetch-github-2.3.tar.gz";
-        sha256 = "dd5dde8b8540983a119d96eaa941b8346a661f2f9606fd739aeed36fba385e7d";
+        url = "https://files.pythonhosted.org/packages/f5/6c/d77130438649b0140d9bb8da17c7457f5ee7649e31bbcd81a307c0e8c2b7/nix-prefetch-github-2.3.1.tar.gz";
+        sha256 = "3a61c48c44a37574189eda20ecef48d18711ec18cf1fb23470cec63e86ac7bca";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -694,7 +709,6 @@ let
       propagatedBuildInputs = [
         self."fancycompleter"
         self."pygments"
-        self."pytest"
         self."wmctrl"
       ];
       meta = with pkgs.stdenv.lib; {
@@ -821,10 +835,10 @@ let
     };
 
     "pytest" = python.mkDerivation {
-      name = "pytest-5.0.1";
+      name = "pytest-5.1.2";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/60/23/de5604e58f4eba7a90f70486c8d4ece25f1a404bae29683903ffd2aea425/pytest-5.0.1.tar.gz";
-        sha256 = "6ef6d06de77ce2961156013e9dff62f1b2688aa04d0dc244299fe7d67e09370d";
+        url = "https://files.pythonhosted.org/packages/c3/66/228ce6dca2b4d2cd5f9c1244aca14e0b13c31e4dbdf39294e782a1c78f12/pytest-5.1.2.tar.gz";
+        sha256 = "b78fe2881323bd44fd9bd76e5317173d4316577e7b1cddebae9136a4495ec865";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -838,7 +852,6 @@ let
         self."packaging"
         self."pluggy"
         self."py"
-        self."requests"
         self."wcwidth"
       ];
       meta = with pkgs.stdenv.lib; {
@@ -859,7 +872,6 @@ let
       propagatedBuildInputs = [
         self."coverage"
         self."pytest"
-        self."six"
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pytest-dev/pytest-cov";
@@ -878,9 +890,7 @@ let
       buildInputs = commonBuildInputs ++ [
         self."setuptools-scm"
       ];
-      propagatedBuildInputs = [
-        self."pytest"
-      ];
+      propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pytest-dev/pytest-runner/";
         license = "UNKNOWN";
@@ -1050,10 +1060,7 @@ let
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [
-        self."certifi"
-        self."idna"
-      ];
+      propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://urllib3.readthedocs.io/";
         license = licenses.mit;
@@ -1131,16 +1138,18 @@ let
     };
 
     "zipp" = python.mkDerivation {
-      name = "zipp-0.5.2";
+      name = "zipp-0.6.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/66/ae/1d6693cde3b3e3c14e95cf3408f24d0e869ead42a79993b611d8817d929a/zipp-0.5.2.tar.gz";
-        sha256 = "4970c3758f4e89a7857a973b1e2a5d75bcdc47794442f2e2dd4fe8e0466e809a";
+        url = "https://files.pythonhosted.org/packages/57/dd/585d728479d97d25aeeb9aa470d36a4ad8d0ba5610f84e14770128ce6ff7/zipp-0.6.0.tar.gz";
+        sha256 = "3718b1cbcd963c7d4c5511a8240812904164b7f381b647143a89d3b98f9bcd8e";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
         self."setuptools-scm"
       ];
-      propagatedBuildInputs = [ ];
+      propagatedBuildInputs = [
+        self."more-itertools"
+      ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/jaraco/zipp";
         license = "UNKNOWN";
