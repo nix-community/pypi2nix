@@ -22,7 +22,11 @@ setup(
     ],
     entry_points={"console_scripts": ["pypi2nix = pypi2nix.cli:main"]},
     packages=["pypi2nix", "pypi2nix.pip"],
-    package_dir={"": "src", "pypi2nix.pip": "src/pypi2nix/pip"},
+    package_dir={
+        "": "src",
+        "pypi2nix.pip": "src/pypi2nix/pip",
+        "pypi2nix.wheels": "src/pypi2nix/wheels",
+    },
     include_package_data=True,
     install_requires=[
         "attrs",
