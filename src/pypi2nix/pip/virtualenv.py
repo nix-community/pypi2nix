@@ -13,9 +13,9 @@ from pypi2nix.pip.interface import Pip
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.utils import cmd
+from pypi2nix.wheels import INDEX
 
-HERE = os.path.dirname(__file__)
-PIP_WHEEL = os.path.join(HERE, "..", "wheels", "pip-19.3.dev0-py2.py3-none-any.whl")
+PIP_WHEEL = INDEX.absolute_path("pip")
 
 
 class VirtualenvPip(Pip):
