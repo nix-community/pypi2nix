@@ -55,6 +55,9 @@ in python.mkDerivation {
     echo "Running pytest ..."
     PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v unittests/ -m 'not nix'
   '';
+  postShellHook = ''
+    export PATH=$PWD/scripts:$PATH
+  '';
   meta = {
     homepage = https://github.com/nix-community/pypi2nix;
     description = "A tool that generates nix expressions for your python packages, so you don't have to.";
