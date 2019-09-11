@@ -60,7 +60,7 @@ Python versions are available consult ``pypi2nix --help``.
 Once Nix expressions are generated you should be able to see 3 new files:
 
 - ``requirements_frozen.txt`` - full frozen set for your for your pypi2nix call.
-  This is the output you would expect from `pip freeze`.
+  This is the output you would expect from ``pip freeze``.
 
 - ``requirements.nix`` is a file which contains a nix expression to for the package set that was built.
 
@@ -356,6 +356,15 @@ Integration tests are a little bit more involved.  We implemented a
 small framework to write new tests and maintain old ones.  Check out
 ``integrationtests.framework`` for information on how to write custom
 integration tests.
+
+Maintainance scripts
+^^^^^^^^^^^^^^^^^^^^
+
+The ``scripts`` folder contains programs that help to maintain the
+repository.  We expect the user to have all the packages from the
+build environment of pypi2nix installed.  We register the ``scripts``
+directory in the users ``PATH`` if they choose to enter ``nix-shell`` in
+the top level directory of this project.
 
 
 .. _`Nix expressions`: http://nixos.org/nix/manual/#chap-writing-nix-expressions
