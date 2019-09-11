@@ -3,6 +3,8 @@ sudo: required
 os:
 - linux
 env:
+  global:
+    - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz
   matrix:
     - TEST_FILE=aiohttp
     - TEST_FILE=awscli_and_requests
@@ -33,21 +35,23 @@ jobs:
     os: linux
     env:
       - TEST_FILE=none
+      - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.03.tar.gz
     script:
-    - nix build -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.03.tar.gz
+    - nix build
   - stage: build
     name: build-nixos-unstable
     os: linux
     env:
       - TEST_FILE=none
+      - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz
     script:
-    - nix build -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz
+    - nix build
   - stage: build
     name: unittests
     os: linux
     env:
       - TEST_FILE=none
     script:
-      - nix-shell --command 'pytest unittests/ --cov=src/'
+      - nix-shell -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz --command 'pytest unittests/ --cov=src/'
     after_success:
       - nix-shell -p 'python3.pkgs.codecov' --command 'codecov'

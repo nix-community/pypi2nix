@@ -23,7 +23,7 @@ let
     overrides =
       self: super: {
         bootstrapped-pip = super.bootstrapped-pip.overrideDerivation (old: {
-          patchPhase = old.patchPhase + ''
+          patchPhase = (if builtins.hasAttr "patchPhase" old then old.patchPhase else "") + ''
             if [ -e $out/${pkgs.{{ python_version }}.sitePackages}/pip/req/req_install.py ]; then
               sed -i \
                 -e "s|{{ paths_to_remove }}|#{{ paths_to_remove }}|"  \

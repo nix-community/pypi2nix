@@ -15,7 +15,7 @@ from pypi2nix.nix import Nix
 
 HERE = os.path.dirname(__file__)
 NIX_PATH = (
-    "nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz"
+    "nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz"
 )
 
 
