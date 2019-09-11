@@ -12,10 +12,10 @@ HERE = os.path.dirname(__file__)
 
 
 @pytest.fixture
-def nix_instance(tmpdir):
+def nix_instance(tmpdir, logger):
     nix_path_addition = tmpdir.mkdir("testpath_exists")
     yield Nix(
-        nix_path=["test_variable={}".format(str(nix_path_addition))], verbose=True
+        nix_path=["test_variable={}".format(str(nix_path_addition))], logger=logger
     )
 
 
@@ -35,8 +35,8 @@ def test_evalulate_nix_expression_respects_additions_to_nix_path(nix_instance):
 
 
 @nix
-def test_evaluate_nix_expression_raises_exception_when_executable_not_found():
-    nix = Nix(executable_directory="/does-not-exist")
+def test_evaluate_nix_expression_raises_exception_when_executable_not_found(logger):
+    nix = Nix(executable_directory="/does-not-exist", logger=logger)
     with pytest.raises(ExecutableNotFound):
         nix.evaluate_expression("true")
 

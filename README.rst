@@ -2,8 +2,7 @@ pypi2nix - generate Nix expressions for Python packages
 =======================================================
 
 ``pypi2nix`` is a command line tool that generates `Nix expressions`_ from
-different Python specific sources (``requirements.txt``, ``buildout.cfg``,
-\...). This is useful for:
+different ``requirements.txt``. This is useful for:
 
 - Building a Nix derivation for a program written in Python as part of
   packaging it.
@@ -33,7 +32,7 @@ Make sure Nix is installed::
 
 And now install it using `nix-env`_ command::
 
-    % nix-env -if https://github.com/garbas/pypi2nix/tarball/master
+    % nix-env -if https://github.com/nix-community/pypi2nix/tarball/master
 
 
 2. Usage
@@ -51,10 +50,6 @@ the ``-r`` option.
     % pypi2nix -V "3.5" -e packageA -e packageB==0.1 \
         -r requirements.txt -r requirements-dev.txt
 
-If your project relies on ``zc.buildout`` you can give ``-b`` option a try::
-
-    % pypi2nix -V "2.7" -b buildout.cfg
-
 
 What is being generated
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -65,7 +60,7 @@ Python versions are available consult ``pypi2nix --help``.
 Once Nix expressions are generated you should be able to see 3 new files:
 
 - ``requirements_frozen.txt`` - full frozen set for your for your pypi2nix call.
-  This is the output you would expect from `pip freeze`.
+  This is the output you would expect from ``pip freeze``.
 
 - ``requirements.nix`` is a file which contains a nix expression to for the package set that was built.
 
@@ -245,7 +240,7 @@ Local files
   ``pypi2nix -V 3 --override ../some/relative/path --override /some/absolute/path``
 
 Git repositories
-  ``pypi2nix -V 3 --override git+https://github.com/garbas/pypi2nix.git#path=overrides.nix``
+  ``pypi2nix -V 3 --override git+https://github.com/nix-community/pypi2nix.git#path=overrides.nix``
 
   If you want to import a file from a specific git repository you have
   to prefix its URL with ``git+``, quite similar to how you would do
@@ -337,7 +332,7 @@ shell.nix::
 Clone `pypi2nix repository`_ and using ``nix run`` command enter development
 environment.::
 
-    % git clone https://github.com/garbas/pypi2nix
+    % git clone https://github.com/nix-community/pypi2nix
     % cd pypi2nix
     % nix run -f .
 
@@ -362,9 +357,18 @@ small framework to write new tests and maintain old ones.  Check out
 ``integrationtests.framework`` for information on how to write custom
 integration tests.
 
+Maintainance scripts
+^^^^^^^^^^^^^^^^^^^^
+
+The ``scripts`` folder contains programs that help to maintain the
+repository.  We expect the user to have all the packages from the
+build environment of pypi2nix installed.  We register the ``scripts``
+directory in the users ``PATH`` if they choose to enter ``nix-shell`` in
+the top level directory of this project.
+
 
 .. _`Nix expressions`: http://nixos.org/nix/manual/#chap-writing-nix-expressions
-.. _`pypi2nix repository`: https://github.com/garbas/pypi2nix
-.. _`examples/Makefile`: https://github.com/garbas/pypi2nix/blob/master/examples/Makefile
+.. _`pypi2nix repository`: https://github.com/nix-community/pypi2nix
+.. _`examples/Makefile`: https://github.com/nix-community/pypi2nix/blob/master/examples/Makefile
 .. _`nix-env`: http://nixos.org/nix/manual/#sec-nix-env
 .. _`pytest`: https://pytest.org

@@ -2,7 +2,6 @@ import os
 import os.path
 
 from pypi2nix.requirement_set import RequirementSet
-from pypi2nix.requirements import Requirement
 
 from ..switches import nix
 
@@ -16,10 +15,12 @@ def list_files(dirname):
 
 
 @nix
-def test_pip_downloads_sources_to_target_directory(pip, project_dir, current_platform):
+def test_pip_downloads_sources_to_target_directory(
+    pip, project_dir, current_platform, requirement_parser
+):
     download_path = os.path.join(project_dir, "download")
     requirements = RequirementSet(current_platform)
-    requirements.add(Requirement.from_line("six"))
+    requirements.add(requirement_parser.parse("six"))
     pip.download_sources(requirements=requirements, target_directory=download_path)
     assert list_files(download_path)
 

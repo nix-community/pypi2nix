@@ -1,26 +1,31 @@
 import os
 import shlex
 import sys
+from typing import Dict
+from typing import Iterable
 
-import click
 import jinja2
-from setuptools._vendor.packaging.utils import canonicalize_name
+
+from pypi2nix.logger import Logger
+from pypi2nix.overrides import Overrides
+from pypi2nix.sources import Sources
+from pypi2nix.wheel import Wheel
 
 HERE = os.path.dirname(__file__)
 
 
 def main(
-    packages_metadata,
-    sources,
-    requirements_name,
-    requirements_files,
-    requirements_frozen,
-    extra_build_inputs,
-    enable_tests,
-    python_version,
-    current_dir,
-    common_overrides=[],
-):
+    packages_metadata: Iterable[Wheel],
+    sources: Sources,
+    requirements_name: str,
+    requirements_frozen: str,
+    extra_build_inputs: Iterable[str],
+    enable_tests: bool,
+    python_version: str,
+    current_dir: str,
+    logger: Logger,
+    common_overrides: Iterable[Overrides] = [],
+) -> None:
     """Create Nix expressions.
     """
 
@@ -35,7 +40,7 @@ def main(
         version = f.read()
     version = version.strip()
 
-    metadata_by_name = {x.name: x for x in packages_metadata}
+    metadata_by_name: Dict[str, Wheel] = {x.name: x for x in packages_metadata}
 
     generated_packages_metadata = []
     for item in sorted(packages_metadata, key=lambda x: x.name):
@@ -43,8 +48,8 @@ def main(
             buildInputs = "\n".join(
                 sorted(
                     [
-                        '        self."{}"'.format(name)
-                        for name in item.build_dependencies
+                        '        self."{}"'.format(dependency.name())
+                        for dependency in item.build_dependencies
                     ]
                 )
             )
@@ -53,11 +58,7 @@ def main(
             buildInputs = "[ ]"
         propagatedBuildInputs = "[ ]"
         if item.deps:
-            deps = [
-                canonicalize_name(x)
-                for x in item.deps
-                if canonicalize_name(x) in metadata_by_name.keys()
-            ]
+            deps = [x.name() for x in item.deps if x.name() in metadata_by_name.keys()]
             if deps:
                 propagatedBuildInputs = "[\n%s\n      ]" % (
                     "\n".join(
@@ -95,7 +96,7 @@ def main(
     overrides = templates.get_template("overrides.nix.j2").render()
 
     common_overrides_expressions = [
-        "    (" + override.nix_expression() + ")" for override in common_overrides
+        "    (" + override.nix_expression(logger) + ")" for override in common_overrides
     ]
 
     default_template = templates.get_template("requirements.nix.j2")
@@ -121,7 +122,7 @@ def main(
     if not os.path.exists(overrides_file):
         with open(overrides_file, "w+") as f:
             f.write(overrides.strip())
-            click.echo("|-> writing %s" % overrides_file)
+            logger.info("|-> writing %s" % overrides_file)
 
     with open(default_file, "w+") as f:
         f.write(default.strip())

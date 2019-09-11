@@ -1,18 +1,21 @@
 import os
 import os.path
-import shutil
 import subprocess
+import sys
+from typing import Dict
+from typing import List
 
 from attr import attrib
 from attr import attrs
 from attr import evolve
 
+from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
 
 HERE = os.path.dirname(__file__)
 NIX_PATH = (
-    "nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixpkgs-unstable.tar.gz"
+    "nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz"
 )
 
 
@@ -37,7 +40,8 @@ class IntegrationTest:
     """
 
     def setUp(self):
-        self.nix = Nix(nix_path=[NIX_PATH], verbose=True)
+        self.logger = StreamLogger(output=sys.stdout)
+        self.nix = Nix(nix_path=[NIX_PATH], logger=self.logger)
 
     def test_build_example(self):
         self.build_pypi2nix()
@@ -150,6 +154,7 @@ class IntegrationTest:
         test_command_line = [
             "nix",
             "run",
+            "--show-trace",
             "-f",
             os.path.join(self.example_directory(), "requirements.nix"),
             "interpreter",
@@ -205,6 +210,7 @@ class IntegrationTest:
         test_command_line = [
             "nix",
             "run",
+            "--show-trace",
             "-f",
             os.path.join(self.example_directory(), "requirements.nix"),
             "interpreter",
@@ -268,9 +274,7 @@ class IntegrationTest:
         return os.path.join(self.example_directory(), "constraints.txt")
 
     def write_requirements_file(self, content):
-        shutil.os.makedirs(
-            os.path.dirname(self.requirements_file_path()), exist_ok=True
-        )
+        os.makedirs(os.path.dirname(self.requirements_file_path()), exist_ok=True)
         with open(self.requirements_file_path(), "w") as f:
             f.write(content)
 
@@ -284,10 +288,10 @@ class IntegrationTest:
         pass
 
     default_overrides = False
-    constraints = []
+    constraints: List[str] = []
 
 
 @attrs
 class TestCommand:
     command = attrib()
-    env = attrib(default=dict())
+    env: Dict[str, str] = attrib(default=dict())

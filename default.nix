@@ -25,11 +25,13 @@ let
   applyTransform = lines: transform: builtins.map transform lines;
   transforms =
     [ (removeAfter "#") # remove after comment
+      (removeAfter "-c ")
     ];
   fromRequirementsFile = file: pythonPackages:
     builtins.map (name: builtins.getAttr name pythonPackages)
       (builtins.filter (x: x != "")
         (builtins.foldl' applyTransform (readLines file) transforms));
+  maybeIntegrationTestsDir = pkgs.lib.optionalString (! excludeIntegrationTests) "integrationtests/";
 in python.mkDerivation {
   name = "pypi2nix-${version}";
   src = nix-gitignore.gitignoreSource additionalIgnores ./.;
@@ -39,15 +41,26 @@ in python.mkDerivation {
   doCheck = true;
   checkPhase = ''
     echo "Running black ..."
-    black --check --diff -v setup.py src/ integrationtests/ unittests/
+    black --check --diff -v setup.py src/  unittests/ mypy/ ${maybeIntegrationTestsDir}
     echo "Running flake8 ..."
-    flake8 -v setup.py src/ integrationtests/ unittests/
+    flake8 -v setup.py src/ ${maybeIntegrationTestsDir} unittests/
+    mypy --config-file setup.cfg src/
+    mypy \
+        --config-file setup.cfg \
+        unittests/ \
+        conftest.py \
+        ${maybeIntegrationTestsDir} \
+        --allow-untyped-defs \
+        --ignore-missing-imports
     echo "Running pytest ..."
     PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v unittests/ -m 'not nix'
   '';
+  postShellHook = ''
+    export PATH=$PWD/scripts:$PATH
+  '';
   meta = {
-    homepage = https://github.com/garbas/pypi2nix;
+    homepage = https://github.com/nix-community/pypi2nix;
     description = "A tool that generates nix expressions for your python packages, so you don't have to.";
-    maintainers = with pkgs.lib.maintainers; [ garbas ];
+    maintainers = with pkgs.lib.maintainers; [ seppeljordan garbas ];
   };
 }

@@ -3,8 +3,9 @@ black
 flake8
 flake8-debugger
 flake8-isort
-flake8-mypy
 flake8-quotes
+flake8-unused-arguments
+mypy
 
 # testing
 codecov
@@ -18,3 +19,5 @@ pdbpp
 # setup requires
 pytest-runner
 setuptools-scm
+
+-c constraints.txt
