@@ -23,7 +23,7 @@ let
     overrides =
       self: super: {
         bootstrapped-pip = super.bootstrapped-pip.overrideDerivation (old: {
-          patchPhase = old.patchPhase + ''
+          patchPhase = (if builtins.hasAttr "patchPhase" old then old.patchPhase else "") + ''
             if [ -e $out/${pkgs.python3.sitePackages}/pip/req/req_install.py ]; then
               sed -i \
                 -e "s|paths_to_remove.remove(auto_confirm)|#paths_to_remove.remove(auto_confirm)|"  \
@@ -221,7 +221,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "http://github.com/codecov/codecov-python";
-        license = "http://www.apache.org/licenses/LICENSE-2.0";
+        license = licenses.asl20;
         description = "Hosted coverage reports for Github, Bitbucket and Gitlab";
       };
     };
@@ -366,7 +366,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/gforcada/flake8-isort";
-        license = "GPL version 2";
+        license = licenses.gpl2;
         description = "flake8 plugin that integrates isort .";
       };
     };
@@ -449,10 +449,10 @@ let
     };
 
     "importlib-metadata" = python.mkDerivation {
-      name = "importlib-metadata-0.20";
+      name = "importlib-metadata-0.21";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/05/41/7d339dd7b507e97f67be812fdf29c4ad991ddd34b1ed0f3c54e8f1c4e0b3/importlib_metadata-0.20.tar.gz";
-        sha256 = "b7143592e374e50584564794fcb8aaf00a23025f9db866627f89a21491847a8d";
+        url = "https://files.pythonhosted.org/packages/73/65/95e3e9b586556779318950b4dac5e246a6fa7b8599b6b3bfa242ae86a327/importlib_metadata-0.21.tar.gz";
+        sha256 = "0c505102757e7fa28b9f0958d8bc81301159dea16e2649858c92edc158b78a83";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -531,7 +531,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://palletsprojects.com/p/markupsafe/";
-        license = "BSD-3-Clause";
+        license = licenses.bsd3;
         description = "Safely add untrusted strings to HTML/XML markup.";
       };
     };
@@ -547,7 +547,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pycqa/mccabe";
-        license = "Expat license";
+        license = licenses.mit;
         description = "McCabe checker, plugin for flake8";
       };
     };
@@ -719,10 +719,10 @@ let
     };
 
     "pluggy" = python.mkDerivation {
-      name = "pluggy-0.12.0";
+      name = "pluggy-0.13.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/75/21/cdabca0144cfa282c2893dc8e07957245ac8657896ef3ea26f18b6fda710/pluggy-0.12.0.tar.gz";
-        sha256 = "0825a152ac059776623854c1543d65a4ad408eb3d33ee114dff91e57ec6ae6fc";
+        url = "https://files.pythonhosted.org/packages/d7/9d/ae82a5facf2dd89f557a33ad18eb68e5ac7b7a75cf52bf6a208f29077ecf/pluggy-0.13.0.tar.gz";
+        sha256 = "fa5fa1622fa6dd5c030e9cad086fa19ef6a0cf6d7a2d12318e10cb49d6d68f34";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -733,7 +733,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pytest-dev/pluggy";
-        license = "MIT license";
+        license = licenses.mit;
         description = "plugin and hook calling mechanisms for python";
       };
     };
@@ -765,7 +765,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "http://py.readthedocs.io/";
-        license = "MIT license";
+        license = licenses.mit;
         description = "library with cross-python path, ini-parsing, io, code, log facilities";
       };
     };
@@ -781,7 +781,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://pycodestyle.readthedocs.io/";
-        license = "Expat license";
+        license = licenses.mit;
         description = "Python style guide checker";
       };
     };
@@ -856,7 +856,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://docs.pytest.org/en/latest/";
-        license = "MIT license";
+        license = licenses.mit;
         description = "pytest: simple powerful testing with Python";
       };
     };
