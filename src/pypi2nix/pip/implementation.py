@@ -143,7 +143,8 @@ class NixPip(Pip):
             BASE_NIX,
             nix_arguments=self.nix_arguments(),
         )
-        return "\n".join(map(lambda x: x.strip(), output.splitlines()))
+        lines = map(lambda x: x.strip(), output.splitlines())
+        return ("\n".join(lines) + "\n") if lines else ""
 
     def editable_sources_directory(self) -> str:
         return os.path.join(self.project_directory, "editable_sources")
