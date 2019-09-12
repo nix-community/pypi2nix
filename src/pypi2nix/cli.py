@@ -17,11 +17,14 @@ from pypi2nix.logger import verbosity_from_int
 from pypi2nix.nix import Nix
 from pypi2nix.overrides import Overrides
 from pypi2nix.pip.implementation import NixPip
+from pypi2nix.python_version import PYTHON_VERSIONS
+from pypi2nix.python_version import available_python_versions
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements_collector import RequirementsCollector
 from pypi2nix.sources import Sources
 from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.utils import md5_sum_of_files_with_file_names
+from pypi2nix.version import pypi2nix_version
 
 
 @click.command("pypi2nix")
@@ -83,8 +86,8 @@ from pypi2nix.utils import md5_sum_of_files_with_file_names
     "-V",
     "--python-version",
     required=False,
-    default=None,
-    type=click.Choice(pypi2nix.utils.PYTHON_VERSIONS.keys()),
+    default="3",
+    type=click.Choice(available_python_versions),
     help=u"Provide which python version we build for.",
 )
 @click.option(
@@ -184,22 +187,18 @@ def main(
             ]
         )
 
-    with open(os.path.join(os.path.dirname(__file__), "VERSION")) as f:
-        pypi2nix_version = f.read()
-
     if version:
         click.echo(pypi2nix_version)
         return
 
-    python_version_argument = python_version
-    python_versions = pypi2nix.utils.PYTHON_VERSIONS.keys()
-    if not python_version:
+    try:
+        python_package_attribute_name = PYTHON_VERSIONS[python_version]
+    except KeyError:
         raise click.exceptions.UsageError(
             'Missing option "-V" / "--python-version".  Choose from '
-            + (", ".join(python_versions))
+            + (", ".join(available_python_versions))
         )
-    python_version = pypi2nix.utils.PYTHON_VERSIONS[python_version]
-    target_platform = platform_generator.from_python_version(python_version_argument)
+    target_platform = platform_generator.from_python_version(python_version)
 
     requirement_collector = RequirementsCollector(target_platform, requirement_parser)
     setup_requirement_collector = RequirementsCollector(
@@ -304,7 +303,7 @@ def main(
         requirements_frozen=requirements_frozen,
         extra_build_inputs=extra_build_inputs,
         enable_tests=enable_tests,
-        python_version=python_version,
+        python_version=python_package_attribute_name,
         current_dir=current_dir,
         logger=logger,
         common_overrides=overrides,

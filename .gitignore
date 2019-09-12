@@ -61,3 +61,4 @@
 /dist/
 *.egg-info
 **/.eggs/**
+.mypy_cache
