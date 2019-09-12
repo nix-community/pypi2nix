@@ -56,14 +56,6 @@ from pypi2nix.version import pypi2nix_version
     u"it uses basename of provided file.",
 )
 @click.option(
-    "-C",
-    "--cache-dir",
-    required=False,
-    default=None,
-    type=click.Path(exists=True, file_okay=True, writable=True, resolve_path=True),
-    help=u"Cache directory to be used for downloading packages.",
-)
-@click.option(
     "-E",
     "--extra-build-inputs",
     multiple=True,
@@ -153,7 +145,6 @@ def main(
     nix_shell: str,
     nix_path: List[str],
     basename: str,
-    cache_dir: str,
     extra_build_inputs: List[str],
     emit_extra_build_inputs: bool,
     extra_env: str,
@@ -227,20 +218,6 @@ def main(
     current_dir = os.getcwd()
     requirements_name = os.path.join(current_dir, basename)
 
-    if not cache_dir:
-        cache_dir = os.path.join(tmp_dir, "cache")
-
-    download_cache_dir = os.path.join(cache_dir, "download")
-    wheel_cache_dir = os.path.join(cache_dir, "wheel")
-
-    if not os.path.exists(download_cache_dir):
-        os.makedirs(download_cache_dir)
-
-    if not os.path.exists(wheel_cache_dir):
-        os.makedirs(wheel_cache_dir)
-
-    assert requirements is not None
-
     project_hash = md5_sum_of_files_with_file_names(requirements)
 
     project_dir = os.path.join(tmp_dir, project_hash)
@@ -297,7 +274,6 @@ def main(
     packages_metadata = stage2.main(
         wheel_paths=wheels,
         target_platform=target_platform,
-        wheel_cache_dir=wheel_cache_dir,
         additional_dependencies=additional_dependency_graph,
     )
     logger.info("Stage3: Generating Nix expressions ...")
