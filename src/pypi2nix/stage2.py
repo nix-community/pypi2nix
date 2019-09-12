@@ -35,13 +35,11 @@ class Stage2:
     def __init__(
         self,
         sources: Sources,
-        verbose: int,
         logger: Logger,
         requirement_parser: RequirementParser,
         index: str = INDEX_URL,
     ) -> None:
         self.sources = sources
-        self.verbose = verbose
         self.index = index
         self.logger = logger
         self.requirement_parser = requirement_parser
@@ -57,15 +55,14 @@ class Stage2:
         output = ""
         metadata: List[Wheel] = []
 
-        if self.verbose > 1:
-            self.logger.info(
-                "-- sources ---------------------------------------------------------------"
-            )
-            for name, source in self.sources.items():
-                self.logger.info("{name}, {source}".format(name=name, source=name))
-            self.logger.info(
-                "--------------------------------------------------------------------------"
-            )
+        self.logger.info(
+            "-- sources ---------------------------------------------------------------"
+        )
+        for name, source in self.sources.items():
+            self.logger.info("{name}, {source}".format(name=name, source=name))
+        self.logger.info(
+            "--------------------------------------------------------------------------"
+        )
 
         wheels = []
         for wheel_path in wheel_paths:
