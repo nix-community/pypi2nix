@@ -50,7 +50,6 @@ class Stage2:
         self,
         wheel_paths: Iterable[str],
         target_platform: TargetPlatform,
-        wheel_cache_dir: str,
         additional_dependencies: Dict[str, RequirementSet],
     ) -> List[Wheel]:
         """Extract packages metadata from wheels dist-info folders.
