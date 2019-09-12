@@ -12,7 +12,7 @@ from attr import attrs
 from packaging.markers import default_environment
 
 from pypi2nix.nix import Nix
-from pypi2nix.utils import PYTHON_VERSIONS
+from pypi2nix.python_version import PYTHON_VERSIONS
 
 
 class PlatformGenerator:
