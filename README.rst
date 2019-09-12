@@ -166,11 +166,11 @@ Command line options
     ``environment.nix``, ``environment_frozen.nix`` and
     ``environment_override.nix``.
 
-``--extra-build-inputs/-E TEXT`` Extra build inputs that the required
-    python packages need to run, e.g. ``libffi`` or ``libgl``.  In
-    that case you would provide ``-E "libffi libgl"``.  These nix
-    packages will be available in the build environment for the
-    wheels.
+``--extra-build-inputs/-E TEXT``
+    Extra build inputs that the required python packages need to run,
+    e.g. ``libffi`` or ``libgl``.  In that case you would provide ``-E
+    "libffi libgl"``.  These nix packages will be available in the
+    build environment for the wheels.
 
 ``--emit-extra-build-inputs/--no-emit-extra-build-inputs``
     These options let you control if external build dependencies
