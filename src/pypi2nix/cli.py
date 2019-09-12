@@ -69,6 +69,11 @@ from pypi2nix.utils import md5_sum_of_files_with_file_names
     u"required python packages.",
 )
 @click.option(
+    "--emit-extra-build-inputs/--no-emit-extra-build-inputs",
+    default=True,
+    help=u"Put extra build dependencies (specified using -E) in generated output.",
+)
+@click.option(
     "-N",
     "--extra-env",
     default="",
@@ -147,6 +152,7 @@ def main(
     basename: str,
     cache_dir: str,
     extra_build_inputs: List[str],
+    emit_extra_build_inputs: bool,
     extra_env: str,
     enable_tests: bool,
     python_version: str,
@@ -302,7 +308,7 @@ def main(
         sources=sources,
         requirements_name=requirements_name,
         requirements_frozen=requirements_frozen,
-        extra_build_inputs=extra_build_inputs,
+        extra_build_inputs=extra_build_inputs if emit_extra_build_inputs else [],
         enable_tests=enable_tests,
         python_version=python_version,
         current_dir=current_dir,
