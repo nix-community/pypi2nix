@@ -10,10 +10,11 @@ import tempfile
 from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import Nix
 from pypi2nix.wheels import INDEX
+from repository import ROOT
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 DERIVATION_PATH = os.path.join(HERE, "build-pip.nix")
-TARGET_DIRECTORY = os.path.join(os.path.dirname(HERE), "src", "pypi2nix", "wheels")
+TARGET_DIRECTORY = os.path.join(ROOT, "src", "pypi2nix", "wheels")
 INDEX_PATH = os.path.join(TARGET_DIRECTORY, "index.json")
 
 

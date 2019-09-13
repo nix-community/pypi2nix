@@ -5,8 +5,7 @@ import os.path
 import shutil
 import subprocess
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+from repository import ROOT
 
 
 def package_setupcfg_package():
