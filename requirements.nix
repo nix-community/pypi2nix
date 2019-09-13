@@ -2,7 +2,7 @@
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -V 3 -r requirements.txt -r requirements-dev.txt
+#   pypi2nix -r requirements.txt -r requirements-dev.txt
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -160,10 +160,10 @@ let
     };
 
     "certifi" = python.mkDerivation {
-      name = "certifi-2019.6.16";
+      name = "certifi-2019.9.11";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/c5/67/5d0548226bcc34468e23a0333978f0e23d28d0b3f0c71a151aef9c3f7680/certifi-2019.6.16.tar.gz";
-        sha256 = "945e3ba63a0b9f577b1395204e13c3a231f9bc0223888be653286534e5873695";
+        url = "https://files.pythonhosted.org/packages/62/85/7585750fd65599e88df0fed59c74f5075d4ea2fe611deceb95dd1c2fb25b/certifi-2019.9.11.tar.gz";
+        sha256 = "e4f3620cfea4f83eedc95b24abd9cd56f3c4b146dd0177e83a21b4eb49e21e50";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -449,10 +449,10 @@ let
     };
 
     "importlib-metadata" = python.mkDerivation {
-      name = "importlib-metadata-0.21";
+      name = "importlib-metadata-0.22";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/73/65/95e3e9b586556779318950b4dac5e246a6fa7b8599b6b3bfa242ae86a327/importlib_metadata-0.21.tar.gz";
-        sha256 = "0c505102757e7fa28b9f0958d8bc81301159dea16e2649858c92edc158b78a83";
+        url = "https://files.pythonhosted.org/packages/e5/9d/e9cffef4769606ec16ff83845655fa19d597d6d91ef49613eda9334135d7/importlib_metadata-0.22.tar.gz";
+        sha256 = "652234b6ab8f2506ae58e528b6fbcc668831d3cc758e1bc01ef438d328b68cdb";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
