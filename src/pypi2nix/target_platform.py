@@ -101,8 +101,10 @@ class PlatformGenerator:
                     ]
                 ).format(interpreter=nixpkgs_attribute_name, packages="setuptools")
             )
-        yield path
-        os.remove(path)
+        try:
+            yield path
+        finally:
+            os.remove(path)
 
 
 @attrs
