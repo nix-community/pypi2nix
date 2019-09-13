@@ -6,7 +6,7 @@ import click
 
 from pypi2nix.configuration import ApplicationConfiguration
 from pypi2nix.logger import verbosity_from_int
-from pypi2nix.main import run_pypi2nix
+from pypi2nix.main import Pypi2nix
 from pypi2nix.overrides import OVERRIDES_URL
 from pypi2nix.overrides import Overrides
 from pypi2nix.overrides import OverridesGithub
@@ -190,7 +190,7 @@ def main(
         verbosity=verbosity,
         wheels_caches=wheels_cache,
     )
-    run_pypi2nix(configuration)
+    Pypi2nix(configuration).run()
 
 
 DEFAULT_VERBOSITY = 1
