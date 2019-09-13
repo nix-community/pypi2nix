@@ -10,6 +10,7 @@ from packaging.markers import default_environment
 
 from pypi2nix.environment_marker import EnvironmentMarker
 from pypi2nix.environment_marker import MarkerToken
+from pypi2nix.python_version import PythonVersion
 from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.target_platform import TargetPlatform
 
@@ -56,11 +57,6 @@ def python_3_6_environment_nix(tmp_path_factory):
     return path
 
 
-@pytest.fixture
-def platform_generator(nix):
-    return PlatformGenerator(nix=nix)
-
-
 MarkerDefinition = namedtuple("NamedTuple", ["name", "value"])
 
 
@@ -95,9 +91,10 @@ def environment_marker_definition(request):
 
 @nix
 def test_that_target_platform_can_be_constructed_from_python_version(
-    platform_generator, nix, python_3_environment_nix
+    platform_generator: PlatformGenerator, nix, python_3_environment_nix
 ):
-    platform = platform_generator.from_python_version("3")
+    platform = platform_generator.from_python_version(PythonVersion.python3)
+    assert isinstance(platform, TargetPlatform)
 
     python_3_version = nix.shell(
         command='python -c "from platform import python_version; print(python_version()[:3])"',
@@ -115,9 +112,10 @@ def test_that_current_platform_to_environment_dict_equals_default_environment(
 
 @nix
 def test_that_generated_platform_environment_dictionary_respects_python_version(
-    platform_generator, python_3_6_environment_nix, nix
+    platform_generator: PlatformGenerator, python_3_6_environment_nix, nix
 ):
-    platform = platform_generator.from_python_version("3.6")
+    platform = platform_generator.from_python_version(PythonVersion.python36)
+    assert isinstance(platform, TargetPlatform)
     output_string = nix.shell(
         command=" ".join(
             [

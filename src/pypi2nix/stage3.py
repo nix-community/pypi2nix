@@ -8,6 +8,7 @@ import jinja2
 
 from pypi2nix.logger import Logger
 from pypi2nix.overrides import Overrides
+from pypi2nix.python_version import PythonVersion
 from pypi2nix.sources import Sources
 from pypi2nix.wheel import Wheel
 
@@ -21,7 +22,7 @@ def main(
     requirements_frozen: str,
     extra_build_inputs: Iterable[str],
     enable_tests: bool,
-    python_version: str,
+    python_version: PythonVersion,
     current_dir: str,
     logger: Logger,
     common_overrides: Iterable[Overrides] = [],
@@ -104,7 +105,7 @@ def main(
     default = default_template.render(
         version=version,
         command_arguments=" ".join(map(shlex.quote, sys.argv[1:])),
-        python_version=python_version,
+        python_version=python_version.derivation_name(),
         extra_build_inputs=(
             extra_build_inputs
             and "with pkgs; [ %s ]" % (" ".join(extra_build_inputs))
@@ -116,7 +117,7 @@ def main(
         common_overrides="\n".join(common_overrides_expressions),
         paths_to_remove="paths_to_remove.remove(auto_confirm)",
         self_uninstalled="self.uninstalled = paths_to_remove",
-        python_major_version=python_version.replace("python", "")[0],
+        python_major_version=python_version.major_version(),
     )
 
     if not os.path.exists(overrides_file):
