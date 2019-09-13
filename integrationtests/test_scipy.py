@@ -13,7 +13,7 @@ class ScipyTest(IntegrationTest, TestCase):
         return ["scipy", "numpy"]
 
     def python_version(self):
-        return "3"
+        return "python3"
 
     def external_dependencies(self):
         return ["gfortran", "blas"]

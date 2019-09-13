@@ -11,7 +11,7 @@ class PillowTest(IntegrationTest, TestCase):
         return ["Pillow"]
 
     def python_version(self):
-        return "3.5"
+        return "python35"
 
     def code_for_testing(self):
         return ["import PIL"]

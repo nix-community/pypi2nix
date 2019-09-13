@@ -8,7 +8,7 @@ class FlitTest(IntegrationTest, TestCase):
         return "flit"
 
     def python_version(self):
-        return "3.5"
+        return "python35"
 
     def requirements(self):
         return ["flit"]

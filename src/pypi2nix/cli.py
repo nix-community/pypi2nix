@@ -68,10 +68,11 @@ from pypi2nix.version import pypi2nix_version
 @click.option(
     "-V",
     "--python-version",
+    "python_version_argument",
     required=False,
-    default="3",
-    target="python_version_argument",
+    default="python3",
     type=click.Choice(available_python_versions),
+    show_default=True,
     help="Provide which python version we build for.",
 )
 @click.option(

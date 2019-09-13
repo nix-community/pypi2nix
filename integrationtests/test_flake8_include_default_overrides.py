@@ -17,6 +17,6 @@ class Flake8IncludeDefaultOverrides(IntegrationTest, TestCase):
         return ["import flake8"]
 
     def python_version(self):
-        return "3.5"
+        return "python35"
 
     default_overrides = True

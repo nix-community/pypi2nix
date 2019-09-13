@@ -10,7 +10,7 @@ class Flake8MercurialTest(IntegrationTest, TestCase):
         return "flake8-mercurial"
 
     def python_version(self):
-        return "3"
+        return "python3"
 
     def requirements(self):
         return [

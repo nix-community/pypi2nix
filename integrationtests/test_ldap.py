@@ -13,7 +13,7 @@ class LdapTest(IntegrationTest, TestCase):
         return ["python-ldap"]
 
     def python_version(self):
-        return "2.7"
+        return "python27"
 
     def code_for_testing(self):
         return ["import ldap"]

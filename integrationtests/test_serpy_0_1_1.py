@@ -8,7 +8,7 @@ class SerpyTest(IntegrationTest, TestCase):
         return "serpy"
 
     def python_version(self):
-        return "3"
+        return "python3"
 
     def requirements(self):
         return ["serpy==0.1.1"]
