@@ -6,6 +6,7 @@ from attr import attrs
 
 from pypi2nix.logger import Verbosity
 from pypi2nix.overrides import Overrides
+from pypi2nix.python_version import PythonVersion
 
 
 @attrs
@@ -18,7 +19,7 @@ class ApplicationConfiguration:
     emit_extra_build_inputs: bool = attrib()
     extra_environment: str = attrib()
     enable_tests: bool = attrib()
-    python_version: str = attrib()
+    python_version: PythonVersion = attrib()
     requirement_files: List[str] = attrib()
     requirements: List[str] = attrib()
     setup_requirements: List[str] = attrib()

@@ -1,17 +1,39 @@
+from enum import Enum
+from enum import unique
 from typing import Dict
+from typing import List
+from typing import Optional
 
-PYTHON_VERSIONS: Dict[str, str] = {
-    "2.6": "python26Full",
-    "2.7": "python27Full",
-    "3.2": "python32",
-    "3.3": "python33",
-    "3.4": "python34",
-    "3.5": "python35",
-    "3.6": "python36",
-    "3.7": "python37",
-    "3": "python3",
-    "pypy": "pypy",
+
+@unique
+class PythonVersion(Enum):
+    python2 = "python2"
+    python27 = "python27Full"
+    python35 = "python35"
+    python36 = "python36"
+    python37 = "python37"
+    python3 = "python3"
+
+    def nixpkgs_attribute(self) -> str:
+        return self.value  # type: ignore
+
+    def derivation_name(self) -> str:
+        return self.value  # type: ignore
+
+    def major_version(self) -> str:
+        return self.derivation_name().replace("python", "")[0]
+
+
+_PYTHON_VERSIONS: Dict[str, PythonVersion] = {
+    "2.7": PythonVersion.python27,
+    "3.5": PythonVersion.python35,
+    "3.6": PythonVersion.python36,
+    "3.7": PythonVersion.python37,
 }
 
 
-available_python_versions = list(PYTHON_VERSIONS.keys())
+def python_version_from_version_string(version_string: str) -> Optional[PythonVersion]:
+    return _PYTHON_VERSIONS.get(version_string)
+
+
+available_python_versions: List[str] = [version.name for version in PythonVersion]

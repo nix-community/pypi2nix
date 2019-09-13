@@ -4,14 +4,10 @@ import shutil
 import sys
 import tempfile
 
-import click
-
 from pypi2nix.configuration import ApplicationConfiguration
 from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import Nix
 from pypi2nix.pip.implementation import NixPip
-from pypi2nix.python_version import PYTHON_VERSIONS
-from pypi2nix.python_version import available_python_versions
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements_collector import RequirementsCollector
 from pypi2nix.sources import Sources
@@ -35,13 +31,6 @@ def run_pypi2nix(configuration: ApplicationConfiguration) -> None:
     )
     platform_generator = PlatformGenerator(nix=nix)
 
-    try:
-        python_package_attribute_name = PYTHON_VERSIONS[configuration.python_version]
-    except KeyError:
-        raise click.exceptions.UsageError(
-            'Missing option "-V" / "--python-version".  Choose from '
-            + (", ".join(available_python_versions))
-        )
     target_platform = platform_generator.from_python_version(
         configuration.python_version
     )
@@ -132,7 +121,7 @@ def run_pypi2nix(configuration: ApplicationConfiguration) -> None:
             else []
         ),
         enable_tests=configuration.enable_tests,
-        python_version=python_package_attribute_name,
+        python_version=configuration.python_version,
         current_dir=current_dir,
         logger=logger,
         common_overrides=configuration.overrides,

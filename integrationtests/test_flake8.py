@@ -11,7 +11,7 @@ class Flake8Test(IntegrationTest, TestCase):
         return ["flake8 == 3.7.7"]
 
     def python_version(self):
-        return "3.5"
+        return "python35"
 
     def code_for_testing(self):
         return ["import flake8"]

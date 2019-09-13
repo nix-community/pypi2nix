@@ -10,6 +10,7 @@ from pypi2nix.main import run_pypi2nix
 from pypi2nix.overrides import OVERRIDES_URL
 from pypi2nix.overrides import Overrides
 from pypi2nix.overrides import OverridesGithub
+from pypi2nix.python_version import PythonVersion
 from pypi2nix.python_version import available_python_versions
 from pypi2nix.utils import args_as_list
 from pypi2nix.version import pypi2nix_version
@@ -67,9 +68,11 @@ from pypi2nix.version import pypi2nix_version
 @click.option(
     "-V",
     "--python-version",
+    "python_version_argument",
     required=False,
-    default="3",
+    default="python3",
     type=click.Choice(available_python_versions),
+    show_default=True,
     help="Provide which python version we build for.",
 )
 @click.option(
@@ -133,7 +136,7 @@ def main(
     emit_extra_build_inputs: bool,
     extra_env: str,
     enable_tests: bool,
-    python_version: str,
+    python_version_argument: str,
     requirements: List[str],
     editable: List[str],
     setup_requires: List[str],
@@ -164,6 +167,12 @@ def main(
                 )
             ]
         )
+    python_version = getattr(PythonVersion, python_version_argument, None)
+    if python_version is None:
+        raise click.exceptions.UsageError(
+            f"Python version `{python_version_argument}` not available"
+        )
+
     configuration = ApplicationConfiguration(
         basename=basename,
         emit_extra_build_inputs=emit_extra_build_inputs,

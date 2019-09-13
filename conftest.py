@@ -112,13 +112,17 @@ def source_distribution_archive(request, data_directory):
 
 
 @pytest.fixture
-def platform_generator(nix):
+def platform_generator(nix: Nix) -> PlatformGenerator:
     return PlatformGenerator(nix)
 
 
 @pytest.fixture
-def current_platform(platform_generator):
-    return platform_generator.current_platform()
+def current_platform(platform_generator: PlatformGenerator) -> TargetPlatform:
+    platform = platform_generator.current_platform()
+    if platform is None:
+        raise Exception("Could not recognize current platform")
+    else:
+        return platform
 
 
 @pytest.fixture

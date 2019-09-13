@@ -10,7 +10,7 @@ class TornadoTest(IntegrationTest, TestCase):
         return "tornado"
 
     def python_version(self):
-        return "2.7"
+        return "python27"
 
     def requirements(self):
         return [

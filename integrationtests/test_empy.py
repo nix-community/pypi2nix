@@ -11,7 +11,7 @@ class EmpyTest(IntegrationTest, TestCase):
         return ["empy"]
 
     def python_version(self):
-        return "3"
+        return "python3"
 
     def code_for_testing(self):
         return ["import em"]

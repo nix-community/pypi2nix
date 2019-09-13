@@ -158,7 +158,7 @@ class NixPip(Pip):
                 download_cache_dir=self.download_cache_directory,
                 extra_build_inputs=self.extra_build_inputs,
                 project_dir=self.project_directory,
-                python_version=self.target_platform.nixpkgs_derivation_name,
+                python_version=self.target_platform.nixpkgs_python_version.derivation_name(),
                 extra_env=self.extra_env,
             ),
             **arguments,

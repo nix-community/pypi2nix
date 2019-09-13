@@ -11,7 +11,7 @@ class ConnexionTest(IntegrationTest, TestCase):
         return ["connexion"]
 
     def python_version(self):
-        return "3.7"
+        return "python37"
 
     def setup_requires(self):
         return ["flit", "pytest-runner", "setuptools-scm", "vcversioner", "flake8"]

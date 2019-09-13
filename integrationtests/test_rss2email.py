@@ -9,7 +9,7 @@ class Rss2Email(IntegrationTest, TestCase):
         return "rss2email"
 
     def python_version(self):
-        return "3.6"
+        return "python36"
 
     def requirements(self):
         return ["https://github.com/wking/rss2email/archive/master.zip#egg=rss2email"]
