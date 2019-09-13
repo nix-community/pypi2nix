@@ -135,11 +135,13 @@ class VirtualenvPip(Pip):
     def _set_environment_variable(self, name: str, value: str) -> Iterator[None]:
         current_value = os.environ.get(name)
         os.environ[name] = value
-        yield
-        if current_value is None:
-            del os.environ[name]
-        else:
-            os.environ[name] = current_value
+        try:
+            yield
+        finally:
+            if current_value is None:
+                del os.environ[name]
+            else:
+                os.environ[name] = current_value
 
     def _maybe_index(self) -> List[str]:
         arguments: List[str] = []
