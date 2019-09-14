@@ -23,7 +23,7 @@ class Archive:
         if self.path.endswith(".tar.gz"):
             with tarfile.open(self.path, "r:gz") as tar:
                 tar.extractall(path=target_directory)
-        elif self.path.endswith(".zip"):
+        elif self.path.endswith(".zip") or self.path.endswith(".whl"):
             with zipfile.ZipFile(self.path) as archive:
                 archive.extractall(path=target_directory)
         elif self.path.endswith(".tar.bz2"):

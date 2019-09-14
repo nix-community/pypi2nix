@@ -86,6 +86,10 @@ def requirement(request, requirement_parser):
 
 
 @pytest.fixture
+def setupcfg_package_wheel_path(data_directory: str) -> str:
+    return os.path.join(data_directory, 'setupcfg_package-1.0-py3-none-any.whl')
+
+@pytest.fixture
 def pip(
     logger: Logger,
     current_platform: TargetPlatform,
