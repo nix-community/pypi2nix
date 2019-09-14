@@ -5,6 +5,7 @@ import os.path
 import shutil
 import subprocess
 
+from build_wheel import build_wheel
 from repository import ROOT
 
 
@@ -18,6 +19,8 @@ def package_setupcfg_package():
         os.path.join(package_dir, "dist", "setupcfg-package-1.0.tar.gz"),
         os.path.join(package_dir, "setupcfg-package.tar.gz"),
     )
+    wheel_target_directory = os.path.join(ROOT, "unittests", "data")
+    build_wheel(wheel_target_directory, package_dir)
 
 
 if __name__ == "__main__":
