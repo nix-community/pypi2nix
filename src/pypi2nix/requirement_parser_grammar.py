@@ -4,7 +4,6 @@ from typing import no_type_check
 from parsley import makeGrammar
 
 from pypi2nix.environment_marker import EnvironmentMarker
-from pypi2nix.environment_marker import MarkerToken
 from pypi2nix.logger import ProxyLogger
 from pypi2nix.requirements import PathRequirement
 from pypi2nix.requirements import UrlRequirement
@@ -29,25 +28,25 @@ class _RequirementParserGrammar:
         urlspec       = '@' wsp* <URI_reference>
         python_str_c  = (wsp | letter | digit | '(' | ')' | '.' | '{' | '}' |
                          '-' | '_' | '*' | '#' | ':' | ';' | ',' | '/' | '?' |
-                         '[' | ']' | '!' | '~' | '`' | '@' | '$' | '%%' | '^' |
+                         '[' | ']' | '!' | '~' | '`' | '@' | '$' | '%' | '^' |
                          '&' | '=' | '+' | '|' | '<' | '>' )
         dquote        = '"'
         squote        = '\\''
         python_str    = (squote <(python_str_c | dquote)*>:s squote |
                          dquote <(python_str_c | squote)*>:s dquote) -> s
-        env_var       = (%s | 'extra'
-                         # ONLY when defined by a containing layer
-                         ):varname -> lookup(varname)
+        env_var       = 'python_version' | 'python_full_version' |
+                        'os_name' | 'sys_platform' | 'platform_release' |
+                        'platform_system' | 'platform_version' |
+                        'platform_machine' | 'platform_python_implementation' |
+                        'implementation_name' | 'implementation_version' |
+                        'extra'
         marker_var    = wsp* (env_var | python_str)
-        marker_expr   = marker_var:l marker_op:o marker_var:r -> EnvironmentMarker(o, l, r)
-                      | wsp* '(' marker:m wsp* ')' -> m
-        marker_op     = version_cmp | (wsp* 'in') | (wsp* 'not' wsp+ 'in' -> 'not in')
-        marker_and    = marker_expr:l wsp* 'and' marker_expr:r -> EnvironmentMarker('and', l, r)
-                      | marker_expr:m -> m
-        marker_or     = marker_and:l wsp* 'or' marker_and:r -> EnvironmentMarker('or', l, r)
-                          | marker_and:m -> m
+        marker_expr   = marker_var marker_op marker_var | wsp* '(' marker wsp* ')'
+        marker_op     = version_cmp | (wsp* 'in') | (wsp* 'not' wsp+ 'in')
+        marker_and    = marker_expr wsp* 'and' marker_expr | marker_expr
+        marker_or     = marker_and wsp* 'or' marker_and | marker_and
         marker        = marker_or
-        quoted_marker = ';' wsp* marker
+        quoted_marker = ';' wsp* <marker>:m -> EnvironmentMarker(m)
         identifier_end = letterOrDigit | (('-' | '_' | '.' )* letterOrDigit)
         identifier    = < letterOrDigit identifier_end* >
         name          = identifier
@@ -103,7 +102,7 @@ class _RequirementParserGrammar:
                           | nz digit # 10-99
                           | '1' digit{2} # 100-199
                           | '2' ('0' | '1' | '2' | '3' | '4') digit # 200-249
-                          | '25' ('0' | '1' | '2' | '3' | '4' | '5') )# %%250-255
+                          | '25' ('0' | '1' | '2' | '3' | '4' | '5') )# %250-255
         reg_name = ( unreserved | pct_encoded | sub_delims)*
         path = (
                 path_abempty # begins with '/' or is empty
@@ -123,27 +122,13 @@ class _RequirementParserGrammar:
         pchar         = unreserved | pct_encoded | sub_delims | ':' | '@'
         query         = ( pchar | '/' | '?')*
         fragment      = ( pchar | '/' | '?')*
-        pct_encoded   = '%%' hexdig
+        pct_encoded   = '%' hexdig
         unreserved    = letter | digit | '-' | '.' | '_' | '~'
         reserved      = gen_delims | sub_delims
         gen_delims    = ':' | '/' | '?' | '#' | '(' | ')?' | '@'
         sub_delims    = '!' | '$' | '&' | '\\'' | '(' | ')' | '*' | '+' | ',' | ';' | '='
         hexdig        = digit | 'a' | 'A' | 'b' | 'B' | 'c' | 'C' | 'd' | 'D' | 'e' | 'E' | 'f' | 'F'
-    """ % (
-        " | ".join(["'{}'".format(name.value) for name in MarkerToken]),
-    )
-
-    @no_type_check
-    def _format_full_version(self, info) -> str:
-        version = "{0.major}.{0.minor}.{0.micro}".format(info)
-        kind = info.releaselevel
-        if kind != "final":
-            version += kind[0] + str(info.serial)
-        return version
-
-    @no_type_check
-    def _environment_bindings(self, token):
-        return MarkerToken.get_from_string(token)
+    """
 
     @no_type_check
     @contextmanager
@@ -152,7 +137,6 @@ class _RequirementParserGrammar:
             self._compiled_grammar = makeGrammar(
                 self.requirement_grammar,
                 {
-                    "lookup": self._environment_bindings,
                     "VersionRequirement": VersionRequirement,
                     "UrlRequirement": UrlRequirement,
                     "PathRequirement": PathRequirement,

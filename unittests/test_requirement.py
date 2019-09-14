@@ -249,8 +249,8 @@ def test_that_we_can_add_two(
     (
         "test-req",
         "test-req <= 1.0",
-        "test-req; 'python_version' == '3.7'",
-        "test-req; 'python_version' != '3.7'",
+        "test-req; python_version == '3.7'",
+        "test-req; python_version != '3.7'",
     ),
 )
 @pytest.mark.parametrize(
@@ -277,8 +277,8 @@ def test_that_we_can_add_version_with_path_requirement_result_is_path_requiremen
     (
         "test-req",
         "test-req <= 1.0",
-        "test-req; 'python_version' == '3.7'",
-        "test-req; 'python_version' != '3.7'",
+        "test-req; python_version == '3.7'",
+        "test-req; python_version != '3.7'",
     ),
 )
 @pytest.mark.parametrize(
@@ -342,7 +342,7 @@ def test_adding_path_requirements_where_one_requirement_does_not_apply(
 ):
     req1 = requirement_parser.parse("path/to/req#egg=test-req")
     req2 = requirement_parser.parse(
-        'different/path#egg=test-req; "python_version" == "1.0"'
+        'different/path#egg=test-req; python_version == "1.0"'
     )
 
     assert req1.add(req2, current_platform) == req1
@@ -370,7 +370,7 @@ def test_that_we_can_add_url_requirements_where_one_does_not_apply(
 ):
     req1 = requirement_parser.parse("https://test.test#egg=test-req")
     req2 = requirement_parser.parse(
-        'https://other.test#egg=test-req; "python_version" == "1.0"'
+        'https://other.test#egg=test-req; python_version == "1.0"'
     )
     assert req1.add(req2, current_platform) == req1
     assert req2.add(req1, current_platform) == req1

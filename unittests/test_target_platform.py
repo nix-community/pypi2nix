@@ -9,7 +9,6 @@ import pytest
 from packaging.markers import default_environment
 
 from pypi2nix.environment_marker import EnvironmentMarker
-from pypi2nix.environment_marker import MarkerToken
 from pypi2nix.python_version import PythonVersion
 from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.target_platform import TargetPlatform
@@ -133,9 +132,7 @@ def test_that_generated_platform_environment_dictionary_respects_python_version(
 def test_that_environment_marker_with_unknown_os_name_do_not_apply_to_current_platform(
     current_platform: TargetPlatform
 ):
-    marker = EnvironmentMarker(
-        operation="==", left=MarkerToken.OS_NAME, right="fake_os_inside_of_unittest"
-    )
+    marker = EnvironmentMarker("os_name == 'fake_os_in_unittest'")
     assert not marker.applies_to_platform(current_platform)
 
 
