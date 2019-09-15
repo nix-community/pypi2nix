@@ -87,7 +87,25 @@ def requirement(request, requirement_parser):
 
 @pytest.fixture
 def setupcfg_package_wheel_path(data_directory: str) -> str:
-    return os.path.join(data_directory, 'setupcfg_package-1.0-py3-none-any.whl')
+    return os.path.join(data_directory, "setupcfg_package-1.0-py3-none-any.whl")
+
+
+@pytest.fixture
+def setupcfg_package_wheel(
+    setupcfg_package_wheel_path: str,
+    logger: Logger,
+    requirement_parser: RequirementParser,
+    current_platform: TargetPlatform,
+) -> Wheel:
+    archive = Archive(path=setupcfg_package_wheel_path)
+    with archive.extracted_files() as directory:
+        return Wheel.from_wheel_directory_path(
+            os.path.join(directory, "setupcfg_package-1.0.dist-info"),
+            current_platform,
+            logger,
+            requirement_parser,
+        )
+
 
 @pytest.fixture
 def pip(

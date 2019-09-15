@@ -53,13 +53,15 @@ class Requirement(metaclass=ABCMeta):
     def logger(self) -> Logger:
         pass
 
-    def applies_to_target(self, target_platform: TargetPlatform) -> bool:
+    def applies_to_target(
+        self, target_platform: TargetPlatform, extras: List[str] = []
+    ) -> bool:
         environment_markers = self.environment_markers()
         try:
             return (
                 True
                 if environment_markers is None
-                else environment_markers.applies_to_platform(target_platform)
+                else environment_markers.applies_to_platform(target_platform, extras)
             )
         except MarkerEvaluationFailed as e:
             self.logger().warning(

@@ -25,4 +25,4 @@ def test_that_we_can_inspect_the_content_of_an_archive(archive):
 def test_that_we_can_inspect_the_content_of_a_wheel(setupcfg_package_wheel_path: str):
     archive = Archive(path=setupcfg_package_wheel_path)
     with archive.extracted_files() as directory:
-        assert 'setupcfg_package-1.0.dist-info' in os.listdir(directory)
+        assert "setupcfg_package-1.0.dist-info" in os.listdir(directory)
