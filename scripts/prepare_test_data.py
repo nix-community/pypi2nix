@@ -10,7 +10,7 @@ from build_wheel import build_wheel
 from repository import ROOT
 
 wheel_target_directory = os.path.join(ROOT, "unittests", "data")
-TEST_PACKAGES = ["setupcfg-package", "package1", "package2", "package3"]
+TEST_PACKAGES = ["setupcfg-package", "package1", "package2", "package3", "package4"]
 
 
 def build_test_package(package_name):

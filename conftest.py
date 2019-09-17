@@ -195,7 +195,7 @@ def wheel_distribution_archive_path(data_directory):
 @pytest.fixture
 def sources_for_test_packages(data_directory):
     sources = Sources()
-    package_names = ["setupcfg-package", "package1", "package2", "package3"]
+    package_names = ["setupcfg-package", "package1", "package2", "package3", "package4"]
     for package_name in package_names:
         sources.add(
             package_name,
