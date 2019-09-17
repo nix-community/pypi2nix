@@ -1,9 +1,11 @@
 import pytest
 
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import VersionRequirement
 from pypi2nix.requirements_file import RequirementsFile
 from pypi2nix.sources import Sources
+from pypi2nix.target_platform import TargetPlatform
 
 
 @pytest.fixture
@@ -217,3 +219,18 @@ def test_that_filter_works_by_name(requirement_parser, requirement_set):
     filtered_requirement_set = requirement_set.filter(lambda req: req.name() != "test")
 
     assert len(filtered_requirement_set) == 0
+
+
+def test_that_extras_are_preserved_when_converting_to_and_from_a_file(
+    requirement_parser: RequirementParser,
+    requirement_set: RequirementSet,
+    current_platform: TargetPlatform,
+    project_dir: str,
+):
+    requirement_set.add(requirement_parser.parse("req[extra1]"))
+    requirements_file = requirement_set.to_file(project_dir, current_platform)
+    new_requirements_set = RequirementSet.from_file(
+        requirements_file, current_platform, requirement_parser
+    )
+    requirement = new_requirements_set["req"]
+    assert requirement.extras() == {"extra1"}

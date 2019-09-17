@@ -296,4 +296,9 @@ class VersionRequirement(Requirement):
                 for operator, specifier in self._versions
             ]
         )
-        return "{name} {version}".format(name=self._name, version=version)
+        extras = (
+            "[{extras}]".format(extras=",".join(self.extras())) if self.extras() else ""
+        )
+        return "{name}{extras} {version}".format(
+            name=self._name, version=version, extras=extras
+        )

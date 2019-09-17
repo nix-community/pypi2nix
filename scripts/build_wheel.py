@@ -8,12 +8,14 @@ import tempfile
 
 from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import Nix
+from repository import ROOT
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 DERIVATION_PATH = os.path.join(HERE, "build-pip.nix")
 
 
 def build_wheel(target_directory: str, requirement: str) -> str:
+    package_directory = os.path.join(ROOT, "unittests", "data")
     escaped_requirement = shlex.quote(requirement)
     target_directory = os.path.abspath(target_directory)
     with tempfile.TemporaryDirectory() as build_directory:
@@ -21,7 +23,7 @@ def build_wheel(target_directory: str, requirement: str) -> str:
         logger = StreamLogger(sys.stdout)
         nix = Nix(logger=logger)
         nix.shell(
-            command=f"pip wheel {escaped_requirement}",
+            command=f"pip wheel {escaped_requirement} --find-links {package_directory}",
             derivation_path=DERIVATION_PATH,
             nix_arguments=dict(),
         )

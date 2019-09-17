@@ -9,9 +9,11 @@ from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
 from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import Nix
+from pypi2nix.package_source import PathSource
 from pypi2nix.pip.virtualenv import VirtualenvPip
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
+from pypi2nix.sources import Sources
 from pypi2nix.stage1 import WheelBuilder
 from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.target_platform import TargetPlatform
@@ -188,3 +190,15 @@ def requirement_parser(logger):
 @pytest.fixture
 def wheel_distribution_archive_path(data_directory):
     return os.path.join(data_directory, "wheel-0.33.6-py2.py3-none-any.whl")
+
+
+@pytest.fixture
+def sources_for_test_packages(data_directory):
+    sources = Sources()
+    package_names = ["setupcfg-package", "package1", "package2", "package3"]
+    for package_name in package_names:
+        sources.add(
+            package_name,
+            PathSource(os.path.join(data_directory, f"{package_name}-1.0.tar.gz")),
+        )
+    return sources
