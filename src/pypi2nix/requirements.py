@@ -161,7 +161,10 @@ class UrlRequirement(Requirement):
             return GitSource(url=url, revision=rev)
 
     def to_line(self) -> str:
-        return "{url}#egg={name}".format(url=self._url, name=self.name())
+        extras = "[" + ",".join(self.extras()) + "]" if self.extras() else ""
+        return "{url}#egg={name}{extras}".format(
+            url=self._url, name=self.name(), extras=extras
+        )
 
     def url(self) -> str:
         return self._url
@@ -225,7 +228,10 @@ class PathRequirement(Requirement):
         return self._environment_markers
 
     def to_line(self) -> str:
-        return "{path}".format(path=self._path)
+        extras = "[" + ",".join(self.extras()) + "]" if self.extras() else ""
+        return "{path}#egg={name}{extras}".format(
+            path=self._path, extras=extras, name=self.name()
+        )
 
     def path(self) -> str:
         return self._path
