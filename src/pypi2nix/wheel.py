@@ -33,20 +33,22 @@ class Wheel:
         license: str,
         description: str,
         build_dependencies: RequirementSet,
+        target_platform: TargetPlatform,
     ):
         self.name = canonicalize_name(name)
         self.version = version
-        self.deps = deps
+        self._deps = deps
         self.homepage = homepage
         self.license = license
         self.description = description
         self.build_dependencies: RequirementSet = build_dependencies
+        self._target_platform = target_platform
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "version": self.version,
-            "deps": [requirement.name() for requirement in self.deps],
+            "deps": [requirement.name() for requirement in self._deps],
             "homepage": self.homepage,
             "license": self.license,
             "description": self.description,
@@ -54,6 +56,13 @@ class Wheel:
                 requirement.name() for requirement in self.build_dependencies
             ],
         }
+
+    def dependencies(self, extras: List[str] = []) -> RequirementSet:
+        return self._deps.filter(
+            lambda requirement: requirement.applies_to_target(
+                self._target_platform, extras=extras
+            )
+        )
 
     def add_build_dependencies(self, dependencies: RequirementSet) -> None:
         self.build_dependencies += dependencies
@@ -131,6 +140,7 @@ class Wheel:
                 license=license,
                 description=safe(description),
                 build_dependencies=RequirementSet(target_platform),
+                target_platform=target_platform,
             )
 
         raise click.ClickException(
@@ -158,8 +168,7 @@ class Wheel:
                 continue
             if not constructor._valid_dependency(current_wheel_name, dependency.name()):
                 continue
-            if dependency.applies_to_target(target_platform):
-                extracted_deps.add(dependency)
+            extracted_deps.add(dependency)
         return extracted_deps
 
 

@@ -20,6 +20,7 @@ def wheel(current_platform):
         license="",
         description="description",
         build_dependencies=build_dependencies,
+        target_platform=current_platform,
     )
 
 
@@ -47,3 +48,21 @@ def test_can_add_build_dependencies_to_wheel(
 
 def test_that_to_dict_is_json_serializable(wheel):
     json.dumps(wheel.to_dict())
+
+
+def test_that_setupcfg_package_wheel_contains_requests_as_dependency(
+    setupcfg_package_wheel: Wheel
+):
+    assert "requests" in setupcfg_package_wheel.dependencies()
+
+
+def test_that_setupcfg_package_wheel_contains_pytest_as_testing_dependency(
+    setupcfg_package_wheel: Wheel
+):
+    assert "pytest" in setupcfg_package_wheel.dependencies(extras=["testing"])
+
+
+def test_that_setupcfg_package_wheel_does_not_contain_pytest_as_non_testing_dependency(
+    setupcfg_package_wheel: Wheel
+):
+    assert "pytest" not in setupcfg_package_wheel.dependencies()

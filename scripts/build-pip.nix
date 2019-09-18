@@ -5,6 +5,7 @@ stdenv.mkDerivation {
   name = "impure-environment";
   buildInputs = [
     python3Packages.pip
+    python3Packages.wheel
   ];
   shellHook = ''
     # set SOURCE_DATE_EPOCH so that we can use python wheels

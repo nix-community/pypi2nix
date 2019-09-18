@@ -153,7 +153,8 @@ def test_that_from_line_to_line_preserves_urls(requirement_parser):
 def test_that_to_line_reproduces_path_correctly(requirement_parser):
     line = "path/to/requirement#egg=test-requirement"
     requirement = requirement_parser.parse(line)
-    assert requirement.to_line() == "path/to/requirement"
+    requirement = requirement_parser.parse(requirement.to_line())
+    assert requirement._path == "path/to/requirement"
 
 
 def test_that_requirements_can_be_added_together_adding_version_constraints(
@@ -410,3 +411,21 @@ def test_that_requirements_with_proper_os_name_applies_to_target(
         "req; os_name == '{}'".format(current_platform.os_name)
     )
     assert requirement.applies_to_target(current_platform)
+
+
+def test_that_extras_of_path_requirements_are_preserved(requirement_parser):
+    requirement = requirement_parser.parse("/path/to/egg#egg=egg[extra1,extra2]")
+    assert isinstance(requirement, PathRequirement)
+    assert requirement.extras() == {"extra1", "extra2"}
+    requirement = requirement_parser.parse(requirement.to_line())
+    assert requirement.extras() == {"extra1", "extra2"}
+
+
+def test_that_extras_of_url_requirements_are_preserved(requirement_parser):
+    requirement = requirement_parser.parse(
+        "https://test.test/test.zip#egg=egg[extra1,extra2]"
+    )
+    assert isinstance(requirement, UrlRequirement)
+    assert requirement.extras() == {"extra1", "extra2"}
+    requirement = requirement_parser.parse(requirement.to_line())
+    assert requirement.extras() == {"extra1", "extra2"}

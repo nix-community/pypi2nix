@@ -53,13 +53,15 @@ class Requirement(metaclass=ABCMeta):
     def logger(self) -> Logger:
         pass
 
-    def applies_to_target(self, target_platform: TargetPlatform) -> bool:
+    def applies_to_target(
+        self, target_platform: TargetPlatform, extras: List[str] = []
+    ) -> bool:
         environment_markers = self.environment_markers()
         try:
             return (
                 True
                 if environment_markers is None
-                else environment_markers.applies_to_platform(target_platform)
+                else environment_markers.applies_to_platform(target_platform, extras)
             )
         except MarkerEvaluationFailed as e:
             self.logger().warning(
@@ -159,7 +161,10 @@ class UrlRequirement(Requirement):
             return GitSource(url=url, revision=rev)
 
     def to_line(self) -> str:
-        return "{url}#egg={name}".format(url=self._url, name=self.name())
+        extras = "[" + ",".join(self.extras()) + "]" if self.extras() else ""
+        return "{url}#egg={name}{extras}".format(
+            url=self._url, name=self.name(), extras=extras
+        )
 
     def url(self) -> str:
         return self._url
@@ -223,7 +228,10 @@ class PathRequirement(Requirement):
         return self._environment_markers
 
     def to_line(self) -> str:
-        return "{path}".format(path=self._path)
+        extras = "[" + ",".join(self.extras()) + "]" if self.extras() else ""
+        return "{path}#egg={name}{extras}".format(
+            path=self._path, extras=extras, name=self.name()
+        )
 
     def path(self) -> str:
         return self._path
@@ -294,4 +302,9 @@ class VersionRequirement(Requirement):
                 for operator, specifier in self._versions
             ]
         )
-        return "{name} {version}".format(name=self._name, version=version)
+        extras = (
+            "[{extras}]".format(extras=",".join(self.extras())) if self.extras() else ""
+        )
+        return "{name}{extras} {version}".format(
+            name=self._name, version=version, extras=extras
+        )

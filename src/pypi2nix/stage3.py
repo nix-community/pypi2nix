@@ -58,8 +58,11 @@ def main(
         else:
             buildInputs = "[ ]"
         propagatedBuildInputs = "[ ]"
-        if item.deps:
-            deps = [x.name() for x in item.deps if x.name() in metadata_by_name.keys()]
+        dependencies = item.dependencies(extras=[])
+        if dependencies:
+            deps = [
+                x.name() for x in dependencies if x.name() in metadata_by_name.keys()
+            ]
             if deps:
                 propagatedBuildInputs = "[\n%s\n      ]" % (
                     "\n".join(
