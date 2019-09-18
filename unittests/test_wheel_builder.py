@@ -51,3 +51,11 @@ def test_does_not_package_myextra_dependencies_if_no_extras_specified(build_whee
 def test_does_detect_extra_requirements_from_requirements(build_wheels):
     wheels = build_wheels(["package4"])
     assert [wheel for wheel in wheels if wheel.name == "package1"]
+
+
+@nix
+def test_that_we_filter_extra_requirements_that_do_not_apply_to_target_platform(
+    build_wheels,
+):
+    wheels = build_wheels(["package3[other_platform]"])
+    assert not [wheel for wheel in wheels if wheel.name == "package2"]
