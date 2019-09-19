@@ -1,4 +1,6 @@
+import os
 import os.path
+import tempfile
 from typing import List
 from typing import Optional
 
@@ -173,24 +175,27 @@ def main(
             f"Python version `{python_version_argument}` not available"
         )
 
-    configuration = ApplicationConfiguration(
-        basename=basename,
-        emit_extra_build_inputs=emit_extra_build_inputs,
-        enable_tests=enable_tests,
-        extra_build_inputs=args_as_list(extra_build_inputs),
-        extra_environment=extra_env,
-        nix_executable_directory=nix_executable_directory,
-        nix_path=nix_path,
-        output_basename=basename,
-        overrides=overrides,
-        python_version=python_version,
-        requirement_files=requirements,
-        requirements=editable,
-        setup_requirements=setup_requires,
-        verbosity=verbosity,
-        wheels_caches=wheels_cache,
-    )
-    Pypi2nix(configuration).run()
+    with tempfile.TemporaryDirectory() as project_directory:
+        configuration = ApplicationConfiguration(
+            basename=basename,
+            emit_extra_build_inputs=emit_extra_build_inputs,
+            enable_tests=enable_tests,
+            extra_build_inputs=args_as_list(extra_build_inputs),
+            extra_environment=extra_env,
+            nix_executable_directory=nix_executable_directory,
+            nix_path=nix_path,
+            output_basename=basename,
+            overrides=overrides,
+            python_version=python_version,
+            requirement_files=requirements,
+            requirements=editable,
+            setup_requirements=setup_requires,
+            verbosity=verbosity,
+            wheels_caches=wheels_cache,
+            project_directory=project_directory,
+            target_directory=os.getcwd(),
+        )
+        Pypi2nix(configuration).run()
 
 
 DEFAULT_VERBOSITY = 1

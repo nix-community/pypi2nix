@@ -23,18 +23,20 @@ def main(
     extra_build_inputs: Iterable[str],
     enable_tests: bool,
     python_version: PythonVersion,
-    current_dir: str,
+    target_directory: str,
     logger: Logger,
     common_overrides: Iterable[Overrides] = [],
 ) -> None:
     """Create Nix expressions.
     """
 
-    default_file = os.path.join(current_dir, "{}.nix".format(requirements_name))
+    default_file = os.path.join(target_directory, "{}.nix".format(requirements_name))
     overrides_file = os.path.join(
-        current_dir, "{}_override.nix".format(requirements_name)
+        target_directory, "{}_override.nix".format(requirements_name)
     )
-    frozen_file = os.path.join(current_dir, "{}_frozen.txt".format(requirements_name))
+    frozen_file = os.path.join(
+        target_directory, "{}_frozen.txt".format(requirements_name)
+    )
 
     version_file = os.path.join(os.path.dirname(__file__), "VERSION")
     with open(version_file) as f:

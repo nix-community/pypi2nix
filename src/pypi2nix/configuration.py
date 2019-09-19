@@ -26,3 +26,5 @@ class ApplicationConfiguration:
     overrides: List[Overrides] = attrib()
     wheels_caches: List[str] = attrib()
     basename: str = attrib()
+    project_directory: str = attrib()
+    target_directory: str = attrib()
