@@ -13,7 +13,6 @@ from pypi2nix.python_version import PythonVersion
 class ApplicationConfiguration:
     verbosity: Verbosity = attrib()
     nix_executable_directory: Optional[str] = attrib()
-    output_basename: str = attrib()
     nix_path: List[str] = attrib()
     extra_build_inputs: List[str] = attrib()
     emit_extra_build_inputs: bool = attrib()
@@ -25,6 +24,6 @@ class ApplicationConfiguration:
     setup_requirements: List[str] = attrib()
     overrides: List[Overrides] = attrib()
     wheels_caches: List[str] = attrib()
-    basename: str = attrib()
+    output_basename: str = attrib()
     project_directory: str = attrib()
     target_directory: str = attrib()

@@ -31,7 +31,7 @@ class Pypi2nix:
             return
 
         requirements_name = os.path.join(
-            self.configuration.target_directory, self.configuration.basename
+            self.configuration.target_directory, self.configuration.output_basename
         )
 
         sources = Sources()

@@ -177,7 +177,6 @@ def main(
 
     with tempfile.TemporaryDirectory() as project_directory:
         configuration = ApplicationConfiguration(
-            basename=basename,
             emit_extra_build_inputs=emit_extra_build_inputs,
             enable_tests=enable_tests,
             extra_build_inputs=args_as_list(extra_build_inputs),
