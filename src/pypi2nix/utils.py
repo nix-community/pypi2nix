@@ -1,4 +1,3 @@
-import hashlib
 import json
 import os
 import shlex
@@ -180,12 +179,3 @@ def download_file(url: str, filename: str, chunk_size: int = 2048) -> None:
     with open(filename, "wb") as fd:
         for chunk in r.iter_content(chunk_size):
             fd.write(chunk)
-
-
-def md5_sum_of_files_with_file_names(paths: List[str]) -> str:
-    hash_sum = hashlib.md5()
-    for path in paths:
-        hash_sum.update(path.encode())
-        with open(path, "rb") as f:
-            hash_sum.update(f.read())
-    return hash_sum.hexdigest()
