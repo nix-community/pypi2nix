@@ -1,6 +1,5 @@
 import os
 import os.path
-import tempfile
 from typing import List
 from typing import Optional
 
@@ -12,6 +11,9 @@ from pypi2nix.main import Pypi2nix
 from pypi2nix.overrides import OVERRIDES_URL
 from pypi2nix.overrides import Overrides
 from pypi2nix.overrides import OverridesGithub
+from pypi2nix.project_directory import PersistentProjectDirectory
+from pypi2nix.project_directory import ProjectDirectory
+from pypi2nix.project_directory import TemporaryProjectDirectory
 from pypi2nix.python_version import PythonVersion
 from pypi2nix.python_version import available_python_versions
 from pypi2nix.utils import args_as_list
@@ -127,6 +129,12 @@ from pypi2nix.version import pypi2nix_version
     type=str,
     help="An url where trusted wheels are located. eg. https://travis.garbas.si/wheels-cache",  # noqa
 )
+@click.option(
+    "--build-directory",
+    default=None,
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True),
+    help="Directory where pypi2nix stores all build artifacts, if not specified a temporary directory will be used",
+)
 def main(
     version: str,
     verbose: int,
@@ -145,6 +153,7 @@ def main(
     overrides: List[Overrides],
     default_overrides: bool,
     wheels_cache: List[str],
+    build_directory: Optional[str],
 ) -> None:
     if version:
         click.echo(pypi2nix_version)
@@ -175,7 +184,12 @@ def main(
             f"Python version `{python_version_argument}` not available"
         )
 
-    with tempfile.TemporaryDirectory() as project_directory:
+    project_directory_context: ProjectDirectory = (
+        TemporaryProjectDirectory()
+        if build_directory is None
+        else PersistentProjectDirectory(path=build_directory)
+    )
+    with project_directory_context as _project_directory:
         configuration = ApplicationConfiguration(
             emit_extra_build_inputs=emit_extra_build_inputs,
             enable_tests=enable_tests,
@@ -191,7 +205,7 @@ def main(
             setup_requirements=setup_requires,
             verbosity=verbosity,
             wheels_caches=wheels_cache,
-            project_directory=project_directory,
+            project_directory=_project_directory,
             target_directory=os.getcwd(),
         )
         Pypi2nix(configuration).run()
