@@ -39,6 +39,7 @@ in python.mkDerivation {
   buildInputs = fromRequirementsFile ./requirements-dev.txt python.packages;
   propagatedBuildInputs = fromRequirementsFile ./requirements.txt python.packages;
   doCheck = true;
+  dontUseSetuptoolsShellHook = true;
   checkPhase = ''
     echo "Running black ..."
     black --check --diff -v setup.py src/  unittests/ mypy/ ${maybeIntegrationTestsDir}
@@ -55,8 +56,9 @@ in python.mkDerivation {
     echo "Running pytest ..."
     PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v unittests/ -m 'not nix'
   '';
-  postShellHook = ''
+  shellHook = ''
     export PATH=$PWD/scripts:$PATH
+    export PYTHONPATH=$PWD/src:$PYTHONPATH
   '';
   meta = {
     homepage = https://github.com/nix-community/pypi2nix;

@@ -19,20 +19,6 @@ let
     inherit pkgs;
     inherit (pkgs) stdenv;
     python = pkgs.{{ python_version }};
-    # patching pip so it does not try to remove files when running nix-shell
-    overrides =
-      self: super: {
-        bootstrapped-pip = super.bootstrapped-pip.overrideDerivation (old: {
-          patchPhase = (if builtins.hasAttr "patchPhase" old then old.patchPhase else "") + ''
-            if [ -e $out/${pkgs.{{ python_version }}.sitePackages}/pip/req/req_install.py ]; then
-              sed -i \
-                -e "s|{{ paths_to_remove }}|#{{ paths_to_remove }}|"  \
-                -e "s|{{ self_uninstalled }}|#{{ self_uninstalled }}|"  \
-                $out/${pkgs.{{ python_version }}.sitePackages}/pip/req/req_install.py
-            fi
-          '';
-        });
-      };
   };
 
   commonBuildInputs = {{ extra_build_inputs }};
