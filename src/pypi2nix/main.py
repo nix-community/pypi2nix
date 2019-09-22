@@ -1,8 +1,6 @@
 import os
 import os.path
-import shutil
 import sys
-import tempfile
 
 from pypi2nix.configuration import ApplicationConfiguration
 from pypi2nix.logger import Logger
@@ -19,7 +17,6 @@ from pypi2nix.stage2 import Stage2
 from pypi2nix.stage3 import main
 from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.target_platform import TargetPlatform
-from pypi2nix.utils import md5_sum_of_files_with_file_names
 from pypi2nix.version import pypi2nix_version
 
 
@@ -33,9 +30,9 @@ class Pypi2nix:
             self.logger().info("No requirements were specified.  Ending program.")
             return
 
-        project_dir = self.set_up_project_directory()
-        current_dir = os.getcwd()
-        requirements_name = os.path.join(current_dir, self.configuration.basename)
+        requirements_name = os.path.join(
+            self.configuration.target_directory, self.configuration.output_basename
+        )
 
         sources = Sources()
         sources.update(self.requirements().sources())
@@ -45,7 +42,7 @@ class Pypi2nix:
 
         pip = NixPip(
             nix=self.nix(),
-            project_directory=project_dir,
+            project_directory=self.configuration.project_directory,
             extra_env=self.configuration.extra_environment,
             extra_build_inputs=self.configuration.extra_build_inputs,
             wheels_cache=self.configuration.wheels_caches,
@@ -54,7 +51,7 @@ class Pypi2nix:
         )
         wheel_builder = WheelBuilder(
             pip=pip,
-            project_directory=project_dir,
+            project_directory=self.configuration.project_directory,
             logger=self.logger(),
             requirement_parser=self.requirement_parser(),
             target_platform=self.target_platform(),
@@ -93,11 +90,13 @@ class Pypi2nix:
             ),
             enable_tests=self.configuration.enable_tests,
             python_version=self.configuration.python_version,
-            current_dir=current_dir,
+            target_directory=self.configuration.target_directory,
             logger=self.logger(),
             common_overrides=self.configuration.overrides,
         )
+        self.print_user_information()
 
+    def print_user_information(self) -> None:
         self.logger().info(
             "\n".join(
                 [
@@ -113,20 +112,6 @@ class Pypi2nix:
                 ]
             )
         )
-
-    def set_up_project_directory(self) -> str:
-        tmp_dir = os.path.join(tempfile.gettempdir(), "pypi2nix")
-        if not os.path.exists(tmp_dir):
-            os.makedirs(tmp_dir)
-        project_hash = md5_sum_of_files_with_file_names(
-            self.configuration.requirement_files
-        )
-        project_dir = os.path.join(tmp_dir, project_hash)
-
-        if os.path.exists(project_dir):
-            shutil.rmtree(project_dir)
-        os.makedirs(project_dir)
-        return project_dir
 
     @memoize
     def requirements(self) -> RequirementSet:

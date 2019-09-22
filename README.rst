@@ -238,6 +238,12 @@ Command line options
     wheels that are built through ``pypi2nix`` on your own or a very
     similar system.
 
+``--build-directory TEXT``
+    The directory where pypi2nix would build the python environment to
+    generate the desired nix expression.  If not specified, the build
+    directory will be temporary and is deleted before the program
+    exits.
+
 
 3. When it doesn't work
 -----------------------
