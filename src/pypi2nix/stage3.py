@@ -118,8 +118,6 @@ def main(
         enable_tests=str(enable_tests).lower(),
         generated_package_nix=generated,
         common_overrides="\n".join(common_overrides_expressions),
-        paths_to_remove="paths_to_remove.remove(auto_confirm)",
-        self_uninstalled="self.uninstalled = paths_to_remove",
         python_major_version=python_version.major_version(),
     )
 
