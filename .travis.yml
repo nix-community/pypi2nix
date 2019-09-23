@@ -11,8 +11,8 @@ install:
 - sudo mount -o remount,exec,size=4G,mode=755 /run/user || true
 - nix-env -iA nixpkgs.nix-prefetch-git nixpkgs.nix-prefetch-hg
 script:
+- set -e
 - nix build
 - result/bin/pypi2nix --help
-- nix-shell --command 'python -m unittest integrationtests/test_${TEST_FILE}.py'
 - nix-shell --command 'pytest unittests/ --cov=src/'
 - nix-shell --command 'pytest integrationtests/'
