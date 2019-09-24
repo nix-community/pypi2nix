@@ -28,7 +28,6 @@ script:
 - nix-shell --command 'python -m unittest integrationtests/test_${TEST_FILE}.py'
 stages:
 - unittests
-- tests
 jobs:
   include:
   - stage: unittests
