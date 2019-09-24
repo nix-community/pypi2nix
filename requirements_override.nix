@@ -1,44 +1,41 @@
 { pkgs, python }:
 
-self: super: {
+self: super:
+let
+  addBuildInputs = packages: old: {
+    buildInputs = old.buildInputs ++ packages;
+  };
+  addSingleBuildInput = package: addBuildInputs [package];
+  overridePythonPackage = name: overrides:
+    let
+      combinedOverrides = old: pkgs.lib.fold
+        (override: previous: previous // override previous)
+        old
+        overrides;
+    in python.overrideDerivation super."${name}" combinedOverrides;
+in {
+  "fancycompleter" = overridePythonPackage "fancycompleter"
+    [
+      (addBuildInputs [self."setuptools-scm"])
+    ];
 
-  "fancycompleter" = python.overrideDerivation super."fancycompleter" (old: {
-    buildInputs = old.buildInputs ++ [ self."setuptools-scm" ];
-  });
+  "flake8-debugger" = overridePythonPackage "flake8-debugger"
+    [
+      (addBuildInputs [self."pytest-runner"])
+    ];
 
-  "flake8-debugger" = python.overrideDerivation super."flake8-debugger" (old: {
-    buildInputs = old.buildInputs ++ [ self."pytest-runner" ];
-  });
+  "mccabe" = overridePythonPackage "mccabe"
+    [
+      (addBuildInputs [self."pytest-runner"])
+    ];
 
-  "importlib-metadata" = python.overrideDerivation super."importlib-metadata" (old: {
-    buildInputs = old.buildInputs ++ [ self."setuptools-scm" ];
-  });
-  "mccabe" = python.overrideDerivation super."mccabe" (old: {
-    buildInputs = old.buildInputs ++ [ self."pytest-runner" ];
-  });
+  "pdbpp" = overridePythonPackage "pdbpp"
+    [
+      (addBuildInputs [self."setuptools-scm"])
+    ];
 
-  "pdbpp" = python.overrideDerivation super."pdbpp" (old: {
-    buildInputs = old.buildInputs ++ [ self."setuptools-scm" ];
-  });
-
-  "pluggy" = python.overrideDerivation super."pluggy" (old: {
-    buildInputs = old.buildInputs ++ [ self."setuptools-scm" ];
-  });
-
-  "py" = python.overrideDerivation super."py" (old: {
-    buildInputs = old.buildInputs ++ [ self."setuptools-scm" ];
-  });
-
-  "pytest" = python.overrideDerivation super."pytest" (old: {
-    buildInputs = old.buildInputs ++ [ self."setuptools-scm" ];
-  });
-
-  "pytest-runner" = python.overrideDerivation super."pytest-runner" (old: {
-    buildInputs = old.buildInputs ++ [ self."setuptools-scm" ];
-  });
-
-  "zipp" = python.overrideDerivation super."zipp" (old: {
-    buildInputs = old.buildInputs ++ [ self."setuptools-scm" ];
-  });
-
+  "py" = overridePythonPackage "py"
+    [
+      (addBuildInputs [self."setuptools-scm"])
+    ];
 }
