@@ -8,6 +8,7 @@ from pypi2nix.logger import StreamLogger
 from pypi2nix.memoize import memoize
 from pypi2nix.nix import Nix
 from pypi2nix.pip.implementation import NixPip
+from pypi2nix.pypi import Pypi
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements_collector import RequirementsCollector
@@ -69,6 +70,7 @@ class Pypi2nix:
             sources=sources,
             logger=self.logger(),
             requirement_parser=self.requirement_parser(),
+            pypi=Pypi(logger=self.logger()),
         )
 
         packages_metadata = stage2.main(

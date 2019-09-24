@@ -11,6 +11,7 @@ from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import Nix
 from pypi2nix.package_source import PathSource
 from pypi2nix.pip.virtualenv import VirtualenvPip
+from pypi2nix.pypi import Pypi
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.sources import Sources
@@ -202,3 +203,8 @@ def sources_for_test_packages(data_directory):
             PathSource(os.path.join(data_directory, f"{package_name}-1.0.tar.gz")),
         )
     return sources
+
+
+@pytest.fixture
+def pypi(logger: Logger) -> Pypi:
+    return Pypi(logger=logger)
