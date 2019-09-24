@@ -2,22 +2,40 @@
 
 self: super:
 let
-  addBuildInput = package: old: {
-    buildInputs = old.buildInputs ++ [ package ];
+  addBuildInputs = packages: old: {
+    buildInputs = old.buildInputs ++ packages;
   };
+  addSingleBuildInput = package: addBuildInputs [package];
+  overridePythonPackage = name: overrides:
+    let
+      combinedOverrides = old: pkgs.lib.fold
+        (override: previous: previous // override previous)
+        old
+        overrides;
+    in python.overrideDerivation super."${name}" combinedOverrides;
 in {
-  "fancycompleter" = python.overrideDerivation super."fancycompleter"
-    (addBuildInput self."setuptools-scm");
+  "fancycompleter" = overridePythonPackage "fancycompleter"
+    [
+      (addBuildInputs [self."setuptools-scm"])
+    ];
 
-  "flake8-debugger" = python.overrideDerivation super."flake8-debugger"
-    (addBuildInput self."pytest-runner");
+  "flake8-debugger" = overridePythonPackage "flake8-debugger"
+    [
+      (addBuildInputs [self."pytest-runner"])
+    ];
 
-  "mccabe" = python.overrideDerivation super."mccabe"
-    (addBuildInput self."pytest-runner");
+  "mccabe" = overridePythonPackage "mccabe"
+    [
+      (addBuildInputs [self."pytest-runner"])
+    ];
 
-  "pdbpp" = python.overrideDerivation super."pdbpp"
-    (addBuildInput self."setuptools-scm");
+  "pdbpp" = overridePythonPackage "pdbpp"
+    [
+      (addBuildInputs [self."setuptools-scm"])
+    ];
 
-  "py" = python.overrideDerivation super."py"
-    (addBuildInput self."setuptools-scm");
+  "py" = overridePythonPackage "py"
+    [
+      (addBuildInputs [self."setuptools-scm"])
+    ];
 }
