@@ -3,16 +3,56 @@ sudo: required
 os:
 - linux
 env:
-  matrix:
-    - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.03.tar.gz
-    - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.09.tar.gz
+  global:
     - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz
+  matrix:
+    - TEST_FILE=aiohttp
+    - TEST_FILE=awscli_and_requests
+    - TEST_FILE=connexion
+    - TEST_FILE=empy
+    - TEST_FILE=flake8
+    - TEST_FILE=flake8_include_default_overrides
+    - TEST_FILE=flake8_mercurial
+    - TEST_FILE=flit
+    - TEST_FILE=ldap
+    - TEST_FILE=lektor
+    - TEST_FILE=pillow
+    - TEST_FILE=rss2email
+    - TEST_FILE=scipy
+    - TEST_FILE=serpy_0_1_1
+    - TEST_FILE=tornado
 install:
 - sudo mount -o remount,exec,size=4G,mode=755 /run/user || true
 - nix-env -iA nixpkgs.nix-prefetch-git nixpkgs.nix-prefetch-hg
 script:
-- set -e
-- nix build
-- result/bin/pypi2nix --help
-- nix-shell --command 'pytest unittests/ --cov=src/'
-- nix-shell --command 'pytest integrationtests/'
+- nix-shell --command 'python -m unittest integrationtests/test_${TEST_FILE}.py'
+stages:
+- unittests
+- tests
+jobs:
+  include:
+  - stage: unittests
+  - name: nixos-19.03
+    os: linux
+    env:
+      - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.03.tar.gz
+    script:
+      - nix build
+      - result/bin/pypi2nix --version
+      - nix-shell --command 'pytest unittests/ --cov=src/'
+  - name: nixos-19.09
+    os: linux
+    env:
+      - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.03.tar.gz
+    script:
+      - nix build
+      - result/bin/pypi2nix --version
+      - nix-shell --command 'pytest unittests/ --cov=src/'
+  - name: nixos-unstable
+    os: linux
+    env:
+      - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz
+    script:
+      - nix build
+      - result/bin/pypi2nix --version
+      - nix-shell --command 'pytest unittests/ --cov=src/'
