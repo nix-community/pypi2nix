@@ -435,10 +435,10 @@ let
     };
 
     "importlib-metadata" = python.mkDerivation {
-      name = "importlib-metadata-0.22";
+      name = "importlib-metadata-0.23";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/e5/9d/e9cffef4769606ec16ff83845655fa19d597d6d91ef49613eda9334135d7/importlib_metadata-0.22.tar.gz";
-        sha256 = "652234b6ab8f2506ae58e528b6fbcc668831d3cc758e1bc01ef438d328b68cdb";
+        url = "https://files.pythonhosted.org/packages/5d/44/636bcd15697791943e2dedda0dbe098d8530a38d113b202817133e0b06c0/importlib_metadata-0.23.tar.gz";
+        sha256 = "aa18d7378b00b40847790e7c27e11673d7fed219354109d0e7b9e5b25dc3ad26";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -649,15 +649,14 @@ let
     };
 
     "packaging" = python.mkDerivation {
-      name = "packaging-19.1";
+      name = "packaging-19.2";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/8b/3a/5bfe64c319be5775ed7ea3bc1a8e5667e0d57a740cc0498ce03e032eaf93/packaging-19.1.tar.gz";
-        sha256 = "c491ca87294da7cc01902edbe30a5bc6c4c28172b5138ab4e4aa1b9d7bfaeafe";
+        url = "https://files.pythonhosted.org/packages/5a/2f/449ded84226d0e2fda8da9252e5ee7731bdf14cd338f622dfcd9934e0377/packaging-19.2.tar.gz";
+        sha256 = "28b924174df7a2fa32c1953825ff29c61e2f5e082343165438812f00d3a7fc47";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [
-        self."attrs"
         self."pyparsing"
         self."six"
       ];
@@ -821,10 +820,10 @@ let
     };
 
     "pytest" = python.mkDerivation {
-      name = "pytest-5.1.2";
+      name = "pytest-5.1.3";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/c3/66/228ce6dca2b4d2cd5f9c1244aca14e0b13c31e4dbdf39294e782a1c78f12/pytest-5.1.2.tar.gz";
-        sha256 = "b78fe2881323bd44fd9bd76e5317173d4316577e7b1cddebae9136a4495ec865";
+        url = "https://files.pythonhosted.org/packages/cd/a9/522f0830079931fee274ce63d8d31df59fc1c1d5896a5f07678c7ad6dc25/pytest-5.1.3.tar.gz";
+        sha256 = "cc6620b96bc667a0c8d4fa592a8c9c94178a1bd6cc799dbb057dfd9286d31a31";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -1039,10 +1038,10 @@ let
     };
 
     "urllib3" = python.mkDerivation {
-      name = "urllib3-1.25.3";
+      name = "urllib3-1.25.6";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/4c/13/2386233f7ee40aa8444b47f7463338f3cbdf00c316627558784e3f542f07/urllib3-1.25.3.tar.gz";
-        sha256 = "dbe59173209418ae49d485b87d1681aefa36252ee85884c31346debd19463232";
+        url = "https://files.pythonhosted.org/packages/ff/44/29655168da441dff66de03952880c6e2d17b252836ff1aa4421fba556424/urllib3-1.25.6.tar.gz";
+        sha256 = "9a107b99a5393caf59c7aa3c1249c16e6879447533d0887f4336dde834c7be86";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];

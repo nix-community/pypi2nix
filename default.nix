@@ -37,7 +37,8 @@ in python.mkDerivation {
   src = nix-gitignore.gitignoreSource additionalIgnores ./.;
   outputs = [ "out" ];
   buildInputs = fromRequirementsFile ./requirements-dev.txt python.packages;
-  propagatedBuildInputs = fromRequirementsFile ./requirements.txt python.packages;
+  propagatedBuildInputs =
+    (fromRequirementsFile ./requirements.txt python.packages) ++ [pkgs.python3Packages.setuptools];
   doCheck = true;
   dontUseSetuptoolsShellHook = true;
   checkPhase = ''
