@@ -3,6 +3,7 @@ from typing import List
 import pytest
 
 from pypi2nix.logger import Logger
+from pypi2nix.pypi import Pypi
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.sources import Sources
@@ -21,13 +22,14 @@ def build_wheels(
     requirement_parser: RequirementParser,
     logger: Logger,
     sources_for_test_packages: Sources,
+    pypi: Pypi,
 ):
     def wrapper(requirement_lines: List[str]) -> List[Wheel]:
         requirements = RequirementSet(current_platform)
         for line in requirement_lines:
             requirements.add(requirement_parser.parse(line))
         wheel_paths = wheel_builder.build(requirements)
-        stage2 = Stage2(sources_for_test_packages, logger, requirement_parser)
+        stage2 = Stage2(sources_for_test_packages, logger, requirement_parser, pypi)
         return stage2.main(
             wheel_paths, current_platform, wheel_builder.additional_build_dependencies
         )

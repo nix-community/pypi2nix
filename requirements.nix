@@ -193,25 +193,6 @@ let
       };
     };
 
-    "codecov" = python.mkDerivation {
-      name = "codecov-2.0.15";
-      src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/77/f2/9790ee0f04eb0571841aff5ba1709c7869e82aa2145a04a3d4770807ff50/codecov-2.0.15.tar.gz";
-        sha256 = "8ed8b7c6791010d359baed66f84f061bba5bd41174bf324c31311e8737602788";
-};
-      doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [
-        self."coverage"
-        self."requests"
-      ];
-      meta = with pkgs.stdenv.lib; {
-        homepage = "http://github.com/codecov/codecov-python";
-        license = licenses.asl20;
-        description = "Hosted coverage reports for Github, Bitbucket and Gitlab";
-      };
-    };
-
     "coverage" = python.mkDerivation {
       name = "coverage-4.5.4";
       src = pkgs.fetchurl {
@@ -334,44 +315,6 @@ let
         homepage = "https://github.com/jbkahn/flake8-debugger";
         license = licenses.mit;
         description = "ipdb/pdb statement checker plugin for flake8";
-      };
-    };
-
-    "flake8-isort" = python.mkDerivation {
-      name = "flake8-isort-2.7.0";
-      src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/20/94/7f17d507ab8973922b98ef0c9ac32de88ac592c7a8367e528fe205e72f50/flake8-isort-2.7.0.tar.gz";
-        sha256 = "81a8495eefed3f2f63f26cd2d766c7b1191e923a15b9106e6233724056572c68";
-};
-      doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [
-        self."flake8"
-        self."isort"
-        self."testfixtures"
-      ];
-      meta = with pkgs.stdenv.lib; {
-        homepage = "https://github.com/gforcada/flake8-isort";
-        license = licenses.gpl2;
-        description = "flake8 plugin that integrates isort .";
-      };
-    };
-
-    "flake8-quotes" = python.mkDerivation {
-      name = "flake8-quotes-2.1.0";
-      src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/18/f9/3323327526354c90fa0e6ff0f043133ae13dd2b89c5b638189cfd5fc9027/flake8-quotes-2.1.0.tar.gz";
-        sha256 = "5dbaf668887873f28346fb87943d6da2e4b9f77ce9f2169cff21764a0a4934ed";
-};
-      doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [
-        self."flake8"
-      ];
-      meta = with pkgs.stdenv.lib; {
-        homepage = "http://github.com/zheller/flake8-quotes/";
-        license = licenses.mit;
-        description = "Flake8 lint for quotes.";
       };
     };
 
@@ -970,22 +913,6 @@ let
         homepage = "https://github.com/benjaminp/six";
         license = licenses.mit;
         description = "Python 2 and 3 compatibility utilities";
-      };
-    };
-
-    "testfixtures" = python.mkDerivation {
-      name = "testfixtures-6.10.0";
-      src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/71/e4/f00e137627758e7e47bf170783cc74dc97fc141fb94fbff38f1484eef837/testfixtures-6.10.0.tar.gz";
-        sha256 = "9d230c5c80746f9f86a16a1f751a5cf5d8e317d4cc48243a19fb180d22303bce";
-};
-      doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
-        homepage = "https://github.com/Simplistix/testfixtures";
-        license = licenses.mit;
-        description = "A collection of helpers and mock objects for unit tests and doc tests.";
       };
     };
 

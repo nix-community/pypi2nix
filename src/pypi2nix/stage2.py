@@ -10,11 +10,13 @@ from typing import Any
 from typing import Dict
 from typing import Iterable
 from typing import List
+from urllib.request import urlopen
 
 import click
-import requests
 
 from pypi2nix.logger import Logger
+from pypi2nix.package_source import UrlSource
+from pypi2nix.pypi import Pypi
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
@@ -25,10 +27,6 @@ from pypi2nix.utils import cmd
 from pypi2nix.utils import prefetch_git
 from pypi2nix.utils import safe
 from pypi2nix.wheel import Wheel
-from pypi2nix.wheel import find_release
-
-INDEX_URL = "https://pypi.io/pypi"
-INDEX_URL = "https://pypi.python.org/pypi"
 
 
 class Stage2:
@@ -37,12 +35,12 @@ class Stage2:
         sources: Sources,
         logger: Logger,
         requirement_parser: RequirementParser,
-        index: str = INDEX_URL,
+        pypi: Pypi,
     ) -> None:
         self.sources = sources
-        self.index = index
         self.logger = logger
         self.requirement_parser = requirement_parser
+        self.pypi = pypi
 
     def main(
         self,
@@ -98,16 +96,22 @@ class Stage2:
             self.process_wheel(wheel_metadata)
         return wheels
 
-    def process_wheel(self, wheel: Wheel, chunk_size: int = 2048) -> None:
+    def process_wheel(self, wheel: Wheel) -> None:
         if wheel.name not in self.sources:
-            url = "{}/{}/json".format(self.index, wheel.name)
-            r = requests.get(url, timeout=None)
-            r.raise_for_status()  # TODO: handle this nicer
-            wheel_data = r.json()
-
-            if not wheel_data.get("releases"):
-                raise click.ClickException(
-                    "Unable to find releases for packge {name}".format(name=wheel.name)
+            release = self.pypi.get_source_release(wheel.name, wheel.version)
+            if release:
+                source = UrlSource(
+                    url=release.url,
+                    logger=self.logger,
+                    hash_value=release.sha256_digest,
                 )
+                self.sources.add(wheel.name, source)
+            else:
+                self.logger.error(
+                    f"Failed to query pypi for release name=`{wheel.name}`, version=`{wheel.version}`"
+                )
+                raise MetadataFetchingFailed()
 
-            self.sources.add(wheel.name, find_release(wheel, wheel_data, self.logger))
+
+class MetadataFetchingFailed(Exception):
+    pass
