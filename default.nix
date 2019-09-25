@@ -1,5 +1,7 @@
-{ pkgs ? import <nixpkgs> {}
-, excludeIntegrationTests ? false
+{
+  pkgs ? import <nixpkgs> {},
+  excludeIntegrationTests ? false,
+  doCheck ? false,
 }:
 
 let
@@ -36,12 +38,12 @@ in python.mkDerivation {
   name = "pypi2nix-${version}";
   src = nix-gitignore.gitignoreSource additionalIgnores ./.;
   outputs = [ "out" ];
-  buildInputs = fromRequirementsFile ./requirements-dev.txt python.packages;
+  checkInputs = if doCheck then fromRequirementsFile ./requirements-dev.txt python.packages else [];
+  buildInputs = [];
   propagatedBuildInputs =
     (fromRequirementsFile ./requirements.txt python.packages) ++ [pkgs.python3Packages.setuptools];
-  doCheck = true;
   dontUseSetuptoolsShellHook = true;
-  checkPhase = ''
+  checkPhase = if doCheck then ''
     echo "Running black ..."
     black --check --diff -v setup.py src/  unittests/ mypy/ ${maybeIntegrationTestsDir}
     echo "Running flake8 ..."
@@ -56,7 +58,7 @@ in python.mkDerivation {
         --ignore-missing-imports
     echo "Running pytest ..."
     PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v unittests/ -m 'not nix'
-  '';
+  '' else "true";
   shellHook = ''
     export PATH=$PWD/scripts:$PATH
     export PYTHONPATH=$PWD/src:$PYTHONPATH
@@ -65,5 +67,6 @@ in python.mkDerivation {
     homepage = https://github.com/nix-community/pypi2nix;
     description = "A tool that generates nix expressions for your python packages, so you don't have to.";
     maintainers = with pkgs.lib.maintainers; [ seppeljordan garbas ];
+    inherit doCheck;
   };
 }

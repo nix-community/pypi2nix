@@ -2,13 +2,11 @@
 black
 flake8
 flake8-debugger
-flake8-isort
-flake8-quotes
 flake8-unused-arguments
 mypy
+isort
 
 # testing
-codecov
 pytest
 pytest-cov
 attrs
