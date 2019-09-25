@@ -439,12 +439,12 @@ shell.nix::
 5. Help developing pypi2nix
 ---------------------------
 
-Clone `pypi2nix repository`_ and using ``nix run`` command enter development
+Clone `pypi2nix repository`_ and using ``nix-shell`` command enter development
 environment.::
 
     % git clone https://github.com/nix-community/pypi2nix
     % cd pypi2nix
-    % nix run -f .
+    % nix-shell
 
 Code is located in ``src/pypi2nix``.
 
