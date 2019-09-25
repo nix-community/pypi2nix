@@ -9,7 +9,6 @@ from typing import Tuple
 from typing import Union
 
 import click
-import requests
 from nix_prefetch_github import nix_prefetch_github
 
 from pypi2nix.logger import Logger
@@ -170,12 +169,3 @@ def prefetch_url(url: str, logger: Logger) -> str:
         ["nix-prefetch-url", url], logger, stderr=subprocess.DEVNULL
     )
     return output.rstrip()
-
-
-def download_file(url: str, filename: str, chunk_size: int = 2048) -> None:
-    r = requests.get(url, stream=True, timeout=None)
-    r.raise_for_status()  # TODO: handle this nicer
-
-    with open(filename, "wb") as fd:
-        for chunk in r.iter_content(chunk_size):
-            fd.write(chunk)

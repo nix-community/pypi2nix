@@ -16,6 +16,7 @@ from pypi2nix.logger import Logger
 from pypi2nix.pypi_package import PypiPackage
 from pypi2nix.pypi_release import PypiRelease
 from pypi2nix.pypi_release import ReleaseType
+from pypi2nix.pypi_release import get_release_type_by_packagetype
 
 
 @attrs(frozen=True)
@@ -26,15 +27,14 @@ class Pypi:
     @lru_cache(maxsize=None)
     def get_package(self, name: str) -> PypiPackage:
         def get_release_type(package_type: str) -> ReleaseType:
-            if package_type == "sdist":
-                return ReleaseType.SOURCE
-            elif package_type == "bdist_wheel":
-                return ReleaseType.WHEEL
-            else:
+            release_type = get_release_type_by_packagetype(package_type)
+            if release_type is None:
                 self._logger.warning(
                     f"Found unexpected `packagetype` entry for package `{name}`"
                 )
                 return ReleaseType.UNKNOWN
+            else:
+                return release_type
 
         url = f"{self._index}/{name}/json"
         try:
@@ -50,6 +50,7 @@ class Pypi:
                 sha256_digest=data["digests"]["sha256"],
                 version=version,
                 type=get_release_type(data["packagetype"]),
+                filename=data["filename"],
             )
             for version, release_list in metadata["releases"].items()
             for data in release_list
@@ -58,18 +59,18 @@ class Pypi:
         return PypiPackage(name=metadata["info"]["name"], releases=releases)
 
     def get_source_release(self, name: str, version: str) -> Optional[PypiRelease]:
-        def version_tag_from_release_url(url: str) -> Union[Version, LegacyVersion]:
+        def version_tag_from_filename(filename: str) -> Union[Version, LegacyVersion]:
             extension = "|".join(
                 map(re.escape, [".tar.gz", ".tar.bz2", ".tar", ".zip", ".tgz"])
             )
-            regular_expression = r".*{name}-(?P<version>.*)(?P<extension>{extension})$".format(
+            regular_expression = r".*-(?P<version>.*)(?P<extension>{extension})$".format(
                 name=re.escape(name), extension=extension
             )
-            result = re.match(regular_expression, url)
+            result = re.match(regular_expression, filename)
             if result:
                 return parse_version(result.group("version"))
             else:
-                message = f"Could not guess version of package from url `{url}`"
+                message = f"Could not guess version of package from url `{filename}`"
                 self._logger.error(message)
                 raise PypiFailed(message)
 
@@ -78,7 +79,7 @@ class Pypi:
             lambda release: release.type == ReleaseType.SOURCE, package.releases
         )
         releases_for_version = filter(
-            lambda release: version_tag_from_release_url(release.url)
+            lambda release: version_tag_from_filename(release.filename)
             == parse_version(version),
             source_releases,
         )

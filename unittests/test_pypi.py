@@ -48,3 +48,12 @@ def test_pypi_gets_correct_source_release_for_radiotherm_1_2(pypi):
         release.sha256_digest
         == "e8a70e0cf38f21170a3a43d5de62954aa38032dfff20adcdf79dd6c39734b8cc"
     )
+
+
+@nix
+def test_pypi_gets_correct_source_release_for_setuptools_1_6_0(pypi):
+    release = pypi.get_source_release("setuptools-scm", "1.6.0")
+    assert (
+        release.sha256_digest
+        == "c4f1b14e4fcc7dd69287a6c0b571c889dd4970559c7fa0512b2311f1513d86f4"
+    )
