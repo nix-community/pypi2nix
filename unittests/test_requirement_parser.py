@@ -1,6 +1,11 @@
 import pytest
 from parsley import ParseError
 
+from pypi2nix.logger import Logger
+from pypi2nix.requirement_parser import RequirementParser
+
+from .logger import get_logger_output
+
 
 def test_parses_pip_style_url(requirement_parser):
     requirement_parser.compiled_grammar()(
@@ -39,3 +44,20 @@ def test_that_we_can_parse_pip_style_requirement_with_file_path(requirement_pars
     ).path_req_pip_style()
     assert requirement.name() == "testegg"
     assert requirement.path() == "path/to/egg"
+
+
+@pytest.mark.parametrize(
+    "line",
+    (
+        "cffi>=1.8,!=1.11.3; python_implementation != 'PyPy'",
+        "cffi>=1.1; python_implementation != 'PyPy'",
+        "cffi>=1.4.1; python_implementation != 'PyPy'",
+    ),
+)
+def test_regressions_with_cryptography(
+    requirement_parser: RequirementParser, line: str, logger: Logger
+) -> None:
+    requirement = requirement_parser.parse(line)
+    assert requirement.name() == "cffi"
+    assert "WARNING" in get_logger_output(logger)
+    assert "PEP 508" in get_logger_output(logger)

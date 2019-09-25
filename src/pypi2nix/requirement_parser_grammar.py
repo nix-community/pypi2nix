@@ -39,7 +39,8 @@ class _RequirementParserGrammar:
                         'platform_system' | 'platform_version' |
                         'platform_machine' | 'platform_python_implementation' |
                         'implementation_name' | 'implementation_version' |
-                        'extra'
+                        'extra' | <bad_env_vars>
+        bad_env_vars  = 'python_implementation':v -> logger().warning("Environment variable does not comply with PEP 508: " + v)
         marker_var    = wsp* (env_var | python_str)
         marker_expr   = marker_var marker_op marker_var | wsp* '(' marker wsp* ')'
         marker_op     = version_cmp | (wsp* 'in') | (wsp* 'not' wsp+ 'in')

@@ -10,6 +10,7 @@ from pypi2nix.logger import Logger
 from pypi2nix.overrides import Overrides
 from pypi2nix.python_version import PythonVersion
 from pypi2nix.sources import Sources
+from pypi2nix.version import pypi2nix_version
 from pypi2nix.wheel import Wheel
 
 HERE = os.path.dirname(__file__)
@@ -30,18 +31,9 @@ def main(
     """Create Nix expressions.
     """
 
-    default_file = os.path.join(target_directory, "{}.nix".format(requirements_name))
-    overrides_file = os.path.join(
-        target_directory, "{}_override.nix".format(requirements_name)
-    )
-    frozen_file = os.path.join(
-        target_directory, "{}_frozen.txt".format(requirements_name)
-    )
-
-    version_file = os.path.join(os.path.dirname(__file__), "VERSION")
-    with open(version_file) as f:
-        version = f.read()
-    version = version.strip()
+    default_file = os.path.join(target_directory, f"{requirements_name}.nix")
+    overrides_file = os.path.join(target_directory, f"{requirements_name}_override.nix")
+    frozen_file = os.path.join(target_directory, f"{requirements_name}_frozen.txt")
 
     metadata_by_name: Dict[str, Wheel] = {x.name: x for x in packages_metadata}
 
@@ -108,7 +100,7 @@ def main(
     default_template = templates.get_template("requirements.nix.j2")
     overrides_file_nix_path = os.path.join(".", os.path.split(overrides_file)[1])
     default = default_template.render(
-        version=version,
+        version=pypi2nix_version,
         command_arguments=" ".join(map(shlex.quote, sys.argv[1:])),
         python_version=python_version.derivation_name(),
         extra_build_inputs=(
