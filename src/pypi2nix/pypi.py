@@ -63,7 +63,7 @@ class Pypi:
             extension = "|".join(
                 map(re.escape, [".tar.gz", ".tar.bz2", ".tar", ".zip", ".tgz"])
             )
-            regular_expression = r".*-(?P<version>.*)(?P<extension>{extension})$".format(
+            regular_expression = r"{name}-(?P<version>.*)(?P<extension>{extension})$".format(
                 name=re.escape(name), extension=extension
             )
             result = re.match(regular_expression, filename)
@@ -75,18 +75,29 @@ class Pypi:
                 raise PypiFailed(message)
 
         package = self.get_package(name)
-        source_releases = filter(
-            lambda release: release.type == ReleaseType.SOURCE, package.releases
+        source_releases = [
+            release
+            for release in package.releases
+            if release.type == ReleaseType.SOURCE
+        ]
+        releases_for_version = (
+            release
+            for release in source_releases
+            if parse_version(release.version) == parse_version(version)
         )
-        releases_for_version = filter(
-            lambda release: version_tag_from_filename(release.filename)
-            == parse_version(version),
-            source_releases,
-        )
+
         for release in releases_for_version:
             return release
         else:
-            return None
+            releases_for_version_by_filename = (
+                release
+                for release in source_releases
+                if version_tag_from_filename(release.filename) == parse_version(version)
+            )
+            for release in releases_for_version_by_filename:
+                return release
+            else:
+                return None
 
 
 class PypiFailed(Exception):
