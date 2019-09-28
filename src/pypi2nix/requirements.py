@@ -5,6 +5,7 @@ from typing import List
 from typing import Optional
 from typing import Set
 from typing import Tuple
+from urllib.parse import urlparse
 
 from attr import attrib
 from attr import attrs
@@ -134,12 +135,10 @@ class UrlRequirement(Requirement):
             return self._handle_git_source(self._url)
         elif self._url.startswith("hg+"):
             return self._handle_hg_source(self._url[3:])
-        elif self._url.startswith("http://"):
-            return UrlSource(url=self._url, logger=self._logger)
-        elif self._url.startswith("https://"):
-            return UrlSource(url=self._url, logger=self._logger)
+        elif self.url_scheme() == "file":
+            return PathSource(path=self.url_path())
         else:
-            return PathSource(path=self._url)
+            return UrlSource(url=self._url, logger=self._logger)
 
     def environment_markers(self) -> Optional[EnvironmentMarker]:
         return self._environment_markers
@@ -168,6 +167,14 @@ class UrlRequirement(Requirement):
 
     def url(self) -> str:
         return self._url
+
+    def url_scheme(self) -> str:
+        url = urlparse(self.url())
+        return url.scheme
+
+    def url_path(self) -> str:
+        url = urlparse(self.url())
+        return url.path
 
 
 @attrs
@@ -229,7 +236,7 @@ class PathRequirement(Requirement):
 
     def to_line(self) -> str:
         extras = "[" + ",".join(self.extras()) + "]" if self.extras() else ""
-        return "{path}#egg={name}{extras}".format(
+        return "file://{path}#egg={name}{extras}".format(
             path=self._path, extras=extras, name=self.name()
         )
 

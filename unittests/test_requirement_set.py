@@ -34,9 +34,13 @@ def test_length_is_one_after_adding_same_requirement_twice(
     assert len(requirement_set) == 1
 
 
-def test_to_file_outputs_a_requirements_file_object(project_dir, current_platform):
+def test_to_file_outputs_a_requirements_file_object(
+    project_dir, current_platform, requirement_parser
+):
     assert isinstance(
-        RequirementSet(current_platform).to_file(project_dir, current_platform),
+        RequirementSet(current_platform).to_file(
+            project_dir, current_platform, requirement_parser
+        ),
         RequirementsFile,
     )
 
@@ -66,7 +70,9 @@ def test_versions_add_if_same_requirement_is_added_twice(
 def test_from_file_handles_empty_lines(
     project_dir, current_platform, requirement_parser
 ):
-    requirements_file = RequirementsFile.from_lines(["pypi2nix", ""], project_dir)
+    requirements_file = RequirementsFile.from_lines(
+        ["pypi2nix", ""], project_dir, requirement_parser
+    )
     requirements_set = RequirementSet.from_file(
         requirements_file, current_platform, requirement_parser
     )
@@ -77,7 +83,7 @@ def test_from_file_handles_comment_lines(
     project_dir, current_platform, requirement_parser
 ):
     requirements_file = RequirementsFile.from_lines(
-        ["pypi2nix", "# comment"], project_dir
+        ["pypi2nix", "# comment"], project_dir, requirement_parser
     )
     requirements_set = RequirementSet.from_file(
         requirements_file, current_platform, requirement_parser
@@ -128,14 +134,18 @@ def test_requirement_set_respects_constraints_when_reading_from_requirement_file
     with open(constraints_txt, "w") as f:
         print("test-requirement <= 1.0", file=f)
 
-    original_requirements_file = RequirementsFile(str(requirements_txt), project_dir)
+    original_requirements_file = RequirementsFile(
+        str(requirements_txt), project_dir, requirement_parser
+    )
     original_requirements_file.process()
 
     requirement_set = RequirementSet.from_file(
         original_requirements_file, current_platform, requirement_parser
     )
 
-    new_requirements_file = requirement_set.to_file(project_dir, current_platform)
+    new_requirements_file = requirement_set.to_file(
+        project_dir, current_platform, requirement_parser
+    )
 
     assert "test-requirement <= 1.0" in new_requirements_file.read()
 
@@ -152,14 +162,18 @@ def test_constraints_without_requirement_will_not_show_up_in_generated_requireme
     with open(constraints_txt, "w") as f:
         print("test-constraint == 1.0", file=f)
 
-    original_requirements_file = RequirementsFile(str(requirements_txt), project_dir)
+    original_requirements_file = RequirementsFile(
+        str(requirements_txt), project_dir, requirement_parser
+    )
     original_requirements_file.process()
 
     requirement_set = RequirementSet.from_file(
         original_requirements_file, current_platform, requirement_parser
     )
 
-    new_requirements_file = requirement_set.to_file(project_dir, current_platform)
+    new_requirements_file = requirement_set.to_file(
+        project_dir, current_platform, requirement_parser
+    )
 
     assert "test-constraint" not in new_requirements_file.read()
 
@@ -174,7 +188,9 @@ def test_include_lines_are_respected_when_generating_from_file(
         print("-r " + str(included_requirements_txt), file=f)
     with open(included_requirements_txt, "w") as f:
         print("test-requirement", file=f)
-    requirements_file = RequirementsFile(str(requirements_txt), project_dir)
+    requirements_file = RequirementsFile(
+        str(requirements_txt), project_dir, requirement_parser
+    )
     requirements_file.process()
     requirement_set = RequirementSet.from_file(
         requirements_file, current_platform, requirement_parser
@@ -228,7 +244,9 @@ def test_that_extras_are_preserved_when_converting_to_and_from_a_file(
     project_dir: str,
 ):
     requirement_set.add(requirement_parser.parse("req[extra1]"))
-    requirements_file = requirement_set.to_file(project_dir, current_platform)
+    requirements_file = requirement_set.to_file(
+        project_dir, current_platform, requirement_parser
+    )
     new_requirements_set = RequirementSet.from_file(
         requirements_file, current_platform, requirement_parser
     )

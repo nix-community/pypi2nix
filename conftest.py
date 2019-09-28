@@ -117,6 +117,7 @@ def pip(
     project_dir: str,
     wheel_distribution_archive_path: str,
     data_directory: str,
+    requirement_parser: RequirementParser,
 ) -> VirtualenvPip:
     pip = VirtualenvPip(
         logger=logger,
@@ -126,6 +127,7 @@ def pip(
         no_index=True,
         wheel_distribution_path=wheel_distribution_archive_path,
         find_links=[data_directory],
+        requirement_parser=requirement_parser,
     )
     pip.prepare_virtualenv()
     return pip

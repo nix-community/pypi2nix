@@ -21,6 +21,7 @@ env:
     - TEST_FILE=scipy
     - TEST_FILE=serpy_0_1_1
     - TEST_FILE=tornado
+    - TEST_FILE=local_path
 install:
 - sudo mount -o remount,exec,size=4G,mode=755 /run/user || true
 - nix-env -iA nixpkgs.nix-prefetch-git nixpkgs.nix-prefetch-hg

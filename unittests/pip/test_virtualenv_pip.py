@@ -17,6 +17,7 @@ def pip_without_index(
     current_platform: TargetPlatform,
     project_dir: str,
     wheel_distribution_archive_path: str,
+    requirement_parser: RequirementParser,
 ) -> VirtualenvPip:
     pip = VirtualenvPip(
         logger=logger,
@@ -25,6 +26,7 @@ def pip_without_index(
         env_builder=venv.EnvBuilder(with_pip=True),
         no_index=True,
         wheel_distribution_path=wheel_distribution_archive_path,
+        requirement_parser=requirement_parser,
     )
     pip.prepare_virtualenv()
     return pip
@@ -37,6 +39,7 @@ def pip_from_data_directory(
     project_dir: str,
     wheel_distribution_archive_path: str,
     data_directory: str,
+    requirement_parser: RequirementParser,
 ) -> VirtualenvPip:
     pip = VirtualenvPip(
         logger=logger,
@@ -46,6 +49,7 @@ def pip_from_data_directory(
         no_index=True,
         wheel_distribution_path=wheel_distribution_archive_path,
         find_links=[data_directory],
+        requirement_parser=requirement_parser,
     )
     pip.prepare_virtualenv()
     return pip
@@ -64,7 +68,10 @@ def test_pip_without_index_cannot_download_six(
 
 
 def test_pip_without_index_cannot_be_prepared_without_wheel_supplied(
-    logger: Logger, current_platform: TargetPlatform, project_dir: str
+    logger: Logger,
+    current_platform: TargetPlatform,
+    project_dir: str,
+    requirement_parser: RequirementParser,
 ) -> None:
     pip = VirtualenvPip(
         logger=logger,
@@ -72,6 +79,7 @@ def test_pip_without_index_cannot_be_prepared_without_wheel_supplied(
         target_directory=os.path.join(project_dir, "pip-without-index-venv"),
         env_builder=venv.EnvBuilder(with_pip=True),
         no_index=True,
+        requirement_parser=requirement_parser,
     )
     with pytest.raises(PipFailed):
         pip.prepare_virtualenv()
