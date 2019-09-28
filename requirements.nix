@@ -517,10 +517,10 @@ let
     };
 
     "mypy" = python.mkDerivation {
-      name = "mypy-0.720";
+      name = "mypy-0.730";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/3f/01/63713094a764280a425badbb603a1896edd403532c05fcd0a6d91779d784/mypy-0.720.tar.gz";
-        sha256 = "49925f9da7cee47eebf3420d7c0e00ec662ec6abb2780eb0a16260a7ba25f9c4";
+        url = "https://files.pythonhosted.org/packages/a2/66/66830b72aafccd99f3fd13097384aaf29c966d1de219416de7b74f13ae37/mypy-0.730.tar.gz";
+        sha256 = "42a78944e80770f21609f504ca6c8173f7768043205b5ac51c9144e057dcf879";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -574,10 +574,10 @@ let
     };
 
     "orderdict" = python.mkDerivation {
-      name = "orderdict-2019.4.13";
+      name = "orderdict-2019.9.25";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/da/c9/4ee29607001d6eabc4b3fe19405e285afb670acb73757fac3162424f5edf/orderdict-2019.4.13.tar.gz";
-        sha256 = "6158b2c09522728a9ce92cfe1e1d8dc465d47ebc6852a535f6d438bbd6522dba";
+        url = "https://files.pythonhosted.org/packages/37/17/b5791077b10ded7cf26f0417fc81e3b7ffa0e26f87309243bba669ad5f57/orderdict-2019.9.25.tar.gz";
+        sha256 = "0bbca83e980b90d4c1316262edcdc8f86b3117ed508bfe7f1b48290bdf613367";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -585,7 +585,7 @@ let
         self."public"
       ];
       meta = with pkgs.stdenv.lib; {
-        homepage = "https://github.com/looking-for-a-job/orderdict.py";
+        homepage = "https://github.com/andrewp-as-is/orderdict.py";
         license = "UNKNOWN";
         description = "UNKNOWN";
       };
