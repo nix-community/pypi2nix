@@ -29,7 +29,9 @@ class RequirementsCollector:
 
     def add_file(self, file_path: str) -> None:
         with tempfile.TemporaryDirectory() as project_directory:
-            requirements_file = RequirementsFile(file_path, project_directory)
+            requirements_file = RequirementsFile(
+                file_path, project_directory, self.requirement_parser
+            )
             requirements_file.process()
             added_requirements = RequirementSet.from_file(
                 requirements_file, self.platform, self.requirement_parser

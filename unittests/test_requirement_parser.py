@@ -3,6 +3,7 @@ from parsley import ParseError
 
 from pypi2nix.logger import Logger
 from pypi2nix.requirement_parser import RequirementParser
+from pypi2nix.requirements import PathRequirement
 
 from .logger import get_logger_output
 
@@ -61,3 +62,8 @@ def test_regressions_with_cryptography(
     assert requirement.name() == "cffi"
     assert "WARNING" in get_logger_output(logger)
     assert "PEP 508" in get_logger_output(logger)
+
+
+def test_that_path_is_parsed_to_path_requirement(requirement_parser: RequirementParser):
+    requirement = requirement_parser.parse("local_path/egg#egg=local-path")
+    assert isinstance(requirement, PathRequirement)

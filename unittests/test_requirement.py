@@ -4,7 +4,9 @@ import pytest
 
 from pypi2nix.package_source import GitSource
 from pypi2nix.package_source import HgSource
+from pypi2nix.package_source import PathSource
 from pypi2nix.requirement_parser import ParsingFailed
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements import IncompatibleRequirements
 from pypi2nix.requirements import PathRequirement
 from pypi2nix.requirements import UrlRequirement
@@ -150,11 +152,12 @@ def test_that_from_line_to_line_preserves_urls(requirement_parser):
     assert requirement.to_line() == line
 
 
-def test_that_to_line_reproduces_path_correctly(requirement_parser):
+def test_that_to_line_reproduces_path_correctly(requirement_parser: RequirementParser):
     line = "path/to/requirement#egg=test-requirement"
     requirement = requirement_parser.parse(line)
     requirement = requirement_parser.parse(requirement.to_line())
-    assert requirement._path == "path/to/requirement"
+    assert isinstance(requirement, UrlRequirement)
+    assert requirement.url() == "file://path/to/requirement"
 
 
 def test_that_requirements_can_be_added_together_adding_version_constraints(
@@ -429,3 +432,10 @@ def test_that_extras_of_url_requirements_are_preserved(requirement_parser):
     assert requirement.extras() == {"extra1", "extra2"}
     requirement = requirement_parser.parse(requirement.to_line())
     assert requirement.extras() == {"extra1", "extra2"}
+
+
+def test_that_source_of_url_requirement_with_file_scheme_is_path_source(
+    requirement_parser
+):
+    requirement = requirement_parser.parse("file://test/path#egg=egg")
+    assert isinstance(requirement.source(), PathSource)

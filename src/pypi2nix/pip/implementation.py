@@ -14,6 +14,7 @@ from pypi2nix.logger import Logger
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
 from pypi2nix.pip.interface import Pip
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.utils import escape_double_quotes
@@ -35,6 +36,7 @@ class NixPip(Pip):
         wheels_cache: List[str],
         target_platform: TargetPlatform,
         logger: Logger,
+        requirement_parser: RequirementParser,
     ):
         self.nix = nix
         self.project_directory = project_directory
@@ -44,6 +46,7 @@ class NixPip(Pip):
         self.wheels_cache = wheels_cache
         self.target_platform = target_platform
         self.logger = logger
+        self.requirement_parser = requirement_parser
 
         output = self.nix.evaluate_expression(
             'let pkgs = import <nixpkgs> {}; in "%s"' % escape_double_quotes(extra_env)
@@ -64,7 +67,7 @@ class NixPip(Pip):
             return
         requirements_files = [
             requirements.to_file(
-                self.project_directory, self.target_platform
+                self.project_directory, self.target_platform, self.requirement_parser
             ).processed_requirements_file_path()
         ]
         self.build_from_nix_file(
@@ -88,7 +91,7 @@ class NixPip(Pip):
             return
         requirements_files = [
             requirements.to_file(
-                self.project_directory, self.target_platform
+                self.project_directory, self.target_platform, self.requirement_parser
             ).processed_requirements_file_path()
         ]
         self.build_from_nix_file(
@@ -117,7 +120,7 @@ class NixPip(Pip):
             target_directory = self.default_lib_directory
         requirements_files = [
             requirements.to_file(
-                self.project_directory, self.target_platform
+                self.project_directory, self.target_platform, self.requirement_parser
             ).processed_requirements_file_path()
         ]
         self.build_from_nix_file(

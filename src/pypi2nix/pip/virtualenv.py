@@ -10,6 +10,7 @@ from venv import EnvBuilder
 from pypi2nix.logger import Logger
 from pypi2nix.pip.exceptions import PipFailed
 from pypi2nix.pip.interface import Pip
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.utils import cmd
@@ -25,6 +26,7 @@ class VirtualenvPip(Pip):
         target_platform: TargetPlatform,
         target_directory: str,
         env_builder: EnvBuilder,
+        requirement_parser: RequirementParser,
         no_index: bool = False,
         wheel_distribution_path: Optional[str] = None,
         find_links: List[str] = [],
@@ -36,6 +38,7 @@ class VirtualenvPip(Pip):
         self.no_index = no_index
         self.wheel_distribution_path = wheel_distribution_path
         self.find_links = find_links
+        self.requirement_parser = requirement_parser
 
     def prepare_virtualenv(self) -> None:
         self.env_builder.create(self.target_directory)
@@ -128,7 +131,7 @@ class VirtualenvPip(Pip):
     def _requirements_file(self, requirements: RequirementSet) -> Iterator[str]:
         with TemporaryDirectory() as directory:
             yield requirements.to_file(
-                directory, self.target_platform
+                directory, self.target_platform, self.requirement_parser
             ).processed_requirements_file_path()
 
     @contextmanager

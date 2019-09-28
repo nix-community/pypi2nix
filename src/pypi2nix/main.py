@@ -49,6 +49,7 @@ class Pypi2nix:
             wheels_cache=self.configuration.wheels_caches,
             target_platform=self.target_platform(),
             logger=self.logger(),
+            requirement_parser=self.requirement_parser(),
         )
         wheel_builder = WheelBuilder(
             pip=pip,
