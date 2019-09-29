@@ -1,6 +1,6 @@
 from .framework import IntegrationTest
 
 
-class FlitTest(IntegrationTest):
+class FlitTestCase(IntegrationTest):
     name_of_testcase = "flit"
     requirements = ["flit"]

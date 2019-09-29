@@ -1,7 +1,7 @@
 from .framework import IntegrationTest
 
 
-class Flake8IncludeDefaultOverrides(IntegrationTest):
+class Flake8IncludeDefaultOverridesTestCase(IntegrationTest):
     name_of_testcase = "flake8_include_default_overrides"
     code_for_testing = ["import flake8"]
     default_overrides = True

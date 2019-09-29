@@ -4,13 +4,11 @@ from .framework import IntegrationTest
 
 
 @expectedFailure
-class ScipyTest(IntegrationTest):
+class ScipyTestCase(IntegrationTest):
     name_of_testcase = "scipy"
     code_for_testing = ["import scipy"]
     requirements = ["scipy", "numpy"]
-
-    def external_dependencies(self):
-        return ["gfortran", "blas"]
+    external_dependencies = ["gfortran", "blas"]
 
     def setup_requires(self):
         return ["numpy"]

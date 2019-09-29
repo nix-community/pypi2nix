@@ -1,7 +1,7 @@
 from .framework import IntegrationTest
 
 
-class SerpyTest(IntegrationTest):
+class SerpyTestCase(IntegrationTest):
     name_of_testcase = "serpy"
     requirements = ["serpy==0.1.1"]
 

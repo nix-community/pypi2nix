@@ -32,7 +32,7 @@ class IntegrationTest(TestCase):
     setup_requires() -- default: []
     executables_for_testing() -- default: []
     extra_environment() -- default: dict()
-    external_dependencies() -- default: []
+    external_dependencies
     requirements_file_check(content) -- default: (lambda content: None)
     constraints
     code_for_testing
@@ -102,7 +102,7 @@ class IntegrationTest(TestCase):
             command.append("-N")
             command.append("{name}={value}".format(name=variable_name, value=value))
 
-        for dependency in self.external_dependencies():
+        for dependency in self.external_dependencies:
             command.append("-E")
             command.append(dependency)
 
@@ -191,18 +191,13 @@ class IntegrationTest(TestCase):
             ) as f:
                 return f.read()
         else:
-            raise Exception(
-                "Specify either code_for_testing or code_for_testing_filename"
-            )
+            return ""
 
     code_for_testing: List[str] = []
     code_for_testing_filename: Optional[str] = None
 
     def extra_environment(self) -> Dict[str, str]:
         return dict()
-
-    def external_dependencies(self) -> List[str]:
-        return []
 
     def run_executable_tests(self) -> None:
         for test_command in self.executables_for_testing():
@@ -296,6 +291,7 @@ class IntegrationTest(TestCase):
     python_version: str = "python3"
     requirements: List[str] = []
     name_of_testcase: str = "undefined"
+    external_dependencies: List[str] = []
 
 
 @attrs

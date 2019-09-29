@@ -3,7 +3,7 @@ from .framework import IntegrationTest
 REVISION = "a209fb6"
 
 
-class Flake8MercurialTest(IntegrationTest):
+class Flake8MercurialTestCase(IntegrationTest):
     name_of_testcase = "flake8-mercurial"
     code_for_testing = ["import flake8"]
     requirements = [

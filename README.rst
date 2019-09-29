@@ -462,10 +462,17 @@ online and fetch data from the internet.  If this cannot be avoided
 use the ``@nix`` decorator, found in ``unittests.switches`` to mark
 tests that require network access.
 
+Integration tests
+"""""""""""""""""
+
 Integration tests are a little bit more involved.  We implemented a
 small framework to write new tests and maintain old ones.  Check out
 ``integrationtests.framework`` for information on how to write custom
 integration tests.
+
+Please note that all integration test cases are classes deriving from
+``integrationtests.framework.IntegrationTest``.  Also all these tests
+must end with ``TestCase``, e.g. ``MyCustomTestCase``.
 
 Maintainance scripts
 ^^^^^^^^^^^^^^^^^^^^
