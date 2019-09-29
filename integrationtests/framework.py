@@ -1,4 +1,5 @@
 import os
+import shutil
 import os.path
 import subprocess
 import sys
@@ -39,6 +40,7 @@ class IntegrationTest(TestCase):
     python_version
     default_overrides
     code_for_testing_filename
+    explicit_build_directory
     """
 
     def setUp(self) -> None:
@@ -71,6 +73,8 @@ class IntegrationTest(TestCase):
 
     def build_nix_expression(self) -> None:
         print("Build nix expression")
+        if self.explicit_build_directory:
+            self.prepare_build_directory()
         process = subprocess.Popen(
             self.build_nix_expression_command(),
             cwd=self.example_directory(),
@@ -105,6 +109,9 @@ class IntegrationTest(TestCase):
         for dependency in self.external_dependencies:
             command.append("-E")
             command.append(dependency)
+        if self.explicit_build_directory:
+            command.append("--build-directory")
+            command.append(self.build_directory())
 
         if self.default_overrides:
             command.append("--default-overrides")
@@ -286,12 +293,21 @@ class IntegrationTest(TestCase):
     def requirements_file_check(self, _: str) -> None:
         pass
 
+    def build_directory(self):
+        return os.path.join(self.example_directory(), "build")
+
+    def prepare_build_directory(self):
+        if os.path.exists(self.build_directory()):
+            shutil.rmtree(self.build_directory())
+        os.makedirs(self.build_directory())
+
     default_overrides = False
     constraints: List[str] = []
     python_version: str = "python3"
     requirements: List[str] = []
     name_of_testcase: str = "undefined"
     external_dependencies: List[str] = []
+    explicit_build_directory: bool = False
 
 
 @attrs

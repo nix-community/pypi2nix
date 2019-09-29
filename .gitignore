@@ -52,6 +52,7 @@
 /integrationtests/*/requirements.txt
 /integrationtests/*/requirements_frozen.txt
 /integrationtests/*/result
+/integrationtests/*/build
 /integrationtests/pypi2nix
 /integrationtests/*/src
 [#]*[#]
