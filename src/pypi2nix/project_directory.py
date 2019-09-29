@@ -34,7 +34,9 @@ class TemporaryProjectDirectory(ProjectDirectory):
         exc_value: Optional[Exception],
         traceback: Optional[TracebackType],
     ) -> bool:
-        return self.temporary_directory.__exit__(exc_type, exc_value, traceback)
+        return self.temporary_directory.__exit__(  # type: ignore
+            exc_type, exc_value, traceback
+        )
 
 
 class PersistentProjectDirectory(ProjectDirectory):

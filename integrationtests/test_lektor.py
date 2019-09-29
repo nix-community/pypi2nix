@@ -5,17 +5,10 @@ from .framework import TestCommand
 
 
 class LektorTest(IntegrationTest, TestCase):
-    def name_of_testcase(self):
-        return "lektor"
-
-    def requirements(self):
-        return ["Lektor"]
-
-    def python_version(self):
-        return "python27"
-
-    def code_for_testing(self):
-        return ["import lektor"]
+    name_of_testcase = "lektor"
+    python_version = "python27"
+    code_for_testing = ["import lektor"]
+    requirements = ["Lektor"]
 
     def executables_for_testing(self):
         return [TestCommand(command=["lektor", "--help"])]

@@ -6,17 +6,10 @@ from .framework import IntegrationTest
 
 @expectedFailure
 class LdapTest(IntegrationTest, TestCase):
-    def name_of_testcase(self):
-        return "ldap"
-
-    def requirements(self):
-        return ["python-ldap"]
-
-    def python_version(self):
-        return "python27"
-
-    def code_for_testing(self):
-        return ["import ldap"]
+    name_of_testcase = "ldap"
+    python_version = "python27"
+    code_for_testing = ["import ldap"]
+    requirements = ["python-ldap"]
 
     def extra_environment(self):
         return {

@@ -5,17 +5,11 @@ from .framework import TestCommand
 
 
 class Rss2Email(IntegrationTest, TestCase):
-    def name_of_testcase(self):
-        return "rss2email"
-
-    def python_version(self):
-        return "python36"
-
-    def requirements(self):
-        return ["https://github.com/wking/rss2email/archive/master.zip#egg=rss2email"]
+    name_of_testcase = "rss2email"
+    code_for_testing = ["import rss2email"]
+    requirements = [
+        "https://github.com/wking/rss2email/archive/master.zip#egg=rss2email"
+    ]
 
     def executables_for_testing(self):
         return [TestCommand(command=["r2e", "--help"])]
-
-    def code_for_testing(self):
-        return ["import rss2email"]
