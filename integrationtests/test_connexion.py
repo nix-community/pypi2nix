@@ -1,9 +1,7 @@
-from unittest import TestCase
-
 from .framework import IntegrationTest
 
 
-class ConnexionTest(IntegrationTest, TestCase):
+class ConnexionTest(IntegrationTest):
     name_of_testcase = "connexion"
     requirements = ["connexion"]
     code_for_testing = ["import connexion"]

@@ -1,11 +1,9 @@
-from unittest import TestCase
-
 from .framework import IntegrationTest
 
 REVISION = "a209fb6"
 
 
-class Flake8MercurialTest(IntegrationTest, TestCase):
+class Flake8MercurialTest(IntegrationTest):
     name_of_testcase = "flake8-mercurial"
     code_for_testing = ["import flake8"]
     requirements = [

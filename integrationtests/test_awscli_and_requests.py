@@ -1,10 +1,8 @@
-from unittest import TestCase
-
 from .framework import IntegrationTest
 from .framework import TestCommand
 
 
-class AwscliAndRequestsTest(IntegrationTest, TestCase):
+class AwscliAndRequestsTest(IntegrationTest):
     name_of_testcase = "awscli_and_requests"
     requirements = ["awscli", "requests"]
     python_version = "python27"

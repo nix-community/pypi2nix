@@ -1,11 +1,10 @@
-from unittest import TestCase
 from unittest import expectedFailure
 
 from .framework import IntegrationTest
 
 
 @expectedFailure
-class LdapTest(IntegrationTest, TestCase):
+class LdapTest(IntegrationTest):
     name_of_testcase = "ldap"
     python_version = "python27"
     code_for_testing = ["import ldap"]

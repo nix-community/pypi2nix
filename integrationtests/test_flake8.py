@@ -1,9 +1,7 @@
-from unittest import TestCase
-
 from .framework import IntegrationTest
 
 
-class Flake8Test(IntegrationTest, TestCase):
+class Flake8Test(IntegrationTest):
     name_of_testcase = "flake8"
     code_for_testing = ["import flake8"]
     requirements = ["flake8 == 3.7.7"]

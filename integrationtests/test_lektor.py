@@ -1,10 +1,8 @@
-from unittest import TestCase
-
 from .framework import IntegrationTest
 from .framework import TestCommand
 
 
-class LektorTest(IntegrationTest, TestCase):
+class LektorTest(IntegrationTest):
     name_of_testcase = "lektor"
     python_version = "python27"
     code_for_testing = ["import lektor"]

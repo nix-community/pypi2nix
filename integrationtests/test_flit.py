@@ -1,8 +1,6 @@
-from unittest import TestCase
-
 from .framework import IntegrationTest
 
 
-class FlitTest(IntegrationTest, TestCase):
+class FlitTest(IntegrationTest):
     name_of_testcase = "flit"
     requirements = ["flit"]

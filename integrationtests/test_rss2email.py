@@ -1,10 +1,8 @@
-from unittest import TestCase
-
 from .framework import IntegrationTest
 from .framework import TestCommand
 
 
-class Rss2Email(IntegrationTest, TestCase):
+class Rss2Email(IntegrationTest):
     name_of_testcase = "rss2email"
     code_for_testing = ["import rss2email"]
     requirements = [

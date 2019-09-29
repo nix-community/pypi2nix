@@ -1,9 +1,7 @@
-from unittest import TestCase
-
 from .framework import IntegrationTest
 
 
-class EmpyTest(IntegrationTest, TestCase):
+class EmpyTest(IntegrationTest):
     name_of_testcase = "empy"
     code_for_testing = ["import em"]
     requirements = ["empy"]

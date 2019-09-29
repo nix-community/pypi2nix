@@ -1,9 +1,7 @@
-from unittest import TestCase
-
 from .framework import IntegrationTest
 
 
-class SerpyTest(IntegrationTest, TestCase):
+class SerpyTest(IntegrationTest):
     name_of_testcase = "serpy"
     requirements = ["serpy==0.1.1"]
 
