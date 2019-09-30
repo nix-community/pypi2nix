@@ -119,7 +119,7 @@ class Pypi2nix:
     @memoize
     def requirements(self) -> RequirementSet:
         requirement_collector = RequirementsCollector(
-            self.target_platform(), self.requirement_parser()
+            self.target_platform(), self.requirement_parser(), self.logger()
         )
         for item in self.configuration.requirements:
             requirement_collector.add_line(item)
@@ -130,7 +130,7 @@ class Pypi2nix:
     @memoize
     def setup_requirements(self) -> RequirementSet:
         setup_requirement_collector = RequirementsCollector(
-            self.target_platform(), self.requirement_parser()
+            self.target_platform(), self.requirement_parser(), self.logger()
         )
         for build_input in self.configuration.setup_requirements:
             setup_requirement_collector.add_line(build_input)

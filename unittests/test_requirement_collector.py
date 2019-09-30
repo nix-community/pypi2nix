@@ -2,18 +2,19 @@ import os.path
 
 import pytest
 
+from pypi2nix.logger import Logger
 from pypi2nix.requirements_collector import RequirementsCollector
 
 
 @pytest.fixture
-def collector(current_platform, requirement_parser):
-    return RequirementsCollector(current_platform, requirement_parser)
+def collector(current_platform, requirement_parser, logger: Logger):
+    return RequirementsCollector(current_platform, requirement_parser, logger)
 
 
 def test_that_we_can_generate_an_empty_requirement_set_from_freshly_constructed_collector(
-    current_platform, requirement_parser
+    current_platform, requirement_parser, logger: Logger
 ):
-    collector = RequirementsCollector(current_platform, requirement_parser)
+    collector = RequirementsCollector(current_platform, requirement_parser, logger)
     requirements = collector.requirements()
     assert len(requirements) == 0
 

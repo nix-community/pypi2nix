@@ -17,7 +17,7 @@ let
 in
 pip_base.override( old: {
   shellHook = old.shellHook + ''
-    pip install \
+    pip install  -vvvvv\
       ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
       --target=${target_directory} \
       --find-links file://${wheel_cache_dir} \

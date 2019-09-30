@@ -67,7 +67,10 @@ class NixPip(Pip):
             return
         requirements_files = [
             requirements.to_file(
-                self.project_directory, self.target_platform, self.requirement_parser
+                self.project_directory,
+                self.target_platform,
+                self.requirement_parser,
+                self.logger,
             ).processed_requirements_file_path()
         ]
         self.build_from_nix_file(
@@ -91,7 +94,10 @@ class NixPip(Pip):
             return
         requirements_files = [
             requirements.to_file(
-                self.project_directory, self.target_platform, self.requirement_parser
+                self.project_directory,
+                self.target_platform,
+                self.requirement_parser,
+                self.logger,
             ).processed_requirements_file_path()
         ]
         self.build_from_nix_file(
@@ -120,7 +126,10 @@ class NixPip(Pip):
             target_directory = self.default_lib_directory
         requirements_files = [
             requirements.to_file(
-                self.project_directory, self.target_platform, self.requirement_parser
+                self.project_directory,
+                self.target_platform,
+                self.requirement_parser,
+                self.logger,
             ).processed_requirements_file_path()
         ]
         self.build_from_nix_file(

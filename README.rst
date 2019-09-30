@@ -468,7 +468,10 @@ Integration tests
 Integration tests are a little bit more involved.  We implemented a
 small framework to write new tests and maintain old ones.  Check out
 ``integrationtests.framework`` for information on how to write custom
-integration tests.
+integration tests.  To run all integration tests run
+``run_integration_tests.py`` from the ``scripts`` directory.  If you
+use ``nix-shell`` to create your development environment then the
+``scripts`` directory should be in you ``PATH`` variable.
 
 Please note that all integration test cases are classes deriving from
 ``integrationtests.framework.IntegrationTest``.  Also all these tests

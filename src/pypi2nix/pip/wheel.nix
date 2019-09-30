@@ -21,7 +21,7 @@ let
 in
 pip_base.override( old: {
   shellHook = old.shellHook + ''
-    ${extra_env} pip wheel \
+    ${extra_env} pip wheel -vvvvv \
       ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
       ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
       --src ${editable_sources_directory} \

@@ -1,5 +1,6 @@
 import pytest
 
+from pyip2nix.logger import Logger
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import VersionRequirement
@@ -35,11 +36,11 @@ def test_length_is_one_after_adding_same_requirement_twice(
 
 
 def test_to_file_outputs_a_requirements_file_object(
-    project_dir, current_platform, requirement_parser
+    project_dir, current_platform, requirement_parser, logger: Logger
 ):
     assert isinstance(
         RequirementSet(current_platform).to_file(
-            project_dir, current_platform, requirement_parser
+            project_dir, current_platform, requirement_parser, logger
         ),
         RequirementsFile,
     )
@@ -68,25 +69,25 @@ def test_versions_add_if_same_requirement_is_added_twice(
 
 
 def test_from_file_handles_empty_lines(
-    project_dir, current_platform, requirement_parser
+    project_dir, current_platform, requirement_parser, logger: Logger
 ):
     requirements_file = RequirementsFile.from_lines(
-        ["pypi2nix", ""], project_dir, requirement_parser
+        ["pypi2nix", ""], project_dir, requirement_parser, logger
     )
     requirements_set = RequirementSet.from_file(
-        requirements_file, current_platform, requirement_parser
+        requirements_file, current_platform, requirement_parser, logger
     )
     assert len(requirements_set) == 1
 
 
 def test_from_file_handles_comment_lines(
-    project_dir, current_platform, requirement_parser
+    project_dir, current_platform, requirement_parser, logger: Logger
 ):
     requirements_file = RequirementsFile.from_lines(
-        ["pypi2nix", "# comment"], project_dir, requirement_parser
+        ["pypi2nix", "# comment"], project_dir, requirement_parser, logger
     )
     requirements_set = RequirementSet.from_file(
-        requirements_file, current_platform, requirement_parser
+        requirements_file, current_platform, requirement_parser, logger
     )
     assert len(requirements_set) == 1
 
@@ -124,7 +125,7 @@ def test_elements_from_both_sets_can_be_found_in_sum_of_sets(
 
 
 def test_requirement_set_respects_constraints_when_reading_from_requirement_file(
-    tmpdir, project_dir, current_platform, requirement_parser
+    tmpdir, project_dir, current_platform, requirement_parser, logger: Logger
 ):
     requirements_txt = tmpdir.join("requirements.txt")
     constraints_txt = tmpdir.join("constraints.txt")
@@ -135,23 +136,23 @@ def test_requirement_set_respects_constraints_when_reading_from_requirement_file
         print("test-requirement <= 1.0", file=f)
 
     original_requirements_file = RequirementsFile(
-        str(requirements_txt), project_dir, requirement_parser
+        str(requirements_txt), project_dir, requirement_parser, logger
     )
     original_requirements_file.process()
 
     requirement_set = RequirementSet.from_file(
-        original_requirements_file, current_platform, requirement_parser
+        original_requirements_file, current_platform, requirement_parser, logger
     )
 
     new_requirements_file = requirement_set.to_file(
-        project_dir, current_platform, requirement_parser
+        project_dir, current_platform, requirement_parser, logger
     )
 
     assert "test-requirement <= 1.0" in new_requirements_file.read()
 
 
 def test_constraints_without_requirement_will_not_show_up_in_generated_requirement_file(
-    tmpdir, project_dir, current_platform, requirement_parser
+    tmpdir, project_dir, current_platform, requirement_parser, logger: Logger
 ):
     requirements_txt = tmpdir.join("requirements.txt")
     constraints_txt = tmpdir.join("constraints.txt")
@@ -163,23 +164,23 @@ def test_constraints_without_requirement_will_not_show_up_in_generated_requireme
         print("test-constraint == 1.0", file=f)
 
     original_requirements_file = RequirementsFile(
-        str(requirements_txt), project_dir, requirement_parser
+        str(requirements_txt), project_dir, requirement_parser, logger
     )
     original_requirements_file.process()
 
     requirement_set = RequirementSet.from_file(
-        original_requirements_file, current_platform, requirement_parser
+        original_requirements_file, current_platform, requirement_parser, logger
     )
 
     new_requirements_file = requirement_set.to_file(
-        project_dir, current_platform, requirement_parser
+        project_dir, current_platform, requirement_parser, logger
     )
 
     assert "test-constraint" not in new_requirements_file.read()
 
 
 def test_include_lines_are_respected_when_generating_from_file(
-    tmpdir, project_dir, current_platform, requirement_parser
+    tmpdir, project_dir, current_platform, requirement_parser, logger: Logger
 ):
     requirements_txt = tmpdir.join("requirements.txt")
     included_requirements_txt = tmpdir.join("included_requirements.txt")
@@ -189,11 +190,11 @@ def test_include_lines_are_respected_when_generating_from_file(
     with open(included_requirements_txt, "w") as f:
         print("test-requirement", file=f)
     requirements_file = RequirementsFile(
-        str(requirements_txt), project_dir, requirement_parser
+        str(requirements_txt), project_dir, requirement_parser, logger
     )
     requirements_file.process()
     requirement_set = RequirementSet.from_file(
-        requirements_file, current_platform, requirement_parser
+        requirements_file, current_platform, requirement_parser, logger
     )
 
     assert "test-requirement" in requirement_set
@@ -242,13 +243,14 @@ def test_that_extras_are_preserved_when_converting_to_and_from_a_file(
     requirement_set: RequirementSet,
     current_platform: TargetPlatform,
     project_dir: str,
+    logger: Logger,
 ):
     requirement_set.add(requirement_parser.parse("req[extra1]"))
     requirements_file = requirement_set.to_file(
-        project_dir, current_platform, requirement_parser
+        project_dir, current_platform, requirement_parser, logger
     )
     new_requirements_set = RequirementSet.from_file(
-        requirements_file, current_platform, requirement_parser
+        requirements_file, current_platform, requirement_parser, logger
     )
     requirement = new_requirements_set["req"]
     assert requirement.extras() == {"extra1"}
