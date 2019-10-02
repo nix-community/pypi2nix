@@ -54,11 +54,8 @@ class NixPip(Pip):
         # trim quotes
         self.extra_env = output[1:-1]
 
-        self.wheel_cache_dir = os.path.join(self.project_directory, "cache", "wheels")
         self.default_lib_directory = os.path.join(self.project_directory, "lib")
-        self.download_cache_directory = os.path.join(
-            self.project_directory, "cache", "download"
-        )
+        self.download_cache_directory = os.path.join(self.project_directory, "cache")
 
     def download_sources(
         self, requirements: RequirementSet, target_directory: str
@@ -106,7 +103,6 @@ class NixPip(Pip):
             nix_arguments=self.nix_arguments(
                 wheels_cache=self.wheels_cache,
                 requirements_files=requirements_files,
-                wheel_cache_dir=self.wheel_cache_dir,
                 editable_sources_directory=self.editable_sources_directory(),
                 build_directory=self.build_directory(),
                 wheels_dir=target_directory,
@@ -137,7 +133,6 @@ class NixPip(Pip):
             file_path=INSTALL_NIX,
             nix_arguments=self.nix_arguments(
                 requirements_files=requirements_files,
-                wheel_cache_dir=self.wheel_cache_dir,
                 target_directory=target_directory,
                 sources_directories=source_directories,
             ),
@@ -180,7 +175,6 @@ class NixPip(Pip):
         self, file_path: str, command: str, nix_arguments: Any
     ) -> None:
         self.create_download_cache_if_missing()
-        self.create_wheel_cache_dir_if_missing()
         self.delete_build_directory()
         try:
             self.build_output = self.nix.shell(
@@ -199,12 +193,6 @@ class NixPip(Pip):
             pass
         else:
             os.makedirs(self.download_cache_directory)
-
-    def create_wheel_cache_dir_if_missing(self) -> None:
-        if os.path.exists(self.wheel_cache_dir):
-            pass
-        else:
-            os.makedirs(self.wheel_cache_dir)
 
     def delete_build_directory(self) -> None:
         try:

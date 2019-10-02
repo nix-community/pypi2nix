@@ -38,13 +38,6 @@ in pkgs.lib.makeOverridable pkgs.stdenv.mkDerivation rec {
     export HOME=${project_dir}
     export SOURCE_DATE_EPOCH=315532800
     export PYPI2NIX_BOOTSTRAP="${pypi2nix_bootstrap}"
-
-    export PIP_DOWNLOAD_CACHE=${download_cache_dir}
-
-    mkdir -p \
-      ${project_dir}/build \
-      ${project_dir}/src \
-      ${project_dir}/wheel \
-      ${project_dir}/wheelhouse
+    export PIP_CACHE_DIR=${download_cache_dir}
   '';
 }
