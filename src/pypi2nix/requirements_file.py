@@ -68,7 +68,6 @@ class RequirementsFile:
     def process(self) -> None:
         new_requirements_file = self.processed_requirements_file_path()
         self._logger.debug("Create requirements file")
-        self._logger.debug(f"Requirements file path: `{new_requirements_file}`")
 
         with open(self.original_path) as original_file, open(
             new_requirements_file, "w+"
@@ -76,8 +75,11 @@ class RequirementsFile:
             for requirements_line in original_file.readlines():
                 requirements_line = requirements_line.strip()
                 if requirements_line:
-                    self._logger.debug(f"{requirements_line}")
-                    print(self._process_line(requirements_line), file=new_file)
+                    processed_requirements_line = self._process_line(requirements_line)
+                    self._logger.debug(
+                        f"file: {new_requirements_file}, requirement: {processed_requirements_line}"
+                    )
+                    print(processed_requirements_line, file=new_file)
 
     def _process_line(self, requirements_line: str) -> str:
         line_handler: LineHandler
