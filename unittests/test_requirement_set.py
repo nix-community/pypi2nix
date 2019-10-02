@@ -1,6 +1,6 @@
 import pytest
 
-from pyip2nix.logger import Logger
+from pypi2nix.logger import Logger
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import VersionRequirement
