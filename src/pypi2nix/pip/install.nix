@@ -4,7 +4,6 @@
 , extra_build_inputs
 , requirements_files
 , target_directory
-, wheel_cache_dir
 , sources_directories
 }:
 let
