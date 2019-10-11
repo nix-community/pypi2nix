@@ -1,6 +1,7 @@
 import tempfile
 from abc import ABCMeta
 from abc import abstractmethod
+from sys import stderr
 from types import TracebackType
 from typing import Optional
 from typing import Type
@@ -44,6 +45,10 @@ class PersistentProjectDirectory(ProjectDirectory):
         self.path = path
 
     def __enter__(self) -> str:
+        print(
+            "WARNING: You have specified the `--build-directory OPTION`.", file=stderr
+        )
+        print("WARNING: It is recommended to not use this flag.", file=stderr)
         return self.path
 
     def __exit__(

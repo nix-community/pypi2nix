@@ -1,8 +1,5 @@
-include src/pypi2nix/*.nix
 include src/pypi2nix/pip/*.nix
 include src/pypi2nix/templates/*.j2
 include src/pypi2nix/VERSION
 include src/pypi2nix/wheels/*.whl
 include src/pypi2nix/wheels/index.json
-include conftest.py
-include prepare-test-data.py

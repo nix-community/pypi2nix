@@ -31,6 +31,7 @@ in pkgs.lib.makeOverridable pkgs.stdenv.mkDerivation rec {
 
   shellHook = ''
     set -e
+    export TMPDIR=${project_dir}
     export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     export PYTHONPATH=${pypi2nix_bootstrap}/base:${project_dir}/lib
@@ -39,5 +40,6 @@ in pkgs.lib.makeOverridable pkgs.stdenv.mkDerivation rec {
     export SOURCE_DATE_EPOCH=315532800
     export PYPI2NIX_BOOTSTRAP="${pypi2nix_bootstrap}"
     export PIP_CACHE_DIR=${download_cache_dir}
+    export PIP_EXISTS_ACTION="s"
   '';
 }

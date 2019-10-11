@@ -20,15 +20,13 @@ let
 in
 pip_base.override( old: {
   shellHook = old.shellHook + ''
-    ${extra_env} pip wheel -vvvvv \
+    ${extra_env} pip wheel \
       ${builtins.concatStringsSep " " (map (x: "--find-links ${x} ") wheels_cache)} \
       ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
       --src ${editable_sources_directory} \
       --wheel-dir ${wheels_dir} \
-      --build ${build_directory} \
       ${sources_directories_links} \
       --find-links file://$PYPI2NIX_BOOTSTRAP/index \
-      --no-index \
-      --exists-action w
+      --no-index
   '';
 })

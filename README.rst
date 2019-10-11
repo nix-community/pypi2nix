@@ -239,6 +239,10 @@ Command line options
     similar system.
 
 ``--build-directory TEXT``
+    **Warning** A bug in ``pypi2nix`` currently prevents some packages
+    from being built with this option set.  It is recommended to not
+    use this flag.
+
     The directory where pypi2nix would build the python environment to
     generate the desired nix expression.  If not specified, the build
     directory will be temporary and is deleted before the program

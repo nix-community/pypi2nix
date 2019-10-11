@@ -17,12 +17,11 @@ let
 in
 pip_base.override( old: {
   shellHook = old.shellHook + ''
-    ${extra_env} pip download -vvvvv \
+    ${extra_env} pip download \
       ${requirements_files_option} \
       --dest ${destination_directory} \
       --src ${editable_sources_directory} \
       --find-links file://$PYPI2NIX_BOOTSTRAP/index \
-      --no-binary :all: \
-      --exists-action w
+      --no-binary :all:
   '';
 })

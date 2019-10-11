@@ -17,7 +17,7 @@ let
 in
 pip_base.override( old: {
   shellHook = old.shellHook + ''
-    pip install  -vvvvv\
+    pip install \
       ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
       --target=${target_directory} \
       ${sources_directories_links} \
