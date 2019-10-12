@@ -6,6 +6,7 @@ from typing import List
 from typing import Type
 from typing import Union
 
+from pypi2nix.logger import Logger
 from pypi2nix.requirement_parser import ParsingFailed
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements import PathRequirement
@@ -17,11 +18,16 @@ LineHandler = Union[
 
 class RequirementsFile:
     def __init__(
-        self, path: str, project_dir: str, requirement_parser: RequirementParser
+        self,
+        path: str,
+        project_dir: str,
+        requirement_parser: RequirementParser,
+        logger: Logger,
     ):
         self.project_dir: str = project_dir
         self.original_path: str = path
         self.requirement_parser = requirement_parser
+        self._logger = logger
 
     @classmethod
     def from_lines(
@@ -29,6 +35,7 @@ class RequirementsFile:
         lines: List[str],
         project_dir: str,
         requirement_parser: RequirementParser,
+        logger: Logger,
     ) -> "RequirementsFile":
         assert not isinstance(lines, str)
         temporary_file_descriptor, temporary_file_path = tempfile.mkstemp(
@@ -43,6 +50,7 @@ class RequirementsFile:
                 project_dir=project_dir,
                 path=temporary_file_path,
                 requirement_parser=requirement_parser,
+                logger=logger,
             )
             requirements_file.process()
         finally:
@@ -66,7 +74,9 @@ class RequirementsFile:
             for requirements_line in original_file.readlines():
                 requirements_line = requirements_line.strip()
                 if requirements_line:
-                    print(self._process_line(requirements_line), file=new_file)
+                    processed_requirements_line = self._process_line(requirements_line)
+                    print(processed_requirements_line, file=new_file)
+        self._logger.debug(f"Created requirements file {new_requirements_file}")
 
     def _process_line(self, requirements_line: str) -> str:
         line_handler: LineHandler
@@ -76,6 +86,7 @@ class RequirementsFile:
                 original_path=self.original_path,
                 project_directory=self.project_dir,
                 requirement_parser=self.requirement_parser,
+                logger=self._logger,
             )
         elif self.is_editable_line(requirements_line):
             line_handler = _EditableLineHandler(
@@ -114,11 +125,13 @@ class _RequirementIncludeLineHandler:
         original_path: str,
         project_directory: str,
         requirement_parser: RequirementParser,
+        logger: Logger,
     ) -> None:
         self._line = line
         self._original_path = original_path
         self._project_directory = project_directory
         self._requirement_parser = requirement_parser
+        self._logger = logger
 
     def process(self) -> str:
         # this includes '-r ' and '-c ' lines
@@ -133,6 +146,7 @@ class _RequirementIncludeLineHandler:
             included_file_path,
             self._project_directory,
             requirement_parser=self._requirement_parser,
+            logger=self._logger,
         )
         new_requirements_file.process()
         return (

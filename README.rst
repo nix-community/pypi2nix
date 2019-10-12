@@ -239,6 +239,10 @@ Command line options
     similar system.
 
 ``--build-directory TEXT``
+    **Warning** A bug in ``pypi2nix`` currently prevents some packages
+    from being built with this option set.  It is recommended to not
+    use this flag.
+
     The directory where pypi2nix would build the python environment to
     generate the desired nix expression.  If not specified, the build
     directory will be temporary and is deleted before the program
@@ -462,10 +466,20 @@ online and fetch data from the internet.  If this cannot be avoided
 use the ``@nix`` decorator, found in ``unittests.switches`` to mark
 tests that require network access.
 
+Integration tests
+"""""""""""""""""
+
 Integration tests are a little bit more involved.  We implemented a
 small framework to write new tests and maintain old ones.  Check out
 ``integrationtests.framework`` for information on how to write custom
-integration tests.
+integration tests.  To run all integration tests run
+``run_integration_tests.py`` from the ``scripts`` directory.  If you
+use ``nix-shell`` to create your development environment then the
+``scripts`` directory should be in you ``PATH`` variable.
+
+Please note that all integration test cases are classes deriving from
+``integrationtests.framework.IntegrationTest``.  Also all these tests
+must end with ``TestCase``, e.g. ``MyCustomTestCase``.
 
 Maintainance scripts
 ^^^^^^^^^^^^^^^^^^^^

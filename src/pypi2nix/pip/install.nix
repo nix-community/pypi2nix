@@ -4,7 +4,6 @@
 , extra_build_inputs
 , requirements_files
 , target_directory
-, wheel_cache_dir
 , sources_directories
 }:
 let
@@ -20,11 +19,9 @@ pip_base.override( old: {
     pip install \
       ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
       --target=${target_directory} \
-      --find-links file://${wheel_cache_dir} \
       ${sources_directories_links} \
       --find-links file://$PYPI2NIX_BOOTSTRAP/index \
       --find-links file://${project_dir}/wheel \
-      --find-links file://${download_cache_dir} \
       --no-index
   '';
 })

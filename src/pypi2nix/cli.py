@@ -133,7 +133,13 @@ from pypi2nix.version import pypi2nix_version
     "--build-directory",
     default=None,
     type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True),
-    help="Directory where pypi2nix stores all build artifacts, if not specified a temporary directory will be used",
+    help=" ".join(
+        [
+            "WARNING: This option does not work, don't use it.",
+            "Directory where pypi2nix stores all build artifacts,",
+            "if not specified a temporary directory will be used",
+        ]
+    ),
 )
 def main(
     version: str,

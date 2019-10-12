@@ -1,6 +1,7 @@
 import tempfile
 from abc import ABCMeta
 from abc import abstractmethod
+from sys import stderr
 from types import TracebackType
 from typing import Optional
 from typing import Type
@@ -34,7 +35,9 @@ class TemporaryProjectDirectory(ProjectDirectory):
         exc_value: Optional[Exception],
         traceback: Optional[TracebackType],
     ) -> bool:
-        return self.temporary_directory.__exit__(exc_type, exc_value, traceback)
+        return self.temporary_directory.__exit__(  # type: ignore
+            exc_type, exc_value, traceback
+        )
 
 
 class PersistentProjectDirectory(ProjectDirectory):
@@ -42,6 +45,10 @@ class PersistentProjectDirectory(ProjectDirectory):
         self.path = path
 
     def __enter__(self) -> str:
+        print(
+            "WARNING: You have specified the `--build-directory OPTION`.", file=stderr
+        )
+        print("WARNING: It is recommended to not use this flag.", file=stderr)
         return self.path
 
     def __exit__(

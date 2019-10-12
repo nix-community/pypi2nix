@@ -10,6 +10,7 @@ from typing import Union
 
 from packaging.utils import canonicalize_name
 
+from pypi2nix.logger import Logger
 from pypi2nix.requirement_parser import ParsingFailed
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements import Requirement
@@ -43,6 +44,7 @@ class RequirementSet:
         project_dir: str,
         target_platform: TargetPlatform,
         requirement_parser: RequirementParser,
+        logger: Logger,
     ) -> RequirementsFile:
         with tempfile.TemporaryDirectory() as directory:
             requirements_txt = os.path.join(directory, "requirements.txt")
@@ -53,7 +55,7 @@ class RequirementSet:
             with open(constraints_txt, "w") as f:
                 print(self._constraints_file_content(target_platform), file=f)
             requirements_file = RequirementsFile(
-                requirements_txt, project_dir, requirement_parser
+                requirements_txt, project_dir, requirement_parser, logger=logger
             )
             requirements_file.process()
         return requirements_file
@@ -92,6 +94,7 @@ class RequirementSet:
         requirements_file: RequirementsFile,
         target_platform: TargetPlatform,
         requirement_parser: RequirementParser,
+        logger: Logger,
     ) -> "RequirementSet":
         file_lines = requirements_file.read().splitlines()
         requirements_set = constructor(target_platform)
@@ -100,7 +103,7 @@ class RequirementSet:
                 requirement = requirement_parser.parse(line)
             except ParsingFailed:
                 detected_requirements = constructor._handle_non_requirement_line(
-                    line, target_platform, requirement_parser
+                    line, target_platform, requirement_parser, logger
                 )
                 requirements_set += detected_requirements
             else:
@@ -178,27 +181,28 @@ class RequirementSet:
         line: str,
         target_platform: TargetPlatform,
         requirement_parser: RequirementParser,
+        logger: Logger,
     ) -> "RequirementSet":
         line = line.strip()
         if line.startswith("-c "):
             include_path = line[2:].strip()
             with tempfile.TemporaryDirectory() as project_directory:
                 requirements_file = RequirementsFile(
-                    include_path, project_directory, requirement_parser
+                    include_path, project_directory, requirement_parser, logger
                 )
                 requirements_file.process()
                 return constructor.from_file(
-                    requirements_file, target_platform, requirement_parser
+                    requirements_file, target_platform, requirement_parser, logger
                 ).to_constraints_only()
         elif line.startswith("-r "):
             include_path = line[2:].strip()
             with tempfile.TemporaryDirectory() as project_directory:
                 requirements_file = RequirementsFile(
-                    include_path, project_directory, requirement_parser
+                    include_path, project_directory, requirement_parser, logger
                 )
                 requirements_file.process()
                 return constructor.from_file(
-                    requirements_file, target_platform, requirement_parser
+                    requirements_file, target_platform, requirement_parser, logger
                 )
         else:
             return constructor(target_platform)

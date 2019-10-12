@@ -131,7 +131,7 @@ class VirtualenvPip(Pip):
     def _requirements_file(self, requirements: RequirementSet) -> Iterator[str]:
         with TemporaryDirectory() as directory:
             yield requirements.to_file(
-                directory, self.target_platform, self.requirement_parser
+                directory, self.target_platform, self.requirement_parser, self.logger
             ).processed_requirements_file_path()
 
     @contextmanager

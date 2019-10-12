@@ -5,7 +5,6 @@
 , extra_env
 , wheels_cache
 , requirements_files
-, wheel_cache_dir
 , editable_sources_directory
 , wheels_dir
 , build_directory
@@ -26,11 +25,8 @@ pip_base.override( old: {
       ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
       --src ${editable_sources_directory} \
       --wheel-dir ${wheels_dir} \
-      --build ${build_directory} \
       ${sources_directories_links} \
-      --find-links file://${wheel_cache_dir} \
       --find-links file://$PYPI2NIX_BOOTSTRAP/index \
-      --no-index \
-      --exists-action w
+      --no-index
   '';
 })

@@ -50,6 +50,7 @@ class WheelBuilder:
         if not setup_requirements:
             setup_requirements = RequirementSet(self.target_platform)
         else:
+            self.logger.info("Installing setup requirements")
             setup_requirements = (
                 self.detect_additional_build_dependencies(setup_requirements)
                 + setup_requirements
@@ -59,9 +60,11 @@ class WheelBuilder:
                 target_directory=self.lib_directory,
                 source_directories=[self.download_directory],
             )
+        self.logger.info("Installing runtime requirements")
         requirements = requirements + setup_requirements
         detected_requirements = self.detect_additional_build_dependencies(requirements)
         updated_requirements = detected_requirements + requirements
+        self.logger.info("Build wheels of setup and runtime requirements")
         self.pip.build_wheels(
             updated_requirements, self.wheel_directory, [self.download_directory]
         )

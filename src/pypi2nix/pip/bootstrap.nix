@@ -3,6 +3,11 @@
 
 let
   deps = import ./deps.nix { inherit fetchurl; };
+  wrappedPip = ''
+    #!${stdenv.shell}
+
+    exec python -m pip "$@"
+  '';
 in
   stdenv.mkDerivation {
     name = "pypi2nix-bootstrap";
@@ -23,7 +28,7 @@ in
       python -c "import sys, pip._internal; sys.exit(pip._internal.main(['install', '--force-reinstall', '--upgrade', 'pip', 'setuptools', '--no-index', '--find-links=file://$out/index', '-v', '--target', '$out/base']))"
       PYTHONPATH=$out/base python -c "import sys, pip._internal; sys.exit(pip._internal.main(['install', '--force-reinstall', '--upgrade', 'wheel', '--no-index', '--find-links=file://$out/index', '-v', '--target', '$out/base']))"
 
-      echo -e "#!${python.interpreter}\nimport sys, pip._internal; sys.exit(pip._internal.main())" > $out/bin/pip
+      echo -e '${wrappedPip}' > $out/bin/pip
 
       sed -i -e "s|\[egg_info.writers\]|\[egg_info.writers\]\nsetup_requires.txt = setuptools.command.egg_info:write_setup_requirements|" $out/base/setuptools-${deps.setuptoolsVersion}.dist-info/entry_points.txt
 
