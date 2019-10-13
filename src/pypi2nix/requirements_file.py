@@ -3,13 +3,16 @@ import os
 import os.path
 import tempfile
 from typing import List
+from typing import Tuple
 from typing import Type
 from typing import Union
 
 from pypi2nix.logger import Logger
+from pypi2nix.package_source import PathSource
 from pypi2nix.requirement_parser import ParsingFailed
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements import PathRequirement
+from pypi2nix.sources import Sources
 
 LineHandler = Union[
     "_RequirementIncludeLineHandler", "_EditableLineHandler", "_RequirementLineHandler"
@@ -28,6 +31,7 @@ class RequirementsFile:
         self.original_path: str = path
         self.requirement_parser = requirement_parser
         self._logger = logger
+        self._sources = Sources()
 
     @classmethod
     def from_lines(
@@ -100,7 +104,9 @@ class RequirementsFile:
                 requirement_parser=self.requirement_parser,
                 original_path=self.original_path,
             )
-        return line_handler.process()
+        line, sources = line_handler.process()
+        self._sources.update(sources)
+        return line
 
     def processed_requirements_file_path(self) -> str:
         return "%s/%s.txt" % (
@@ -116,6 +122,9 @@ class RequirementsFile:
 
     def is_editable_line(self, line: str) -> bool:
         return line.startswith("-e ") and not self.is_vcs_line(line)
+
+    def sources(self) -> Sources:
+        return self._sources
 
 
 class _RequirementIncludeLineHandler:
@@ -133,7 +142,7 @@ class _RequirementIncludeLineHandler:
         self._requirement_parser = requirement_parser
         self._logger = logger
 
-    def process(self) -> str:
+    def process(self) -> Tuple[str, Sources]:
         # this includes '-r ' and '-c ' lines
         original_file_path = self._line[2:].strip()
         if os.path.isabs(original_file_path):
@@ -150,7 +159,8 @@ class _RequirementIncludeLineHandler:
         )
         new_requirements_file.process()
         return (
-            self._line[0:3] + new_requirements_file.processed_requirements_file_path()
+            self._line[0:3] + new_requirements_file.processed_requirements_file_path(),
+            new_requirements_file.sources(),
         )
 
 
@@ -162,14 +172,15 @@ class _EditableLineHandler:
         self._original_path = original_path
         self._requirement_parser = requirement_parser
 
-    def process(self) -> str:
+    def process(self) -> Tuple[str, Sources]:
         self._strip_editable()
         line_handler = _RequirementLineHandler(
             line=self._line,
             requirement_parser=self._requirement_parser,
             original_path=self._original_path,
         )
-        return "-e " + line_handler.process()
+        line, sources = line_handler.process()
+        return "-e " + line, sources
 
     def _strip_editable(self) -> None:
         self._line = self._line[2:].strip()
@@ -182,22 +193,28 @@ class _RequirementLineHandler:
         self._line = line
         self._requirement_parser = requirement_parser
         self._original_path = original_path
+        self._sources = Sources()
 
-    def process(self) -> str:
+    def process(self) -> Tuple[str, Sources]:
         try:
             requirement = self._requirement_parser.parse(self._line)
         except ParsingFailed:
-            return self._line
+            return self._line, self._sources
         else:
             if isinstance(requirement, PathRequirement):
-                requirement = requirement.change_path(self._update_path)
-            return requirement.to_line()
+                requirement = requirement.change_path(
+                    lambda path: self._update_path(requirement.name(), path)
+                )
+            return requirement.to_line(), self._sources
 
-    def _update_path(self, requirement_path: str) -> str:
+    def _update_path(self, requirement_name: str, requirement_path: str) -> str:
+        if not os.path.isabs(requirement_path):
+            requirement_path = os.path.relpath(
+                os.path.join(os.path.dirname(self._original_path), requirement_path)
+            )
+        self._sources.add(requirement_name, PathSource(path=requirement_path))
         if os.path.isabs(requirement_path):
             return requirement_path
         else:
-            absolute_path = os.path.abspath(
-                os.path.join(os.path.dirname(self._original_path), requirement_path)
-            )
+            absolute_path = os.path.abspath(requirement_path)
             return absolute_path

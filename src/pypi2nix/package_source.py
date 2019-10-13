@@ -1,3 +1,4 @@
+import os.path
 from typing import Dict
 from typing import Optional
 from typing import Union
@@ -108,5 +109,16 @@ class PathSource:
     def __init__(self, path: str) -> None:
         self.path = path
 
+    @property
+    def _normalized_path(self) -> str:
+        if os.path.isabs(self.path):
+            return self.path
+        else:
+            head, tail = os.path.split(self.path)
+            if head:
+                return self.path
+            else:
+                return os.path.join(self.path, ".")
+
     def nix_expression(self) -> str:
-        return self.path
+        return self._normalized_path

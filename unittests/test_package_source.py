@@ -93,3 +93,8 @@ def test_url_source_nix_expression_contains_specified_hash_when_given(logger):
 @nix
 def test_path_source_gives_valid_nix_expression(path_source, expression_evaluater):
     expression_evaluater(path_source.nix_expression())
+
+
+def test_path_source_paths_with_one_segement_get_dot_appended_for_nix():
+    source = PathSource("segment")
+    assert source.nix_expression() == "segment/."
