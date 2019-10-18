@@ -67,3 +67,13 @@ def test_regressions_with_cryptography(
 def test_that_path_is_parsed_to_path_requirement(requirement_parser: RequirementParser):
     requirement = requirement_parser.parse("local_path/egg#egg=local-path")
     assert isinstance(requirement, PathRequirement)
+
+
+def test_that_requirement_parser_does_not_choke_on_sys_dot_platform(
+    requirement_parser: RequirementParser, logger: Logger
+):
+    line = 'macfsevents ; sys.platform == "darwin"'
+    requirement = requirement_parser.parse(line)
+    assert requirement.name() == "macfsevents"
+    assert "WARNING" in get_logger_output(logger)
+    assert "PEP 508" in get_logger_output(logger)
