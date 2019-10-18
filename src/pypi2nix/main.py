@@ -10,7 +10,6 @@ from pypi2nix.nix import Nix
 from pypi2nix.pip.implementation import NixPip
 from pypi2nix.pypi import Pypi
 from pypi2nix.requirement_parser import RequirementParser
-from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements_collector import RequirementsCollector
 from pypi2nix.sources import Sources
 from pypi2nix.stage1 import WheelBuilder
@@ -26,18 +25,22 @@ class Pypi2nix:
         self.configuration = configuration
 
     def run(self) -> None:
+        requirements = self.requirements_collector().requirements()
         self.logger().info("pypi2nix v{} running ...".format(pypi2nix_version))
-        if not self.requirements():
+        if not requirements:
             self.logger().info("No requirements were specified.  Ending program.")
             return
 
+        setup_requirements = self.setup_requirements_collector().requirements()
         requirements_name = os.path.join(
             self.configuration.target_directory, self.configuration.output_basename
         )
 
         sources = Sources()
-        sources.update(self.requirements().sources())
-        sources.update(self.setup_requirements().sources())
+        sources.update(setup_requirements.sources())
+        sources.update(requirements.sources())
+        sources.update(self.setup_requirements_collector().sources())
+        sources.update(self.requirements_collector().sources())
 
         self.logger().info("Downloading wheels and creating wheelhouse ...")
 
@@ -59,8 +62,7 @@ class Pypi2nix:
             target_platform=self.target_platform(),
         )
         wheels = wheel_builder.build(
-            requirements=self.requirements(),
-            setup_requirements=self.setup_requirements(),
+            requirements=requirements, setup_requirements=setup_requirements
         )
         requirements_frozen = wheel_builder.get_frozen_requirements()
         additional_dependency_graph = wheel_builder.additional_build_dependencies
@@ -117,7 +119,7 @@ class Pypi2nix:
         )
 
     @memoize
-    def requirements(self) -> RequirementSet:
+    def requirements_collector(self) -> RequirementsCollector:
         requirement_collector = RequirementsCollector(
             self.target_platform(),
             self.requirement_parser(),
@@ -128,10 +130,10 @@ class Pypi2nix:
             requirement_collector.add_line(item)
         for requirement_file_path in self.configuration.requirement_files:
             requirement_collector.add_file(requirement_file_path)
-        return requirement_collector.requirements()
+        return requirement_collector
 
     @memoize
-    def setup_requirements(self) -> RequirementSet:
+    def setup_requirements_collector(self) -> RequirementsCollector:
         setup_requirement_collector = RequirementsCollector(
             self.target_platform(),
             self.requirement_parser(),
@@ -140,7 +142,7 @@ class Pypi2nix:
         )
         for build_input in self.configuration.setup_requirements:
             setup_requirement_collector.add_line(build_input)
-        return setup_requirement_collector.requirements()
+        return setup_requirement_collector
 
     @memoize
     def requirement_parser(self) -> RequirementParser:

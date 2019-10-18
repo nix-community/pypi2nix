@@ -23,6 +23,7 @@ env:
     - TEST_FILE=tornado
     - TEST_FILE=local_path
     - TEST_FILE=pynacl
+    - TEST_FILE=relative_paths
 install:
 - sudo mount -o remount,exec,size=4G,mode=755 /run/user || true
 - nix-env -iA nixpkgs.nix-prefetch-git nixpkgs.nix-prefetch-hg
