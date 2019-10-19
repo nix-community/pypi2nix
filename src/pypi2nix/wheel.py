@@ -17,7 +17,6 @@ from pypi2nix.logger import Logger
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
-from pypi2nix.utils import TO_IGNORE
 from pypi2nix.utils import safe
 
 
@@ -68,12 +67,7 @@ class Wheel:
     @classmethod
     def _valid_dependency(constructor, name: str, dependency: str) -> bool:
         canonicalized_dependency = canonicalize_name(dependency)
-        return all(
-            [
-                canonicalized_dependency != name,
-                canonicalized_dependency not in TO_IGNORE,
-            ]
-        )
+        return canonicalized_dependency != name
 
     @classmethod
     def from_wheel_directory_path(
@@ -162,8 +156,6 @@ class Wheel:
         extracted_deps = RequirementSet(target_platform)
         for dep_string in deps:
             dependency = requirement_parser.parse(dep_string)
-            if dependency.name() in TO_IGNORE:
-                continue
             if not constructor._valid_dependency(current_wheel_name, dependency.name()):
                 continue
             extracted_deps.add(dependency)

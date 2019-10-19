@@ -22,7 +22,6 @@ from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
 from pypi2nix.sources import Sources
 from pypi2nix.target_platform import TargetPlatform
-from pypi2nix.utils import TO_IGNORE
 from pypi2nix.utils import cmd
 from pypi2nix.utils import prefetch_git
 from pypi2nix.utils import safe
@@ -73,9 +72,6 @@ class Stage2:
             if not wheel_metadata:
                 continue
 
-            if wheel_metadata.name in TO_IGNORE:
-                self.logger.debug("    SKIPPING")
-                continue
             if wheel_metadata.name in additional_dependencies:
                 wheel_metadata.add_build_dependencies(
                     additional_dependencies[wheel_metadata.name]

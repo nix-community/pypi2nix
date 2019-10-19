@@ -17,8 +17,6 @@ NixOption = Union[str, List[str], bool]
 
 HERE = os.path.dirname(__file__)
 
-TO_IGNORE = ["pip", "setuptools", "wheel", "zc.buildout", "zc.recipe.egg"]
-
 
 def pretty_option(option: Optional[str]) -> str:
     if option is None:
