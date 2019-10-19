@@ -66,7 +66,7 @@ in python.mkDerivation {
   meta = {
     homepage = https://github.com/nix-community/pypi2nix;
     description = "A tool that generates nix expressions for your python packages, so you don't have to.";
-    maintainers = with pkgs.lib.maintainers; [ seppeljordan garbas ];
+    maintainers = with pkgs.lib.maintainers; [ seppeljordan ];
     inherit doCheck;
   };
 }

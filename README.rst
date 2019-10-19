@@ -228,9 +228,9 @@ Command line options
 
 ``--default-overrides/--no-default-overrides``
     Pull in overrides from
-    ``https://github.com/garbas/nixpkgs-python``.  We currently
-    discourage the use of this feature since these overrides are not
-    maintained.
+    ``https://github.com/nix-community/pypi2nix-overrides``.  We
+    currently discourage the use of this feature since these overrides
+    are not maintained.
 
 ``--wheels-cache/-W TEXT``
     A location where prebuilt wheels can be found.  This option will
@@ -333,7 +333,7 @@ file, you can include pre-existing overrides files.  These overrides
 will be included the same way as your ``requirements_overrides.nix``.
 
 The ``pypi2nix`` author also maintains a set of "default" overrides at
-https://github.com/garbas/nixpkgs-python/blob/master/overrides.nix --
+https://github.com/nix-community/pypi2nix-overrides/blob/master/overrides.nix --
 you can include these by using the ``--default-overrides`` argument to
 ``pypi2nix``. These overrides are designed in such a way that they
 only override dependencies that were already present in your
@@ -344,7 +344,7 @@ argument.  ``pypi2nix`` can fetch these overrides from a local file or
 over certain common protocols.
 
 ``http`` and ``https``
-  ``pypi2nix -V 3 --overrides https://raw.githubusercontent.com/garbas/nixpkgs-python/master/overrides.nix``
+  ``pypi2nix -V 3 --overrides https://raw.githubusercontent.com/nix-community/pypi2nix-overrides/master/overrides.nix``
 
   Note that the generated Nix expression will check if contents of
   the overrides file differs from when the Nix expression was built, and
