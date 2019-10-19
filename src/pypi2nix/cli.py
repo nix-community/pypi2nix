@@ -117,8 +117,8 @@ from pypi2nix.version import pypi2nix_version
 )
 @click.option(
     "--default-overrides/--no-default-overrides",
-    default=False,
-    help='Apply overrides from "nixpkgs-python" (https://github.com/garbas/nixpkgs-python)',  # noqa
+    default=True,
+    help='Apply overrides from "nixpkgs-python" (https://github.com/nix-community/pypi2nix-overrides)',  # noqa
 )
 @click.option(
     "-W",
@@ -180,7 +180,9 @@ def main(
         overrides += tuple(
             [
                 OverridesGithub(
-                    owner="garbas", repo="nixpkgs-python", path="overrides.nix"
+                    owner="nix-community",
+                    repo="pypi2nix-overrides",
+                    path="overrides.nix",
                 )
             ]
         )
