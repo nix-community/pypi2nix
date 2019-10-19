@@ -117,7 +117,7 @@ from pypi2nix.version import pypi2nix_version
 )
 @click.option(
     "--default-overrides/--no-default-overrides",
-    default=False,
+    default=True,
     help='Apply overrides from "nixpkgs-python" (https://github.com/nix-community/pypi2nix-overrides)',  # noqa
 )
 @click.option(
