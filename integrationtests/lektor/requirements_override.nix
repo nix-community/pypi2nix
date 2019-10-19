@@ -7,5 +7,4 @@ self: super: {
       sed -i -e "s|requests\[security\]|requests|" setup.py
     '';
   });
-
 }
