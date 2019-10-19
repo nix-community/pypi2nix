@@ -16,14 +16,15 @@ env:
     - TEST_FILE=flit
     - TEST_FILE=ldap
     - TEST_FILE=lektor
+    - TEST_FILE=local_path
     - TEST_FILE=pillow
+    - TEST_FILE=pynacl
+    - TEST_FILE=relative_paths
     - TEST_FILE=rss2email
     - TEST_FILE=scipy
     - TEST_FILE=serpy_0_1_1
+    - TEST_FILE=setuptools
     - TEST_FILE=tornado
-    - TEST_FILE=local_path
-    - TEST_FILE=pynacl
-    - TEST_FILE=relative_paths
 install:
 - sudo mount -o remount,exec,size=4G,mode=755 /run/user || true
 - nix-env -iA nixpkgs.nix-prefetch-git nixpkgs.nix-prefetch-hg
