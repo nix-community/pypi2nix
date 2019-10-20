@@ -2,7 +2,7 @@
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -r requirements.txt -r requirements-dev.txt
+#   pypi2nix -r requirements.txt -r requirements-dev.txt -v
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -109,13 +109,16 @@ let
     };
 
     "attrs" = python.mkDerivation {
-      name = "attrs-19.1.0";
+      name = "attrs-19.3.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/cc/d9/931a24cc5394f19383fbbe3e1147a0291276afa43a0dc3ed0d6cd9fda813/attrs-19.1.0.tar.gz";
-        sha256 = "f0b870f674851ecbfbbbd364d6b5cbdff9dcedbc7f3f5e18a6891057f21fe399";
+        url = "https://files.pythonhosted.org/packages/98/c3/2c227e66b5e896e15ccdae2e00bbc69aa46e9a8ce8869cc5fa96310bf612/attrs-19.3.0.tar.gz";
+        sha256 = "f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72";
 };
       doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs ++ [ ];
+      buildInputs = commonBuildInputs ++ [
+        self."setuptools"
+        self."wheel"
+      ];
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://www.attrs.org/";
@@ -300,10 +303,10 @@ let
     };
 
     "flake8-debugger" = python.mkDerivation {
-      name = "flake8-debugger-3.1.0";
+      name = "flake8-debugger-3.0.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/39/4b/90548607282483dd15f9ce1f4434d735ae756e16e1faf60621b0f8877fcc/flake8-debugger-3.1.0.tar.gz";
-        sha256 = "be4fb88de3ee8f6dd5053a2d347e2c0a2b54bab6733a2280bb20ebd3c4ca1d97";
+        url = "https://files.pythonhosted.org/packages/2c/a7/45823a26ef0c5fa7a0c099b772a5b6aa2d8e686284490ef738fc8691ffc0/flake8-debugger-3.0.0.tar.gz";
+        sha256 = "e5c8ac980d819db2f3fbb89fe0e43a2fe6c127edd6ce4984a3f7e0bbdac3d2d4";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -385,7 +388,9 @@ let
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
+        self."setuptools"
         self."setuptools-scm"
+        self."wheel"
       ];
       propagatedBuildInputs = [
         self."zipp"
@@ -432,10 +437,10 @@ let
     };
 
     "jinja2" = python.mkDerivation {
-      name = "jinja2-2.10.1";
+      name = "jinja2-2.10.3";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/93/ea/d884a06f8c7f9b7afbc8138b762e80479fb17aedbbe2b06515a12de9378d/Jinja2-2.10.1.tar.gz";
-        sha256 = "065c4f02ebe7f7cf559e49ee5a95fb800a9e4528727aec6f24402a5374c65013";
+        url = "https://files.pythonhosted.org/packages/7b/db/1d037ccd626d05a7a47a1b81ea73775614af83c2b3e53d86a0bb41d8d799/Jinja2-2.10.3.tar.gz";
+        sha256 = "9fe95f19286cfefaa917656583d020be14e7859c6b0252588391e47db34527de";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -443,9 +448,9 @@ let
         self."markupsafe"
       ];
       meta = with pkgs.stdenv.lib; {
-        homepage = "http://jinja.pocoo.org/";
-        license = licenses.bsdOriginal;
-        description = "A small but fast and easy to use stand-alone template engine written in pure python.";
+        homepage = "https://palletsprojects.com/p/jinja/";
+        license = licenses.bsd3;
+        description = "A very fast and expressive template engine.";
       };
     };
 
@@ -491,6 +496,7 @@ let
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [
         self."public"
+        self."setuptools"
         self."values"
       ];
       meta = with pkgs.stdenv.lib; {
@@ -517,10 +523,10 @@ let
     };
 
     "mypy" = python.mkDerivation {
-      name = "mypy-0.730";
+      name = "mypy-0.740";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/a2/66/66830b72aafccd99f3fd13097384aaf29c966d1de219416de7b74f13ae37/mypy-0.730.tar.gz";
-        sha256 = "42a78944e80770f21609f504ca6c8173f7768043205b5ac51c9144e057dcf879";
+        url = "https://files.pythonhosted.org/packages/af/38/7f4f8a52b6062d63193cdb86b17757e8668367cca7ddae08be99ab98fafc/mypy-0.740.tar.gz";
+        sha256 = "48c8bc99380575deb39f5d3400ebb6a8a1cb5cc669bbba4d3bb30f904e0a0e7d";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -537,16 +543,16 @@ let
     };
 
     "mypy-extensions" = python.mkDerivation {
-      name = "mypy-extensions-0.4.1";
+      name = "mypy-extensions-0.4.3";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/c2/92/3cc05d1206237d54db7b2565a58080a909445330b4f90a6436302a49f0f8/mypy_extensions-0.4.1.tar.gz";
-        sha256 = "37e0e956f41369209a3d5f34580150bcacfabaa57b33a15c0b25f4b5725e0812";
+        url = "https://files.pythonhosted.org/packages/63/60/0582ce2eaced55f65a4406fc97beba256de4b7a95a0034c6576458c6519f/mypy_extensions-0.4.3.tar.gz";
+        sha256 = "2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
-        homepage = "http://www.mypy-lang.org/";
+        homepage = "https://github.com/python/mypy_extensions";
         license = licenses.mit;
         description = "Experimental type system extensions for programs checked with the mypy typechecker.";
       };
@@ -583,6 +589,7 @@ let
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [
         self."public"
+        self."setuptools"
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/andrewp-as-is/orderdict.py";
@@ -627,10 +634,10 @@ let
     };
 
     "pdbpp" = python.mkDerivation {
-      name = "pdbpp-0.10.0";
+      name = "pdbpp-0.10.2";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/ec/c3/cf957fa98406ef25422b3324dee70b3624dacdd05602201af356234059c4/pdbpp-0.10.0.tar.gz";
-        sha256 = "ee7eab02ecf32d92bd66b45eedb9bda152fa13f7be0dceb7050413a52cbbc4dd";
+        url = "https://files.pythonhosted.org/packages/3f/82/4b6c5b9128bbbad48a52c6d639c84e3c453e75953ed123b6e9338420dcec/pdbpp-0.10.2.tar.gz";
+        sha256 = "73ff220d5006e0ecdc3e2705d8328d8aa5ac27fef95cc06f6e42cd7d22d55eb8";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -654,7 +661,9 @@ let
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
+        self."setuptools"
         self."setuptools-scm"
+        self."wheel"
       ];
       propagatedBuildInputs = [
         self."importlib-metadata"
@@ -674,7 +683,9 @@ let
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [ ];
+      propagatedBuildInputs = [
+        self."setuptools"
+      ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/looking-for-a-job/public.py";
         license = "UNKNOWN";
@@ -763,14 +774,16 @@ let
     };
 
     "pytest" = python.mkDerivation {
-      name = "pytest-5.1.3";
+      name = "pytest-5.2.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/cd/a9/522f0830079931fee274ce63d8d31df59fc1c1d5896a5f07678c7ad6dc25/pytest-5.1.3.tar.gz";
-        sha256 = "cc6620b96bc667a0c8d4fa592a8c9c94178a1bd6cc799dbb057dfd9286d31a31";
+        url = "https://files.pythonhosted.org/packages/3a/3b/f839b8431582e0f4e5f98230300db70b795f467503b2cdb0bf7eb9b18351/pytest-5.2.1.tar.gz";
+        sha256 = "ca563435f4941d0cb34767301c27bc65c510cb82e90b9ecf9cb52dc2c63caaa0";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
+        self."setuptools"
         self."setuptools-scm"
+        self."wheel"
       ];
       propagatedBuildInputs = [
         self."atomicwrites"
@@ -790,10 +803,10 @@ let
     };
 
     "pytest-cov" = python.mkDerivation {
-      name = "pytest-cov-2.7.1";
+      name = "pytest-cov-2.8.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/bb/0f/3db7ff86801883b21d5353b258c994b1b8e2abbc804e2273b8d0fd19004b/pytest-cov-2.7.1.tar.gz";
-        sha256 = "e00ea4fdde970725482f1f35630d12f074e121a23801aabf2ae154ec6bdd343a";
+        url = "https://files.pythonhosted.org/packages/13/8a/51f54b43a043c799bceca846594b9a310823a3e52df5ec27109cccba90f4/pytest-cov-2.8.1.tar.gz";
+        sha256 = "cc6742d8bac45070217169f5f72ceee1e0e55b0221f54bcf24845972d3a47f2b";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -816,7 +829,9 @@ let
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
+        self."setuptools"
         self."setuptools-scm"
+        self."wheel"
       ];
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
@@ -875,12 +890,29 @@ let
         self."click"
         self."orderdict"
         self."public"
+        self."setuptools"
         self."write"
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/looking-for-a-job/setupcfg.py";
         license = "UNKNOWN";
         description = "UNKNOWN";
+      };
+    };
+
+    "setuptools" = python.mkDerivation {
+      name = "setuptools-41.4.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/f4/d5/a6c19dcbcbc267aca376558797f036d9bcdff344c9f785fe7d0fe9a5f2a7/setuptools-41.4.0.zip";
+        sha256 = "7eae782ccf36b790c21bde7d86a4f303a441cd77036b25c559a602cf5186ce4d";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/pypa/setuptools";
+        license = "UNKNOWN";
+        description = "Easily download, build, install, upgrade, and uninstall Python packages";
       };
     };
 
@@ -990,6 +1022,7 @@ let
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [
         self."public"
+        self."setuptools"
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/looking-for-a-job/values.py";
@@ -1011,6 +1044,22 @@ let
         homepage = "https://github.com/jquast/wcwidth";
         license = licenses.mit;
         description = "Measures number of Terminal column cells of wide-character codes";
+      };
+    };
+
+    "wheel" = python.mkDerivation {
+      name = "wheel-0.33.6";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/59/b0/11710a598e1e148fb7cbf9220fd2a0b82c98e94efbdecb299cb25e7f0b39/wheel-0.33.6.tar.gz";
+        sha256 = "10c9da68765315ed98850f8e048347c3eb06dd81822dc2ab1d4fde9dc9702646";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/pypa/wheel";
+        license = licenses.mit;
+        description = "A built-package format for Python.";
       };
     };
 
@@ -1041,6 +1090,7 @@ let
       propagatedBuildInputs = [
         self."mkdir"
         self."public"
+        self."setuptools"
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/looking-for-a-job/write.py";
@@ -1057,7 +1107,9 @@ let
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
+        self."setuptools"
         self."setuptools-scm"
+        self."wheel"
       ];
       propagatedBuildInputs = [
         self."more-itertools"
@@ -1072,7 +1124,7 @@ let
   localOverridesFile = ./requirements_override.nix;
   localOverrides = import localOverridesFile { inherit pkgs python; };
   commonOverrides = [
-    
+        (let src = pkgs.fetchFromGitHub { owner = "nix-community"; repo = "pypi2nix-overrides"; rev = "bd48e5a36901935fd51779dc345a4bb86cd66992"; sha256 = "1hfxmm0bcny1hjzjwmfvjnyg5167ginlmdfhr9w7k9salpw8gq59"; } ; in import "${src}/overrides.nix" { inherit pkgs python; })
   ];
   paramOverrides = [
     (overrides { inherit pkgs python; })
