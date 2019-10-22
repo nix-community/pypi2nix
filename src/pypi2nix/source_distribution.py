@@ -6,9 +6,9 @@ from email.message import Message
 from typing import Any
 from typing import Iterable
 
-import setupcfg
 import toml
 from packaging.utils import canonicalize_name
+from setuptools.config import read_configuration
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
@@ -98,7 +98,7 @@ class SourceDistribution:
             if os.path.basename(filepath) == "setup.cfg"
         ]
         if setup_cfg_candidates:
-            return setupcfg.load(setup_cfg_candidates[0])
+            return read_configuration(setup_cfg_candidates[0])
 
     def build_dependencies(
         self, target_platform: TargetPlatform, requirement_parser: RequirementParser
