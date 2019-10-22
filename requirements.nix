@@ -2,7 +2,7 @@
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -r requirements.txt -r requirements-dev.txt -v
+#   pypi2nix -r requirements.txt -r requirements-dev.txt --no-default-overrides
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -1124,7 +1124,7 @@ let
   localOverridesFile = ./requirements_override.nix;
   localOverrides = import localOverridesFile { inherit pkgs python; };
   commonOverrides = [
-        (let src = pkgs.fetchFromGitHub { owner = "nix-community"; repo = "pypi2nix-overrides"; rev = "bd48e5a36901935fd51779dc345a4bb86cd66992"; sha256 = "1hfxmm0bcny1hjzjwmfvjnyg5167ginlmdfhr9w7k9salpw8gq59"; } ; in import "${src}/overrides.nix" { inherit pkgs python; })
+    
   ];
   paramOverrides = [
     (overrides { inherit pkgs python; })

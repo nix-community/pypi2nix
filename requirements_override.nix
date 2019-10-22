@@ -5,6 +5,9 @@ let
   addBuildInputs = packages: old: {
     buildInputs = old.buildInputs ++ packages;
   };
+  pipInstallIgnoresInstalled = old: {
+    pipInstallFlags = ["--ignore-installed"];
+  };
   addSingleBuildInput = package: addBuildInputs [package];
   overridePythonPackage = name: overrides:
     let
@@ -37,5 +40,10 @@ in {
   "py" = overridePythonPackage "py"
     [
       (addBuildInputs [self."setuptools-scm"])
+    ];
+
+  "setuptools" = overridePythonPackage "setuptools"
+    [
+      pipInstallIgnoresInstalled
     ];
 }
