@@ -18,7 +18,7 @@ class ProjectDirectory(metaclass=ABCMeta):
         exc_type: Optional[Type],
         exc_value: Optional[Exception],
         traceback: Optional[TracebackType],
-    ) -> bool:
+    ) -> None:
         pass
 
 
@@ -34,10 +34,8 @@ class TemporaryProjectDirectory(ProjectDirectory):
         exc_type: Optional[Type],
         exc_value: Optional[Exception],
         traceback: Optional[TracebackType],
-    ) -> bool:
-        return self.temporary_directory.__exit__(  # type: ignore
-            exc_type, exc_value, traceback
-        )
+    ) -> None:
+        return self.temporary_directory.__exit__(exc_type, exc_value, traceback)
 
 
 class PersistentProjectDirectory(ProjectDirectory):
@@ -56,5 +54,5 @@ class PersistentProjectDirectory(ProjectDirectory):
         exc_type: Optional[Type],
         exc_value: Optional[Exception],
         traceback: Optional[TracebackType],
-    ) -> bool:
-        return False
+    ) -> None:
+        pass
