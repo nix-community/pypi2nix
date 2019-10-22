@@ -34,6 +34,16 @@ And now install it using `nix-env`_ command::
 
     % nix-env -if https://github.com/nix-community/pypi2nix/tarball/master
 
+System Requirements
+^^^^^^^^^^^^^^^^^^^
+
+Your system needs to have ``nix`` installed on it.  Currently
+``pypi2nix`` is only tested against ``linux`` systems.  Supported
+``nixpkgs`` channels are ``nixos-19.09`` and ``nixos-unstable``.  Due
+to the nature of ``nixos-unstable`` the occasional breakage of
+``pypi2nix`` is to be expected.  We try to provide fixes in that
+regard in a timely manner.
+
 
 2. Usage
 --------
