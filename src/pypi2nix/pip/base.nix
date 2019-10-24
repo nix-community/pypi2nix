@@ -6,10 +6,7 @@
 
 let
   pkgs = import <nixpkgs> {};
-  pypi2nix_bootstrap = import ./bootstrap.nix {
-    inherit (pkgs) stdenv fetchurl unzip which makeWrapper;
-    inherit python;
-  };
+  pypi2nix_bootstrap = pkgs.callPackage ./bootstrap.nix {};
   python = builtins.getAttr python_version pkgs;
   extra_build_inputs_derivations = (map
     (name: pkgs.lib.getAttrFromPath (pkgs.lib.splitString "." name) pkgs)

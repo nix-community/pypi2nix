@@ -1,3 +1,5 @@
 {
-    "pip": "pip-19.3.dev0-py2.py3-none-any.whl"
+    "pip": "pip-19.3.1-py2.py3-none-any.whl",
+    "setuptools": "setuptools-41.4.0-py2.py3-none-any.whl",
+    "wheel": "wheel-0.33.6-py2.py3-none-any.whl"
 }
