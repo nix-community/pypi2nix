@@ -1,6 +1,4 @@
 { stdenv
-, fetchurl
-, makeWrapper
 , python
 }:
 
@@ -13,8 +11,8 @@ let
 in
   stdenv.mkDerivation {
     name = "pypi2nix-bootstrap";
+    buildInputs = [ python ];
     src = ../wheels;
-    buildInputs = [ python makeWrapper ];
     installPhase = ''
       PYTHONPATH=
       for wheel in $(ls $src/*.whl); do

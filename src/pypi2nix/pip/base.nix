@@ -8,10 +8,9 @@ let
   pkgs = import <nixpkgs> {};
   pypi2nix_bootstrap = pkgs.callPackage ./bootstrap.nix {};
   python = builtins.getAttr python_version pkgs;
-  extra_build_inputs_derivations = (map
-    (name: pkgs.lib.getAttrFromPath (pkgs.lib.splitString "." name) pkgs)
-    extra_build_inputs
-  );
+  nixpkg_from_name = name:
+    pkgs.lib.getAttrFromPath (pkgs.lib.splitString "." name) pkgs;
+  extra_build_inputs_derivations = map nixpkg_from_name extra_build_inputs;
   locales = pkgs.lib.optional pkgs.stdenv.isLinux pkgs.glibcLocales;
 in pkgs.lib.makeOverridable pkgs.stdenv.mkDerivation rec {
   name = "pypi2nix-pip";
