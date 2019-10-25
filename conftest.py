@@ -210,3 +210,15 @@ def sources_for_test_packages(data_directory):
 @pytest.fixture
 def pypi(logger: Logger) -> Pypi:
     return Pypi(logger=logger)
+
+
+@pytest.fixture
+def flit_wheel(data_directory, current_platform, logger, requirement_parser):
+    path = os.path.join(data_directory, "flit-1.3-py3-none-any.whl")
+    with Archive(path=path).extracted_files() as wheel_directory:
+        return Wheel.from_wheel_directory_path(
+            os.path.join(wheel_directory, "flit-1.3.dist-info"),
+            current_platform,
+            logger,
+            requirement_parser,
+        )
