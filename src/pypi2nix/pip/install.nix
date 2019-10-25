@@ -20,7 +20,6 @@ pip_base.override( old: {
       ${builtins.concatStringsSep " " (map (x: "-r ${x} ") requirements_files)} \
       --target=${target_directory} \
       ${sources_directories_links} \
-      --find-links file://$PYPI2NIX_BOOTSTRAP/index \
       --find-links file://${project_dir}/wheel \
       --no-index
   '';

@@ -26,7 +26,6 @@ pip_base.override( old: {
       --src ${editable_sources_directory} \
       --wheel-dir ${wheels_dir} \
       ${sources_directories_links} \
-      --find-links file://$PYPI2NIX_BOOTSTRAP/index \
       --no-index
   '';
 })

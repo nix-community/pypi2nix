@@ -14,9 +14,6 @@ from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.utils import cmd
-from pypi2nix.wheels import INDEX
-
-PIP_WHEEL = INDEX.absolute_path("pip")
 
 
 class VirtualenvPip(Pip):
@@ -42,7 +39,6 @@ class VirtualenvPip(Pip):
 
     def prepare_virtualenv(self) -> None:
         self.env_builder.create(self.target_directory)
-        self._execute_pip_command(["install", "-U", PIP_WHEEL])
         self._execute_pip_command(
             ["install", self._wheel_requirement_name()] + self._maybe_index()
         )
