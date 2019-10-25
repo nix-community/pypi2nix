@@ -13,6 +13,7 @@ class ReleaseType(Enum):
     WHEEL = 2
     EGG = 3
     WIN_INSTALLER = 4
+    RPM = 5
 
 
 _release_type_mapping = {
@@ -20,6 +21,7 @@ _release_type_mapping = {
     "bdist_wheel": ReleaseType.WHEEL,
     "bdist_egg": ReleaseType.EGG,
     "bdist_wininst": ReleaseType.WIN_INSTALLER,
+    "bdist_rpm": ReleaseType.RPM,
 }
 
 
