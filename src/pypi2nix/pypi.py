@@ -30,7 +30,7 @@ class Pypi:
             release_type = get_release_type_by_packagetype(package_type)
             if release_type is None:
                 self._logger.warning(
-                    f"Found unexpected `packagetype` entry for package `{name}`"
+                    f"Found unexpected `packagetype` entry {package_type} for package `{name}`"
                 )
                 return ReleaseType.UNKNOWN
             else:
