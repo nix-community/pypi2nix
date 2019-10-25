@@ -83,7 +83,6 @@ class Wheel:
                 metadata_file, "r", encoding="ascii", errors="surrogateescape"
             ) as headers:
                 metadata = email.parser.Parser().parse(headers)
-            print(metadata)
             license_string = str_from_message(metadata, "license")
             if license_string is None:
                 license_string = ""
