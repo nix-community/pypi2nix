@@ -14,6 +14,7 @@ class ReleaseType(Enum):
     EGG = 3
     WIN_INSTALLER = 4
     RPM = 5
+    MSI = 6
 
 
 _release_type_mapping = {
@@ -22,6 +23,7 @@ _release_type_mapping = {
     "bdist_egg": ReleaseType.EGG,
     "bdist_wininst": ReleaseType.WIN_INSTALLER,
     "bdist_rpm": ReleaseType.RPM,
+    "bdist_msi": ReleaseType.MSI,
 }
 
 
