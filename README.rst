@@ -238,9 +238,8 @@ Command line options
 
 ``--default-overrides/--no-default-overrides``
     Pull in overrides from
-    ``https://github.com/nix-community/pypi2nix-overrides``.  We
-    currently discourage the use of this feature since these overrides
-    are not maintained.
+    ``https://github.com/nix-community/pypi2nix-overrides``.  This
+    feature is enabled by default.
 
 ``--wheels-cache/-W TEXT``
     A location where prebuilt wheels can be found.  This option will
