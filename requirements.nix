@@ -175,7 +175,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/chardet/chardet";
-        license = licenses.lgpl3;
+        license = licenses.lgpl2;
         description = "Universal encoding detector for Python 2 and 3";
       };
     };
@@ -223,7 +223,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "http://docutils.sourceforge.net/";
-        license = "public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt)";
+        license = licenses.publicDomain;
         description = "Docutils -- Python Documentation Utilities";
       };
     };
@@ -260,7 +260,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/takluyver/entrypoints";
-        license = "UNKNOWN";
+        license = licenses.mit;
         description = "Discover and load entry points from installed packages.";
       };
     };
@@ -359,7 +359,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/takluyver/flit";
-        license = "UNKNOWN";
+        license = licenses.bsdOriginal;
         description = "A simple packaging tool for simple packages.";
       };
     };
@@ -397,7 +397,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "http://importlib-metadata.readthedocs.io/";
-        license = "Apache Software License";
+        license = licenses.asl20;
         description = "Read metadata from Python packages";
       };
     };
@@ -415,7 +415,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/takluyver/intreehooks";
-        license = "UNKNOWN";
+        license = licenses.mit;
         description = "Load a PEP 517 backend from inside the source tree";
       };
     };
@@ -449,7 +449,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://palletsprojects.com/p/jinja/";
-        license = licenses.bsd3;
+        license = licenses.bsdOriginal;
         description = "A very fast and expressive template engine.";
       };
     };
@@ -465,7 +465,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://palletsprojects.com/p/markupsafe/";
-        license = licenses.bsd3;
+        license = licenses.bsdOriginal;
         description = "Safely add untrusted strings to HTML/XML markup.";
       };
     };
@@ -573,7 +573,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pypa/packaging";
-        license = licenses.bsdOriginal;
+        license = licenses.asl20;
         description = "Core utilities for Python packages";
       };
     };
@@ -717,10 +717,10 @@ let
     };
 
     "pytest" = python.mkDerivation {
-      name = "pytest-5.2.1";
+      name = "pytest-5.2.2";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/3a/3b/f839b8431582e0f4e5f98230300db70b795f467503b2cdb0bf7eb9b18351/pytest-5.2.1.tar.gz";
-        sha256 = "ca563435f4941d0cb34767301c27bc65c510cb82e90b9ecf9cb52dc2c63caaa0";
+        url = "https://files.pythonhosted.org/packages/24/67/051f7622814613980a03c9722233a4d7f8b0e21787a46b41a1057c903992/pytest-5.2.2.tar.gz";
+        sha256 = "27abc3fef618a01bebb1f0d6d303d2816a99aa87a5968ebc32fe971be91eb1e6";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -759,7 +759,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pytest-dev/pytest-cov";
-        license = licenses.mit;
+        license = licenses.bsdOriginal;
         description = "Pytest plugin for measuring coverage.";
       };
     };
@@ -779,7 +779,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pytest-dev/pytest-runner/";
-        license = "UNKNOWN";
+        license = licenses.mit;
         description = "Invoke py.test as distutils command with dependency resolution";
       };
     };
@@ -832,7 +832,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pypa/setuptools";
-        license = "UNKNOWN";
+        license = licenses.mit;
         description = "Easily download, build, install, upgrade, and uninstall Python packages";
       };
     };
@@ -912,7 +912,7 @@ let
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/python/typing/blob/master/typing_extensions/README.rst";
-        license = "PSF";
+        license = licenses.psfl;
         description = "Backported and Experimental Type Hints for Python 3.5+";
       };
     };
@@ -998,7 +998,7 @@ let
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/jaraco/zipp";
-        license = "UNKNOWN";
+        license = licenses.mit;
         description = "Backport of pathlib-compatible object wrapper for zip files";
       };
     };
