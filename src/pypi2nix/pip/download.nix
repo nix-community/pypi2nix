@@ -21,7 +21,6 @@ pip_base.override( old: {
       ${requirements_files_option} \
       --dest ${destination_directory} \
       --src ${editable_sources_directory} \
-      --find-links file://$PYPI2NIX_BOOTSTRAP/index \
       --no-binary :all:
   '';
 })

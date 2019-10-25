@@ -56,7 +56,11 @@ class Pypi:
             for data in release_list
         }
 
-        return PypiPackage(name=metadata["info"]["name"], releases=releases)
+        return PypiPackage(
+            name=metadata["info"]["name"],
+            releases=releases,
+            version=metadata["info"]["version"],
+        )
 
     def get_source_release(self, name: str, version: str) -> Optional[PypiRelease]:
         def version_tag_from_filename(filename: str) -> Union[Version, LegacyVersion]:

@@ -10,3 +10,4 @@ from pypi2nix.pypi_release import PypiRelease
 class PypiPackage:
     name: str = attrib()
     releases: Set[PypiRelease] = attrib()
+    version: str = attrib()

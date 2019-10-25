@@ -6,8 +6,8 @@
 
 let
   pkgs = import <nixpkgs> {};
-  pypi2nix_bootstrap = pkgs.callPackage ./bootstrap.nix {};
   python = builtins.getAttr python_version pkgs;
+  pypi2nix_bootstrap = pkgs.callPackage ./bootstrap.nix {inherit python;};
   nixpkg_from_name = name:
     pkgs.lib.getAttrFromPath (pkgs.lib.splitString "." name) pkgs;
   extra_build_inputs_derivations = map nixpkg_from_name extra_build_inputs;
@@ -15,7 +15,6 @@ let
 in pkgs.lib.makeOverridable pkgs.stdenv.mkDerivation rec {
   name = "pypi2nix-pip";
   buildInputs = with pkgs; [
-    python
     pypi2nix_bootstrap
     unzip
     gitAndTools.git
@@ -26,7 +25,7 @@ in pkgs.lib.makeOverridable pkgs.stdenv.mkDerivation rec {
     export TMPDIR=${project_dir}
     export GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-    export PYTHONPATH=${pypi2nix_bootstrap}/base:${project_dir}/lib
+    export PYTHONPATH=${project_dir}/lib
     export LANG=en_US.UTF-8
     export HOME=${project_dir}
     export SOURCE_DATE_EPOCH=315532800

@@ -1,5 +1,6 @@
 import json
 import os.path
+from collections import namedtuple
 from contextlib import contextmanager
 from typing import Dict
 from typing import Iterator
@@ -10,22 +11,19 @@ from attr import attrs
 
 @attrs
 class Index:
+    Entry = namedtuple("Entry", ["url", "sha256"])
     path: str = attrib()
 
-    def absolute_path(self, key: str) -> str:
-        file_name = self[key]
-        return os.path.abspath(os.path.join(os.path.dirname(self.path), file_name))
-
-    def __getitem__(self, key: str) -> str:
+    def __getitem__(self, key: str) -> "Index.Entry":
         with self._index_json() as index:
-            return index[key]
+            return Index.Entry(url=index[key]["url"], sha256=index[key]["sha256"])
 
-    def __setitem__(self, key: str, value: str) -> None:
+    def __setitem__(self, key: str, value: "Index.Entry") -> None:
         with self._index_json(write=True) as index:
-            index[key] = value
+            index[key] = {"url": value.url, "sha256": value.sha256}
 
     @contextmanager
-    def _index_json(self, write: bool = False) -> Iterator[Dict[str, str]]:
+    def _index_json(self, write: bool = False) -> Iterator[Dict[str, Dict[str, str]]]:
         with open(self.path) as f:
             index = json.load(f)
         yield index
@@ -35,6 +33,3 @@ class Index:
 
 
 INDEX = Index(os.path.join(os.path.dirname(__file__), "index.json"))
-
-
-pip_wheel_path = INDEX["pip"]
