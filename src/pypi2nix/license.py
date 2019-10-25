@@ -136,10 +136,7 @@ LICENSE_PATTERNS: Dict[str, List[str]] = {
 
 
 def recognized_nix_license_from_classifiers(classifiers: List[str],) -> Optional[str]:
-    all_classifiers_keys = all_classifiers.keys()
-    license_classifiers = [
-        i for i in filter(lambda x: x in all_classifiers_keys, classifiers)
-    ]
+    license_classifiers = [i for i in classifiers if i in all_classifiers]
     for license_classifier in license_classifiers:
         license_nix = all_classifiers[license_classifier]
         if license_nix is not None:

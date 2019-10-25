@@ -35,6 +35,11 @@ def build_test_package(package_name):
     build_wheel(wheel_target_directory, package_dir)
 
 
+def download_flit_wheel():
+    build_wheel(wheel_target_directory, "flit==1.3")
+
+
 if __name__ == "__main__":
     for test_package in TEST_PACKAGES:
         build_test_package(test_package)
+    download_flit_wheel()
