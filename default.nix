@@ -45,9 +45,9 @@ in python.mkDerivation {
   dontUseSetuptoolsShellHook = true;
   checkPhase = if doCheck then ''
     echo "Running black ..."
-    black --check --diff -v setup.py src/  unittests/ mypy/ ${maybeIntegrationTestsDir}
+    black --check --diff -v setup.py src/  unittests/ mypy/ ${maybeIntegrationTestsDir} scripts/
     echo "Running flake8 ..."
-    flake8 -v setup.py src/ ${maybeIntegrationTestsDir} unittests/
+    flake8 -v setup.py src/ ${maybeIntegrationTestsDir} unittests/ scripts/
     mypy --config-file setup.cfg src/
     mypy \
         --config-file setup.cfg \

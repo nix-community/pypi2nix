@@ -18,7 +18,10 @@ def create_sdist():
 
 def create_virtual_env():
     os.makedirs("build", exist_ok=True)
-    shutil.rmtree("build/venv")
+    try:
+        shutil.rmtree("build/venv")
+    except FileNotFoundError:
+        pass
     subprocess.run(["python", "-m", "venv", "build/venv"], check=True)
 
 
