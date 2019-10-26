@@ -53,3 +53,11 @@ jobs:
       - nix build
       - result/bin/pypi2nix --version
       - nix-shell --command 'pytest unittests/'
+  - stage: package tests
+    name: package installation
+    os: linux
+    env:
+      - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz
+    
+    script:
+      - nix-shell --command 'install_test.py'

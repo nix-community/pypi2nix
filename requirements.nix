@@ -148,6 +148,25 @@ let
       };
     };
 
+    "bleach" = python.mkDerivation {
+      name = "bleach-3.1.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/78/5a/0df03e8735cd9c75167528299c738702437589b9c71a849489d00ffa82e8/bleach-3.1.0.tar.gz";
+        sha256 = "3fdf7f77adcf649c9911387df51254b813185e32b2c6619f690b593a617e19fa";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."six"
+        self."webencodings"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/mozilla/bleach";
+        license = licenses.asl20;
+        description = "An easy safelist-based HTML-sanitizing tool.";
+      };
+    };
+
     "certifi" = python.mkDerivation {
       name = "certifi-2019.9.11";
       src = pkgs.fetchurl {
@@ -614,6 +633,22 @@ let
       };
     };
 
+    "pkginfo" = python.mkDerivation {
+      name = "pkginfo-1.5.0.1";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/6c/04/fd6683d24581894be8b25bc8c68ac7a0a73bf0c4d74b888ac5fe9a28e77f/pkginfo-1.5.0.1.tar.gz";
+        sha256 = "7424f2c8511c186cd5424bbf31045b77435b37a8d604990b79d4e70d741148bb";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://code.launchpad.net/~tseaver/pkginfo/trunk";
+        license = licenses.mit;
+        description = "Query metadatdata from sdists / bdists / installed packages.";
+      };
+    };
+
     "pluggy" = python.mkDerivation {
       name = "pluggy-0.13.0";
       src = pkgs.fetchurl {
@@ -800,6 +835,27 @@ let
       };
     };
 
+    "readme-renderer" = python.mkDerivation {
+      name = "readme-renderer-24.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/44/de/a567140b13a0fc8d3b04d85a510b5a7d9869b44b2939fa8ac07c5e421485/readme_renderer-24.0.tar.gz";
+        sha256 = "bb16f55b259f27f75f640acf5e00cf897845a8b3e4731b5c1a436e4b8529202f";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."bleach"
+        self."docutils"
+        self."pygments"
+        self."six"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/pypa/readme_renderer";
+        license = licenses.asl20;
+        description = "readme_renderer is a library for rendering \"readme\" descriptions for Warehouse";
+      };
+    };
+
     "requests" = python.mkDerivation {
       name = "requests-2.22.0";
       src = pkgs.fetchurl {
@@ -818,6 +874,24 @@ let
         homepage = "http://python-requests.org";
         license = licenses.asl20;
         description = "Python HTTP for Humans.";
+      };
+    };
+
+    "requests-toolbelt" = python.mkDerivation {
+      name = "requests-toolbelt-0.9.1";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/28/30/7bf7e5071081f761766d46820e52f4b16c8a08fef02d2eb4682ca7534310/requests-toolbelt-0.9.1.tar.gz";
+        sha256 = "968089d4584ad4ad7c171454f0a5c6dac23971e9472521ea3b6d49d610aa6fc0";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."requests"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://toolbelt.readthedocs.org";
+        license = licenses.asl20;
+        description = "A utility belt for advanced users of python-requests";
       };
     };
 
@@ -885,6 +959,45 @@ let
       };
     };
 
+    "tqdm" = python.mkDerivation {
+      name = "tqdm-4.36.1";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/80/b3/6ca4806441b730782fc4613c6aa2070412295c5521f33ae151988e448929/tqdm-4.36.1.tar.gz";
+        sha256 = "abc25d0ce2397d070ef07d8c7e706aede7920da163c64997585d42d3537ece3d";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/tqdm/tqdm";
+        license = licenses.mit;
+        description = "Fast, Extensible Progress Meter";
+      };
+    };
+
+    "twine" = python.mkDerivation {
+      name = "twine-2.0.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/91/82/32c68749d10ae30dd126699ee471b8885d9a9ae326a0f25dac42bb6a3f28/twine-2.0.0.tar.gz";
+        sha256 = "9fe7091715c7576df166df8ef6654e61bada39571783f2fd415bdcba867c6993";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."pkginfo"
+        self."readme-renderer"
+        self."requests"
+        self."requests-toolbelt"
+        self."setuptools"
+        self."tqdm"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://twine.readthedocs.io/";
+        license = licenses.asl20;
+        description = "Collection of utilities for publishing packages on PyPI";
+      };
+    };
+
     "typed-ast" = python.mkDerivation {
       name = "typed-ast-1.4.0";
       src = pkgs.fetchurl {
@@ -946,6 +1059,22 @@ let
         homepage = "https://github.com/jquast/wcwidth";
         license = licenses.mit;
         description = "Measures number of Terminal column cells of wide-character codes";
+      };
+    };
+
+    "webencodings" = python.mkDerivation {
+      name = "webencodings-0.5.1";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/0b/02/ae6ceac1baeda530866a85075641cec12989bd8d31af6d5ab4a3e8c92f47/webencodings-0.5.1.tar.gz";
+        sha256 = "b36a1c245f2d304965eb4e0a82848379241dc04b865afcc4aab16748587e1923";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/SimonSapin/python-webencodings";
+        license = licenses.bsdOriginal;
+        description = "Character encoding aliases for legacy web content";
       };
     };
 
