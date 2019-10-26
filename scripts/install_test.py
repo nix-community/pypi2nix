@@ -3,6 +3,7 @@ import os
 import os.path
 import shutil
 import subprocess
+
 from pypi2nix.version import pypi2nix_version
 
 
@@ -33,13 +34,19 @@ def create_wheel():
 
 def install_sdist():
     subprocess.run(
-        ["build/venv/bin/pip", "install", f"dist/pypi2nix-{pypi2nix_version}.tar.gz"], check=True
+        ["build/venv/bin/pip", "install", f"dist/pypi2nix-{pypi2nix_version}.tar.gz"],
+        check=True,
     )
 
 
 def install_wheel():
     subprocess.run(
-        ["build/venv/bin/pip", "install", f"dist/pypi2nix-{pypi2nix_version}-py3-none-any.whl"], check=True
+        [
+            "build/venv/bin/pip",
+            "install",
+            f"dist/pypi2nix-{pypi2nix_version}-py3-none-any.whl",
+        ],
+        check=True,
     )
 
 
