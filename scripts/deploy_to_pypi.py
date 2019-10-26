@@ -1,9 +1,18 @@
 #!/usr/bin/env python
-import os
 import argparse
+import os
+import shutil
 import subprocess
 
 from pypi2nix.version import pypi2nix_version
+
+
+def main():
+    set_up_environment()
+    args = parse_args()
+    pypi_name = get_pypi_name_from_args(args)
+    remove_old_build_artifacts()
+    deploy_to(pypi_name)
 
 
 def set_up_environment():
@@ -20,6 +29,10 @@ def get_pypi_name_from_args(args):
     return "pypi" if args.production else "test-pypi"
 
 
+def remove_old_build_artifacts():
+    shutil.rmtree("src/pypi2nix.egg-info", ignore_errors=True)
+
+
 def deploy_to(pypi_name):
     subprocess.run(["python", "setup.py", "sdist", "bdist_wheel"], check=True)
     distribution_paths = [
@@ -29,13 +42,6 @@ def deploy_to(pypi_name):
     subprocess.run(
         ["twine", "upload", "-r", pypi_name] + distribution_paths, check=True
     )
-
-
-def main():
-    set_up_environment()
-    args = parse_args()
-    pypi_name = get_pypi_name_from_args(args)
-    deploy_to(pypi_name)
 
 
 if __name__ == "__main__":
