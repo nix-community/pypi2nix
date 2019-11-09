@@ -60,7 +60,6 @@ class IntegrationTest(TestCase):
         try:
             self.nix.build(
                 os.path.join(os.path.dirname(HERE), "default.nix"),
-                arguments={"excludeIntegrationTests": True},
                 out_link=os.path.join(HERE, "pypi2nix"),
             )
         except EvaluationFailed:

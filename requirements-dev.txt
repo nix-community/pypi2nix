@@ -9,16 +9,11 @@ isort
 # testing
 pytest
 pytest-cov
-attrs
 
 # develop
 pdbpp
 
 # packaging
 twine
-
-# setup requires
-pytest-runner
-setuptools-scm
 
 -c constraints.txt
