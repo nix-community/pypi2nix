@@ -1,33 +1,14 @@
-{
-  pkgs ? import <nixpkgs> {},
-}:
+{ pkgs ? import <nixpkgs> { }, }:
 
 let
   pythonPackages = import ./requirements.nix { inherit pkgs; };
 
   version = pkgs.lib.fileContents ./src/pypi2nix/VERSION;
 
-  pypi2nixFunction =
-    { mkDerivation
-    , lib
-
-    , attrs
-    , black
-    , click
-    , flake8
-    , flake8-unused-arguments
-    , isort
-    , jinja2
-    , mypy
-    , nix-prefetch-github
-    , parsley
-    , pdbpp
-    , pytest
-    , pytest-cov
-    , setuptools
-    , toml
-    , twine
-    }: mkDerivation {
+  pypi2nixFunction = { mkDerivation, lib, nixfmt, attrs, black, click, flake8
+    , flake8-unused-arguments, isort, jinja2, mypy, nix-prefetch-github, parsley
+    , pdbpp, pytest, pytest-cov, setuptools, toml, twine }:
+    mkDerivation {
       name = "pypi2nix-${version}";
       src = ./.;
       checkInputs = [
@@ -40,19 +21,14 @@ let
         pytest-cov
         twine
         pdbpp
+        nixfmt
       ];
-      buildInputs = [];
-      propagatedBuildInputs = [
-        attrs
-        click
-        jinja2
-        nix-prefetch-github
-        parsley
-        setuptools
-        toml
-      ];
+      buildInputs = [ ];
+      propagatedBuildInputs =
+        [ attrs click jinja2 nix-prefetch-github parsley setuptools toml ];
       dontUseSetuptoolsShellHook = true;
       checkPhase = ''
+        nixfmt --check default.nix
         echo "Running black ..."
         black --check --diff -v setup.py src/ unittests/ mypy/ integrationtests/ scripts/
         echo "Running flake8 ..."
@@ -73,8 +49,9 @@ let
         export PYTHONPATH=$PWD/src:$PYTHONPATH
       '';
       meta = {
-        homepage = https://github.com/nix-community/pypi2nix;
-        description = "A tool that generates nix expressions for your python packages, so you don't have to.";
+        homepage = "https://github.com/nix-community/pypi2nix";
+        description =
+          "A tool that generates nix expressions for your python packages, so you don't have to.";
         maintainers = with lib.maintainers; [ seppeljordan ];
       };
     };
@@ -82,6 +59,7 @@ let
   callPackage = pkgs.lib.callPackageWith ({
     mkDerivation = pythonPackages.mkDerivation;
     lib = pkgs.lib;
+    nixfmt = pkgs.nixfmt;
   } // pythonPackages.packages);
 
-in callPackage pypi2nixFunction {}
+in callPackage pypi2nixFunction { }
