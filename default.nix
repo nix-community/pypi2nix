@@ -6,8 +6,8 @@ let
   version = pkgs.lib.fileContents ./src/pypi2nix/VERSION;
 
   pypi2nixFunction = { mkDerivation, lib, nixfmt, attrs, black, click, flake8
-    , flake8-unused-arguments, isort, jinja2, mypy, nix-prefetch-github, parsley
-    , pdbpp, pytest, pytest-cov, setuptools, toml, twine }:
+    , flake8-unused-arguments, isort, jinja2, mypy, nix-prefetch-github
+    , packaging, parsley, pdbpp, pytest, pytest-cov, setuptools, toml, twine, }:
     mkDerivation {
       name = "pypi2nix-${version}";
       src = ./.;
@@ -24,8 +24,16 @@ let
         nixfmt
       ];
       buildInputs = [ ];
-      propagatedBuildInputs =
-        [ attrs click jinja2 nix-prefetch-github parsley setuptools toml ];
+      propagatedBuildInputs = [
+        attrs
+        click
+        jinja2
+        nix-prefetch-github
+        packaging
+        parsley
+        setuptools
+        toml
+      ];
       dontUseSetuptoolsShellHook = true;
       checkPhase = ''
         nixfmt --check default.nix
