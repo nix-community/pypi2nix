@@ -1,1 +1,6 @@
-pypi2nix_version = "2.0.1.dev7+gdb43e3b.d20191110"
+try:
+    from ._version import pypi2nix_version
+except ImportError:
+    from setuptools_scm import get_version
+
+    pypi2nix_version = get_version()
