@@ -45,8 +45,8 @@ class _RequirementParserGrammar:
         marker_var    = wsp* (env_var | python_str)
         marker_expr   = marker_var marker_op marker_var | wsp* '(' marker wsp* ')'
         marker_op     = version_cmp | (wsp* 'in') | (wsp* 'not' wsp+ 'in')
-        marker_and    = marker_expr wsp* 'and' marker_expr | marker_expr
-        marker_or     = marker_and wsp* 'or' marker_and | marker_and
+        marker_and    = marker_expr wsp* 'and' marker_and | marker_expr
+        marker_or     = marker_and wsp* 'or' marker_or | marker_and
         marker        = marker_or
         quoted_marker = ';' wsp* <marker>:m -> EnvironmentMarker(m)
         identifier_end = letterOrDigit | (('-' | '_' | '.' )* letterOrDigit)
