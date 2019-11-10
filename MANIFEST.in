@@ -1,4 +1,3 @@
 include src/pypi2nix/pip/*.nix
 include src/pypi2nix/templates/*.j2
-include src/pypi2nix/VERSION
 include src/pypi2nix/wheels/index.json

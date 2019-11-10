@@ -3,14 +3,38 @@
 let
   pythonPackages = import ./requirements.nix { inherit pkgs; };
 
-  version = pkgs.lib.fileContents ./src/pypi2nix/VERSION;
+  version = "dev";
+
+  sourceFilter = with pkgs.lib;
+    with builtins;
+    path: type:
+    let
+      name = baseNameOf (toString path);
+      ignoreDirectories = directories:
+        !(any (directory: directory == name && type == "directory")
+          directories);
+      ignoreFileTypes = types:
+        !(any (type: hasSuffix ("." + type) name && type == "regular") types);
+    in ignoreDirectories [
+      "parsemon2.egg-info"
+      "__pycache__"
+      "build"
+      "dist"
+      ".mypy_cache"
+    ] && ignoreFileTypes [ "pyc" ];
+
+  source = pkgs.lib.cleanSourceWith {
+    src = ./.;
+    filter = sourceFilter;
+  };
 
   pypi2nixFunction = { mkDerivation, lib, nixfmt, attrs, black, click, flake8
     , flake8-unused-arguments, isort, jinja2, mypy, nix-prefetch-github
-    , packaging, parsley, pdbpp, pytest, pytest-cov, setuptools, toml, twine, }:
+    , packaging, parsley, pdbpp, pytest, pytest-cov, setuptools, setuptools-scm
+    , toml, twine, git, }:
     mkDerivation {
       name = "pypi2nix-${version}";
-      src = ./.;
+      src = source;
       checkInputs = [
         black
         flake8
@@ -23,7 +47,8 @@ let
         pdbpp
         nixfmt
       ];
-      buildInputs = [ ];
+      buildInputs = [ setuptools-scm ];
+      nativeBuildInputs = [ git ];
       propagatedBuildInputs = [
         attrs
         click
@@ -68,6 +93,7 @@ let
     mkDerivation = pythonPackages.mkDerivation;
     lib = pkgs.lib;
     nixfmt = pkgs.nixfmt;
+    git = pkgs.git;
   } // pythonPackages.packages);
 
 in callPackage pypi2nixFunction { }

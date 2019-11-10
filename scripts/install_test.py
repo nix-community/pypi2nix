@@ -7,6 +7,18 @@ import subprocess
 from pypi2nix.version import pypi2nix_version
 
 
+def main():
+    set_up_environment()
+    create_virtual_env()
+    create_sdist()
+    install_sdist()
+    run_help_command()
+    create_virtual_env()
+    create_wheel()
+    install_wheel()
+    run_help_command()
+
+
 def set_up_environment():
     os.putenv("SOURCE_DATE_EPOCH", "315532800")
     os.unsetenv("PYTHONPATH")
@@ -52,18 +64,6 @@ def install_wheel():
 
 def run_help_command():
     subprocess.run(["build/venv/bin/pypi2nix", "--help"], check=True)
-
-
-def main():
-    set_up_environment()
-    create_virtual_env()
-    create_sdist()
-    install_sdist()
-    run_help_command()
-    create_virtual_env()
-    create_wheel()
-    install_wheel()
-    run_help_command()
 
 
 if __name__ == "__main__":
