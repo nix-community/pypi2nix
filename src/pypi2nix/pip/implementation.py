@@ -242,8 +242,6 @@ class NixPip(Pip):
             "here>\n\n"
             body += "# Traceback \n\n```bash\n"
             body += "% pypi2nix --version\n"
-            with open(os.path.join(HERE, "VERSION")) as f:
-                body += f.read() + "\n"
             body += "% pypi2nix " + " ".join(sys.argv[1:]) + "\n"
             body += self.build_output + "\n```\n"
             click.launch(

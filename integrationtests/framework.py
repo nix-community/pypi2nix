@@ -261,6 +261,7 @@ class IntegrationTest(TestCase):
     def nix_build_env(self) -> Dict[str, str]:
         environment_variables = dict(os.environ)
         environment_variables["NIX_PATH"] = NIX_PATH
+        del environment_variables["PYTHONPATH"]
         return environment_variables
 
     def generate_requirements_file_content(self) -> str:
