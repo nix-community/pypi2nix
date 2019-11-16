@@ -26,23 +26,54 @@ haven't seen it already.
 1. Installation
 ---------------
 
+System Requirements
+^^^^^^^^^^^^^^^^^^^
+
 Make sure Nix is installed::
 
     % curl https://nixos.org/nix/install | sh
 
-And now install it using `nix-env`_ command::
-
-    % nix-env -if https://github.com/nix-community/pypi2nix/tarball/master
-
-System Requirements
-^^^^^^^^^^^^^^^^^^^
-
-Your system needs to have ``nix`` installed on it.  Currently
+Currently
 ``pypi2nix`` is only tested against ``linux`` systems.  Supported
 ``nixpkgs`` channels are ``nixos-19.09`` and ``nixos-unstable``.  Due
 to the nature of ``nixos-unstable`` the occasional breakage of
 ``pypi2nix`` is to be expected.  We try to provide fixes in that
 regard in a timely manner.
+
+
+Ad hoc Installation (Simple)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For just installing the package with a command, use `nix-env`_::
+
+    % nix-env -if https://github.com/nix-community/pypi2nix/tarball/master
+
+Declarative Installation (Advanced)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you prefer to explicitly declare each installed package in your Nix(OS)
+or project configuration, you can do the following:  
+
+First, import the package from its `default.nix` by fetching the whole git
+repository with `pkgs.fetchgit`.  Afterwards you can just add the imported attribute
+the list of installed software.
+
+Below you find an example for NixOS' `configuration.nix`. Other methods like
+`home-manager <https://github.com/rycee/home-manager>`_ work similar::
+
+    let
+      pypi2nix = import (pkgs.fetchgit {
+        url = "https://github.com/nix-community/pypi2nix";
+        # adjust rev and sha256 to desired version
+        rev = "v2.0.0";
+        sha256 = "sha256:1mrvbm78jnk7m44gvpa7l2iwrjiv9584f14vlcw9p334zxknpsfr";
+      }) {};
+    in
+      environment.systemPackages = [
+        # your other packages
+        pypi2nix
+      ];
+
 
 
 2. Usage
