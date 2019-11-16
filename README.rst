@@ -26,6 +26,11 @@ haven't seen it already.
 1. Installation
 ---------------
 
+``pypi2nix`` is part of ``nixpkgs``.  If you just want to use
+``pypi2nix`` on your system, it is recommended that you install it via
+the regular means, e.g. ``nix-env -iA nixos.pypi2nix`` on NixOS or
+``nix-env -iA nixpkgs.pypi2nix`` on other systems utilizing nix.
+
 System Requirements
 ^^^^^^^^^^^^^^^^^^^
 
@@ -33,12 +38,11 @@ Make sure Nix is installed::
 
     % curl https://nixos.org/nix/install | sh
 
-Currently
-``pypi2nix`` is only tested against ``linux`` systems.  Supported
-``nixpkgs`` channels are ``nixos-19.09`` and ``nixos-unstable``.  Due
-to the nature of ``nixos-unstable`` the occasional breakage of
-``pypi2nix`` is to be expected.  We try to provide fixes in that
-regard in a timely manner.
+Currently ``pypi2nix`` is only tested against ``linux`` systems.
+Supported ``nixpkgs`` channels are ``nixos-19.09`` and
+``nixos-unstable``.  Due to the nature of ``nixos-unstable`` the
+occasional breakage of ``pypi2nix`` is to be expected.  We try to
+provide fixes in that regard in a timely manner.
 
 
 Ad hoc Installation (Simple)
@@ -46,27 +50,29 @@ Ad hoc Installation (Simple)
 
 For just installing the package with a command, use `nix-env`_::
 
-    % nix-env -if https://github.com/nix-community/pypi2nix/tarball/master
+  git clone https://github.com/nix-community/pypi2nix.git
+  cd pypi2nix
+  nix-env -if .
 
 Declarative Installation (Advanced)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you prefer to explicitly declare each installed package in your Nix(OS)
-or project configuration, you can do the following:  
+If you prefer to explicitly declare each installed package in your
+Nix(OS) or project configuration, you can do the following:
 
-First, import the package from its `default.nix` by fetching the whole git
-repository with `pkgs.fetchgit`.  Afterwards you can just add the imported attribute
-the list of installed software.
+First, import the package from its ``default.nix`` by fetching the
+whole git repository with ``pkgs.fetchgit``.  Afterwards you can just
+add the imported attribute the list of installed software.
 
-Below you find an example for NixOS' `configuration.nix`. Other methods like
-`home-manager <https://github.com/rycee/home-manager>`_ work similar::
+Below you find an example for NixOS' ``configuration.nix``. Other
+methods like `home-manager`_ work similar::
 
     let
       pypi2nix = import (pkgs.fetchgit {
         url = "https://github.com/nix-community/pypi2nix";
         # adjust rev and sha256 to desired version
-        rev = "v2.0.0";
-        sha256 = "sha256:1mrvbm78jnk7m44gvpa7l2iwrjiv9584f14vlcw9p334zxknpsfr";
+        rev = "v2.0.1";
+        sha256 = "sha256:0mxh3x8bck3axdfi9vh9mz1m3zvmzqkcgy6gxp8f9hhs6qg5146y";
       }) {};
     in
       environment.systemPackages = [
@@ -536,3 +542,4 @@ the top level directory of this project.
 .. _`examples/Makefile`: https://github.com/nix-community/pypi2nix/blob/master/examples/Makefile
 .. _`nix-env`: http://nixos.org/nix/manual/#sec-nix-env
 .. _`pytest`: https://pytest.org
+.. _`home-manager`: https://github.com/rycee/home-manager
