@@ -84,7 +84,7 @@ class WheelBuilder:
             return detected_dependencies
         for distribution in uninspected_distributions:
             build_dependencies = distribution.build_dependencies(
-                self.target_platform, self.requirement_parser
+                self.target_platform
             ).filter(lambda requirement: requirement.name() not in [distribution.name])
             self.additional_build_dependencies[distribution.name] += build_dependencies
             detected_dependencies += build_dependencies
@@ -103,7 +103,9 @@ class WheelBuilder:
         for archive in archives:
             try:
                 distributions.append(
-                    SourceDistribution.from_archive(archive, self.logger)
+                    SourceDistribution.from_archive(
+                        archive, self.logger, requirement_parser=self.requirement_parser
+                    )
                 )
             except DistributionNotDetected:
                 continue

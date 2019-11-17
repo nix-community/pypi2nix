@@ -12,6 +12,7 @@ from setuptools.config import read_configuration
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
+from pypi2nix.package.interfaces import HasBuildDependencies
 from pypi2nix.requirement_parser import ParsingFailed
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
@@ -22,11 +23,12 @@ class DistributionNotDetected(Exception):
     pass
 
 
-class SourceDistribution:
+class SourceDistribution(HasBuildDependencies):
     def __init__(
         self,
         name: str,
         logger: Logger,
+        requirement_parser: RequirementParser,
         pyproject_toml: Any = None,
         setup_cfg: Any = None,
     ) -> None:
@@ -34,10 +36,14 @@ class SourceDistribution:
         self.pyproject_toml = pyproject_toml
         self.setup_cfg = setup_cfg
         self.logger = logger
+        self.requirement_parser = requirement_parser
 
     @classmethod
     def from_archive(
-        source_distribution, archive: Archive, logger: Logger
+        source_distribution,
+        archive: Archive,
+        logger: Logger,
+        requirement_parser: RequirementParser,
     ) -> "SourceDistribution":
         with archive.extracted_files() as extraction_directory:
             extracted_files = [
@@ -56,7 +62,11 @@ class SourceDistribution:
                 "Could not parse source distribution metadata, name detection failed"
             )
         return source_distribution(
-            name=name, pyproject_toml=pyproject_toml, setup_cfg=setup_cfg, logger=logger
+            name=name,
+            pyproject_toml=pyproject_toml,
+            setup_cfg=setup_cfg,
+            logger=logger,
+            requirement_parser=requirement_parser,
         )
 
     @classmethod
@@ -100,22 +110,16 @@ class SourceDistribution:
         if setup_cfg_candidates:
             return read_configuration(setup_cfg_candidates[0])
 
-    def build_dependencies(
-        self, target_platform: TargetPlatform, requirement_parser: RequirementParser
-    ) -> RequirementSet:
+    def build_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
         if self.pyproject_toml is not None:
-            return self.build_dependencies_from_pyproject_toml(
-                target_platform, requirement_parser
-            )
+            return self.build_dependencies_from_pyproject_toml(target_platform)
         elif self.setup_cfg is not None:
-            return self.build_dependencies_from_setup_cfg(
-                target_platform, requirement_parser
-            )
+            return self.build_dependencies_from_setup_cfg(target_platform)
         else:
             return RequirementSet(target_platform)
 
     def build_dependencies_from_pyproject_toml(
-        self, target_platform: TargetPlatform, requirement_parser: RequirementParser
+        self, target_platform: TargetPlatform
     ) -> RequirementSet:
         requirement_set = RequirementSet(target_platform)
         if self.pyproject_toml is None:
@@ -125,7 +129,7 @@ class SourceDistribution:
                 "requires", []
             ):
                 try:
-                    requirement = requirement_parser.parse(build_input)
+                    requirement = self.requirement_parser.parse(build_input)
                 except ParsingFailed as e:
                     self.logger.warning(
                         "Failed to parse build dependency of `{name}`".format(
@@ -141,16 +145,16 @@ class SourceDistribution:
         return requirement_set
 
     def build_dependencies_from_setup_cfg(
-        self, target_platform: TargetPlatform, requirement_parser: RequirementParser
+        self, target_platform: TargetPlatform
     ) -> RequirementSet:
         setup_requires = self.setup_cfg.get("options", {}).get("setup_requires")
         requirements = RequirementSet(target_platform)
         if isinstance(setup_requires, str):
-            requirements.add(requirement_parser.parse(setup_requires))
+            requirements.add(self.requirement_parser.parse(setup_requires))
         elif isinstance(setup_requires, list):
             for requirement_string in setup_requires:
                 try:
-                    requirement = requirement_parser.parse(requirement_string)
+                    requirement = self.requirement_parser.parse(requirement_string)
                 except ParsingFailed as e:
                     self.logger.warning(
                         "Failed to parse build dependency of `{name}`".format(
