@@ -56,14 +56,14 @@ class SourceDistribution(HasBuildDependencies):
                 extracted_files, archive
             )
             name: str = metadata.get("name")
+            if isinstance(name, Header):
+                raise DistributionNotDetected(
+                    "Could not parse source distribution metadata, name detection failed"
+                )
             pyproject_toml = source_distribution.get_pyproject_toml(
                 name, extracted_files, logger, requirement_parser
             )
             setup_cfg = source_distribution.get_setup_cfg(extracted_files)
-        if isinstance(name, Header):
-            raise DistributionNotDetected(
-                "Could not parse source distribution metadata, name detection failed"
-            )
         return source_distribution(
             name=name,
             pyproject_toml=pyproject_toml,
