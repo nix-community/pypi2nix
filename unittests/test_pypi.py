@@ -23,7 +23,7 @@ def test_pypi_get_package_returns_package_with_releases(pypi):
 
 @nix
 def test_pypi_gets_correct_source_release_for_package_version_with_only_source_release(
-    pypi
+    pypi,
 ):
     release = pypi.get_source_release("six", "0.9.0")
     assert (
