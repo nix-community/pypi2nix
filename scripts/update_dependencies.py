@@ -15,6 +15,8 @@ def main():
             "requirements.txt",
             "-r",
             "requirements-dev.txt",
+            "-s",
+            "pytest-runner",
             "--no-default-overrides",
         ]
         + (["-v"] if arguments.verbose else []),

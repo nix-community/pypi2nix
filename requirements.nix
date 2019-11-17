@@ -1,8 +1,8 @@
-# generated using pypi2nix tool (version: 2.0.2.dev6+g4c4ed5d)
+# generated using pypi2nix tool (version: 2.0.2.dev4+g9a1561e)
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -r requirements.txt -r requirements-dev.txt --no-default-overrides
+#   pypi2nix -r requirements.txt -r requirements-dev.txt -s pytest-runner --no-default-overrides
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -819,6 +819,26 @@ let
         homepage = "https://github.com/pytest-dev/pytest-cov";
         license = licenses.bsdOriginal;
         description = "Pytest plugin for measuring coverage.";
+      };
+    };
+
+    "pytest-runner" = python.mkDerivation {
+      name = "pytest-runner-5.2";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/5b/82/1462f86e6c3600f2471d5f552fcc31e39f17717023df4bab712b4a9db1b3/pytest-runner-5.2.tar.gz";
+        sha256 = "96c7e73ead7b93e388c5d614770d2bae6526efd997757d3543fe17b557a0942b";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [
+        self."setuptools"
+        self."setuptools-scm"
+        self."wheel"
+      ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/pytest-dev/pytest-runner/";
+        license = licenses.mit;
+        description = "Invoke py.test as distutils command with dependency resolution";
       };
     };
 
