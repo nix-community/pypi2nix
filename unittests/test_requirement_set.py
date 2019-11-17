@@ -222,7 +222,7 @@ def test_that_get_method_returns_none_if_key_not_found(requirement_set):
 
 
 def test_that_get_method_returns_specified_default_value_when_not_found(
-    requirement_set
+    requirement_set,
 ):
     assert requirement_set.get("not-found", 0) == 0
 

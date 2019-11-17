@@ -54,7 +54,7 @@ def test_that_we_can_add_a_requirements_file_path(collector, tmpdir):
 
 
 def test_that_requirements_with_relative_paths_are_absolute_paths_after_adding(
-    collector
+    collector,
 ):
     collector.add_line("./path/to/egg#egg=testegg")
     requirement = collector.requirements().get("testegg")

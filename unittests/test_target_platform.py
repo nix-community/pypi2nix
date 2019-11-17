@@ -104,7 +104,7 @@ def test_that_target_platform_can_be_constructed_from_python_version(
 
 @nix
 def test_that_current_platform_to_environment_dict_equals_default_environment(
-    current_platform: TargetPlatform
+    current_platform: TargetPlatform,
 ):
     assert current_platform.environment_dictionary() == default_environment()
 
@@ -130,7 +130,7 @@ def test_that_generated_platform_environment_dictionary_respects_python_version(
 
 
 def test_that_environment_marker_with_unknown_os_name_do_not_apply_to_current_platform(
-    current_platform: TargetPlatform
+    current_platform: TargetPlatform,
 ):
     marker = EnvironmentMarker("os_name == 'fake_os_in_unittest'")
     assert not marker.applies_to_platform(current_platform)

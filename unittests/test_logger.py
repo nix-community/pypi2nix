@@ -176,7 +176,7 @@ def test_that_low_number_gets_translated_into_error_verbosity():
 
 
 def test_that_unconnect_proxy_logger_raises_proper_exception_on_logging(
-    unconnected_proxy_logger
+    unconnected_proxy_logger,
 ):
     with pytest.raises(LoggerNotConnected):
         unconnected_proxy_logger.debug("test")

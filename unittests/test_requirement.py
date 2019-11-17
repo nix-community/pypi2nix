@@ -16,7 +16,7 @@ from .switches import nix
 
 
 def test_requirement_cannot_be_constructed_from_line_containing_newline(
-    requirement_parser
+    requirement_parser,
 ):
     with pytest.raises(ParsingFailed):
         requirement_parser.parse("pypi2nix\n >= 1.0")
@@ -103,7 +103,7 @@ def test_from_line_recognizes_git_sources(requirement_parser):
 
 
 def test_from_line_accepts_requirement_with_marker_including_in_operator(
-    requirement_parser
+    requirement_parser,
 ):
     requirement = requirement_parser.parse("zipfile36; python_version in '3.3 3.4 3.5'")
     assert requirement.name() == "zipfile36"
@@ -435,7 +435,7 @@ def test_that_extras_of_url_requirements_are_preserved(requirement_parser):
 
 
 def test_that_source_of_url_requirement_with_file_scheme_is_path_source(
-    requirement_parser
+    requirement_parser,
 ):
     requirement = requirement_parser.parse("file://test/path#egg=egg")
     assert isinstance(requirement.source(), PathSource)
