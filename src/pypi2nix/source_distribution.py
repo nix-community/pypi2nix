@@ -5,14 +5,15 @@ from email.header import Header
 from email.message import Message
 from typing import Any
 from typing import Iterable
+from typing import Optional
 
-import toml
 from packaging.utils import canonicalize_name
 from setuptools.config import read_configuration
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
 from pypi2nix.package.interfaces import HasBuildDependencies
+from pypi2nix.package.pyproject import PyprojectToml
 from pypi2nix.requirement_parser import ParsingFailed
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
@@ -29,7 +30,7 @@ class SourceDistribution(HasBuildDependencies):
         name: str,
         logger: Logger,
         requirement_parser: RequirementParser,
-        pyproject_toml: Any = None,
+        pyproject_toml: Optional[PyprojectToml] = None,
         setup_cfg: Any = None,
     ) -> None:
         self.name = canonicalize_name(name)
@@ -54,9 +55,11 @@ class SourceDistribution(HasBuildDependencies):
             metadata = source_distribution.metadata_from_uncompressed_distribution(
                 extracted_files, archive
             )
-            pyproject_toml = source_distribution.get_pyproject_toml(extracted_files)
+            name: str = metadata.get("name")
+            pyproject_toml = source_distribution.get_pyproject_toml(
+                name, extracted_files, logger, requirement_parser
+            )
             setup_cfg = source_distribution.get_setup_cfg(extracted_files)
-        name = metadata.get("name")
         if isinstance(name, Header):
             raise DistributionNotDetected(
                 "Could not parse source distribution metadata, name detection failed"
@@ -88,7 +91,13 @@ class SourceDistribution(HasBuildDependencies):
         return metadata
 
     @classmethod
-    def get_pyproject_toml(_, extracted_files: Iterable[str]) -> Any:
+    def get_pyproject_toml(
+        _,
+        name: str,
+        extracted_files: Iterable[str],
+        logger: Logger,
+        requirement_parser: RequirementParser,
+    ) -> Optional[PyprojectToml]:
         pyproject_toml_candidates = [
             filepath
             for filepath in extracted_files
@@ -96,7 +105,13 @@ class SourceDistribution(HasBuildDependencies):
         ]
         if pyproject_toml_candidates:
             with open(pyproject_toml_candidates[0]) as f:
-                return toml.load(f)
+                content = f.read()
+                return PyprojectToml(
+                    name=name,
+                    file_content=content,
+                    requirement_parser=requirement_parser,
+                    logger=logger,
+                )
         else:
             return None
 
@@ -121,28 +136,10 @@ class SourceDistribution(HasBuildDependencies):
     def build_dependencies_from_pyproject_toml(
         self, target_platform: TargetPlatform
     ) -> RequirementSet:
-        requirement_set = RequirementSet(target_platform)
         if self.pyproject_toml is None:
-            pass
+            return RequirementSet(target_platform)
         else:
-            for build_input in self.pyproject_toml.get("build-system", {}).get(
-                "requires", []
-            ):
-                try:
-                    requirement = self.requirement_parser.parse(build_input)
-                except ParsingFailed as e:
-                    self.logger.warning(
-                        "Failed to parse build dependency of `{name}`".format(
-                            name=self.name
-                        )
-                    )
-                    self.logger.warning(
-                        "Possible reason: `{reason}`".format(reason=e.reason)
-                    )
-                else:
-                    if requirement.applies_to_target(target_platform):
-                        requirement_set.add(requirement)
-        return requirement_set
+            return self.pyproject_toml.build_dependencies(target_platform)
 
     def build_dependencies_from_setup_cfg(
         self, target_platform: TargetPlatform
