@@ -1,8 +1,5 @@
-import email
 import os
 import os.path
-from email.header import Header
-from email.message import Message
 from typing import Iterable
 from typing import Optional
 
@@ -11,15 +8,12 @@ from packaging.utils import canonicalize_name
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
 from pypi2nix.package.interfaces import HasBuildDependencies
+from pypi2nix.package.metadata import PackageMetadata
 from pypi2nix.package.pyproject import PyprojectToml
 from pypi2nix.package.setupcfg import SetupCfg
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
-
-
-class DistributionNotDetected(Exception):
-    pass
 
 
 class SourceDistribution(HasBuildDependencies):
@@ -50,14 +44,8 @@ class SourceDistribution(HasBuildDependencies):
                 for directory_path, _, file_names in os.walk(extraction_directory)
                 for file_name in file_names
             ]
-            metadata = source_distribution.metadata_from_uncompressed_distribution(
-                extracted_files, archive
-            )
-            name: str = metadata.get("name")
-            if isinstance(name, Header):
-                raise DistributionNotDetected(
-                    "Could not parse source distribution metadata, name detection failed"
-                )
+            metadata = PackageMetadata.from_package_directory(path=extraction_directory)
+            name = metadata.name
             pyproject_toml = source_distribution.get_pyproject_toml(
                 name, extracted_files, logger, requirement_parser
             )
@@ -71,24 +59,6 @@ class SourceDistribution(HasBuildDependencies):
             logger=logger,
             requirement_parser=requirement_parser,
         )
-
-    @classmethod
-    def metadata_from_uncompressed_distribution(
-        _, extracted_files: Iterable[str], archive: Archive
-    ) -> Message:
-        pkg_info_files = [
-            filepath for filepath in extracted_files if filepath.endswith("PKG-INFO")
-        ]
-        if not pkg_info_files:
-            raise DistributionNotDetected(
-                "`{}` does not appear to be a python source distribution, Could not find PKG-INFO file".format(
-                    archive.path
-                )
-            )
-        pkg_info_file = pkg_info_files[0]
-        with open(pkg_info_file) as f:
-            metadata = email.parser.Parser().parse(f)
-        return metadata
 
     @classmethod
     def get_pyproject_toml(

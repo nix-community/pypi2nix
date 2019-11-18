@@ -9,10 +9,10 @@ from typing import Set
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
+from pypi2nix.package.exceptions import DistributionNotDetected
 from pypi2nix.pip.interface import Pip
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
-from pypi2nix.source_distribution import DistributionNotDetected
 from pypi2nix.source_distribution import SourceDistribution
 from pypi2nix.target_platform import TargetPlatform
 
