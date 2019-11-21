@@ -2,6 +2,7 @@ import os
 import os.path
 from contextlib import contextmanager
 from tempfile import TemporaryDirectory
+from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Optional
@@ -110,7 +111,7 @@ class VirtualenvPip(Pip):
         self, arguments: List[str], pythonpath: List[str] = []
     ) -> str:
         with self._explicit_pythonpath(pythonpath), self._set_environment_variable(
-            "SOURCE_DATE_EPOCH", "315532800"
+            {"SOURCE_DATE_EPOCH": "315532800",}
         ):
             returncode, output = cmd([self._pip_path()] + arguments, logger=self.logger)
         if returncode != 0:
@@ -120,7 +121,7 @@ class VirtualenvPip(Pip):
     @contextmanager
     def _explicit_pythonpath(self, pythonpath: List[str]) -> Iterator[None]:
         additional_paths = ":".join(pythonpath)
-        with self._set_environment_variable("PYTHONPATH", additional_paths):
+        with self._set_environment_variable({"PYTHONPATH": additional_paths}):
             yield
 
     @contextmanager
@@ -131,16 +132,26 @@ class VirtualenvPip(Pip):
             ).processed_requirements_file_path()
 
     @contextmanager
-    def _set_environment_variable(self, name: str, value: str) -> Iterator[None]:
-        current_value = os.environ.get(name)
-        os.environ[name] = value
+    def _set_environment_variable(
+        self, variables: Dict[str, Optional[str]]
+    ) -> Iterator[None]:
+        def set_environment(
+            environment: Dict[str, Optional[str]]
+        ) -> Dict[str, Optional[str]]:
+            old_environment: Dict[str, Optional[str]] = dict()
+            for name, value in variables.items():
+                old_environment[name] = os.environ.get(name)
+                if value is None:
+                    del os.environ[name]
+                else:
+                    os.environ[name] = value
+            return old_environment
+
+        old_environment = set_environment(variables)
         try:
             yield
         finally:
-            if current_value is None:
-                del os.environ[name]
-            else:
-                os.environ[name] = current_value
+            set_environment(old_environment)
 
     def _maybe_index(self) -> List[str]:
         arguments: List[str] = []
