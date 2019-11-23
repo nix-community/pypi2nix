@@ -30,23 +30,14 @@ class _PackageMetadataBuilder:
         return self._name
 
     def build(self) -> None:
-        extracted_files = [
-            os.path.join(directory_path, file_name)
-            for directory_path, _, file_names in os.walk(self.path_to_directory)
-            for file_name in file_names
-        ]
-        pkg_info_files = [
-            filepath for filepath in extracted_files if filepath.endswith("PKG-INFO")
-        ]
-        if not pkg_info_files:
+        pkg_info_file = os.path.join(self.path_to_directory, "PKG-INFO")
+        try:
+            with open(pkg_info_file) as f:
+                metadata = email.parser.Parser().parse(f)
+        except FileNotFoundError:
             raise DistributionNotDetected(
-                "`{}` does not appear to be a python source distribution, Could not find PKG-INFO file".format(
-                    self.path_to_directory
-                )
+                f"Could not find PKG-INFO file in {self.path_to_directory}"
             )
-        pkg_info_file = pkg_info_files[0]
-        with open(pkg_info_file) as f:
-            metadata = email.parser.Parser().parse(f)
         self._name = metadata.get("name")
         if isinstance(self._name, Header):
             raise DistributionNotDetected(

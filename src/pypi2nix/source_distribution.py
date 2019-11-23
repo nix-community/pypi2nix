@@ -7,6 +7,7 @@ from packaging.utils import canonicalize_name
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
+from pypi2nix.package.exceptions import DistributionNotDetected
 from pypi2nix.package.interfaces import HasBuildDependencies
 from pypi2nix.package.metadata import PackageMetadata
 from pypi2nix.package.pyproject import PyprojectToml
@@ -39,17 +40,27 @@ class SourceDistribution(HasBuildDependencies):
         requirement_parser: RequirementParser,
     ) -> "SourceDistribution":
         with archive.extracted_files() as extraction_directory:
+            first_level_paths = os.listdir(extraction_directory)
+            if len(first_level_paths) != 1:
+                raise DistributionNotDetected(
+                    f"Multiple package directories or files extracted from {archive}"
+                )
+            package_dir = os.path.join(extraction_directory, first_level_paths[0])
+            if not os.path.isdir(package_dir):
+                raise DistributionNotDetected(
+                    f"No package directory could be extracted from source distribution {archive}"
+                )
             extracted_files = [
-                os.path.join(directory_path, file_name)
-                for directory_path, _, file_names in os.walk(extraction_directory)
-                for file_name in file_names
+                os.path.join(package_dir, file_name)
+                for file_name in os.listdir(package_dir)
+                if os.path.isfile(os.path.join(package_dir, file_name))
             ]
-            metadata = PackageMetadata.from_package_directory(path=extraction_directory)
-            name = metadata.name
-            pyproject_toml = source_distribution.get_pyproject_toml(
-                name, extracted_files, logger, requirement_parser
-            )
             setup_cfg = source_distribution.get_setup_cfg(
+                extracted_files, logger, requirement_parser
+            )
+            metadata = source_distribution._get_package_metadata(package_dir)
+            name = source_distribution._get_name(setup_cfg, metadata, archive)
+            pyproject_toml = source_distribution.get_pyproject_toml(
                 name, extracted_files, logger, requirement_parser
             )
         return source_distribution(
@@ -88,7 +99,6 @@ class SourceDistribution(HasBuildDependencies):
     @classmethod
     def get_setup_cfg(
         _,
-        name: str,
         extracted_files: Iterable[str],
         logger: Logger,
         requirement_parser: RequirementParser,
@@ -100,13 +110,42 @@ class SourceDistribution(HasBuildDependencies):
         ]
         if setup_cfg_candidates:
             return SetupCfg(
-                name=name,
                 setup_cfg_path=setup_cfg_candidates[0],
                 logger=logger,
                 requirement_parser=requirement_parser,
             )
         else:
             return None
+
+    @classmethod
+    def _get_package_metadata(self, path: str) -> Optional[PackageMetadata]:
+        try:
+            return PackageMetadata.from_package_directory(path=path)
+        except DistributionNotDetected:
+            return None
+
+    @classmethod
+    def _get_name(
+        self,
+        setup_cfg: Optional[SetupCfg],
+        metadata: Optional[PackageMetadata],
+        archive: Archive,
+    ) -> str:
+        if setup_cfg and metadata:
+            if setup_cfg.name != metadata.name and setup_cfg.name is not None:
+                raise DistributionNotDetected(
+                    f"Conflicting name information from setup.cfg ({setup_cfg.name}) and PKG-INFO ({metadata.name}) in {archive}"
+                )
+            else:
+                return metadata.name
+        elif setup_cfg and setup_cfg.name is not None:
+            return setup_cfg.name
+        elif metadata is not None:
+            return metadata.name
+        else:
+            raise DistributionNotDetected(
+                f"Neither PKG-INFO nor setup.cfg are present in {archive}"
+            )
 
     def build_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
         if self.pyproject_toml is not None:
@@ -115,3 +154,6 @@ class SourceDistribution(HasBuildDependencies):
             return self.setup_cfg.build_dependencies(target_platform)
         else:
             return RequirementSet(target_platform)
+
+    def __str__(self) -> str:
+        return f"SourceDistribution<name={self.name}>"

@@ -83,15 +83,22 @@ class WheelBuilder:
         if not uninspected_distributions:
             return detected_dependencies
         for distribution in uninspected_distributions:
-            build_dependencies = distribution.build_dependencies(
-                self.target_platform
-            ).filter(lambda requirement: requirement.name() not in [distribution.name])
-            self.additional_build_dependencies[distribution.name] += build_dependencies
-            detected_dependencies += build_dependencies
+            detected_dependencies += self._get_build_dependencies_for_distribution(
+                distribution
+            )
         return detected_dependencies + self.detect_additional_build_dependencies(
             detected_dependencies,
             constraints=(requirements + constraints).to_constraints_only(),
         )
+
+    def _get_build_dependencies_for_distribution(
+        self, distribution: SourceDistribution
+    ) -> RequirementSet:
+        build_dependencies = distribution.build_dependencies(
+            self.target_platform
+        ).filter(lambda requirement: requirement.name() not in [distribution.name])
+        self.additional_build_dependencies[distribution.name] += build_dependencies
+        return build_dependencies
 
     def get_uninspected_source_distributions(self) -> List[SourceDistribution]:
         archives = [
@@ -102,13 +109,12 @@ class WheelBuilder:
         distributions = list()
         for archive in archives:
             try:
-                distributions.append(
-                    SourceDistribution.from_archive(
-                        archive, self.logger, requirement_parser=self.requirement_parser
-                    )
+                distribution = SourceDistribution.from_archive(
+                    archive, self.logger, requirement_parser=self.requirement_parser
                 )
             except DistributionNotDetected:
                 continue
+            distributions.append(distribution)
         return distributions
 
     def register_all_source_distributions(self) -> None:

@@ -220,3 +220,7 @@ def main(
 
 
 DEFAULT_VERBOSITY = 1
+
+
+if __name__ == "__main__":
+    main()
