@@ -1,6 +1,6 @@
-try:
-    from ._version import pypi2nix_version  # type: ignore
-except ModuleNotFoundError:
-    from setuptools_scm import get_version
+import os.path
 
-    pypi2nix_version = get_version()
+HERE = os.path.dirname(__file__)
+VERSION_FILE = os.path.join(HERE, "VERSION")
+with open(VERSION_FILE) as handle:
+    pypi2nix_version = handle.read().strip()
