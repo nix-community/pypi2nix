@@ -50,9 +50,7 @@ Ad hoc Installation (Simple)
 
 For just installing the package with a command, use `nix-env`_::
 
-  git clone https://github.com/nix-community/pypi2nix.git
-  cd pypi2nix
-  nix-env -if .
+  nix-env -if https://github.com/nix-community/pypi2nix.git
 
 Declarative Installation (Advanced)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
