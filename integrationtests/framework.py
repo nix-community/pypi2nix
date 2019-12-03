@@ -17,9 +17,6 @@ from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
 
 HERE = os.path.dirname(__file__)
-NIX_PATH = (
-    "nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz"
-)
 
 
 class IntegrationTest(TestCase):
@@ -45,7 +42,7 @@ class IntegrationTest(TestCase):
 
     def setUp(self) -> None:
         self.logger = StreamLogger(output=sys.stdout)
-        self.nix = Nix(nix_path=[NIX_PATH], logger=self.logger)
+        self.nix = Nix(logger=self.logger)
         self.assertNotEqual(self.name_of_testcase, "undefined")
 
     def test_build_example(self) -> None:
@@ -260,7 +257,6 @@ class IntegrationTest(TestCase):
 
     def nix_build_env(self) -> Dict[str, str]:
         environment_variables = dict(os.environ)
-        environment_variables["NIX_PATH"] = NIX_PATH
         del environment_variables["PYTHONPATH"]
         return environment_variables
 

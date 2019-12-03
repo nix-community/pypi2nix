@@ -36,6 +36,7 @@ class WheelBuilder:
         self.additional_build_dependencies: Dict[str, RequirementSet] = defaultdict(
             lambda: RequirementSet(self.target_platform)
         )
+        self.source_distributions: Dict[str, SourceDistribution] = dict()
         self.logger = logger
         self.requirement_parser = requirement_parser
         self.lib_directory = os.path.join(self.project_directory, "lib")
@@ -83,11 +84,13 @@ class WheelBuilder:
         if not uninspected_distributions:
             return detected_dependencies
         for distribution in uninspected_distributions:
+            self.source_distributions[distribution.name] = distribution
             build_dependencies = distribution.build_dependencies(
                 self.target_platform
             ).filter(lambda requirement: requirement.name() not in [distribution.name])
             self.additional_build_dependencies[distribution.name] += build_dependencies
             detected_dependencies += build_dependencies
+
         return detected_dependencies + self.detect_additional_build_dependencies(
             detected_dependencies,
             constraints=(requirements + constraints).to_constraints_only(),

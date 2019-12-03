@@ -37,6 +37,13 @@ class SourceDistribution(HasBuildDependencies):
         self.logger = logger
         self.requirement_parser = requirement_parser
 
+    @property
+    def package_format(self) -> str:
+        if self.pyproject_toml:
+            return "pyproject"
+        else:
+            return "setuptools"
+
     @classmethod
     def from_archive(
         source_distribution,
@@ -139,9 +146,11 @@ class SourceDistribution(HasBuildDependencies):
             return None
 
     def build_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
+        build_dependencies = RequirementSet(target_platform)
         if self.pyproject_toml is not None:
-            return self.pyproject_toml.build_dependencies(target_platform)
+            build_dependencies = self.pyproject_toml.build_dependencies(target_platform)
         elif self.setup_cfg is not None:
-            return self.setup_cfg.build_dependencies(target_platform)
-        else:
-            return RequirementSet(target_platform)
+            build_dependencies = self.setup_cfg.build_dependencies(target_platform)
+        return build_dependencies.filter(
+            lambda requirement: requirement.name != self.name
+        )
