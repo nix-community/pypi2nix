@@ -427,21 +427,19 @@ let
     };
 
     "flit" = python.mkDerivation {
-      name = "flit-1.3";
+      name = "flit-2.1.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/1f/87/9ea76ab4cdf1fd36710d9688ec36a0053067c47e753b32272f952ff206c5/flit-1.3.tar.gz";
-        sha256 = "6f6f0fb83c51ffa3a150fa41b5ac118df9ea4a87c2c06dff4ebf9adbe7b52b36";
+        url = "https://files.pythonhosted.org/packages/4e/45/0d4231ebd53626ee5ec501fdaa449c8292ae5473ec0ee3566b68648385fa/flit-2.1.0.tar.gz";
+        sha256 = "6c954c3ec4e87a84fac55cca1a1d692a39354affa7c791eb49f6631b71ddbb40";
 };
       doCheck = commonDoCheck;
       format = "pyproject";
       buildInputs = commonBuildInputs ++ [
-        self."docutils"
-        self."intreehooks"
-        self."pytoml"
-        self."requests"
+        self."flit-core"
       ];
       propagatedBuildInputs = [
         self."docutils"
+        self."flit-core"
         self."pytoml"
         self."requests"
       ];
@@ -449,6 +447,27 @@ let
         homepage = "https://github.com/takluyver/flit";
         license = licenses.bsdOriginal;
         description = "A simple packaging tool for simple packages.";
+      };
+    };
+
+    "flit-core" = python.mkDerivation {
+      name = "flit-core-2.1.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/6c/6a/f945cf72957752ba0655260a8cb9c1139ea134c5f4b104bc48027349a6f4/flit_core-2.1.0.tar.gz";
+        sha256 = "d2ebad9351c34083c16388d1df64a6e19579affcec02bfc05746714eef9f82fb";
+};
+      doCheck = commonDoCheck;
+      format = "pyproject";
+      buildInputs = commonBuildInputs ++ [
+        self."intreehooks"
+      ];
+      propagatedBuildInputs = [
+        self."pytoml"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/takluyver/flit";
+        license = licenses.bsdOriginal;
+        description = "Distribution-building parts of Flit. See flit package for more information";
       };
     };
 
