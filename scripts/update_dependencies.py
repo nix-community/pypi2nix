@@ -18,6 +18,8 @@ def main():
             "-s",
             "pytest-runner",
             "--no-default-overrides",
+            "-E",
+            "openssl libffi",
         ]
         + (["-v"] if arguments.verbose else []),
         cwd=ROOT,

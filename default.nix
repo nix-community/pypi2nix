@@ -31,7 +31,7 @@ let
   pypi2nixFunction = { mkDerivation, lib, nixfmt, attrs, black, click, flake8
     , flake8-unused-arguments, isort, jinja2, mypy, nix-prefetch-github
     , packaging, parsley, pdbpp, pytest, pytest-cov, setuptools, setuptools-scm
-    , toml, twine, git, }:
+    , toml, twine, git, jsonschema }:
     mkDerivation {
       name = "pypi2nix-${version}";
       src = source;
@@ -58,6 +58,7 @@ let
         parsley
         setuptools
         toml
+        jsonschema
       ];
       dontUseSetuptoolsShellHook = true;
       checkPhase = ''

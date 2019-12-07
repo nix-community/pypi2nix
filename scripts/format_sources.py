@@ -17,7 +17,9 @@ def main():
         "scripts",
     ]
     absolute_paths = [os.path.join(ROOT, relative) for relative in relative_paths]
-    subprocess.run(["nixfmt", "default.nix"], check=True)
+    subprocess.run(
+        ["nixfmt", "default.nix", "src/pypi2nix/pip/bootstrap.nix"], check=True
+    )
     subprocess.run(["isort", "-rc"] + absolute_paths, check=True)
     subprocess.run(["black"] + absolute_paths, check=True)
     subprocess.run(["flake8"] + absolute_paths, check=True)

@@ -46,4 +46,9 @@ in {
     [
       pipInstallIgnoresInstalled
     ];
+
+  "jsonschema" = overridePythonPackage "jsonschema"
+    [
+      (addBuildInputs [self."setuptools-scm"])
+    ];
 }

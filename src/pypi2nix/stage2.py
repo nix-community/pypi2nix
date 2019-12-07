@@ -20,6 +20,7 @@ from pypi2nix.pypi import Pypi
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
+from pypi2nix.source_distribution import SourceDistribution
 from pypi2nix.sources import Sources
 from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.utils import cmd
@@ -45,7 +46,7 @@ class Stage2:
         self,
         wheel_paths: Iterable[str],
         target_platform: TargetPlatform,
-        additional_dependencies: Dict[str, RequirementSet],
+        source_distributions: Dict[str, SourceDistribution],
     ) -> List[Wheel]:
         """Extract packages metadata from wheels dist-info folders.
         """
@@ -72,10 +73,12 @@ class Stage2:
             if not wheel_metadata:
                 continue
 
-            if wheel_metadata.name in additional_dependencies:
+            if wheel_metadata.name in source_distributions:
+                source_distribution = source_distributions[wheel_metadata.name]
                 wheel_metadata.add_build_dependencies(
-                    additional_dependencies[wheel_metadata.name]
+                    source_distribution.build_dependencies(target_platform)
                 )
+                wheel_metadata.package_format = source_distribution.package_format
 
             wheels.append(wheel_metadata)
 

@@ -40,6 +40,7 @@ class Wheel:
         self.description = description
         self.build_dependencies: RequirementSet = build_dependencies
         self._target_platform = target_platform
+        self.package_format: str = "setuptools"
 
     def to_dict(self) -> Dict[str, Any]:
         return {

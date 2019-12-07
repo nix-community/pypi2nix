@@ -2,6 +2,7 @@
       name = "{{ name }}-{{ version }}";
       src = {{ fetch_expression }};
       doCheck = commonDoCheck;
+      format = "{{ package_format }}";
       buildInputs = commonBuildInputs ++ {{ buildInputs }};
       propagatedBuildInputs = {{ propagatedBuildInputs }};
       meta = with pkgs.stdenv.lib; {

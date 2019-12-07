@@ -1,3 +1,5 @@
+from typing import Optional
+
 from setuptools.config import read_configuration
 
 from pypi2nix.logger import Logger
@@ -12,12 +14,11 @@ from .interfaces import HasBuildDependencies
 class SetupCfg(HasBuildDependencies):
     def __init__(
         self,
-        name: str,
         setup_cfg_path: str,
         logger: Logger,
         requirement_parser: RequirementParser,
     ):
-        self.name = name
+        self.setup_cfg_path = setup_cfg_path
         self.setup_cfg = read_configuration(setup_cfg_path)
         self.logger = logger
         self.requirement_parser = requirement_parser
@@ -33,14 +34,14 @@ class SetupCfg(HasBuildDependencies):
                     requirement = self.requirement_parser.parse(requirement_string)
                 except ParsingFailed as e:
                     self.logger.warning(
-                        "Failed to parse build dependency of `{name}`".format(
-                            name=self.name
-                        )
+                        f"Failed to parse build dependency of `{self.setup_cfg_path}`"
                     )
-                    self.logger.warning(
-                        "Possible reason: `{reason}`".format(reason=e.reason)
-                    )
+                    self.logger.warning(f"Possible reason: `{e.reason}`")
                 else:
                     if requirement.applies_to_target(target_platform):
                         requirements.add(requirement)
         return requirements
+
+    @property
+    def name(self) -> Optional[str]:
+        return self.setup_cfg.get("metadata", {}).get("name", None)  # type: ignore

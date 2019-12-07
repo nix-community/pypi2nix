@@ -1,0 +1,2 @@
+class DistributionNotDetected(Exception):
+    pass
