@@ -157,9 +157,11 @@ class SourceDistribution(HasBuildDependencies):
     def build_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
         build_dependencies = RequirementSet(target_platform)
         if self.pyproject_toml is not None:
-            build_dependencies = self.pyproject_toml.build_dependencies(target_platform)
-        elif self.setup_cfg is not None:
-            build_dependencies = self.setup_cfg.build_dependencies(target_platform)
+            build_dependencies += self.pyproject_toml.build_dependencies(
+                target_platform
+            )
+        if self.setup_cfg is not None:
+            build_dependencies += self.setup_cfg.build_dependencies(target_platform)
         return build_dependencies.filter(
             lambda requirement: requirement.name != self.name
         )
