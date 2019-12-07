@@ -33,3 +33,6 @@ class Archive:
             raise UnpackingFailed(
                 "Could not detect archive format for file {}".format(self.path)
             )
+
+    def __str__(self) -> str:
+        return f"Archive<path={self.path}>"

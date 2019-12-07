@@ -1,8 +1,5 @@
-import email
 import os
 import os.path
-from email.header import Header
-from email.message import Message
 from typing import Iterable
 from typing import Optional
 
@@ -10,16 +7,14 @@ from packaging.utils import canonicalize_name
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
+from pypi2nix.package.exceptions import DistributionNotDetected
 from pypi2nix.package.interfaces import HasBuildDependencies
+from pypi2nix.package.metadata import PackageMetadata
 from pypi2nix.package.pyproject import PyprojectToml
 from pypi2nix.package.setupcfg import SetupCfg
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
-
-
-class DistributionNotDetected(Exception):
-    pass
 
 
 class SourceDistribution(HasBuildDependencies):
@@ -52,23 +47,27 @@ class SourceDistribution(HasBuildDependencies):
         requirement_parser: RequirementParser,
     ) -> "SourceDistribution":
         with archive.extracted_files() as extraction_directory:
-            extracted_files = [
-                os.path.join(directory_path, file_name)
-                for directory_path, _, file_names in os.walk(extraction_directory)
-                for file_name in file_names
-            ]
-            metadata = source_distribution.metadata_from_uncompressed_distribution(
-                extracted_files, archive
-            )
-            name: str = metadata.get("name")
-            if isinstance(name, Header):
+            first_level_paths = os.listdir(extraction_directory)
+            if len(first_level_paths) != 1:
                 raise DistributionNotDetected(
-                    "Could not parse source distribution metadata, name detection failed"
+                    f"Multiple package directories or files extracted from {archive}"
                 )
-            pyproject_toml = source_distribution.get_pyproject_toml(
-                name, extracted_files, logger, requirement_parser
-            )
+            package_dir = os.path.join(extraction_directory, first_level_paths[0])
+            if not os.path.isdir(package_dir):
+                raise DistributionNotDetected(
+                    f"No package directory could be extracted from source distribution {archive}"
+                )
+            extracted_files = [
+                os.path.join(package_dir, file_name)
+                for file_name in os.listdir(package_dir)
+                if os.path.isfile(os.path.join(package_dir, file_name))
+            ]
             setup_cfg = source_distribution.get_setup_cfg(
+                extracted_files, logger, requirement_parser
+            )
+            metadata = source_distribution._get_package_metadata(package_dir)
+            name = source_distribution._get_name(setup_cfg, metadata, archive)
+            pyproject_toml = source_distribution.get_pyproject_toml(
                 name, extracted_files, logger, requirement_parser
             )
         return source_distribution(
@@ -78,24 +77,6 @@ class SourceDistribution(HasBuildDependencies):
             logger=logger,
             requirement_parser=requirement_parser,
         )
-
-    @classmethod
-    def metadata_from_uncompressed_distribution(
-        _, extracted_files: Iterable[str], archive: Archive
-    ) -> Message:
-        pkg_info_files = [
-            filepath for filepath in extracted_files if filepath.endswith("PKG-INFO")
-        ]
-        if not pkg_info_files:
-            raise DistributionNotDetected(
-                "`{}` does not appear to be a python source distribution, Could not find PKG-INFO file".format(
-                    archive.path
-                )
-            )
-        pkg_info_file = pkg_info_files[0]
-        with open(pkg_info_file) as f:
-            metadata = email.parser.Parser().parse(f)
-        return metadata
 
     @classmethod
     def get_pyproject_toml(
@@ -125,7 +106,6 @@ class SourceDistribution(HasBuildDependencies):
     @classmethod
     def get_setup_cfg(
         _,
-        name: str,
         extracted_files: Iterable[str],
         logger: Logger,
         requirement_parser: RequirementParser,
@@ -137,13 +117,42 @@ class SourceDistribution(HasBuildDependencies):
         ]
         if setup_cfg_candidates:
             return SetupCfg(
-                name=name,
                 setup_cfg_path=setup_cfg_candidates[0],
                 logger=logger,
                 requirement_parser=requirement_parser,
             )
         else:
             return None
+
+    @classmethod
+    def _get_package_metadata(self, path: str) -> Optional[PackageMetadata]:
+        try:
+            return PackageMetadata.from_package_directory(path=path)
+        except DistributionNotDetected:
+            return None
+
+    @classmethod
+    def _get_name(
+        self,
+        setup_cfg: Optional[SetupCfg],
+        metadata: Optional[PackageMetadata],
+        archive: Archive,
+    ) -> str:
+        if setup_cfg and metadata:
+            if setup_cfg.name != metadata.name and setup_cfg.name is not None:
+                raise DistributionNotDetected(
+                    f"Conflicting name information from setup.cfg ({setup_cfg.name}) and PKG-INFO ({metadata.name}) in {archive}"
+                )
+            else:
+                return metadata.name
+        elif setup_cfg and setup_cfg.name is not None:
+            return setup_cfg.name
+        elif metadata is not None:
+            return metadata.name
+        else:
+            raise DistributionNotDetected(
+                f"Neither PKG-INFO nor setup.cfg are present in {archive}"
+            )
 
     def build_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
         build_dependencies = RequirementSet(target_platform)
@@ -154,3 +163,6 @@ class SourceDistribution(HasBuildDependencies):
         return build_dependencies.filter(
             lambda requirement: requirement.name != self.name
         )
+
+    def __str__(self) -> str:
+        return f"SourceDistribution<name={self.name}>"
