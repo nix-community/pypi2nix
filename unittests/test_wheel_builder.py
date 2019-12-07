@@ -31,7 +31,7 @@ def build_wheels(
         wheel_paths = wheel_builder.build(requirements)
         stage2 = Stage2(sources_for_test_packages, logger, requirement_parser, pypi)
         return stage2.main(
-            wheel_paths, current_platform, wheel_builder.additional_build_dependencies
+            wheel_paths, current_platform, wheel_builder.source_distributions
         )
 
     return wrapper

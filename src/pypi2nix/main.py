@@ -65,7 +65,7 @@ class Pypi2nix:
             requirements=requirements, setup_requirements=setup_requirements
         )
         requirements_frozen = wheel_builder.get_frozen_requirements()
-        additional_dependency_graph = wheel_builder.additional_build_dependencies
+        source_distributions = wheel_builder.source_distributions
 
         self.logger().info("Extracting metadata from pypi.python.org ...")
 
@@ -79,7 +79,7 @@ class Pypi2nix:
         packages_metadata = stage2.main(
             wheel_paths=wheels,
             target_platform=self.target_platform(),
-            additional_dependencies=additional_dependency_graph,
+            source_distributions=source_distributions,
         )
         self.logger().info("Generating Nix expressions ...")
 

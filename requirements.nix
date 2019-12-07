@@ -1,8 +1,8 @@
-# generated using pypi2nix tool (version: 2.0.2.dev4+g9a1561e)
+# generated using pypi2nix tool (version: 2.0.2.dev18+g7f3dfc9)
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -r requirements.txt -r requirements-dev.txt -s pytest-runner --no-default-overrides
+#   pypi2nix -r requirements.txt -r requirements-dev.txt -s pytest-runner --no-default-overrides -E 'openssl libffi'
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -21,7 +21,7 @@ let
     python = pkgs.python3;
   };
 
-  commonBuildInputs = [];
+  commonBuildInputs = with pkgs; [ openssl libffi ];
   commonDoCheck = false;
 
   withPackages = pkgs':
@@ -92,22 +92,6 @@ let
       };
     };
 
-    "atomicwrites" = python.mkDerivation {
-      name = "atomicwrites-1.3.0";
-      src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/ec/0f/cd484ac8820fed363b374af30049adc8fd13065720fd4f4c6be8a2309da7/atomicwrites-1.3.0.tar.gz";
-        sha256 = "75a9445bac02d8d058d5e1fe689654ba5a6556a1dfd8ce6ec55a0ed79866cfa6";
-};
-      doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [ ];
-      meta = with pkgs.stdenv.lib; {
-        homepage = "https://github.com/untitaker/python-atomicwrites";
-        license = licenses.mit;
-        description = "Atomic file writes.";
-      };
-    };
-
     "attrs" = python.mkDerivation {
       name = "attrs-19.3.0";
       src = pkgs.fetchurl {
@@ -175,10 +159,10 @@ let
     };
 
     "certifi" = python.mkDerivation {
-      name = "certifi-2019.9.11";
+      name = "certifi-2019.11.28";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/62/85/7585750fd65599e88df0fed59c74f5075d4ea2fe611deceb95dd1c2fb25b/certifi-2019.9.11.tar.gz";
-        sha256 = "e4f3620cfea4f83eedc95b24abd9cd56f3c4b146dd0177e83a21b4eb49e21e50";
+        url = "https://files.pythonhosted.org/packages/41/bf/9d214a5af07debc6acf7f3f257265618f1db242a3f8e49a9b516f24523a6/certifi-2019.11.28.tar.gz";
+        sha256 = "25b64c7da4cd7479594d035c08c2d809eb4aab3a26e5a990ea98cc450c320f1f";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -187,6 +171,24 @@ let
         homepage = "https://certifi.io/";
         license = licenses.mpl20;
         description = "Python package for providing Mozilla's CA Bundle.";
+      };
+    };
+
+    "cffi" = python.mkDerivation {
+      name = "cffi-1.13.2";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/2d/bf/960e5a422db3ac1a5e612cb35ca436c3fc985ed4b7ed13a1b4879006f450/cffi-1.13.2.tar.gz";
+        sha256 = "599a1e8ff057ac530c9ad1778293c665cb81a791421f46922d80a86473c13346";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."pycparser"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://cffi.readthedocs.org";
+        license = licenses.mit;
+        description = "Foreign Function Interface for Python calling C code.";
       };
     };
 
@@ -238,6 +240,29 @@ let
       };
     };
 
+    "cryptography" = python.mkDerivation {
+      name = "cryptography-2.8";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/be/60/da377e1bed002716fb2d5d1d1cab720f298cb33ecff7bf7adea72788e4e4/cryptography-2.8.tar.gz";
+        sha256 = "3cda1f0ed8747339bbdf71b9f38ca74c7b592f24f65cdb3ab3765e4b02871651";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [
+        self."cffi"
+        self."setuptools"
+        self."wheel"
+      ];
+      propagatedBuildInputs = [
+        self."cffi"
+        self."six"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/pyca/cryptography";
+        license = licenses.asl20;
+        description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers.";
+      };
+    };
+
     "docutils" = python.mkDerivation {
       name = "docutils-0.15.2";
       src = pkgs.fetchurl {
@@ -255,16 +280,15 @@ let
     };
 
     "effect" = python.mkDerivation {
-      name = "effect-0.12.0";
+      name = "effect-1.1.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/e0/48/9b8f44c0ce230cb88abf1addc3efb266c2df02a325c8bf453c7a0de0b374/effect-0.12.0.tar.gz";
-        sha256 = "f43322b269b2dca0c15856f090b9167d8499bf474ec64696c80a508299d51f69";
+        url = "https://files.pythonhosted.org/packages/31/7a/3c7a4568ed3a8fa463ffabbc70ed9471d82daad4e479b305d299bec72b49/effect-1.1.0.tar.gz";
+        sha256 = "7affb603707c648b07b11781ebb793a4b9aee8acf1ac5764c3ed2112adf0c9ea";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [
         self."attrs"
-        self."six"
       ];
       meta = with pkgs.stdenv.lib; {
         homepage = "http://github.com/python-effect/effect/";
@@ -462,6 +486,24 @@ let
       };
     };
 
+    "jeepney" = python.mkDerivation {
+      name = "jeepney-0.4.1";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/3a/b6/28c665d48e48b5b7e6a26853d6b4595c4031de7798a6c4985b14492ebd14/jeepney-0.4.1.tar.gz";
+        sha256 = "13806f91a96e9b2623fd2a81b950d763ee471454aafd9eb6d75dbe7afce428fb";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [
+        self."flit"
+      ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://gitlab.com/takluyver/jeepney";
+        license = licenses.mit;
+        description = "Low-level, pure Python DBus protocol wrapper.";
+      };
+    };
+
     "jinja2" = python.mkDerivation {
       name = "jinja2-2.10.3";
       src = pkgs.fetchurl {
@@ -477,6 +519,54 @@ let
         homepage = "https://palletsprojects.com/p/jinja/";
         license = licenses.bsdOriginal;
         description = "A very fast and expressive template engine.";
+      };
+    };
+
+    "jsonschema" = python.mkDerivation {
+      name = "jsonschema-3.2.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/69/11/a69e2a3c01b324a77d3a7c0570faa372e8448b666300c4117a516f8b1212/jsonschema-3.2.0.tar.gz";
+        sha256 = "c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [
+        self."setuptools"
+        self."wheel"
+      ];
+      propagatedBuildInputs = [
+        self."attrs"
+        self."importlib-metadata"
+        self."pyrsistent"
+        self."setuptools"
+        self."six"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/Julian/jsonschema";
+        license = licenses.mit;
+        description = "An implementation of JSON Schema validation for Python";
+      };
+    };
+
+    "keyring" = python.mkDerivation {
+      name = "keyring-19.2.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/ee/46/77fdb7cd2b0f1f684afbc35a59b3d7ebb6961fe528f97b86900002968914/keyring-19.2.0.tar.gz";
+        sha256 = "91037ccaf0c9a112a76f7740e4a416b9457a69b66c2799421581bee710a974b3";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [
+        self."setuptools"
+        self."setuptools-scm"
+        self."wheel"
+      ];
+      propagatedBuildInputs = [
+        self."entrypoints"
+        self."secretstorage"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/jaraco/keyring";
+        license = licenses.mit;
+        description = "Store and access your passwords safely.";
       };
     };
 
@@ -513,10 +603,10 @@ let
     };
 
     "more-itertools" = python.mkDerivation {
-      name = "more-itertools-7.2.0";
+      name = "more-itertools-8.0.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/c2/31/45f61c8927c9550109f1c4b99ba3ca66d328d889a9c9853a808bff1c9fa0/more-itertools-7.2.0.tar.gz";
-        sha256 = "409cd48d4db7052af495b09dec721011634af3753ae1ef92d2b32f73a745f832";
+        url = "https://files.pythonhosted.org/packages/5a/e7/b7883994ae36a5167214ea573b10dce626c65d9eeea1fa1e853b8e5a3b73/more-itertools-8.0.0.tar.gz";
+        sha256 = "53ff73f186307d9c8ef17a9600309154a6ae27f25579e80af4db8f047ba14bc2";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -529,10 +619,10 @@ let
     };
 
     "mypy" = python.mkDerivation {
-      name = "mypy-0.740";
+      name = "mypy-0.750";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/af/38/7f4f8a52b6062d63193cdb86b17757e8668367cca7ddae08be99ab98fafc/mypy-0.740.tar.gz";
-        sha256 = "48c8bc99380575deb39f5d3400ebb6a8a1cb5cc669bbba4d3bb30f904e0a0e7d";
+        url = "https://files.pythonhosted.org/packages/31/50/c780996be1df46a39799521d6a798ef649f1e2215852e2c877259bfe4453/mypy-0.750.tar.gz";
+        sha256 = "6ecbd0e8e371333027abca0922b0c2c632a5b4739a0c61ffbd0733391e39144c";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -673,10 +763,10 @@ let
     };
 
     "pluggy" = python.mkDerivation {
-      name = "pluggy-0.13.0";
+      name = "pluggy-0.13.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/d7/9d/ae82a5facf2dd89f557a33ad18eb68e5ac7b7a75cf52bf6a208f29077ecf/pluggy-0.13.0.tar.gz";
-        sha256 = "fa5fa1622fa6dd5c030e9cad086fa19ef6a0cf6d7a2d12318e10cb49d6d68f34";
+        url = "https://files.pythonhosted.org/packages/f8/04/7a8542bed4b16a65c2714bf76cf5a0b026157da7f75e87cc88774aa10b14/pluggy-0.13.1.tar.gz";
+        sha256 = "15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -726,6 +816,22 @@ let
       };
     };
 
+    "pycparser" = python.mkDerivation {
+      name = "pycparser-2.19";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/68/9e/49196946aee219aead1290e00d1e7fdeab8567783e83e1b9ab5585e6206a/pycparser-2.19.tar.gz";
+        sha256 = "a988718abfad80b6b157acce7bf130a30876d27603738ac39f140993246b25b3";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/eliben/pycparser";
+        license = licenses.bsdOriginal;
+        description = "C parser in Python";
+      };
+    };
+
     "pyflakes" = python.mkDerivation {
       name = "pyflakes-2.1.1";
       src = pkgs.fetchurl {
@@ -743,10 +849,10 @@ let
     };
 
     "pygments" = python.mkDerivation {
-      name = "pygments-2.4.2";
+      name = "pygments-2.5.2";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/7e/ae/26808275fc76bf2832deb10d3a3ed3107bc4de01b85dcccbe525f2cd6d1e/Pygments-2.4.2.tar.gz";
-        sha256 = "881c4c157e45f30af185c1ffe8d549d48ac9127433f2c380c24b84572ad66297";
+        url = "https://files.pythonhosted.org/packages/cb/9f/27d4844ac5bf158a33900dbad7985951e2910397998e85712da03ce125f0/Pygments-2.5.2.tar.gz";
+        sha256 = "98c8aa5a9f778fcd1026a17361ddaf7330d1b7c62ae97c3bb0ae73e0b9b6b0fe";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -774,11 +880,29 @@ let
       };
     };
 
-    "pytest" = python.mkDerivation {
-      name = "pytest-5.2.4";
+    "pyrsistent" = python.mkDerivation {
+      name = "pyrsistent-0.15.6";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/11/68/37f8569d4151a36ceba04d1cd098d4ff6283fc5369b108d596fe8675a3ee/pytest-5.2.4.tar.gz";
-        sha256 = "ff0090819f669aaa0284d0f4aad1a6d9d67a6efdc6dd4eb4ac56b704f890a0d6";
+        url = "https://files.pythonhosted.org/packages/6c/6f/c1a2e8da80a0029f6b618d7e20e1a6f2a61dd04e2e54225309c2cc4268f7/pyrsistent-0.15.6.tar.gz";
+        sha256 = "f3b280d030afb652f79d67c5586157c5c1355c9a58dfc7940566e28d28f3df1b";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."six"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://github.com/tobgu/pyrsistent/";
+        license = licenses.mit;
+        description = "Persistent/Functional/Immutable data structures";
+      };
+    };
+
+    "pytest" = python.mkDerivation {
+      name = "pytest-5.3.1";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/58/76/45329365ccc901e954cbc6d4c4a7cb6162600a34ed060a6b7b4f127d8183/pytest-5.3.1.tar.gz";
+        sha256 = "f67403f33b2b1d25a6756184077394167fe5e2f9d8bdaab30707d19ccec35427";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [
@@ -787,7 +911,6 @@ let
         self."wheel"
       ];
       propagatedBuildInputs = [
-        self."atomicwrites"
         self."attrs"
         self."importlib-metadata"
         self."more-itertools"
@@ -934,11 +1057,30 @@ let
       };
     };
 
-    "setuptools" = python.mkDerivation {
-      name = "setuptools-41.6.0";
+    "secretstorage" = python.mkDerivation {
+      name = "secretstorage-3.1.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/11/0a/7f13ef5cd932a107cd4c0f3ebc9d831d9b78e1a0e8c98a098ca17b1d7d97/setuptools-41.6.0.zip";
-        sha256 = "6afa61b391dcd16cb8890ec9f66cc4015a8a31a6e1c2b4e0c464514be1a3d722";
+        url = "https://files.pythonhosted.org/packages/a6/89/df343dbc2957a317127e7ff2983230dc5336273be34f2e1911519d85aeb5/SecretStorage-3.1.1.tar.gz";
+        sha256 = "20c797ae48a4419f66f8d28fc221623f11fc45b6828f96bdb1ad9990acb59f92";
+};
+      doCheck = commonDoCheck;
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."cryptography"
+        self."jeepney"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/mitya57/secretstorage";
+        license = licenses.bsdOriginal;
+        description = "Python bindings to FreeDesktop.org Secret Service API";
+      };
+    };
+
+    "setuptools" = python.mkDerivation {
+      name = "setuptools-42.0.1";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/ce/1d/96320b9784b04943c924a9f1c6fa49124a1542039ce098a5f9a369227bad/setuptools-42.0.1.zip";
+        sha256 = "be5c1ea910cd1f37d1dd79b5f74b68b359348f558fbe4866b15f54a052d61ee1";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -999,10 +1141,10 @@ let
     };
 
     "tqdm" = python.mkDerivation {
-      name = "tqdm-4.38.0";
+      name = "tqdm-4.39.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/08/ad/be20d03f9fae7059cd2bd866f47cef00cfaebab304d3699200245bc31583/tqdm-4.38.0.tar.gz";
-        sha256 = "c1d677f3a85fa291b34bdf8f770f877119b9754b32673699653556f85e2c2f13";
+        url = "https://files.pythonhosted.org/packages/a0/77/ee3aad4ee074d519597c16149ddebc7587ead2e5b609b8d765a860989c6a/tqdm-4.39.0.tar.gz";
+        sha256 = "f1a1613fee07cc30a253051617f2a219a785c58877f9f6bfa129446cbaf8b4c1";
 };
       doCheck = commonDoCheck;
       buildInputs = commonBuildInputs ++ [ ];
@@ -1015,14 +1157,20 @@ let
     };
 
     "twine" = python.mkDerivation {
-      name = "twine-2.0.0";
+      name = "twine-3.1.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/91/82/32c68749d10ae30dd126699ee471b8885d9a9ae326a0f25dac42bb6a3f28/twine-2.0.0.tar.gz";
-        sha256 = "9fe7091715c7576df166df8ef6654e61bada39571783f2fd415bdcba867c6993";
+        url = "https://files.pythonhosted.org/packages/7e/2f/e2a91a8ab97e8c9830ce297132631aef5dcd599f076123d1ebb26f1941b6/twine-3.1.1.tar.gz";
+        sha256 = "d561a5e511f70275e5a485a6275ff61851c16ffcb3a95a602189161112d9f160";
 };
       doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs ++ [ ];
+      buildInputs = commonBuildInputs ++ [
+        self."setuptools"
+        self."setuptools-scm"
+        self."wheel"
+      ];
       propagatedBuildInputs = [
+        self."importlib-metadata"
+        self."keyring"
         self."pkginfo"
         self."readme-renderer"
         self."requests"

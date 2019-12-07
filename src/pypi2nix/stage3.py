@@ -71,6 +71,7 @@ def main(
                 )
         source = sources[item.name]
         fetch_expression = source.nix_expression()
+        package_format = item.package_format
         generated_packages_metadata.append(
             dict(
                 name=item.name,
@@ -81,6 +82,7 @@ def main(
                 homepage=item.homepage,
                 license=item.license,
                 description=item.description,
+                package_format=package_format,
             )
         )
 
