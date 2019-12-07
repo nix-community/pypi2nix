@@ -534,6 +534,12 @@ build environment of pypi2nix installed.  We register the ``scripts``
 directory in the users ``PATH`` if they choose to enter ``nix-shell`` in
 the top level directory of this project.
 
+Version bumping
+^^^^^^^^^^^^^^^
+
+We use ``bumpv`` to manage the current version of this project.  This
+program should be part of the development environment.
+
 
 .. _`Nix expressions`: http://nixos.org/nix/manual/#chap-writing-nix-expressions
 .. _`pypi2nix repository`: https://github.com/nix-community/pypi2nix
