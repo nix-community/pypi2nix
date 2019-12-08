@@ -41,7 +41,7 @@ jobs:
       - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.09.tar.gz
     script:
       - set -e
-      - nix build
+      - nix-build
       - result/bin/pypi2nix --version
       - nix-shell --command 'pytest unittests/'
   - name: nixos-unstable

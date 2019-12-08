@@ -15,5 +15,6 @@ pdbpp
 
 # packaging
 twine
+bumpv
 
 -c constraints.txt

@@ -50,9 +50,7 @@ Ad hoc Installation (Simple)
 
 For just installing the package with a command, use `nix-env`_::
 
-  git clone https://github.com/nix-community/pypi2nix.git
-  cd pypi2nix
-  nix-env -if .
+  nix-env -if https://github.com/nix-community/pypi2nix.git
 
 Declarative Installation (Advanced)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -535,6 +533,12 @@ repository.  We expect the user to have all the packages from the
 build environment of pypi2nix installed.  We register the ``scripts``
 directory in the users ``PATH`` if they choose to enter ``nix-shell`` in
 the top level directory of this project.
+
+Version bumping
+^^^^^^^^^^^^^^^
+
+We use ``bumpv`` to manage the current version of this project.  This
+program should be part of the development environment.
 
 
 .. _`Nix expressions`: http://nixos.org/nix/manual/#chap-writing-nix-expressions
