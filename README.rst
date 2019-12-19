@@ -50,7 +50,7 @@ Ad hoc Installation (Simple)
 
 For just installing the package with a command, use `nix-env`_::
 
-  nix-env -if https://github.com/nix-community/pypi2nix.git
+  nix-env -if https://github.com/nix-community/pypi2nix/tarball/master
 
 Declarative Installation (Advanced)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
