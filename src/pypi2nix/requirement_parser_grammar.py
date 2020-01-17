@@ -19,15 +19,21 @@ class _RequirementParserGrammar:
         self._logger = ProxyLogger()
 
     requirement_grammar = """
+        specification = wsp* (
+                          path_req_pip_style:s |
+                          url_req_pip_style:s |
+                          url_req:s |
+                          name_req:s
+                        ) -> s
         wsp           = ' ' | '\t'
         version_cmp   = wsp* <'<=' | '<' | '!=' | '==' | '>=' | '>' | '~=' | '==='>
         version       = wsp* <( letterOrDigit | '-' | '_' | '.' | '*' | '+' | '!' )+>
-        version_one   = version_cmp:op version:v wsp* -> (op, v)
+        version_one   = version_cmp:op version:v -> (op, v)
         version_many  = version_one:v1 (wsp* ',' version_one)*:v2 -> [v1] + v2
         versionspec   = ('(' version_many:v ')' ->v) | version_many
         urlspec       = '@' wsp* <URI_reference>
         python_str_c  = (wsp | letter | digit | '(' | ')' | '.' | '{' | '}' |
-                         '-' | '_' | '*' | '#' | ':' | ';' | ',' | '/' | '?' |
+                         '-' | '_' | '*' | ~comment '#' | ':' | ';' | ',' | '/' | '?' |
                          '[' | ']' | '!' | '~' | '`' | '@' | '$' | '%' | '^' |
                          '&' | '=' | '+' | '|' | '<' | '>' )
         dquote        = '"'
@@ -57,26 +63,28 @@ class _RequirementParserGrammar:
         editable = '-e'
         egg_name = '#egg=' name:n -> n
 
-        name_req      = (name:n wsp* extras?:e wsp* versionspec?:v wsp* quoted_marker?:m
+        name_req      = (name:n (wsp* extras)?:e (wsp* versionspec)?:v (wsp* quoted_marker)?:m (wsp+ comment)?
                          -> VersionRequirement(name=n, extras=set(e or []), versions=v or [], environment_markers=m, logger=logger()))
-        url_req       = name:n wsp* extras?:e wsp* urlspec:v (wsp+ | end) quoted_marker?:m
+        url_req       = name:n (wsp* extras)?:e (wsp* urlspec):v (wsp+ quoted_marker)?:m (wsp+ comment)?
                         -> UrlRequirement(name=n, extras=set(e or []), url=v or [], environment_markers=m, logger=logger())
-        path_req_pip_style = (editable wsp+)? <file_path>:path egg_name:name extras?:e (wsp* | end) quoted_marker?:marker
+        path_req_pip_style = (editable wsp+)? <file_path>:path egg_name:name extras?:e (wsp* quoted_marker)?:marker (wsp+ comment)?
                              -> PathRequirement(name=name, path=path, environment_markers=marker, extras=set(e or []), logger=logger())
-        url_req_pip_style = (editable wsp+)? <('hg+' | 'git+')? URI_reference_pip_style>:url egg_name:name extras?:e (wsp* | end) quoted_marker?:marker
+        url_req_pip_style = (editable wsp+)?
+                            <('hg+' | 'git+')? URI_reference_pip_style>:url
+                            egg_name:name extras?:e
+                            (wsp* quoted_marker)?:marker
+                            (wsp+ comment)?
                             -> UrlRequirement(name=name, url=url, extras=set(e or []), environment_markers=marker, logger=logger())
-        specification = wsp* ( path_req_pip_style | url_req_pip_style | url_req | name_req ):s wsp* -> s
-
         file_path     = <('./' | '/')? file_path_segment ('/' file_path_segment)* '/'?>
-        file_path_segment = file_path_segment_character+
+        file_path_segment = (~comment file_path_segment_character)+
         file_path_segment_character = ~('#'|'/') anything
         URI_reference = <URI | relative_ref>
         URI_reference_pip_style = <URI_pip_style | relative_ref>
-        URI           = scheme ':' hier_part ('?' query )? ( '#' fragment)?
+        URI           = scheme ':' hier_part ('?' query )? ( ~comment '#' fragment)?
         URI_pip_style = scheme ':' hier_part ('?' query )?
         hier_part     = ('//' authority path_abempty) | path_absolute | path_rootless | path_empty
         absolute_URI  = scheme ':' hier_part ( '?' query )?
-        relative_ref  = relative_part ( '?' query )? ( '#' fragment )?
+        relative_ref  = relative_part ( '?' query )? ( ~comment '#' fragment )?
         relative_part = '//' authority path_abempty | path_absolute | path_noscheme | path_empty
         scheme        = letter ( letter | digit | '+' | '-' | '.')*
         authority     = ( userinfo '@' )? host ( ':' port )?
@@ -127,9 +135,10 @@ class _RequirementParserGrammar:
         pct_encoded   = '%' hexdig
         unreserved    = letter | digit | '-' | '.' | '_' | '~'
         reserved      = gen_delims | sub_delims
-        gen_delims    = ':' | '/' | '?' | '#' | '(' | ')?' | '@'
+        gen_delims    = ':' | '/' | '?' | ~comment '#' | '(' | ')?' | '@'
         sub_delims    = '!' | '$' | '&' | '\\'' | '(' | ')' | '*' | '+' | ',' | ';' | '='
         hexdig        = digit | 'a' | 'A' | 'b' | 'B' | 'c' | 'C' | 'd' | 'D' | 'e' | 'E' | 'f' | 'F'
+        comment       = '#' <anything*>:content -> content.strip()
     """
 
     @no_type_check

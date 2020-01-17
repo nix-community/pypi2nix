@@ -77,3 +77,47 @@ def test_that_requirement_parser_does_not_choke_on_sys_dot_platform(
     assert requirement.name() == "macfsevents"
     assert "WARNING" in get_logger_output(logger)
     assert "PEP 508" in get_logger_output(logger)
+
+
+def test_that_comment_is_parsed_correctly(requirement_parser: RequirementParser):
+    comment_string = "# this is a comment"
+    result = requirement_parser.compiled_grammar()(comment_string).comment()
+    assert result == "this is a comment"
+
+
+def test_that_comment_without_string_after_it_is_parsed_correctly(
+    requirement_parser: RequirementParser,
+):
+    comment_string = "#"
+    result = requirement_parser.compiled_grammar()(comment_string).comment()
+    assert result == ""
+
+
+def test_that_name_requirements_can_have_comments(
+    requirement_parser: RequirementParser,
+):
+    line = "requirement # comment"
+    result = requirement_parser.compiled_grammar()(line).name_req()
+    assert result.name() == "requirement"
+
+
+def test_that_url_req_can_have_comments(requirement_parser: RequirementParser):
+    line = "test @ https://test.url # comment"
+    result = requirement_parser.compiled_grammar()(line).url_req()
+    assert result.name() == "test"
+
+
+def test_that_url_req_pip_style_can_have_comments(
+    requirement_parser: RequirementParser,
+):
+    line = "https://test.url#egg=test # comment"
+    result = requirement_parser.compiled_grammar()(line).url_req_pip_style()
+    assert result.name() == "test"
+
+
+def test_that_path_req_pip_style_can_have_comments(
+    requirement_parser: RequirementParser,
+):
+    line = "/path/requirement#egg=test # comment"
+    result = requirement_parser.compiled_grammar()(line).path_req_pip_style()
+    assert result.name() == "test"
