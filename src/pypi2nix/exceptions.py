@@ -1,0 +1,2 @@
+class UnknownTargetPlatform(Exception):
+    pass

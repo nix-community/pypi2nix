@@ -12,14 +12,17 @@ from attr import attrib
 from attr import attrs
 from packaging.markers import default_environment
 
+from pypi2nix.exceptions import UnknownTargetPlatform
+from pypi2nix.logger import Logger
 from pypi2nix.nix import Nix
 from pypi2nix.python_version import PythonVersion
 from pypi2nix.python_version import python_version_from_version_string
 
 
 class PlatformGenerator:
-    def __init__(self, nix: Nix) -> None:
+    def __init__(self, nix: Nix, logger: Logger) -> None:
         self.nix = nix
+        self.logger = logger
 
     def from_python_version(self, version: PythonVersion) -> "TargetPlatform":
         with self._python_environment_nix(version.derivation_name()) as nix_file:
@@ -78,13 +81,24 @@ class PlatformGenerator:
 
     def _load_default_environment(self, json_string: str) -> Dict[str, str]:
         result: Dict[str, str] = dict()
-        loaded_json = json.loads(json_string)
+        loaded_json = self._parse_target_platform_string(json_string)
         if not isinstance(loaded_json, dict):
             return result
         for key, value in loaded_json.items():
             if isinstance(key, str) and isinstance(value, str):
                 result[key] = value
         return result
+
+    def _parse_target_platform_string(self, json_string: str) -> Any:
+        try:
+            return json.loads(json_string)
+        except json.decoder.JSONDecodeError:
+            error_message = (
+                "Could not detect target platform, pypi2nix was unable to parse "
+                "the following string as json: " + json_string
+            )
+            self.logger.error(error_message)
+            raise UnknownTargetPlatform(error_message)
 
     @contextmanager
     def _python_environment_nix(self, nixpkgs_attribute_name: str) -> Iterator[str]:
