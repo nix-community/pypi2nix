@@ -139,8 +139,8 @@ def source_distribution_archive(request, data_directory):
 
 
 @pytest.fixture
-def platform_generator(nix: Nix) -> PlatformGenerator:
-    return PlatformGenerator(nix)
+def platform_generator(nix: Nix, logger: Logger) -> PlatformGenerator:
+    return PlatformGenerator(nix, logger)
 
 
 @pytest.fixture

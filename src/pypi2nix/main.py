@@ -150,7 +150,7 @@ class Pypi2nix:
 
     @memoize
     def target_platform(self) -> TargetPlatform:
-        platform_generator = PlatformGenerator(nix=self.nix())
+        platform_generator = PlatformGenerator(nix=self.nix(), logger=self.logger())
         target_platform = platform_generator.from_python_version(
             self.configuration.python_version
         )
