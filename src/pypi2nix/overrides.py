@@ -1,4 +1,5 @@
 import subprocess
+import urllib
 from abc import ABCMeta
 from abc import abstractmethod
 from typing import Dict
@@ -117,19 +118,38 @@ class OverridesGithub(Overrides):
         )
 
 
-def url_to_overrides(url_string: str) -> Overrides:
-    url = urlparse(url_string)
-    if url.scheme == "":
-        return OverridesFile(url.path)
-    elif url.scheme == "file":
-        return OverridesFile(url.path)
-    elif url.scheme == "http" or url.scheme == "https":
-        return OverridesUrl(url.geturl())
-    elif url.scheme.startswith("git+"):
+class OverridesUrlParam(click.ParamType):
+    name = "url"
+
+    @no_type_check
+    def convert(self, value, param, ctx):
+        try:
+            return self._url_to_overrides(value)
+        except UnsupportedUrlError as e:
+            self.fail(str(e), param, ctx)
+
+    def _url_to_overrides(self, url_string: str) -> Overrides:
+        url = urlparse(url_string)
+        if url.scheme == "":
+            return OverridesFile(url.path)
+        elif url.scheme == "file":
+            return OverridesFile(url.path)
+        elif url.scheme == "http" or url.scheme == "https":
+            return OverridesUrl(url.geturl())
+        elif url.scheme.startswith("git+"):
+            return self._handle_git_override_url(url, url_string)
+        else:
+            raise UnsupportedUrlError(
+                "Cannot handle common overrides url %s" % url_string
+            )
+
+    def _handle_git_override_url(
+        self, url: urllib.parse.ParseResult, url_string: str
+    ) -> OverridesGit:
         if not url.fragment:
             raise UnsupportedUrlError(
                 (
-                    "Cannot handle overrides with no path given, offeding url was"
+                    "Cannot handle overrides with no path given, offending url was"
                     " {url}."
                 ).format(url=url_string)
             )
@@ -139,9 +159,8 @@ def url_to_overrides(url_string: str) -> Overrides:
                 fragment_name, fragment_value = fragment_item.split()
             except ValueError:
                 raise UnsupportedUrlError(
-                    "Encountered deformed URL fragment `{}` in url `{}`".format(
-                        fragment_item, url_string
-                    )
+                    f"Encountered deformed URL fragment `{fragment_item}` "
+                    f"in url `{url_string}`"
                 )
             else:
                 fragments[fragment_name] = fragment_value
@@ -150,19 +169,6 @@ def url_to_overrides(url_string: str) -> Overrides:
             path=fragments["path"],
             rev=fragments.get("rev", None),
         )
-    else:
-        raise UnsupportedUrlError("Cannot handle common overrides url %s" % url_string)
-
-
-class OverridesUrlParam(click.ParamType):
-    name = "url"
-
-    @no_type_check
-    def convert(self, value, param, ctx):
-        try:
-            return url_to_overrides(value)
-        except UnsupportedUrlError as e:
-            self.fail(str(e), param, ctx)
 
 
 OVERRIDES_URL = OverridesUrlParam()
