@@ -4,10 +4,8 @@ from email.header import Header
 from email.message import Message
 from typing import Any
 from typing import Dict
-from typing import Iterable
 from typing import List
 from typing import Optional
-from typing import Type
 
 import click
 from packaging.utils import canonicalize_name
@@ -66,109 +64,144 @@ class Wheel:
         self.build_dependencies += dependencies
 
     @classmethod
-    def _valid_dependency(constructor, name: str, dependency: str) -> bool:
-        canonicalized_dependency = canonicalize_name(dependency)
-        return canonicalized_dependency != name
-
-    @classmethod
     def from_wheel_directory_path(
-        wheel_class: "Type[Wheel]",
+        wheel_class,
         wheel_directory_path: str,
         target_platform: TargetPlatform,
         logger: Logger,
         requirement_parser: RequirementParser,
     ) -> "Wheel":
-        metadata_file = os.path.join(wheel_directory_path, "METADATA")
+        builder = Builder(
+            target_platform, wheel_directory_path, logger, requirement_parser
+        )
+        return builder.build()
+
+
+class Builder:
+    def __init__(
+        self,
+        target_platform: TargetPlatform,
+        wheel_directory_path: str,
+        logger: Logger,
+        requirement_parser: RequirementParser,
+    ) -> None:
+        self.name: Optional[str] = None
+        self.version: Optional[str] = None
+        self.target_platform = target_platform
+        self.runtime_dependencies: RequirementSet = RequirementSet(target_platform)
+        self.homepage: Optional[str] = None
+        self.license: Optional[str] = None
+        self.description: Optional[str] = None
+        self.build_dependencies = RequirementSet(target_platform)
+        self.wheel_directory_path: str = wheel_directory_path
+        self.logger = logger
+        self.requirement_parser = requirement_parser
+        self.pkg_info: Message = self._parse_pkg_info()
+
+    def build(self) -> "Wheel":
+        self._get_name()
+        self._get_version()
+        self._get_runtime_dependencies()
+        self._get_homepage()
+        self._get_license()
+        self._get_description()
+        return self._verify_integrity()
+
+    def _verify_integrity(self) -> "Wheel":
+        if self.version is None:
+            raise Exception(
+                f"Could not extract version from wheel metadata for `{self.name}`"
+            )
+        if self.name is None:
+            raise Exception(
+                f"Could not extract name info from metadata for package at `{self.wheel_directory_path}`"
+            )
+        if self.homepage is None:
+            raise Exception(
+                f"Could not extract homepage information from metadata for package `{self.name}`"
+            )
+        if self.license is None:
+            raise Exception(
+                f"Could not extract license information from metadata for package `{self.name}`"
+            )
+        if self.description is None:
+            raise Exception(
+                f"Could not extract description from metadata for package `{self.name}`"
+            )
+        return Wheel(
+            name=self.name,
+            version=self.version,
+            target_platform=self.target_platform,
+            deps=self.runtime_dependencies,
+            build_dependencies=self.build_dependencies,
+            homepage=self.homepage,
+            license=self.license,
+            description=self.description,
+        )
+
+    def _parse_pkg_info(self) -> Message:
+        metadata_file = os.path.join(self.wheel_directory_path, "METADATA")
         if os.path.exists(metadata_file):
             with open(
                 metadata_file, "r", encoding="ascii", errors="surrogateescape"
             ) as headers:
-                metadata = email.parser.Parser().parse(headers)
-            license_string = str_from_message(metadata, "license")
-            if license_string is None:
-                license_string = ""
-            classifiers = list_from_message(metadata, "Classifier")
-            if classifiers is None:
-                classifiers = []
-            license = find_license(
-                classifiers=classifiers, license_string=license_string
+                return email.parser.Parser().parse(headers)
+        else:
+            raise click.ClickException(
+                f"Unable to find METADATA in `{self.wheel_directory_path}` folder."
             )
 
-            if license is None:
-                license = '"' + safe(license_string) + '"'
-                logger.warning(
-                    "Couldn't recognize license `{}` for `{}`".format(
-                        license_string, metadata.get("name")
-                    )
-                )
-
-            name = str_from_message(metadata, "name")
-            if name is None:
-                raise Exception("Could not extract name from wheel metadata")
-            else:
-                name = canonicalize_name(name)
-
-            version = str_from_message(metadata, "version")
-            if version is None:
-                raise Exception("Could not extract version from wheel metadata")
-
-            dependencies = list_from_message(metadata, "requires-dist")
-            if dependencies is None:
-                dependencies = []
-
-            description = str_from_message(metadata, "summary")
-            if description is None:
-                description = ""
-
-            return wheel_class(
-                name=name,
-                version=version,
-                deps=wheel_class._extract_deps(
-                    dependencies,
-                    target_platform,
-                    requirement_parser,
-                    current_wheel_name=name,
-                ),
-                homepage=safe(find_homepage(metadata)),
-                license=license,
-                description=safe(description),
-                build_dependencies=RequirementSet(target_platform),
-                target_platform=target_platform,
+    def _get_name(self) -> None:
+        self.name = str_from_message(self.pkg_info, "name")
+        if self.name is None:
+            raise Exception(
+                f"Could not extract name from wheel metadata at {self.wheel_directory_path}"
             )
+        self.name = canonicalize_name(self.name)
 
-        raise click.ClickException(
-            "Unable to find METADATA in `%s` folder." % wheel_directory_path
+    def _get_version(self) -> None:
+        self.version = str_from_message(self.pkg_info, "version")
+
+    def _get_license(self) -> None:
+        license_string = str_from_message(self.pkg_info, "license")
+        if license_string is None:
+            license_string = ""
+        classifiers = list_from_message(self.pkg_info, "Classifier")
+        if classifiers is None:
+            classifiers = []
+        self.license = find_license(
+            classifiers=classifiers, license_string=license_string
         )
 
-    @classmethod
-    def _extract_deps(
-        constructor,
-        deps: Iterable[str],
-        target_platform: TargetPlatform,
-        requirement_parser: RequirementParser,
-        current_wheel_name: str,
-    ) -> RequirementSet:
-        """Get dependent packages from metadata.
+        if self.license is None:
+            self.license = '"' + safe(license_string) + '"'
+            self.logger.warning(
+                f"Couldn't recognize license `{license_string}` for `{self.name}`"
+            )
 
-        Note that this is currently very rough stuff. I consider only the
-        first 'requires' dataset in 'run_requires'. Other requirement sets
-        like 'test_requires' are completely ignored.
-        """
-        extracted_deps = RequirementSet(target_platform)
-        for dep_string in deps:
-            dependency = requirement_parser.parse(dep_string)
-            if not constructor._valid_dependency(current_wheel_name, dependency.name()):
+    def _get_description(self) -> None:
+        self.description = str_from_message(self.pkg_info, "summary")
+        if self.description is None:
+            self.description = ""
+
+    def _get_runtime_dependencies(self) -> None:
+        dependencies = list_from_message(self.pkg_info, "requires-dist")
+        if dependencies is None:
+            dependencies = []
+        for dep_string in dependencies:
+            dependency = self.requirement_parser.parse(dep_string)
+            if not self._is_valid_dependency(dependency.name()):
                 continue
-            extracted_deps.add(dependency)
-        return extracted_deps
+            self.runtime_dependencies.add(dependency)
 
+    def _is_valid_dependency(self, dependency_name: str) -> bool:
+        canonicalized_dependency = canonicalize_name(dependency_name)
+        return canonicalized_dependency != self.name
 
-def find_homepage(item: Message) -> str:
-    homepage = str_from_message(item, "home-page")
-    if homepage:
-        return homepage
-    else:
-        return ""
+    def _get_homepage(self) -> None:
+        self.homepage = str_from_message(self.pkg_info, "home-page")
+        if not self.homepage:
+            self.homepage = ""
 
 
 def str_from_message(metadata: Message, key: str) -> Optional[str]:
