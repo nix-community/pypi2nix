@@ -47,20 +47,22 @@ class WheelBuilder:
         setup_requirements: Optional[RequirementSet] = None,
     ) -> List[str]:
         self.ensure_download_directory_exists()
+        self._ensure_wheels_directory_exists()
         if not setup_requirements:
             setup_requirements = RequirementSet(self.target_platform)
         else:
-            self.logger.info("Installing setup requirements")
+            self.logger.info("Downloading setup requirements")
             setup_requirements = (
                 self.detect_additional_build_dependencies(setup_requirements)
                 + setup_requirements
             )
+            self.logger.info("Installing setup requirements")
             self.pip.install(
                 setup_requirements,
                 target_directory=self.lib_directory,
                 source_directories=[self.download_directory],
             )
-        self.logger.info("Installing runtime requirements")
+        self.logger.info("Downloading runtime requirements")
         requirements = requirements + setup_requirements
         detected_requirements = self.detect_additional_build_dependencies(requirements)
         updated_requirements = detected_requirements + requirements
@@ -158,6 +160,9 @@ class WheelBuilder:
             os.makedirs(self.extracted_wheels_directory)
         except FileExistsError:
             pass
+
+    def _ensure_wheels_directory_exists(self) -> None:
+        os.makedirs(self.wheel_directory, exist_ok=True)
 
 
 def list_files(path: str) -> List[str]:
