@@ -1,8 +1,8 @@
 {
     "pip": {
         "__type__": "fetchgit",
-        "rev": "ea7def858d41c73e5c2f32df156b324f0693f91c",
-        "sha256": "1v46ywrmvc1xabyh9i60s4jaxr5a8cvc79yk31xi7sv352brj58y",
+        "rev": "153e22ae3427c0e3a23c38474e83261eb60200c0",
+        "sha256": "0b9igpsm41d5av3gdyn69cmxaka13c3c0fhm185nngacq1m0f8ab",
         "url": "https://github.com/pypa/pip.git"
     },
     "setuptools": {
