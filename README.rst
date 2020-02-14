@@ -388,17 +388,17 @@ argument.  ``pypi2nix`` can fetch these overrides from a local file or
 over certain common protocols.
 
 ``http`` and ``https``
-  ``pypi2nix -V 3 --overrides https://raw.githubusercontent.com/nix-community/pypi2nix-overrides/master/overrides.nix``
+  ``pypi2nix --overrides https://raw.githubusercontent.com/nix-community/pypi2nix-overrides/master/overrides.nix``
 
   Note that the generated Nix expression will check if contents of
   the overrides file differs from when the Nix expression was built, and
   fail if this was the case (or the file does not exist anymore).
 
 Local files
-  ``pypi2nix -V 3 --override ../some/relative/path --override /some/absolute/path``
+  ``pypi2nix --override ../some/relative/path --override /some/absolute/path``
 
 Git repositories
-  ``pypi2nix -V 3 --override git+https://github.com/nix-community/pypi2nix.git#path=overrides.nix``
+  ``pypi2nix --override git+https://github.com/nix-community/pypi2nix.git#path=overrides.nix``
 
   If you want to import a file from a specific git repository you have
   to prefix its URL with ``git+``, quite similar to how you would do
