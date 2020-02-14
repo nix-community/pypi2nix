@@ -35,7 +35,6 @@ class IntegrationTest(TestCase):
     constraints
     code_for_testing
     python_version
-    default_overrides
     code_for_testing_filename
     explicit_build_directory
     """
@@ -93,25 +92,20 @@ class IntegrationTest(TestCase):
             self.python_version,
             "-r",
             "requirements.txt",
+            "--default-overrides",
         ]
         for requirement in self.setup_requires():
             command.append("-s")
             command.append(requirement)
-
         for variable_name, value in self.extra_environment().items():
             command.append("-N")
             command.append("{name}={value}".format(name=variable_name, value=value))
-
         for dependency in self.external_dependencies:
             command.append("-E")
             command.append(dependency)
         if self.explicit_build_directory:
             command.append("--build-directory")
             command.append(self.build_directory())
-
-        if self.default_overrides:
-            command.append("--default-overrides")
-
         return command
 
     def setup_requires(self) -> List[str]:
@@ -297,7 +291,6 @@ class IntegrationTest(TestCase):
             shutil.rmtree(self.build_directory())
         os.makedirs(self.build_directory())
 
-    default_overrides = False
     constraints: List[str] = []
     python_version: str = "python3"
     requirements: List[str] = []
