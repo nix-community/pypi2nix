@@ -7,8 +7,6 @@ from typing import Optional
 
 @unique
 class PythonVersion(Enum):
-    python2 = "python2"
-    python27 = "python27Full"
     python35 = "python35"
     python36 = "python36"
     python37 = "python37"
@@ -26,7 +24,6 @@ class PythonVersion(Enum):
 
 
 _PYTHON_VERSIONS: Dict[str, PythonVersion] = {
-    "2.7": PythonVersion.python27,
     "3.5": PythonVersion.python35,
     "3.6": PythonVersion.python36,
     "3.7": PythonVersion.python37,

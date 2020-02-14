@@ -19,7 +19,6 @@ def test_available_python_versions_exist_in_nixpkgs(
 @pytest.mark.parametrize(
     "version_string, expected_python_version",
     [
-        ("2.7", PythonVersion.python27),
         ("3.5", PythonVersion.python35),
         ("3.6", PythonVersion.python36),
         ("3.7", PythonVersion.python37),
