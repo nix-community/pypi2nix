@@ -1,9 +1,8 @@
 {
     "pip": {
-        "__type__": "fetchgit",
-        "rev": "cdae7277efff447d2978fa5cb460b0e36fdb2e2a",
-        "sha256": "1hf768fspf5x9naz779nf4l19v3yzf94jivkw20m453d8lqm6pk6",
-        "url": "https://github.com/pypa/pip.git"
+        "__type__": "fetchurl",
+        "sha256": "7db0c8ea4c7ea51c8049640e8e6e7fde949de672bfa4949920675563a5a6967f",
+        "url": "https://files.pythonhosted.org/packages/8e/76/66066b7bc71817238924c7e4b448abdb17eb0c92d645769c223f9ace478f/pip-20.0.2.tar.gz"
     },
     "setuptools": {
         "__type__": "fetchurl",

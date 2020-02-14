@@ -46,4 +46,8 @@ class PackageSource:
         self.logger.info(f"Successfully updated package `{package_name}`")
 
 
-SOURCE_BY_PACKAGE_NAME = {"pip": "https://github.com/pypa/pip.git"}
+SOURCE_BY_PACKAGE_NAME = {
+    "pip": "https://github.com/pypa/pip.git",
+    "setuptools": "https://github.com/pypa/setuptools.git",
+    "wheel": "https://github.com/pypa/wheel.git",
+}
