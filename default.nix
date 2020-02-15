@@ -58,6 +58,7 @@ let
         packaging
         parsley
         setuptools
+        setuptools-scm
         toml
         jsonschema
       ];
