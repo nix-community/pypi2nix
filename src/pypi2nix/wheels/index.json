@@ -1,18 +1,17 @@
 {
     "pip": {
-        "__type__": "fetchgit",
-        "rev": "b8c16a0dc86519e283a94b14591f9ddae27f9c55",
-        "sha256": "1bc1is06ckhc7w5van99djmdyarfm2y5ak3j46bpxa5f0lvn1aa2",
-        "url": "https://github.com/pypa/pip.git"
+        "__type__": "fetchurl",
+        "sha256": "7db0c8ea4c7ea51c8049640e8e6e7fde949de672bfa4949920675563a5a6967f",
+        "url": "https://files.pythonhosted.org/packages/8e/76/66066b7bc71817238924c7e4b448abdb17eb0c92d645769c223f9ace478f/pip-20.0.2.tar.gz"
     },
     "setuptools": {
         "__type__": "fetchurl",
-        "sha256": "c5b372090d7c8709ce79a6a66872a91e518f7d65af97fca78135e1cb10d4b940",
-        "url": "https://files.pythonhosted.org/packages/f7/b6/5b98441b6749ea1db1e41e5e6e7a93cbdd7ffd45e11fe1b22d45884bc777/setuptools-42.0.2.zip"
+        "sha256": "89c6e6011ec2f6d57d43a3f9296c4ef022c2cbf49bab26b407fe67992ae3397f",
+        "url": "https://files.pythonhosted.org/packages/68/75/d1d7b7340b9eb6e0388bf95729e63c410b381eb71fe8875cdfd949d8f9ce/setuptools-45.2.0.zip"
     },
     "wheel": {
         "__type__": "fetchurl",
-        "sha256": "10c9da68765315ed98850f8e048347c3eb06dd81822dc2ab1d4fde9dc9702646",
-        "url": "https://files.pythonhosted.org/packages/59/b0/11710a598e1e148fb7cbf9220fd2a0b82c98e94efbdecb299cb25e7f0b39/wheel-0.33.6.tar.gz"
+        "sha256": "8788e9155fe14f54164c1b9eb0a319d98ef02c160725587ad60f14ddc57b6f96",
+        "url": "https://files.pythonhosted.org/packages/75/28/521c6dc7fef23a68368efefdcd682f5b3d1d58c2b90b06dc1d0b805b51ae/wheel-0.34.2.tar.gz"
     }
 }
