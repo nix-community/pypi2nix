@@ -16,7 +16,7 @@ from pypi2nix.wheel import Wheel
 HERE = os.path.dirname(__file__)
 
 
-def main(
+def render_expression(
     packages_metadata: Iterable[Wheel],
     sources: Sources,
     requirements_name: str,

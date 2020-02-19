@@ -3,21 +3,21 @@ import os.path
 import sys
 
 from pypi2nix.configuration import ApplicationConfiguration
+from pypi2nix.expression_renderer import render_expression
 from pypi2nix.logger import Logger
 from pypi2nix.logger import StreamLogger
 from pypi2nix.memoize import memoize
+from pypi2nix.metadata_fetcher import MetadataFetcher
 from pypi2nix.nix import Nix
 from pypi2nix.pip.implementation import NixPip
 from pypi2nix.pypi import Pypi
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements_collector import RequirementsCollector
 from pypi2nix.sources import Sources
-from pypi2nix.stage1 import WheelBuilder
-from pypi2nix.stage2 import Stage2
-from pypi2nix.stage3 import main
 from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.version import pypi2nix_version
+from pypi2nix.wheel_builder import WheelBuilder
 
 
 class Pypi2nix:
@@ -69,21 +69,21 @@ class Pypi2nix:
 
         self.logger().info("Extracting metadata from pypi.python.org ...")
 
-        stage2 = Stage2(
+        metadata_fetcher = MetadataFetcher(
             sources=sources,
             logger=self.logger(),
             requirement_parser=self.requirement_parser(),
             pypi=Pypi(logger=self.logger()),
         )
 
-        packages_metadata = stage2.main(
+        packages_metadata = metadata_fetcher.main(
             wheel_paths=wheels,
             target_platform=self.target_platform(),
             source_distributions=source_distributions,
         )
         self.logger().info("Generating Nix expressions ...")
 
-        main(
+        render_expression(
             packages_metadata=packages_metadata,
             sources=sources,
             requirements_name=requirements_name,
