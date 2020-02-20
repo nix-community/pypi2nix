@@ -4,7 +4,6 @@ from .framework import TestCommand
 
 class LektorTestCase(IntegrationTest):
     name_of_testcase = "lektor"
-    python_version = "python27"
     code_for_testing = ["import lektor"]
     requirements = ["Lektor"]
     external_dependencies = ["libffi", "openssl", "unzip"]
