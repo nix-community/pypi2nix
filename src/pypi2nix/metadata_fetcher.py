@@ -29,7 +29,7 @@ from pypi2nix.utils import safe
 from pypi2nix.wheel import Wheel
 
 
-class Stage2:
+class MetadataFetcher:
     def __init__(
         self,
         sources: Sources,
