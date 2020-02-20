@@ -1,9 +1,11 @@
 import os
 import os.path
 import sys
+from typing import List
 
 from pypi2nix.configuration import ApplicationConfiguration
 from pypi2nix.expression_renderer import render_expression
+from pypi2nix.external_dependencies import ExternalDependency
 from pypi2nix.logger import Logger
 from pypi2nix.logger import StreamLogger
 from pypi2nix.memoize import memoize
@@ -48,7 +50,7 @@ class Pypi2nix:
             nix=self.nix(),
             project_directory=self.configuration.project_directory,
             extra_env=self.configuration.extra_environment,
-            extra_build_inputs=self.configuration.extra_build_inputs,
+            extra_build_inputs=self._extra_build_inputs(),
             wheels_cache=self.configuration.wheels_caches,
             target_platform=self.target_platform(),
             logger=self.logger(),
@@ -117,6 +119,13 @@ class Pypi2nix:
                 ]
             )
         )
+
+    @memoize
+    def _extra_build_inputs(self) -> List[ExternalDependency]:
+        return [
+            ExternalDependency(attribute_name=input)
+            for input in self.configuration.extra_build_inputs
+        ]
 
     @memoize
     def requirements_collector(self) -> RequirementsCollector:

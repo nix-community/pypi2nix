@@ -15,10 +15,10 @@ from pypi2nix.pypi import Pypi
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.sources import Sources
-from pypi2nix.wheel_builder import WheelBuilder
 from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.wheel import Wheel
+from pypi2nix.wheel_builder import WheelBuilder
 
 DATA_DIRECTORY = os.path.join(os.path.dirname(__file__), "unittests", "data")
 
