@@ -10,6 +10,7 @@ env:
     - TEST_FILE=awscli_and_requests
     - TEST_FILE=connexion
     - TEST_FILE=empy
+    - TEST_FILE=fava
     - TEST_FILE=flake8
     - TEST_FILE=flake8_mercurial
     - TEST_FILE=flit
