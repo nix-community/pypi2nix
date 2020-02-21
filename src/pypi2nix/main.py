@@ -6,6 +6,7 @@ from typing import List
 from pypi2nix.configuration import ApplicationConfiguration
 from pypi2nix.expression_renderer import render_expression
 from pypi2nix.external_dependencies import ExternalDependency
+from pypi2nix.external_dependencies import ExternalDependencyCollector
 from pypi2nix.logger import Logger
 from pypi2nix.logger import StreamLogger
 from pypi2nix.memoize import memoize
@@ -122,10 +123,10 @@ class Pypi2nix:
 
     @memoize
     def _extra_build_inputs(self) -> List[ExternalDependency]:
-        return [
-            ExternalDependency(attribute_name=input)
-            for input in self.configuration.extra_build_inputs
-        ]
+        collector = ExternalDependencyCollector()
+        for external_input in self.configuration.extra_build_inputs:
+            collector.collect_explicit(external_input)
+        return collector.get_collected()
 
     @memoize
     def requirements_collector(self) -> RequirementsCollector:
