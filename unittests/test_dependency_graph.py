@@ -1,3 +1,5 @@
+from copy import copy
+
 import pytest
 
 from pypi2nix.dependency_graph import CyclicDependencyOccured
@@ -104,6 +106,27 @@ def test_cannot_add_circular_runtime_dependency_to_buildtime_dependency(
         dependency_graph.set_runtime_dependency(
             dependent=package_b, dependency=package_a
         )
+
+
+def test_can_add_two_dependencies_graphs_and_runtime_dependencies_are_also_added(
+    package_a: Requirement,
+    package_b: Requirement,
+    package_c: Requirement,
+    dependency_graph: DependencyGraph,
+):
+    other_dependency_graph = copy(dependency_graph)
+    dependency_graph.set_runtime_dependency(dependent=package_a, dependency=package_b)
+    other_dependency_graph.set_runtime_dependency(
+        dependent=package_b, dependency=package_c
+    )
+    sum_graph = dependency_graph + other_dependency_graph
+    assert not dependency_graph.is_runtime_dependency(
+        dependent=package_a, dependency=package_c
+    )
+    assert not other_dependency_graph.is_runtime_dependency(
+        dependent=package_a, dependency=package_c
+    )
+    assert sum_graph.is_runtime_dependency(dependent=package_a, dependency=package_c)
 
 
 @pytest.fixture

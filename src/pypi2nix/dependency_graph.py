@@ -1,9 +1,15 @@
 from collections import defaultdict
+from copy import copy
+from typing import Callable
 from typing import DefaultDict
 from typing import Generator
 from typing import Set
+from typing import TypeVar
 
 from pypi2nix.requirements import Requirement
+
+K = TypeVar("K")
+V = TypeVar("V")
 
 
 class DependencyGraph:
@@ -89,6 +95,48 @@ class DependencyGraph:
                 else:
                     pending.add(dependency)
 
+    def __add__(self, other: "DependencyGraph") -> "DependencyGraph":
+        new_graph = DependencyGraph()
+        new_graph._runtime_dependencies = _merge_defaultdicts(
+            self._runtime_dependencies, other._runtime_dependencies
+        )
+        new_graph._buildtime_dependencies = _merge_defaultdicts(
+            self._buildtime_dependencies, other._buildtime_dependencies
+        )
+        return new_graph
+
+    def __copy__(self) -> "DependencyGraph":
+        new_graph = DependencyGraph()
+        new_graph._buildtime_dependencies = copy(self._buildtime_dependencies)
+        new_graph._runtime_dependencies = copy(self._runtime_dependencies)
+        return new_graph
+
 
 class CyclicDependencyOccured(Exception):
     pass
+
+
+def _merge_defaultdicts(
+    first: DefaultDict[str, Set[str]], second: DefaultDict[str, Set[str]]
+) -> DefaultDict[str, Set[str]]:
+    return _merge_with_combine(
+        first, second, combine_function=lambda x, y: x | y, constructor=lambda: set(),
+    )
+
+
+def _merge_with_combine(
+    first: DefaultDict[K, V],
+    second: DefaultDict[K, V],
+    combine_function: Callable[[V, V], V],
+    constructor: Callable[[], V],
+) -> DefaultDict[K, V]:
+    combination: DefaultDict[K, V] = defaultdict(constructor)
+    for first_key, first_value in first.items():
+        combination[first_key] = first_value
+    for second_key, second_value in second.items():
+        combination[second_key] = (
+            combine_function(combination[second_key], second_value)
+            if second_key in combination
+            else second_value
+        )
+    return combination
