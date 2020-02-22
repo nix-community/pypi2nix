@@ -6,6 +6,7 @@ from typing import Generator
 from typing import Set
 from typing import TypeVar
 
+from pypi2nix.external_dependencies import ExternalDependency
 from pypi2nix.requirements import Requirement
 
 K = TypeVar("K")
@@ -20,6 +21,9 @@ class DependencyGraph:
         self._buildtime_dependencies: DefaultDict[str, Set[str]] = defaultdict(
             lambda: set()
         )
+        self._external_dependencies: DefaultDict[
+            str, Set[ExternalDependency]
+        ] = defaultdict(lambda: set())
 
     def set_runtime_dependency(
         self, dependent: Requirement, dependency: Requirement
@@ -41,6 +45,11 @@ class DependencyGraph:
             )
         self._buildtime_dependencies[dependent.name()].add(dependency.name())
 
+    def set_external_dependency(
+        self, dependent: Requirement, dependency: ExternalDependency
+    ) -> None:
+        self._external_dependencies[dependent.name()].add(dependency)
+
     def is_runtime_dependency(
         self, dependent: Requirement, dependency: Requirement
     ) -> bool:
@@ -53,6 +62,14 @@ class DependencyGraph:
 
     def get_all_runtime_dependency_names(self, package: Requirement) -> Set[str]:
         return set(self._get_runtime_children(package.name()))
+
+    def get_all_external_dependencies(
+        self, package: Requirement
+    ) -> Set[ExternalDependency]:
+        found_dependencies: Set[ExternalDependency] = set()
+        for package_name in self._get_python_children(package.name()):
+            found_dependencies.update(self._external_dependencies[package_name])
+        return found_dependencies
 
     def _is_python_child(self, dependent: str, dependency: str) -> bool:
         for child in self._get_python_children(dependent):
@@ -103,12 +120,16 @@ class DependencyGraph:
         new_graph._buildtime_dependencies = _merge_defaultdicts(
             self._buildtime_dependencies, other._buildtime_dependencies
         )
+        new_graph._external_dependencies = _merge_defaultdicts(
+            self._external_dependencies, other._external_dependencies
+        )
         return new_graph
 
     def __copy__(self) -> "DependencyGraph":
         new_graph = DependencyGraph()
         new_graph._buildtime_dependencies = copy(self._buildtime_dependencies)
         new_graph._runtime_dependencies = copy(self._runtime_dependencies)
+        new_graph._external_dependencies = copy(self._external_dependencies)
         return new_graph
 
 
@@ -117,8 +138,8 @@ class CyclicDependencyOccured(Exception):
 
 
 def _merge_defaultdicts(
-    first: DefaultDict[str, Set[str]], second: DefaultDict[str, Set[str]]
-) -> DefaultDict[str, Set[str]]:
+    first: DefaultDict[str, Set[V]], second: DefaultDict[str, Set[V]]
+) -> DefaultDict[str, Set[V]]:
     return _merge_with_combine(
         first, second, combine_function=lambda x, y: x | y, constructor=lambda: set(),
     )

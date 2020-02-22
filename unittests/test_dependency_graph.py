@@ -4,6 +4,7 @@ import pytest
 
 from pypi2nix.dependency_graph import CyclicDependencyOccured
 from pypi2nix.dependency_graph import DependencyGraph
+from pypi2nix.external_dependencies import ExternalDependency
 from pypi2nix.logger import Logger
 from pypi2nix.requirements import Requirement
 from pypi2nix.requirements import VersionRequirement
@@ -150,6 +151,56 @@ def test_can_add_two_dependencies_graphs_and_buildtime_dependencies_are_also_add
     assert sum_graph.is_buildtime_dependency(dependent=package_a, dependency=package_c)
 
 
+def test_can_detect_external_dependencies_for_packages(
+    package_a: Requirement,
+    external_dependency_a: ExternalDependency,
+    dependency_graph: DependencyGraph,
+):
+    dependency_graph.set_external_dependency(
+        dependent=package_a, dependency=external_dependency_a
+    )
+    assert dependency_graph.get_all_external_dependencies(package_a) == {
+        external_dependency_a,
+    }
+
+
+def test_can_retrieve_external_dependencies_from_runtime_dependencies(
+    package_a: Requirement,
+    package_b: Requirement,
+    external_dependency_a: ExternalDependency,
+    dependency_graph: DependencyGraph,
+):
+    dependency_graph.set_runtime_dependency(dependent=package_a, dependency=package_b)
+    dependency_graph.set_external_dependency(
+        dependent=package_b, dependency=external_dependency_a
+    )
+    assert dependency_graph.get_all_external_dependencies(package=package_a) == {
+        external_dependency_a,
+    }
+
+
+def test_can_retrieve_external_dependencies_after_adding_graphs(
+    package_a: Requirement,
+    package_b: Requirement,
+    external_dependency_a: ExternalDependency,
+    external_dependency_b: ExternalDependency,
+    dependency_graph: DependencyGraph,
+):
+    other_dependency_graph = copy(dependency_graph)
+    dependency_graph.set_external_dependency(
+        dependent=package_a, dependency=external_dependency_a
+    )
+    dependency_graph.set_runtime_dependency(dependent=package_a, dependency=package_b)
+    other_dependency_graph.set_external_dependency(
+        dependent=package_b, dependency=external_dependency_b
+    )
+    sum_graph = dependency_graph + other_dependency_graph
+    assert sum_graph.get_all_external_dependencies(package=package_a) == {
+        external_dependency_a,
+        external_dependency_b,
+    }
+
+
 @pytest.fixture
 def package_a(logger: Logger) -> Requirement:
     return VersionRequirement(
@@ -186,3 +237,13 @@ def package_c(logger: Logger) -> Requirement:
 @pytest.fixture
 def dependency_graph() -> DependencyGraph:
     return DependencyGraph()
+
+
+@pytest.fixture
+def external_dependency_a() -> ExternalDependency:
+    return ExternalDependency("a")
+
+
+@pytest.fixture
+def external_dependency_b() -> ExternalDependency:
+    return ExternalDependency("b")
