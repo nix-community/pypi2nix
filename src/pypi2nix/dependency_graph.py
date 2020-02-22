@@ -18,6 +18,9 @@ class DependencyGraph:
     def is_dependency(self, dependent: Requirement, dependency: Requirement) -> bool:
         return self._is_child(dependent.name(), dependency.name())
 
+    def get_dependency_names(self, package: Requirement) -> Set[str]:
+        return set(self._get_children(package.name()))
+
     def _is_child(self, dependent: str, dependency: str) -> bool:
         for child in self._get_children(dependent):
             if child == dependency:
@@ -28,12 +31,11 @@ class DependencyGraph:
         alread_seen: Set[str] = set()
         pending: Set[str] = {package_name}
         while pending:
-            for package in pending:
-                pending.remove(package)
-                yield package
-                alread_seen.add(package)
-                for dependency in self._dependencies[package]:
-                    if dependency in alread_seen:
-                        continue
-                    else:
-                        pending.add(dependency)
+            package = pending.pop()
+            yield package
+            alread_seen.add(package)
+            for dependency in self._dependencies[package]:
+                if dependency in alread_seen:
+                    continue
+                else:
+                    pending.add(dependency)

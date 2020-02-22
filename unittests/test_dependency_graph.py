@@ -24,6 +24,21 @@ def test_can_detect_indirect_dependencies(
     assert dependency_graph.is_dependency(dependent=package_a, dependency=package_c)
 
 
+def test_can_retriev_all_dependency_names(
+    package_a: Requirement,
+    package_b: Requirement,
+    package_c: Requirement,
+    dependency_graph: DependencyGraph,
+) -> None:
+    dependency_graph.set_direct_dependency(dependent=package_a, dependency=package_b)
+    dependency_graph.set_direct_dependency(dependent=package_b, dependency=package_c)
+    assert dependency_graph.get_dependency_names(package_a) == {
+        package_a.name(),
+        package_b.name(),
+        package_c.name(),
+    }
+
+
 @pytest.fixture
 def package_a(logger: Logger) -> Requirement:
     return VersionRequirement(
