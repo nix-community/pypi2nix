@@ -2,7 +2,7 @@ from attr import attrib
 from attr import attrs
 
 
-@attrs
+@attrs(frozen=True)
 class ExternalDependency:
     _attribute_name: str = attrib()
 
