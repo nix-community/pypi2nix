@@ -1,5 +1,6 @@
 import pytest
 
+from pypi2nix.dependency_graph import CyclicDependencyOccured
 from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.logger import Logger
 from pypi2nix.requirements import Requirement
@@ -22,6 +23,16 @@ def test_can_detect_indirect_dependencies(
     dependency_graph.set_direct_dependency(dependent=package_a, dependency=package_b)
     dependency_graph.set_direct_dependency(dependent=package_b, dependency=package_c)
     assert dependency_graph.is_dependency(dependent=package_a, dependency=package_c)
+
+
+def test_cyclic_dependencies_not_allowed(
+    package_a: Requirement, package_b: Requirement, dependency_graph: DependencyGraph
+):
+    dependency_graph.set_direct_dependency(dependent=package_a, dependency=package_b)
+    with pytest.raises(CyclicDependencyOccured):
+        dependency_graph.set_direct_dependency(
+            dependent=package_b, dependency=package_a
+        )
 
 
 def test_can_retriev_all_dependency_names(

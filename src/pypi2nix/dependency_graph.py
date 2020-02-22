@@ -13,6 +13,11 @@ class DependencyGraph:
     def set_direct_dependency(
         self, dependent: Requirement, dependency: Requirement
     ) -> None:
+        if self.is_dependency(dependency, dependent):
+            raise CyclicDependencyOccured(
+                f"Failed to add dependency {dependent} -> {dependency} to Graph "
+                f"since {dependent} is alread a dependency of {dependency}"
+            )
         self._dependencies[dependent.name()].add(dependency.name())
 
     def is_dependency(self, dependent: Requirement, dependency: Requirement) -> bool:
@@ -39,3 +44,7 @@ class DependencyGraph:
                     continue
                 else:
                     pending.add(dependency)
+
+
+class CyclicDependencyOccured(Exception):
+    pass
