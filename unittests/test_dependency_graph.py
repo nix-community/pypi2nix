@@ -11,7 +11,9 @@ def test_can_set_runtime_dependencies(
     package_a: Requirement, package_b: Requirement, dependency_graph: DependencyGraph
 ):
     dependency_graph.set_runtime_dependency(dependent=package_a, dependency=package_b)
-    assert dependency_graph.is_runtime_dependency(dependent=package_a, dependency=package_b)
+    assert dependency_graph.is_runtime_dependency(
+        dependent=package_a, dependency=package_b
+    )
 
 
 def test_can_detect_indirect_runtime_dependencies(
@@ -22,7 +24,9 @@ def test_can_detect_indirect_runtime_dependencies(
 ) -> None:
     dependency_graph.set_runtime_dependency(dependent=package_a, dependency=package_b)
     dependency_graph.set_runtime_dependency(dependent=package_b, dependency=package_c)
-    assert dependency_graph.is_runtime_dependency(dependent=package_a, dependency=package_c)
+    assert dependency_graph.is_runtime_dependency(
+        dependent=package_a, dependency=package_c
+    )
 
 
 def test_cyclic_runtime_dependencies_not_allowed(
@@ -48,6 +52,58 @@ def test_can_retriev_all_runtime_dependency_names(
         package_b.name(),
         package_c.name(),
     }
+
+
+def test_can_set_buildtime_dependency(
+    package_a: Requirement, package_b: Requirement, dependency_graph: DependencyGraph
+):
+    dependency_graph.set_buildtime_dependency(dependent=package_a, dependency=package_b)
+    assert dependency_graph.is_buildtime_dependency(
+        dependent=package_a, dependency=package_b
+    )
+
+
+def test_build_time_dependencies_dont_show_up_as_runtime_dependencies(
+    package_a: Requirement,
+    package_b: Requirement,
+    package_c: Requirement,
+    dependency_graph: DependencyGraph,
+):
+    dependency_graph.set_runtime_dependency(dependent=package_a, dependency=package_b)
+    dependency_graph.set_buildtime_dependency(dependent=package_b, dependency=package_c)
+    assert not dependency_graph.is_runtime_dependency(
+        dependent=package_a, dependency=package_c
+    )
+
+
+def test_cannot_add_circular_buildtime_dependencies(
+    package_a: Requirement, package_b: Requirement, dependency_graph: DependencyGraph,
+):
+    dependency_graph.set_buildtime_dependency(dependent=package_a, dependency=package_b)
+    with pytest.raises(CyclicDependencyOccured):
+        dependency_graph.set_buildtime_dependency(
+            dependent=package_b, dependency=package_a
+        )
+
+
+def test_cannot_add_circular_builtime_dependency_to_runtime_dependency(
+    package_a: Requirement, package_b: Requirement, dependency_graph: DependencyGraph,
+):
+    dependency_graph.set_runtime_dependency(dependent=package_a, dependency=package_b)
+    with pytest.raises(CyclicDependencyOccured):
+        dependency_graph.set_buildtime_dependency(
+            dependent=package_b, dependency=package_a
+        )
+
+
+def test_cannot_add_circular_runtime_dependency_to_buildtime_dependency(
+    package_a: Requirement, package_b: Requirement, dependency_graph: DependencyGraph,
+):
+    dependency_graph.set_buildtime_dependency(dependent=package_a, dependency=package_b)
+    with pytest.raises(CyclicDependencyOccured):
+        dependency_graph.set_runtime_dependency(
+            dependent=package_b, dependency=package_a
+        )
 
 
 @pytest.fixture
