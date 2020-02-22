@@ -10,20 +10,20 @@ class DependencyGraph:
     def __init__(self) -> None:
         self._dependencies: DefaultDict[str, Set[str]] = defaultdict(lambda: set())
 
-    def set_direct_dependency(
+    def set_runtime_dependency(
         self, dependent: Requirement, dependency: Requirement
     ) -> None:
-        if self.is_dependency(dependency, dependent):
+        if self.is_runtime_dependency(dependency, dependent):
             raise CyclicDependencyOccured(
                 f"Failed to add dependency {dependent} -> {dependency} to Graph "
                 f"since {dependent} is alread a dependency of {dependency}"
             )
         self._dependencies[dependent.name()].add(dependency.name())
 
-    def is_dependency(self, dependent: Requirement, dependency: Requirement) -> bool:
+    def is_runtime_dependency(self, dependent: Requirement, dependency: Requirement) -> bool:
         return self._is_child(dependent.name(), dependency.name())
 
-    def get_dependency_names(self, package: Requirement) -> Set[str]:
+    def get_all_runtime_dependency_names(self, package: Requirement) -> Set[str]:
         return set(self._get_children(package.name()))
 
     def _is_child(self, dependent: str, dependency: str) -> bool:

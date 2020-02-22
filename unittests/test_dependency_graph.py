@@ -7,43 +7,43 @@ from pypi2nix.requirements import Requirement
 from pypi2nix.requirements import VersionRequirement
 
 
-def test_can_set_direct_dependencies(
+def test_can_set_runtime_dependencies(
     package_a: Requirement, package_b: Requirement, dependency_graph: DependencyGraph
 ):
-    dependency_graph.set_direct_dependency(dependent=package_a, dependency=package_b)
-    assert dependency_graph.is_dependency(dependent=package_a, dependency=package_b)
+    dependency_graph.set_runtime_dependency(dependent=package_a, dependency=package_b)
+    assert dependency_graph.is_runtime_dependency(dependent=package_a, dependency=package_b)
 
 
-def test_can_detect_indirect_dependencies(
+def test_can_detect_indirect_runtime_dependencies(
     package_a: Requirement,
     package_b: Requirement,
     package_c: Requirement,
     dependency_graph: DependencyGraph,
 ) -> None:
-    dependency_graph.set_direct_dependency(dependent=package_a, dependency=package_b)
-    dependency_graph.set_direct_dependency(dependent=package_b, dependency=package_c)
-    assert dependency_graph.is_dependency(dependent=package_a, dependency=package_c)
+    dependency_graph.set_runtime_dependency(dependent=package_a, dependency=package_b)
+    dependency_graph.set_runtime_dependency(dependent=package_b, dependency=package_c)
+    assert dependency_graph.is_runtime_dependency(dependent=package_a, dependency=package_c)
 
 
-def test_cyclic_dependencies_not_allowed(
+def test_cyclic_runtime_dependencies_not_allowed(
     package_a: Requirement, package_b: Requirement, dependency_graph: DependencyGraph
 ):
-    dependency_graph.set_direct_dependency(dependent=package_a, dependency=package_b)
+    dependency_graph.set_runtime_dependency(dependent=package_a, dependency=package_b)
     with pytest.raises(CyclicDependencyOccured):
-        dependency_graph.set_direct_dependency(
+        dependency_graph.set_runtime_dependency(
             dependent=package_b, dependency=package_a
         )
 
 
-def test_can_retriev_all_dependency_names(
+def test_can_retriev_all_runtime_dependency_names(
     package_a: Requirement,
     package_b: Requirement,
     package_c: Requirement,
     dependency_graph: DependencyGraph,
 ) -> None:
-    dependency_graph.set_direct_dependency(dependent=package_a, dependency=package_b)
-    dependency_graph.set_direct_dependency(dependent=package_b, dependency=package_c)
-    assert dependency_graph.get_dependency_names(package_a) == {
+    dependency_graph.set_runtime_dependency(dependent=package_a, dependency=package_b)
+    dependency_graph.set_runtime_dependency(dependent=package_b, dependency=package_c)
+    assert dependency_graph.get_all_runtime_dependency_names(package_a) == {
         package_a.name(),
         package_b.name(),
         package_c.name(),
