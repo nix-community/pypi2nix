@@ -130,7 +130,7 @@ class Pypi2nix:
         )
         for external_input in self.configuration.extra_build_inputs:
             collector.collect_explicit(external_input)
-        return collector.get_collected()
+        return list(collector.get_collected())
 
     @memoize
     def requirements_collector(self) -> RequirementsCollector:
