@@ -13,6 +13,17 @@ def test_can_set_direct_dependencies(
     assert dependency_graph.is_dependency(dependent=package_a, dependency=package_b)
 
 
+def test_can_detect_indirect_dependencies(
+    package_a: Requirement,
+    package_b: Requirement,
+    package_c: Requirement,
+    dependency_graph: DependencyGraph,
+) -> None:
+    dependency_graph.set_direct_dependency(dependent=package_a, dependency=package_b)
+    dependency_graph.set_direct_dependency(dependent=package_b, dependency=package_c)
+    assert dependency_graph.is_dependency(dependent=package_a, dependency=package_c)
+
+
 @pytest.fixture
 def package_a(logger: Logger) -> Requirement:
     return VersionRequirement(
@@ -28,6 +39,17 @@ def package_a(logger: Logger) -> Requirement:
 def package_b(logger: Logger) -> Requirement:
     return VersionRequirement(
         name="package-b",
+        versions=[],
+        extras=set(),
+        environment_markers=None,
+        logger=logger,
+    )
+
+
+@pytest.fixture
+def package_c(logger: Logger) -> Requirement:
+    return VersionRequirement(
+        name="package-c",
         versions=[],
         extras=set(),
         environment_markers=None,
