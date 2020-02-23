@@ -59,8 +59,7 @@ def dependency_graph(
             continue
     for dependency in draw(external_dependencies):
         graph.set_external_dependency(
-            dependent=packages[draw(selections) % len(packages)],
-            dependency=dependency
+            dependent=packages[draw(selections) % len(packages)], dependency=dependency
         )
     return graph
 
