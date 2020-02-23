@@ -2,9 +2,13 @@ from collections import defaultdict
 from copy import copy
 from typing import Callable
 from typing import DefaultDict
+from typing import Dict
 from typing import Generator
+from typing import List
 from typing import Set
 from typing import TypeVar
+
+import yaml
 
 from pypi2nix.external_dependencies import ExternalDependency
 from pypi2nix.requirements import Requirement
@@ -71,6 +75,37 @@ class DependencyGraph:
             found_dependencies.update(self._external_dependencies[package_name])
         return found_dependencies
 
+    def serialize(self) -> str:
+        document: DefaultDict[str, Dict[str, List[str]]] = defaultdict(lambda: dict())
+        for key, external_dependencies in self._external_dependencies.items():
+            document[key]["externalDependencies"] = [
+                dep.attribute_name() for dep in external_dependencies
+            ]
+        for key, runtime_dependencies in self._runtime_dependencies.items():
+            document[key]["runtimeDependencies"] = list(runtime_dependencies)
+        for key, buildtime_dependencies in self._buildtime_dependencies.items():
+            document[key]["buildtimeDependencies"] = list(buildtime_dependencies)
+        return yaml.dump(dict(document))  # type: ignore
+
+    @classmethod
+    def deserialize(_class, data: str) -> "DependencyGraph":
+        document: DefaultDict[str, Dict[str, List[str]]]
+        document = yaml.load(data, Loader=yaml.Loader)
+        graph = DependencyGraph()
+        for package, dependencies in document.items():
+            external_dependencies = dependencies.get("externalDependencies")
+            if external_dependencies is not None:
+                graph._external_dependencies[package] = {
+                    ExternalDependency(name) for name in external_dependencies
+                }
+            runtime_dependencies = dependencies.get("runtimeDependencies")
+            if runtime_dependencies is not None:
+                graph._runtime_dependencies[package] = set(runtime_dependencies)
+            buildtime_dependencies = dependencies.get("buildtimeDependencies")
+            if buildtime_dependencies is not None:
+                graph._buildtime_dependencies[package] = set(buildtime_dependencies)
+        return graph
+
     def _is_python_child(self, dependent: str, dependency: str) -> bool:
         for child in self._get_python_children(dependent):
             if child == dependency:
@@ -131,6 +166,25 @@ class DependencyGraph:
         new_graph._runtime_dependencies = copy(self._runtime_dependencies)
         new_graph._external_dependencies = copy(self._external_dependencies)
         return new_graph
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, DependencyGraph):
+            return (
+                self._runtime_dependencies == other._runtime_dependencies
+                and self._buildtime_dependencies == other._buildtime_dependencies
+                and self._external_dependencies == other._external_dependencies
+            )
+        else:
+            return False
+
+    def __repr__(self) -> str:
+        return (
+            "DependencyGraph("
+            f"runtime_dependencies={repr(self._runtime_dependencies)}, "
+            f"buildtime_dependencies={repr(self._buildtime_dependencies)}, "
+            f"external_dependencies={repr(self._external_dependencies)}"
+            ")"
+        )
 
 
 class CyclicDependencyOccured(Exception):

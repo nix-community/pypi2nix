@@ -23,3 +23,4 @@
 **/.eggs/**
 .mypy_cache
 src/pypi2nix/_version.py
+/.hypothesis

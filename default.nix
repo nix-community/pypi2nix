@@ -31,23 +31,23 @@ let
   pypi2nixFunction = { mkDerivation, lib, nixfmt, attrs, black, click, flake8
     , flake8-unused-arguments, isort, jinja2, mypy, nix-prefetch-github
     , packaging, parsley, pdbpp, pytest, pytest-cov, setuptools, setuptools-scm
-    , toml, twine, git, jsonschema, bumpv, hypothesis }:
+    , toml, twine, git, jsonschema, bumpv, hypothesis, pyyaml }:
     mkDerivation {
       name = "pypi2nix-${version}";
       src = source;
       checkInputs = [
         black
+        bumpv
         flake8
         flake8-unused-arguments
-        mypy
+        hypothesis
         isort
+        mypy
+        nixfmt
+        pdbpp
         pytest
         pytest-cov
         twine
-        pdbpp
-        nixfmt
-        bumpv
-        hypothesis
       ];
       buildInputs = [ ];
       nativeBuildInputs = [ git ];
@@ -55,13 +55,14 @@ let
         attrs
         click
         jinja2
+        jsonschema
         nix-prefetch-github
         packaging
         parsley
+        pyyaml
         setuptools
         setuptools-scm
         toml
-        jsonschema
       ];
       dontUseSetuptoolsShellHook = true;
       checkPhase = ''
