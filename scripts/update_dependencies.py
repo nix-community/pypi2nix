@@ -17,6 +17,8 @@ def main():
             "requirements-dev.txt",
             "-s",
             "pytest-runner",
+            "-s",
+            "setupmeta",
             "--no-default-overrides",
             "-E",
             "openssl libffi",

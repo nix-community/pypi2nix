@@ -2,7 +2,7 @@
 # See more at: https://github.com/nix-community/pypi2nix
 #
 # COMMAND:
-#   pypi2nix -r requirements.txt -r requirements-dev.txt -s pytest-runner --no-default-overrides -E 'openssl libffi'
+#   pypi2nix -r requirements.txt -r requirements-dev.txt -s pytest-runner -s setupmeta --no-default-overrides -E 'openssl libffi'
 #
 
 { pkgs ? import <nixpkgs> {},
@@ -143,10 +143,10 @@ let
     };
 
     "bleach" = python.mkDerivation {
-      name = "bleach-3.1.0";
+      name = "bleach-3.1.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/78/5a/0df03e8735cd9c75167528299c738702437589b9c71a849489d00ffa82e8/bleach-3.1.0.tar.gz";
-        sha256 = "3fdf7f77adcf649c9911387df51254b813185e32b2c6619f690b593a617e19fa";
+        url = "https://files.pythonhosted.org/packages/8d/94/1b236a95e948b9074264a574fbc45f24963fffd0920ccbf74ecce7e347ca/bleach-3.1.1.tar.gz";
+        sha256 = "aa8b870d0f46965bac2c073a93444636b0e1ca74e9777e34f03dd494b8a59d48";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
@@ -200,10 +200,10 @@ let
     };
 
     "cffi" = python.mkDerivation {
-      name = "cffi-1.13.2";
+      name = "cffi-1.14.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/2d/bf/960e5a422db3ac1a5e612cb35ca436c3fc985ed4b7ed13a1b4879006f450/cffi-1.13.2.tar.gz";
-        sha256 = "599a1e8ff057ac530c9ad1778293c665cb81a791421f46922d80a86473c13346";
+        url = "https://files.pythonhosted.org/packages/05/54/3324b0c46340c31b909fcec598696aaec7ddc8c18a63f2db352562d3354c/cffi-1.14.0.tar.gz";
+        sha256 = "2d384f4a127a15ba701207f7639d94106693b6cd64173d6c8988e2c25f3ac2b6";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
@@ -349,17 +349,19 @@ let
     };
 
     "fancycompleter" = python.mkDerivation {
-      name = "fancycompleter-0.8";
+      name = "fancycompleter-0.9.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/fd/e3/da39a6cfaffe578a01221261ac1d5d99c48d44f6377ff0de3a12dd332cec/fancycompleter-0.8.tar.gz";
-        sha256 = "d2522f1f3512371f295379c4c0d1962de06762eb586c199620a2a5d423539b12";
+        url = "https://files.pythonhosted.org/packages/a9/95/649d135442d8ecf8af5c7e235550c628056423c96c4bc6787348bdae9248/fancycompleter-0.9.1.tar.gz";
+        sha256 = "09e0feb8ae242abdfd7ef2ba55069a46f011814a80fe5476be48f51b00247272";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
-      propagatedBuildInputs = [ ];
+      propagatedBuildInputs = [
+        self."pyrepl"
+      ];
       meta = with pkgs.stdenv.lib; {
-        homepage = "http://bitbucket.org/antocuni/fancycompleter";
+        homepage = "https://github.com/pdbpp/fancycompleter";
         license = licenses.bsdOriginal;
         description = "colorful TAB completion for Python prompt";
       };
@@ -471,11 +473,31 @@ let
       };
     };
 
-    "idna" = python.mkDerivation {
-      name = "idna-2.8";
+    "hypothesis" = python.mkDerivation {
+      name = "hypothesis-5.5.4";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/ad/13/eb56951b6f7950cadb579ca166e448ba77f9d24efc03edd7e55fa57d04b7/idna-2.8.tar.gz";
-        sha256 = "c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407";
+        url = "https://files.pythonhosted.org/packages/72/01/0f12f7992240f9d676bf8f31aa7ac898325c34d455c876a726329d548f65/hypothesis-5.5.4.tar.gz";
+        sha256 = "2e5382dea626072f12a17c10d2b3c3f13bb7cb35ba40d0978bc29b0ade589b63";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."attrs"
+        self."sortedcontainers"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/HypothesisWorks/hypothesis/tree/master/hypothesis-python";
+        license = licenses.mpl20;
+        description = "A library for property-based testing";
+      };
+    };
+
+    "idna" = python.mkDerivation {
+      name = "idna-2.9";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/cb/19/57503b5de719ee45e83472f339f617b0c01ad75cba44aba1e4c97c2b0abd/idna-2.9.tar.gz";
+        sha256 = "7588d1c14ae4c77d74036e8c22ff447b26d0fde8f007354fd48a7814db15b7cb";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
@@ -489,10 +511,10 @@ let
     };
 
     "importlib-metadata" = python.mkDerivation {
-      name = "importlib-metadata-1.4.0";
+      name = "importlib-metadata-1.5.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/8c/0e/10e247f40c89ba72b7f2a2104ccf1b65de18f79562ffe11bfb837b711acf/importlib_metadata-1.4.0.tar.gz";
-        sha256 = "f17c015735e1a88296994c0697ecea7e11db24290941983b08c9feb30921e6d8";
+        url = "https://files.pythonhosted.org/packages/0d/e4/638f3bde506b86f62235c595073066e7b8472fc9ee2b8c6491347f31d726/importlib_metadata-1.5.0.tar.gz";
+        sha256 = "06f5b3a99029c7134207dd882428a66992a9de2bef7c2b699b5641f9886c3302";
 };
       doCheck = commonDoCheck;
       format = "pyproject";
@@ -567,10 +589,10 @@ let
     };
 
     "jinja2" = python.mkDerivation {
-      name = "jinja2-2.10.3";
+      name = "jinja2-2.11.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/7b/db/1d037ccd626d05a7a47a1b81ea73775614af83c2b3e53d86a0bb41d8d799/Jinja2-2.10.3.tar.gz";
-        sha256 = "9fe95f19286cfefaa917656583d020be14e7859c6b0252588391e47db34527de";
+        url = "https://files.pythonhosted.org/packages/d8/03/e491f423379ea14bb3a02a5238507f7d446de639b623187bccc111fbecdf/Jinja2-2.11.1.tar.gz";
+        sha256 = "93187ffbc7808079673ef52771baa950426fd664d3aad1d0fa3e95644360e250";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
@@ -672,10 +694,10 @@ let
     };
 
     "more-itertools" = python.mkDerivation {
-      name = "more-itertools-8.1.0";
+      name = "more-itertools-8.2.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/df/8c/c278395367a46c00d28036143fdc6583db8f98622b83875403f16473509b/more-itertools-8.1.0.tar.gz";
-        sha256 = "c468adec578380b6281a114cb8a5db34eb1116277da92d7c46f904f0b52d3288";
+        url = "https://files.pythonhosted.org/packages/a0/47/6ff6d07d84c67e3462c50fa33bf649cda859a8773b53dc73842e84455c05/more-itertools-8.2.0.tar.gz";
+        sha256 = "b1ddb932186d8a6ac451e1d95844b382f55e12686d51ca0c68b6f61f2ab7a507";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
@@ -749,10 +771,10 @@ let
     };
 
     "packaging" = python.mkDerivation {
-      name = "packaging-20.0";
+      name = "packaging-20.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/c7/cf/d84b72480a556d9bd4a191a91b0a8ea71cb48e6f6132f12d9d365c51bdb6/packaging-20.0.tar.gz";
-        sha256 = "fe1d8331dfa7cc0a883b49d75fc76380b2ab2734b220fbb87d774e4fd4b851f8";
+        url = "https://files.pythonhosted.org/packages/7b/d5/199f982ae38231995276421377b72f4a25d8251f4fa56f6be7cfcd9bb022/packaging-20.1.tar.gz";
+        sha256 = "e665345f9eef0c621aa0bf2f8d78cf6d21904eef16a93f020240b704a57f1334";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
@@ -984,6 +1006,23 @@ let
       };
     };
 
+    "pyrepl" = python.mkDerivation {
+      name = "pyrepl-0.9.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/05/1b/ea40363be0056080454cdbabe880773c3c5bd66d7b13f0c8b8b8c8da1e0c/pyrepl-0.9.0.tar.gz";
+        sha256 = "292570f34b5502e871bbb966d639474f2b57fbfcd3373c2d6a2f3d56e681a775";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://bitbucket.org/pypy/pyrepl/";
+        license = "MIT X11 style";
+        description = "A library for building flexible command line interfaces";
+      };
+    };
+
     "pyrsistent" = python.mkDerivation {
       name = "pyrsistent-0.15.7";
       src = pkgs.fetchurl {
@@ -1004,10 +1043,10 @@ let
     };
 
     "pytest" = python.mkDerivation {
-      name = "pytest-5.3.3";
+      name = "pytest-5.3.5";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/eb/3d/19bac795b6e60f4d6127227d4e11c31f8d9555de5e1f1a5e01ebad1d2ccf/pytest-5.3.3.tar.gz";
-        sha256 = "f5d3d0e07333119fe7d4af4ce122362dc4053cdd34a71d2766290cf5369c64ad";
+        url = "https://files.pythonhosted.org/packages/f0/5f/41376614e41f7cdee02d22d1aec1ea028301b4c6c4523a5f7ef8e960fe0b/pytest-5.3.5.tar.gz";
+        sha256 = "0d5fe9189a148acc3c3eb2ac8e1ac0742cb7618c084f3d228baaec0c254b318d";
 };
       doCheck = commonDoCheck;
       format = "pyproject";
@@ -1130,10 +1169,10 @@ let
     };
 
     "regex" = python.mkDerivation {
-      name = "regex-2020.1.8";
+      name = "regex-2020.2.20";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/73/d9/b58289d885180b5d538aa6df07974b5fe6088547ac846c0f76f77259c304/regex-2020.1.8.tar.gz";
-        sha256 = "d0f424328f9822b0323b3b6f2e4b9c90960b24743d220763c7f07071e0778351";
+        url = "https://files.pythonhosted.org/packages/e8/76/8ac7f467617b9cfbafcef3c76df6f22b15de654a62bea719792b00a83195/regex-2020.2.20.tar.gz";
+        sha256 = "9e9624440d754733eddbcd4614378c18713d2d9d0dc647cf9c72f64e39671be5";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
@@ -1147,10 +1186,10 @@ let
     };
 
     "requests" = python.mkDerivation {
-      name = "requests-2.22.0";
+      name = "requests-2.23.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/01/62/ddcf76d1d19885e8579acb1b1df26a852b03472c0e46d2b959a714c90608/requests-2.22.0.tar.gz";
-        sha256 = "11e007a8a2aa0323f5a921e9e6a2d7e4e67d9877e85773fba9ba6419025cbeb4";
+        url = "https://files.pythonhosted.org/packages/f5/4f/280162d4bd4d8aad241a21aecff7a6e46891b905a4341e7ab549ebaf7915/requests-2.23.0.tar.gz";
+        sha256 = "b3f43d496c6daba4493e7c431722aeb7dbc6288f52a6e04e7b6023b0247817e6";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
@@ -1162,7 +1201,7 @@ let
         self."urllib3"
       ];
       meta = with pkgs.stdenv.lib; {
-        homepage = "http://python-requests.org";
+        homepage = "https://requests.readthedocs.io";
         license = licenses.asl20;
         description = "Python HTTP for Humans.";
       };
@@ -1210,11 +1249,28 @@ let
       };
     };
 
-    "setuptools" = python.mkDerivation {
-      name = "setuptools-45.0.0";
+    "setupmeta" = python.mkDerivation {
+      name = "setupmeta-2.6.18";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/fd/76/3c7f726ed5c582019937f178d7478ce62716b7e8263344f1684cbe11ab3e/setuptools-45.0.0.zip";
-        sha256 = "c46d9c8f2289535457d36c676b541ca78f7dcb736b97d02f50d17f7f15b583cc";
+        url = "https://files.pythonhosted.org/packages/7e/a4/d750121bc1ccf5ed3ca1ee4b3277cdfafcce79251b6a1edaf7e1938244e0/setupmeta-2.6.18.tar.gz";
+        sha256 = "089120e1dcdd3f312e4555567dee7284857941d0249272d3a4a3dc8fd41c6337";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/zsimic/setupmeta";
+        license = licenses.mit;
+        description = "Simplify your setup.py";
+      };
+    };
+
+    "setuptools" = python.mkDerivation {
+      name = "setuptools-45.2.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/68/75/d1d7b7340b9eb6e0388bf95729e63c410b381eb71fe8875cdfd949d8f9ce/setuptools-45.2.0.zip";
+        sha256 = "89c6e6011ec2f6d57d43a3f9296c4ef022c2cbf49bab26b407fe67992ae3397f";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
@@ -1228,10 +1284,10 @@ let
     };
 
     "setuptools-scm" = python.mkDerivation {
-      name = "setuptools-scm-3.4.1";
+      name = "setuptools-scm-3.5.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/9a/29/d8f9b0ddb3b9cb9da4de7fdd5f85bc598f774f22161cf72e5fe47207c8ea/setuptools_scm-3.4.1.tar.gz";
-        sha256 = "6aaa6fbeb81d0899d6f473b0d79efccdd9a28f33192f479d5d2bd92b8eb75090";
+        url = "https://files.pythonhosted.org/packages/b2/f7/60a645aae001a2e06cf4b8db2fba9d9f36b8fd378f10647e3e218b61b74b/setuptools_scm-3.5.0.tar.gz";
+        sha256 = "5bdf21a05792903cafe7ae0c9501182ab52497614fa6b1750d9dbae7b60c1a87";
 };
       doCheck = commonDoCheck;
       format = "pyproject";
@@ -1264,6 +1320,23 @@ let
       };
     };
 
+    "sortedcontainers" = python.mkDerivation {
+      name = "sortedcontainers-2.1.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/29/e0/135df2e733790a3d3bcda970fd080617be8cea3bd98f411e76e6847c17ef/sortedcontainers-2.1.0.tar.gz";
+        sha256 = "974e9a32f56b17c1bac2aebd9dcf197f3eb9cd30553c5852a3187ad162e1a03a";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://www.grantjenks.com/docs/sortedcontainers/";
+        license = licenses.asl20;
+        description = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set";
+      };
+    };
+
     "toml" = python.mkDerivation {
       name = "toml-0.10.0";
       src = pkgs.fetchurl {
@@ -1282,10 +1355,10 @@ let
     };
 
     "tqdm" = python.mkDerivation {
-      name = "tqdm-4.41.1";
+      name = "tqdm-4.43.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/cd/22/f15bb3c0a2810da0e825d193fb76d782015d82c676c4f682a957814926d7/tqdm-4.41.1.tar.gz";
-        sha256 = "4789ccbb6fc122b5a6a85d512e4e41fc5acad77216533a6f2b8ce51e0f265c23";
+        url = "https://files.pythonhosted.org/packages/7a/cf/625e53bb8c6ad88302192c7aa50d45cdfb2b0fe97892869ec3dd9309f67f/tqdm-4.43.0.tar.gz";
+        sha256 = "f35fb121bafa030bd94e74fcfd44f3c2830039a2ddef7fc87ef1c2d205237b24";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
@@ -1363,10 +1436,10 @@ let
     };
 
     "urllib3" = python.mkDerivation {
-      name = "urllib3-1.25.7";
+      name = "urllib3-1.25.8";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/ad/fc/54d62fa4fc6e675678f9519e677dfc29b8964278d75333cf142892caf015/urllib3-1.25.7.tar.gz";
-        sha256 = "f3c5fd51747d450d4dcf6f923c81f78f811aab8205fda64b0aba34a4e48b0745";
+        url = "https://files.pythonhosted.org/packages/09/06/3bc5b100fe7e878d3dee8f807a4febff1a40c213d2783e3246edde1f3419/urllib3-1.25.8.tar.gz";
+        sha256 = "87716c2d2a7121198ebcb7ce7cccf6ce5e9ba539041cfbaeecfb641dc0bf6acc";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
@@ -1414,19 +1487,21 @@ let
     };
 
     "wheel" = python.mkDerivation {
-      name = "wheel-0.33.6";
+      name = "wheel-0.34.2";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/59/b0/11710a598e1e148fb7cbf9220fd2a0b82c98e94efbdecb299cb25e7f0b39/wheel-0.33.6.tar.gz";
-        sha256 = "10c9da68765315ed98850f8e048347c3eb06dd81822dc2ab1d4fde9dc9702646";
+        url = "https://files.pythonhosted.org/packages/75/28/521c6dc7fef23a68368efefdcd682f5b3d1d58c2b90b06dc1d0b805b51ae/wheel-0.34.2.tar.gz";
+        sha256 = "8788e9155fe14f54164c1b9eb0a319d98ef02c160725587ad60f14ddc57b6f96";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
-      buildInputs = commonBuildInputs ++ [ ];
+      buildInputs = commonBuildInputs ++ [
+        self."setuptools"
+      ];
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/pypa/wheel";
         license = licenses.mit;
-        description = "A built-package format for Python.";
+        description = "A built-package format for Python";
       };
     };
 
@@ -1448,10 +1523,10 @@ let
     };
 
     "zipp" = python.mkDerivation {
-      name = "zipp-1.0.0";
+      name = "zipp-3.0.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/d4/cd/ef86396dce8910413b6ca1ef31ec09367c47e15fc1a12def2cc8ae134dea/zipp-1.0.0.tar.gz";
-        sha256 = "d38fbe01bbf7a3593a32bc35a9c4453c32bc42b98c377f9bff7e9f8da157786c";
+        url = "https://files.pythonhosted.org/packages/42/09/bb2a28216f9572da61a2c56c6d5bf6d8c011371d8268f42a9ca5a4cbaf40/zipp-3.0.0.tar.gz";
+        sha256 = "7c0f8e91abc0dc07a5068f315c52cb30c66bfbc581e5b50704c8a2f6ebae794a";
 };
       doCheck = commonDoCheck;
       format = "pyproject";
@@ -1460,9 +1535,7 @@ let
         self."setuptools-scm"
         self."wheel"
       ];
-      propagatedBuildInputs = [
-        self."more-itertools"
-      ];
+      propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
         homepage = "https://github.com/jaraco/zipp";
         license = licenses.mit;

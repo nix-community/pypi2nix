@@ -6,5 +6,6 @@ parsley
 toml
 packaging
 jsonschema
+hypothesis
 
 -c constraints.txt
