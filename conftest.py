@@ -6,6 +6,7 @@ from io import StringIO
 import pytest
 
 from pypi2nix.archive import Archive
+from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.logger import Logger
 from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import Nix
@@ -48,8 +49,27 @@ def wheels_dir(project_dir):
 
 
 @pytest.fixture
-def wheel_builder(pip, project_dir, logger, requirement_parser, current_platform):
-    return WheelBuilder(pip, project_dir, logger, requirement_parser, current_platform)
+def wheel_builder(
+    pip,
+    project_dir,
+    logger,
+    requirement_parser,
+    current_platform,
+    base_dependency_graph,
+):
+    return WheelBuilder(
+        pip,
+        project_dir,
+        logger,
+        requirement_parser,
+        current_platform,
+        base_dependency_graph,
+    )
+
+
+@pytest.fixture
+def base_dependency_graph():
+    return DependencyGraph()
 
 
 @pytest.fixture

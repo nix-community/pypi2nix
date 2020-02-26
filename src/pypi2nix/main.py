@@ -4,6 +4,7 @@ import sys
 from typing import List
 
 from pypi2nix.configuration import ApplicationConfiguration
+from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.expression_renderer import render_expression
 from pypi2nix.external_dependencies import ExternalDependency
 from pypi2nix.external_dependencies import ExternalDependencyCollector
@@ -64,6 +65,7 @@ class Pypi2nix:
             logger=self.logger(),
             requirement_parser=self.requirement_parser(),
             target_platform=self.target_platform(),
+            base_dependency_graph=self.base_dependency_graph(),
         )
         wheels = wheel_builder.build(
             requirements=requirements, setup_requirements=setup_requirements
@@ -183,3 +185,7 @@ class Pypi2nix:
         logger: Logger = StreamLogger(output=sys.stdout)
         logger.set_verbosity(self.configuration.verbosity)
         return logger
+
+    @memoize
+    def base_dependency_graph(self) -> DependencyGraph:
+        return DependencyGraph()

@@ -1,13 +1,14 @@
 import os
 import os.path
 import zipfile
-from collections import defaultdict
+from copy import copy
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
 
 from pypi2nix.archive import Archive
+from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.logger import Logger
 from pypi2nix.package.exceptions import DistributionNotDetected
 from pypi2nix.pip.interface import Pip
@@ -25,6 +26,7 @@ class WheelBuilder:
         logger: Logger,
         requirement_parser: RequirementParser,
         target_platform: TargetPlatform,
+        base_dependency_graph: DependencyGraph,
     ) -> None:
         self.pip = pip
         self.download_directory = os.path.join(project_directory, "download")
@@ -33,13 +35,11 @@ class WheelBuilder:
         self.project_directory = project_directory
         self.inspected_source_distribution_files: Set[str] = set()
         self.target_platform = target_platform
-        self.additional_build_dependencies: Dict[str, RequirementSet] = defaultdict(
-            lambda: RequirementSet(self.target_platform)
-        )
         self.source_distributions: Dict[str, SourceDistribution] = dict()
         self.logger = logger
         self.requirement_parser = requirement_parser
         self.lib_directory = os.path.join(self.project_directory, "lib")
+        self._dependency_graph = base_dependency_graph
 
     def build(
         self,
@@ -101,7 +101,10 @@ class WheelBuilder:
         build_dependencies = distribution.build_dependencies(
             self.target_platform
         ).filter(lambda requirement: requirement.name() not in [distribution.name])
-        self.additional_build_dependencies[distribution.name] += build_dependencies
+        for dependency in build_dependencies:
+            self._dependency_graph.set_buildtime_dependency(
+                dependent=distribution.to_loose_requirement(), dependency=dependency
+            )
         return build_dependencies
 
     def get_uninspected_source_distributions(self) -> List[SourceDistribution]:
@@ -163,6 +166,10 @@ class WheelBuilder:
 
     def _ensure_wheels_directory_exists(self) -> None:
         os.makedirs(self.wheel_directory, exist_ok=True)
+
+    @property
+    def dependency_graph(self) -> DependencyGraph:
+        return copy(self._dependency_graph)
 
 
 def list_files(path: str) -> List[str]:
