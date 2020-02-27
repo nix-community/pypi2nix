@@ -32,21 +32,13 @@ class DependencyGraph:
     def set_runtime_dependency(
         self, dependent: Requirement, dependency: Requirement
     ) -> None:
-        if self.is_buildtime_dependency(dependency, dependent):
-            raise CyclicDependencyOccured(
-                f"Failed to add dependency {dependent} -> {dependency} to Graph "
-                f"since {dependent} is alread a dependency of {dependency}"
-            )
+        self._raise_on_cyclic_dependency(dependent, dependency)
         self._runtime_dependencies[dependent.name()].add(dependency.name())
 
     def set_buildtime_dependency(
         self, dependent: Requirement, dependency: Requirement
     ) -> None:
-        if self.is_buildtime_dependency(dependency, dependent):
-            raise CyclicDependencyOccured(
-                f"Failed to add dependency {dependent} -> {dependency} to Graph "
-                f"since {dependent} is alread a dependency of {dependency}"
-            )
+        self._raise_on_cyclic_dependency(dependent, dependency)
         self._buildtime_dependencies[dependent.name()].add(dependency.name())
 
     def set_external_dependency(
@@ -105,6 +97,15 @@ class DependencyGraph:
             if buildtime_dependencies is not None:
                 graph._buildtime_dependencies[package] = set(buildtime_dependencies)
         return graph
+
+    def _raise_on_cyclic_dependency(
+        self, dependent: Requirement, dependency: Requirement
+    ) -> None:
+        if self.is_buildtime_dependency(dependency, dependent):
+            raise CyclicDependencyOccured(
+                f"Failed to add dependency {dependent} -> {dependency} to Graph "
+                f"since {dependent} is alread a dependency of {dependency}"
+            )
 
     def _is_python_child(self, dependent: str, dependency: str) -> bool:
         for child in self._get_python_children(dependent):
