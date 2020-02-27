@@ -1,3 +1,4 @@
+import os
 import os.path
 import venv
 
@@ -94,3 +95,12 @@ def test_pip_with_data_directory_index_can_download_six(
     requirements = RequirementSet(current_platform)
     requirements.add(requirement_parser.parse("six"))
     pip_from_data_directory.download_sources(requirements, download_dir)
+
+
+def test_that_set_environment_variable_undoes_changes_when_exiting(
+    pip_without_index: VirtualenvPip,
+):
+    old_environment = dict(os.environ)
+    with pip_without_index._set_environment_variable({"test": "definitly_unset"}):
+        pass
+    assert dict(os.environ) == old_environment

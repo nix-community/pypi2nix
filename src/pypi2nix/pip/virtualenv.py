@@ -135,23 +135,23 @@ class VirtualenvPip(Pip):
     def _set_environment_variable(
         self, variables: Dict[str, Optional[str]]
     ) -> Iterator[None]:
-        def set_environment(
-            environment: Dict[str, Optional[str]]
-        ) -> Dict[str, Optional[str]]:
-            old_environment: Dict[str, Optional[str]] = dict()
+        def set_environment(environment: Dict[str, Optional[str]]) -> None:
             for name, value in variables.items():
-                old_environment[name] = os.environ.get(name)
                 if value is None:
                     del os.environ[name]
                 else:
                     os.environ[name] = value
-            return old_environment
 
-        old_environment = set_environment(variables)
+        old_environment = dict(os.environ)
+        set_environment(variables)
         try:
             yield
         finally:
-            set_environment(old_environment)
+            for key, value in old_environment.items():
+                os.environ[key] = value
+            for key in os.environ.keys():
+                if key not in old_environment:
+                    del os.environ[key]
 
     def _maybe_index(self) -> List[str]:
         arguments: List[str] = []
