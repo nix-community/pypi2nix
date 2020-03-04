@@ -40,6 +40,7 @@ def test_can_install_generated_packages(
         source_directories=[str(target_directory)],
         target_directory=str(install_target),
     )
+    assert "testpackage" in pip.freeze(python_path=[str(install_target)])
 
 
 @pytest.fixture
