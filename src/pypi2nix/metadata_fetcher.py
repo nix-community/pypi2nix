@@ -25,7 +25,6 @@ from pypi2nix.sources import Sources
 from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.utils import cmd
 from pypi2nix.utils import prefetch_git
-from pypi2nix.utils import safe
 from pypi2nix.wheel import Wheel
 
 

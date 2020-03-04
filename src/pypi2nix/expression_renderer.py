@@ -7,6 +7,7 @@ from typing import Iterable
 import jinja2
 
 from pypi2nix.logger import Logger
+from pypi2nix.nix_language import escape_string
 from pypi2nix.overrides import Overrides
 from pypi2nix.python_version import PythonVersion
 from pypi2nix.sources import Sources
@@ -81,7 +82,7 @@ def render_expression(
                 propagatedBuildInputs=propagatedBuildInputs,
                 homepage=item.homepage,
                 license=item.license,
-                description=item.description,
+                description=escape_string(item.description),
                 package_format=package_format,
             )
         )

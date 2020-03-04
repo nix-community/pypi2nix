@@ -3,7 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from pypi2nix.utils import safe
+from pypi2nix.nix_language import escape_string
 
 all_classifiers = {
     "License :: Aladdin Free Public License (AFPL)": None,
@@ -147,7 +147,7 @@ def recognized_nix_license_from_classifiers(classifiers: List[str],) -> Optional
 def first_license_classifier_from_list(classifiers: List[str]) -> Optional[str]:
     for classifier in classifiers:
         if classifier in all_classifiers:
-            escaped_classifier: str = safe(classifier)
+            escaped_classifier: str = escape_string(classifier)
             return '"' + escaped_classifier + '"'
     return None
 
