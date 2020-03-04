@@ -58,7 +58,6 @@ let
         setuptools-scm
         toml
       ];
-      dontUseSetuptoolsShellHook = true;
       checkPhase = ''
         ${if include_nixfmt then "nixfmt --check default.nix" else ""}
         echo "Running black ..."
