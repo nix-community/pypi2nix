@@ -27,10 +27,6 @@ def pretty_option(option: Optional[str]) -> str:
         )
 
 
-def safe(string: str) -> str:
-    return string.replace('"', '\\"')
-
-
 def cmd(
     command: Union[str, List[str]], logger: Logger, stderr: Optional[int] = None
 ) -> Tuple[int, str]:

@@ -117,6 +117,7 @@ class IntegrationTest(TestCase):
 
     def run_expression_tests(self) -> None:
         self.build_interpreter_from_generated_expression()
+        self.build_additional_attributes()
         self.run_interpreter_with_test_code()
         self.run_executable_tests()
 
@@ -132,6 +133,16 @@ class IntegrationTest(TestCase):
             self.fail(
                 "Failed to build python interpreter from nix expression generated"
             )
+
+    def build_additional_attributes(self) -> None:
+        for additional_path in self.additional_paths_to_build:
+            try:
+                self.nix.evaluate_file(
+                    os.path.join(self.example_directory(), "requirements.nix"),
+                    attribute=additional_path,
+                )
+            except EvaluationFailed:
+                self.fail(f"Failed to build attribute path {additional_path}")
 
     def run_interpreter_with_test_code(self) -> None:
         if self.code_for_testing_string():
@@ -297,6 +308,7 @@ class IntegrationTest(TestCase):
     name_of_testcase: str = "undefined"
     external_dependencies: List[str] = []
     explicit_build_directory: bool = False
+    additional_paths_to_build: List[str] = []
 
 
 @attrs

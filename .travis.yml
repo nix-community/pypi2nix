@@ -7,6 +7,7 @@ env:
     - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz
   matrix:
     - TEST_FILE=aiohttp
+    - TEST_FILE=appdirs
     - TEST_FILE=awscli_and_requests
     - TEST_FILE=connexion
     - TEST_FILE=empy
@@ -52,6 +53,17 @@ jobs:
     os: linux
     env:
       - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz
+    before_script:
+      - sudo mkdir -p /etc/nix && echo 'sandbox = true' | sudo tee /etc/nix/nix.conf
+    script:
+      - set -e
+      - nix build
+      - result/bin/pypi2nix --version
+      - nix-shell --command 'pytest unittests/'
+  - name: nixos-20.03
+    os: linux
+    env:
+      - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-20.03.tar.gz
     before_script:
       - sudo mkdir -p /etc/nix && echo 'sandbox = true' | sudo tee /etc/nix/nix.conf
     script:

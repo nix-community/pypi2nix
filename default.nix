@@ -1,4 +1,4 @@
-{ pkgs ? import <nixpkgs> { }, }:
+{ pkgs ? import <nixpkgs> { }, include_nixfmt ? false }:
 
 let
   pythonPackages = import ./requirements.nix { inherit pkgs; };
@@ -15,13 +15,8 @@ let
           directories);
       ignoreFileTypes = types:
         !(any (type: hasSuffix ("." + type) name && type == "regular") types);
-    in ignoreDirectories [
-      "parsemon2.egg-info"
-      "__pycache__"
-      "build"
-      "dist"
-      ".mypy_cache"
-    ] && ignoreFileTypes [ "pyc" ];
+    in ignoreDirectories [ "__pycache__" "build" "dist" ".mypy_cache" ]
+    && ignoreFileTypes [ "pyc" ];
 
   source = pkgs.lib.cleanSourceWith {
     src = ./.;
@@ -45,9 +40,8 @@ let
         pytest-cov
         twine
         pdbpp
-        nixfmt
         bumpv
-      ];
+      ] ++ (if include_nixfmt then [ nixfmt ] else [ ]);
       buildInputs = [ ];
       nativeBuildInputs = [ git ];
       propagatedBuildInputs = [
@@ -64,7 +58,7 @@ let
       ];
       dontUseSetuptoolsShellHook = true;
       checkPhase = ''
-        nixfmt --check default.nix
+        ${if include_nixfmt then "nixfmt --check default.nix" else ""}
         echo "Running black ..."
         black --check --diff -v setup.py src/ unittests/ mypy/ integrationtests/ scripts/
         echo "Running flake8 ..."
