@@ -16,7 +16,6 @@ let
       ignoreFileTypes = types:
         !(any (type: hasSuffix ("." + type) name && type == "regular") types);
     in ignoreDirectories [
-      "parsemon2.egg-info"
       "__pycache__"
       "build"
       "dist"
