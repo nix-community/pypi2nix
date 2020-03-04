@@ -67,6 +67,17 @@ class Nix:
             + create_command_options(arguments),
         )
 
+    def evaluate_file(self, source_file: str, attribute: Optional[str] = None) -> None:
+        absolute_source_file = os.path.abspath(source_file)
+        self.evaluate_expression(
+            f"let file_path = {absolute_source_file}; "
+            + "file_expression = import file_path {}; "
+            + "in "
+            + f"file_expression.{attribute}"
+            if attribute
+            else "file_expression",
+        )
+
     def build_expression(
         self,
         expression: str,

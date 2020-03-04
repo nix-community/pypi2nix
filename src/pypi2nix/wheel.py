@@ -12,10 +12,10 @@ from packaging.utils import canonicalize_name
 
 from pypi2nix.license import find_license
 from pypi2nix.logger import Logger
+from pypi2nix.nix_language import escape_string
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
-from pypi2nix.utils import safe
 
 
 class Wheel:
@@ -174,7 +174,7 @@ class Builder:
         )
 
         if self.license is None:
-            self.license = '"' + safe(license_string) + '"'
+            self.license = '"' + escape_string(license_string) + '"'
             self.logger.warning(
                 f"Couldn't recognize license `{license_string}` for `{self.name}`"
             )
