@@ -7,11 +7,11 @@ from packaging.utils import canonicalize_name
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
-from pypi2nix.package.exceptions import DistributionNotDetected
-from pypi2nix.package.interfaces import HasBuildDependencies
-from pypi2nix.package.metadata import PackageMetadata
-from pypi2nix.package.pyproject import PyprojectToml
-from pypi2nix.package.setupcfg import SetupCfg
+from pypi2nix.package import DistributionNotDetected
+from pypi2nix.package import HasBuildDependencies
+from pypi2nix.package import PackageMetadata
+from pypi2nix.package import PyprojectToml
+from pypi2nix.package import SetupCfg
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform

@@ -10,7 +10,7 @@ from pypi2nix.logger import Logger
 from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import Nix
 from pypi2nix.package_source import PathSource
-from pypi2nix.pip.virtualenv import VirtualenvPip
+from pypi2nix.pip import VirtualenvPip
 from pypi2nix.pypi import Pypi
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet

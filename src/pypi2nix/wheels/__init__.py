@@ -31,9 +31,9 @@ class Index:
     def __getitem__(self, key: str) -> "Index.Entry":
         with self._index_json() as index:
             entry = index[key]
-            if self.is_schema_valid(entry, URL_SCHEMA):
+            if self._is_schema_valid(entry, URL_SCHEMA):
                 return Index.UrlEntry(url=entry["url"], sha256=entry["sha256"])
-            elif self.is_schema_valid(entry, GIT_SCHEMA):
+            elif self._is_schema_valid(entry, GIT_SCHEMA):
                 return Index.GitEntry(
                     url=entry["url"], sha256=entry["sha256"], rev=entry["rev"]
                 )
@@ -58,7 +58,7 @@ class Index:
 
     def is_valid(self) -> bool:
         with self._index_json() as index:
-            return self.is_schema_valid(index, INDEX_SCHEMA)
+            return self._is_schema_valid(index, INDEX_SCHEMA)
 
     @contextmanager
     def _index_json(self, write: bool = False) -> Iterator[Dict[str, Dict[str, str]]]:
@@ -69,7 +69,7 @@ class Index:
             with open(self.path, "w") as f:
                 json.dump(index, f, sort_keys=True, indent=4)
 
-    def is_schema_valid(self, json_value: Any, schema: Any) -> bool:
+    def _is_schema_valid(self, json_value: Any, schema: Any) -> bool:
         try:
             validate(json_value, schema)
         except ValidationError as e:

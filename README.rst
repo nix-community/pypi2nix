@@ -1,6 +1,8 @@
 pypi2nix - generate Nix expressions for Python packages
 =======================================================
 
+.. inclusion-marker
+
 ``pypi2nix`` is a command line tool that generates `Nix expressions`_ from
 different ``requirements.txt``. This is useful for:
 
@@ -21,7 +23,6 @@ The `Nixpkgs manual section about Python
 haven't seen it already.
 
 .. contents::
-
 
 1. Installation
 ---------------

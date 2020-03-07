@@ -1,7 +1,7 @@
 import os.path
 from typing import List
 
-from pypi2nix.pip.interface import Pip
+from pypi2nix.pip import Pip
 from pypi2nix.requirement_set import RequirementSet
 
 from ..switches import nix
