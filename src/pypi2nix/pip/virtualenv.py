@@ -9,8 +9,8 @@ from typing import Optional
 from venv import EnvBuilder
 
 from pypi2nix.logger import Logger
-from pypi2nix.pip.exceptions import PipFailed
-from pypi2nix.pip.interface import Pip
+from pypi2nix.pip import Pip
+from pypi2nix.pip import PipFailed
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform

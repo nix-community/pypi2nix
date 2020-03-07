@@ -1,4 +1,4 @@
-import email
+from email.parser import Parser as EmailParser
 import os
 from email.header import Header
 
@@ -33,7 +33,8 @@ class _PackageMetadataBuilder:
         pkg_info_file = os.path.join(self.path_to_directory, "PKG-INFO")
         try:
             with open(pkg_info_file) as f:
-                metadata = email.parser.Parser().parse(f)
+                parser = EmailParser()
+                metadata = parser.parse(f)
         except FileNotFoundError:
             raise DistributionNotDetected(
                 f"Could not find PKG-INFO file in {self.path_to_directory}"

@@ -3,8 +3,8 @@ import venv
 
 import pytest
 
-from pypi2nix.pip.implementation import NixPip
-from pypi2nix.pip.virtualenv import VirtualenvPip
+from pypi2nix.pip import NixPip
+from pypi2nix.pip import VirtualenvPip
 from pypi2nix.requirement_parser import RequirementParser
 
 

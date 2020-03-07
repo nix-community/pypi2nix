@@ -13,11 +13,12 @@ import click
 from pypi2nix.logger import Logger
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
-from pypi2nix.pip.interface import Pip
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.utils import escape_double_quotes
+
+from .interface import Pip
 
 HERE = os.path.dirname(__file__)
 DOWNLOAD_NIX = os.path.join(HERE, "download.nix")

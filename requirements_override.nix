@@ -19,12 +19,22 @@ let
 in {
   "fancycompleter" = overridePythonPackage "fancycompleter"
     [
-      (addBuildInputs [self."setuptools-scm"])
+      (addBuildInputs [self."setuptools-scm" self."setupmeta"])
     ];
 
   "flake8-debugger" = overridePythonPackage "flake8-debugger"
     [
       (addBuildInputs [self."pytest-runner"])
+    ];
+
+  "keyring" = overridePythonPackage "keyring"
+    [
+      (addBuildInputs [self."toml"])
+    ];
+
+  "jsonschema" = overridePythonPackage "jsonschema"
+    [
+      (addBuildInputs [self."setuptools-scm"])
     ];
 
   "mccabe" = overridePythonPackage "mccabe"
@@ -47,8 +57,13 @@ in {
       pipInstallIgnoresInstalled
     ];
 
-  "jsonschema" = overridePythonPackage "jsonschema"
+  "wheel" = overridePythonPackage "wheel"
     [
-      (addBuildInputs [self."setuptools-scm"])
+      pipInstallIgnoresInstalled
+    ];
+
+  "zipp" = overridePythonPackage "zipp"
+    [
+      (addBuildInputs [self."toml"])
     ];
 }
