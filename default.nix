@@ -61,9 +61,9 @@ let
       checkPhase = ''
         ${if include_nixfmt then "nixfmt --check default.nix" else ""}
         echo "Running black ..."
-        black --check --diff -v setup.py src/ unittests/ mypy/ integrationtests/ scripts/
+        black --check --diff setup.py src/ unittests/ mypy/ integrationtests/ scripts/
         echo "Running flake8 ..."
-        flake8 -v setup.py src/ integrationtests/ unittests/ scripts/
+        flake8 setup.py src/ integrationtests/ unittests/ scripts/
         mypy --config-file setup.cfg src/
         mypy \
             --config-file setup.cfg \
