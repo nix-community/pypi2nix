@@ -17,4 +17,7 @@ pdbpp
 twine
 bumpv
 
+# documentation
+sphinx
+
 -c constraints.txt
