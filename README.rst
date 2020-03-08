@@ -1,6 +1,12 @@
 pypi2nix - generate Nix expressions for Python packages
 =======================================================
 
+.. contents::
+
+See https://pypi2nix.readthedocs.io/en/latest/ for documentation.
+
+.. inclusion-marker
+
 ``pypi2nix`` is a command line tool that generates `Nix expressions`_ from
 different ``requirements.txt``. This is useful for:
 
@@ -19,9 +25,6 @@ Nixpkgs.
 The `Nixpkgs manual section about Python
 <https://nixos.org/nixpkgs/manual/#python>`_ makes good reading if you
 haven't seen it already.
-
-.. contents::
-
 
 1. Installation
 ---------------

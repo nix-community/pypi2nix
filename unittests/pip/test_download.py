@@ -1,7 +1,7 @@
 import os
 import os.path
 
-from pypi2nix.pip.interface import Pip
+from pypi2nix.pip import Pip
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform

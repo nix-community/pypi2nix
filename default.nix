@@ -26,12 +26,13 @@ let
   pypi2nixFunction = { mkDerivation, lib, nixfmt, attrs, black, click, flake8
     , flake8-unused-arguments, isort, jinja2, mypy, nix-prefetch-github
     , packaging, parsley, pdbpp, pytest, pytest-cov, setuptools, setuptools-scm
-    , toml, twine, git, jsonschema, bumpv, hypothesis, pyyaml }:
+    , toml, twine, git, jsonschema, bumpv, hypothesis, pyyaml, sphinx }:
     mkDerivation {
       name = "pypi2nix-${version}";
       src = source;
       checkInputs = [
         black
+        bumpv
         bumpv
         flake8
         flake8-unused-arguments
@@ -39,8 +40,10 @@ let
         isort
         mypy
         pdbpp
+        pdbpp
         pytest
         pytest-cov
+        sphinx
         twine
       ] ++ (if include_nixfmt then [ nixfmt ] else [ ]);
       buildInputs = [ ];
@@ -61,9 +64,9 @@ let
       checkPhase = ''
         ${if include_nixfmt then "nixfmt --check default.nix" else ""}
         echo "Running black ..."
-        black --check --diff -v setup.py src/ unittests/ mypy/ integrationtests/ scripts/
+        black --check --diff setup.py src/ unittests/ mypy/ integrationtests/ scripts/
         echo "Running flake8 ..."
-        flake8 -v setup.py src/ integrationtests/ unittests/ scripts/
+        flake8 setup.py src/ integrationtests/ unittests/ scripts/
         mypy --config-file setup.cfg src/
         mypy \
             --config-file setup.cfg \

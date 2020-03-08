@@ -14,7 +14,7 @@ from pypi2nix.logger import StreamLogger
 from pypi2nix.memoize import memoize
 from pypi2nix.metadata_fetcher import MetadataFetcher
 from pypi2nix.nix import Nix
-from pypi2nix.pip.implementation import NixPip
+from pypi2nix.pip import NixPip
 from pypi2nix.pypi import Pypi
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements_collector import RequirementsCollector

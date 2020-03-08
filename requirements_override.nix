@@ -18,47 +18,52 @@ let
   in python.overrideDerivation super."${name}" combinedOverrides;
 in {
   "fancycompleter" = overridePythonPackage "fancycompleter"
-  [
-    (addBuildInputs [self."setuptools-scm" self."setupmeta"])
-  ];
+    [
+      (addBuildInputs [self."setuptools-scm" self."setupmeta"])
+    ];
 
   "flake8-debugger" = overridePythonPackage "flake8-debugger"
-  [
-    (addBuildInputs [self."pytest-runner"])
-  ];
-
-  "mccabe" = overridePythonPackage "mccabe"
-  [
-    (addBuildInputs [self."pytest-runner"])
-  ];
-
-  "pdbpp" = overridePythonPackage "pdbpp"
-  [
-    (addBuildInputs [self."setuptools-scm"])
-  ];
-
-  "py" = overridePythonPackage "py"
-  [
-    (addBuildInputs [self."setuptools-scm"])
-  ];
-
-  "setuptools" = overridePythonPackage "setuptools"
-  [
-    pipInstallIgnoresInstalled
-  ];
+    [
+      (addBuildInputs [self."pytest-runner"])
+    ];
 
   "jsonschema" = overridePythonPackage "jsonschema"
-  [
-    (addBuildInputs [self."setuptools-scm"])
-  ];
+    [
+      (addBuildInputs [self."setuptools-scm"])
+    ];
+
+  "keyring" = overridePythonPackage "keyring"
+    [
+      (addBuildInputs [self."toml"])
+    ];
+
+  "mccabe" = overridePythonPackage "mccabe"
+    [
+      (addBuildInputs [self."pytest-runner"])
+    ];
+
+  "pdbpp" = overridePythonPackage "pdbpp"
+    [
+      (addBuildInputs [self."setuptools-scm"])
+    ];
+
+  "py" = overridePythonPackage "py"
+    [
+      (addBuildInputs [self."setuptools-scm"])
+    ];
+
+  "setuptools" = overridePythonPackage "setuptools"
+    [
+      pipInstallIgnoresInstalled
+    ];
 
   "wheel" = overridePythonPackage "wheel"
-  [
-    pipInstallIgnoresInstalled
-  ];
+    [
+      pipInstallIgnoresInstalled
+    ];
 
   "zipp" = overridePythonPackage "zipp"
-  [
-    (addBuildInputs [self."toml"])
-  ];
+    [
+      (addBuildInputs [self."toml"])
+    ];
 }
