@@ -1,8 +1,6 @@
 Modules
 =======
 
-.. contents::
-
 pypi2nix.logger
 ---------------
 
