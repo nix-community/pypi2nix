@@ -3,6 +3,8 @@ pypi2nix - generate Nix expressions for Python packages
 
 .. contents::
 
+See https://pypi2nix.readthedocs.io/en/latest/ for documentation.
+
 .. inclusion-marker
 
 ``pypi2nix`` is a command line tool that generates `Nix expressions`_ from
