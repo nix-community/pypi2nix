@@ -1,6 +1,6 @@
-from email.parser import Parser as EmailParser
 import os
 from email.header import Header
+from email.parser import Parser as EmailParser
 
 from attr import attrib
 from attr import attrs

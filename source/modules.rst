@@ -82,7 +82,7 @@ pypi2nix.requirements_file
 
 
 pypi2nix.requirements_collector
----------
+-------------------------------
 
 .. automodule:: pypi2nix.requirements_collector
    :members:
