@@ -6,6 +6,7 @@ Welcome to pypi2nix's documentation!
    :caption: Contents:
 
    modules
+   external-dependencies
 
 
 Introduction
