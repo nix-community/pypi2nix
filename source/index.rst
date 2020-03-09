@@ -7,6 +7,7 @@ Welcome to pypi2nix's documentation!
 
    modules
    external-dependencies
+   development
 
 
 Introduction
