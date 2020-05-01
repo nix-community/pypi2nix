@@ -9,6 +9,23 @@ pypi2nix.logger
    :undoc-members:
 
 
+pypi2nix.dependency_graph
+-------------------------
+
+.. automodule:: pypi2nix.dependency_graph
+   :members:
+   :undoc-members:
+
+
+pypi2nix.external_dependencies
+------------------------------
+
+.. automodule:: pypi2nix.external_dependencies
+   :members:
+   :undoc-members:
+   :imported-members:
+
+
 pypi2nix.wheels
 ---------------
 

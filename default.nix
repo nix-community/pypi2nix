@@ -26,7 +26,8 @@ let
   pypi2nixFunction = { mkDerivation, lib, nixfmt, attrs, black, click, flake8
     , flake8-unused-arguments, isort, jinja2, mypy, nix-prefetch-github
     , packaging, parsley, pdbpp, pytest, pytest-cov, setuptools, setuptools-scm
-    , toml, twine, git, jsonschema, bumpv, hypothesis, pyyaml, sphinx }:
+    , toml, twine, git, jsonschema, bumpv, hypothesis, pyyaml, sphinx
+    , nix-prefetch-hg }:
     mkDerivation {
       name = "pypi2nix-${version}";
       src = source;
@@ -47,7 +48,7 @@ let
         twine
       ] ++ (if include_nixfmt then [ nixfmt ] else [ ]);
       buildInputs = [ ];
-      nativeBuildInputs = [ git ];
+      nativeBuildInputs = [ git nix-prefetch-hg ];
       propagatedBuildInputs = [
         attrs
         click
@@ -95,6 +96,7 @@ let
     lib = pkgs.lib;
     nixfmt = pkgs.nixfmt;
     git = pkgs.git;
+    nix-prefetch-hg = pkgs.nix-prefetch-hg;
   } // pythonPackages.packages);
 
 in callPackage pypi2nixFunction { }

@@ -7,8 +7,8 @@ from pypi2nix.configuration import ApplicationConfiguration
 from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.expression_renderer import render_expression
 from pypi2nix.external_dependencies import ExternalDependency
-from pypi2nix.external_dependencies import ExternalDependencyCollector
-from pypi2nix.external_dependencies import RequirementDependencyRetriever
+from pypi2nix.external_dependency_collector import ExternalDependencyCollector
+from pypi2nix.external_dependency_collector import RequirementDependencyRetriever
 from pypi2nix.logger import Logger
 from pypi2nix.logger import StreamLogger
 from pypi2nix.memoize import memoize
@@ -104,6 +104,7 @@ class Pypi2nix:
             target_directory=self.configuration.target_directory,
             logger=self.logger(),
             common_overrides=self.configuration.overrides,
+            target_platform=self.target_platform(),
         )
         self.print_user_information()
 

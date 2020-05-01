@@ -1,9 +1,9 @@
 from copy import copy
 from typing import Set
 
+from pypi2nix.external_dependencies import ExternalDependency
 from pypi2nix.requirement_set import RequirementSet
 
-from .external_dependency import ExternalDependency
 from .lookup import RequirementDependencyRetriever
 
 
