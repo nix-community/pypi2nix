@@ -34,13 +34,11 @@ let
       checkInputs = [
         black
         bumpv
-        bumpv
         flake8
         flake8-unused-arguments
         hypothesis
         isort
         mypy
-        pdbpp
         pdbpp
         pytest
         pytest-cov
