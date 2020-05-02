@@ -90,6 +90,9 @@ class Wheel(HasRuntimeDependencies, HasBuildDependencies):
         )
         return builder.build()
 
+    def target_platform(self) -> TargetPlatform:
+        return self._target_platform
+
 
 class Builder:
     def __init__(

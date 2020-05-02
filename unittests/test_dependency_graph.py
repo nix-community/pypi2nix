@@ -6,8 +6,12 @@ from pypi2nix.dependency_graph import CyclicDependencyOccured
 from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.external_dependencies import ExternalDependency
 from pypi2nix.logger import Logger
+from pypi2nix.requirement_parser import RequirementParser
+from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.requirements import Requirement
 from pypi2nix.requirements import VersionRequirement
+from pypi2nix.target_platform import TargetPlatform
+from pypi2nix.wheel import Wheel
 
 
 def test_can_set_runtime_dependencies(
@@ -199,6 +203,33 @@ def test_can_retrieve_external_dependencies_after_adding_graphs(
         external_dependency_a,
         external_dependency_b,
     }
+
+
+def test_can_understand_wheel_dependecies(
+    current_platform: TargetPlatform, requirement_parser: RequirementParser
+):
+    runtime_dependencies = RequirementSet(current_platform)
+    runtime_dependency = requirement_parser.parse("runtime_dependency")
+    runtime_dependencies.add(runtime_dependency)
+    build_dependencies = RequirementSet(current_platform)
+    build_dependency = requirement_parser.parse("build_dependency")
+    build_dependencies.add(build_dependency)
+    wheel = Wheel(
+        name="testpackage",
+        version="",
+        deps=runtime_dependencies,
+        target_platform=current_platform,
+        license="",
+        homepage="",
+        description="",
+        build_dependencies=build_dependencies,
+    )
+    requirement = requirement_parser.parse("testpackage")
+    dependency_graph = DependencyGraph()
+    dependency_graph.import_wheel(wheel, requirement_parser)
+
+    assert dependency_graph.is_buildtime_dependency(requirement, build_dependency)
+    assert dependency_graph.is_runtime_dependency(requirement, runtime_dependency)
 
 
 @pytest.fixture

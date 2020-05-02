@@ -11,7 +11,9 @@ from typing import TypeVar
 import yaml
 
 from pypi2nix.external_dependencies import ExternalDependency
+from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirements import Requirement
+from pypi2nix.wheel import Wheel
 
 K = TypeVar("K")
 V = TypeVar("V")
@@ -66,6 +68,14 @@ class DependencyGraph:
         for package_name in self._get_python_children(package.name()):
             found_dependencies.update(self._external_dependencies[package_name])
         return found_dependencies
+
+    def import_wheel(self, wheel: Wheel, requirement_parser: RequirementParser) -> None:
+        dependent = requirement_parser.parse(wheel.name)
+        for runtime_dependency in wheel.runtime_dependencies(wheel.target_platform()):
+
+            self.set_runtime_dependency(dependent, runtime_dependency)
+        for build_dependency in wheel.build_dependencies(wheel.target_platform()):
+            self.set_buildtime_dependency(dependent, build_dependency)
 
     def serialize(self) -> str:
         document: DefaultDict[str, Dict[str, List[str]]] = defaultdict(lambda: dict())
