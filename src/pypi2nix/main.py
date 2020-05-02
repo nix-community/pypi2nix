@@ -106,6 +106,14 @@ class Pypi2nix:
             common_overrides=self.configuration.overrides,
             target_platform=self.target_platform(),
         )
+        if self.configuration.dependency_graph_output_location:
+            dependency_graph = DependencyGraph()
+            for wheel in packages_metadata:
+                dependency_graph.import_wheel(wheel, self.requirement_parser())
+            with open(
+                self.configuration.dependency_graph_output_location, "w"
+            ) as output_file:
+                output_file.write(dependency_graph.serialize())
         self.print_user_information()
 
     def print_user_information(self) -> None:

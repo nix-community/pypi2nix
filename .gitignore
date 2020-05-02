@@ -10,6 +10,7 @@
 /integrationtests/*/constraints.txt
 /integrationtests/*/requirements.txt
 /integrationtests/*/requirements_frozen.txt
+/integrationtests/*/dependency-graph.yml
 /integrationtests/*/result
 /integrationtests/*/build
 /integrationtests/pypi2nix

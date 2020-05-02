@@ -295,6 +295,10 @@ Command line options
     directory will be temporary and is deleted before the program
     exits.
 
+``--dependency-graph-output PATH``
+    Output the dependency information of processed packages to the
+    specified path.  The output format is yaml.
+
 
 3. When it doesn't work
 -----------------------

@@ -1,5 +1,6 @@
 import os
 import os.path
+from pathlib import Path
 from typing import List
 from typing import Optional
 
@@ -89,6 +90,13 @@ from pypi2nix.version import pypi2nix_version
     help="pip requirements.txt file",
 )
 @click.option(
+    "--dependency-graph-output",
+    required=False,
+    default=None,
+    type=click.Path(file_okay=True, dir_okay=False, resolve_path=True),
+    help="Output dependency graph to this location",
+)
+@click.option(
     "-e",
     "--editable",
     multiple=True,
@@ -160,6 +168,7 @@ def main(
     default_overrides: bool,
     wheels_cache: List[str],
     build_directory: Optional[str],
+    dependency_graph_output: Optional[str],
 ) -> None:
     if version:
         click.echo(pypi2nix_version)
@@ -215,6 +224,9 @@ def main(
             wheels_caches=wheels_cache,
             project_directory=_project_directory,
             target_directory=os.getcwd(),
+            dependency_graph_output_location=Path(dependency_graph_output)
+            if dependency_graph_output
+            else None,
         )
         Pypi2nix(configuration).run()
 

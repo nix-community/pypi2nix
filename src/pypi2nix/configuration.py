@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List
 from typing import Optional
 
@@ -27,3 +28,4 @@ class ApplicationConfiguration:
     output_basename: str = attrib()
     project_directory: str = attrib()
     target_directory: str = attrib()
+    dependency_graph_output_location: Optional[Path] = attrib()

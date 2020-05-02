@@ -12,9 +12,11 @@ from attr import attrib
 from attr import attrs
 from attr import evolve
 
+from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
+from pypi2nix.requirement_parser import RequirementParser
 
 HERE = os.path.dirname(__file__)
 
@@ -37,12 +39,34 @@ class IntegrationTest(TestCase):
     python_version
     code_for_testing_filename
     explicit_build_directory
+
+    check_dependency_graph(
+        self,
+        dependency_graph: DependencyGraph,
+        requirement_parser: RequirementParser
+    ):
+        Override this function in your test case to perform checks on the
+        dependency graph information that pypi2nix renders.  You can use
+        the requirement_parser supplied though the method argument to
+        generate Requirement objects. For example::
+            django = requirement_parser.parse('django')
+            pytz = requirement_parser.parse('pytz')
+
+        If we wanted to check that pypi2nix detected the dependency of django
+        on the pytz package than we could do it the following way:
+            self.assertTrue(
+                dependency_graph.is_runtime_dependency(
+                    dependent=django,
+                    dependency=pytz,
+                )
+            )
     """
 
     def setUp(self) -> None:
         self.logger = StreamLogger(output=sys.stdout)
         self.nix = Nix(logger=self.logger)
         self.assertNotEqual(self.name_of_testcase, "undefined")
+        self.requirement_parser = RequirementParser(self.logger)
 
     def test_build_example(self) -> None:
         self.build_pypi2nix()
@@ -50,6 +74,7 @@ class IntegrationTest(TestCase):
         self.build_nix_expression()
         self.check_requirements_file_content()
         self.run_expression_tests()
+        self.run_dependency_graph_tests()
 
     def build_pypi2nix(self) -> None:
         print("Build pypi2nix executable")
@@ -93,6 +118,8 @@ class IntegrationTest(TestCase):
             "-r",
             "requirements.txt",
             "--default-overrides",
+            "--dependency-graph-output",
+            self._dependency_graph_output_path(),
         ]
         for requirement in self.setup_requires():
             command.append("-s")
@@ -120,6 +147,10 @@ class IntegrationTest(TestCase):
         self.build_additional_attributes()
         self.run_interpreter_with_test_code()
         self.run_executable_tests()
+
+    def run_dependency_graph_tests(self) -> None:
+        dependency_graph = self._read_dependency_graph()
+        self.check_dependency_graph(dependency_graph, self.requirement_parser)
 
     def build_interpreter_from_generated_expression(self) -> None:
         print("Build python interpreter from generated expression")
@@ -294,6 +325,9 @@ class IntegrationTest(TestCase):
     def requirements_file_check(self, _: str) -> None:
         pass
 
+    def _dependency_graph_output_path(self) -> str:
+        return os.path.join(self.example_directory(), "dependency-graph.yml")
+
     def build_directory(self):
         return os.path.join(self.example_directory(), "build")
 
@@ -301,6 +335,15 @@ class IntegrationTest(TestCase):
         if os.path.exists(self.build_directory()):
             shutil.rmtree(self.build_directory())
         os.makedirs(self.build_directory())
+
+    def check_dependency_graph(
+        self, dependency_graph: DependencyGraph, requirement_parser: RequirementParser
+    ):
+        pass
+
+    def _read_dependency_graph(self) -> DependencyGraph:
+        with open(self._dependency_graph_output_path()) as f:
+            return DependencyGraph.deserialize(f.read())
 
     constraints: List[str] = []
     python_version: str = "python3"
