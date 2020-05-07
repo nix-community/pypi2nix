@@ -27,7 +27,9 @@ class CodeFormatter:
         ]
         self.format_nix_files()
         absolute_paths = [os.path.join(ROOT, relative) for relative in relative_paths]
-        subprocess.run(["isort", "-rc"] + absolute_paths, check=True)
+        self._logger.info("Running isort")
+        subprocess.run(["isort", "-rc", "."], check=True)
+        self._logger.info("Running black")
         subprocess.run(["black"] + absolute_paths, check=True)
         self.run_check_process("flake8", absolute_paths)
         self.run_check_process("mypy", ["src"])
@@ -37,6 +39,7 @@ class CodeFormatter:
         )
 
     def run_check_process(self, executable, arguments: List[str] = []):
+        self._logger.info(f"Running {executable}")
         try:
             subprocess.run([executable] + arguments, check=True)
         except subprocess.CalledProcessError:
