@@ -28,14 +28,17 @@ def pretty_option(option: Optional[str]) -> str:
 
 
 def cmd(
-    command: Union[str, List[str]], logger: Logger, stderr: Optional[int] = None
+    command: Union[str, List[str]],
+    logger: Logger,
+    stderr: Optional[int] = None,
+    cwd: Optional[str] = None,
 ) -> Tuple[int, str]:
     if isinstance(command, str):
         command = shlex.split(command)
 
     logger.debug("|-> " + " ".join(map(shlex.quote, command)))
 
-    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=stderr)
+    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=stderr, cwd=cwd)
 
     try:
         out = []
@@ -158,8 +161,11 @@ def escape_double_quotes(text: str) -> str:
     return text.replace('"', '\\"')
 
 
-def prefetch_url(url: str, logger: Logger) -> str:
-    returncode, output = cmd(
-        ["nix-prefetch-url", url], logger, stderr=subprocess.DEVNULL
-    )
+def prefetch_url(url: str, logger: Logger, name: Optional[str] = None) -> str:
+    command = ["nix-prefetch-url", url]
+    if name is not None:
+        command += ["--name", name]
+    returncode, output = cmd(command, logger, stderr=subprocess.DEVNULL)
+    if not output:
+        raise ValueError(f"Could not fetch ressource from {url}")
     return output.rstrip()

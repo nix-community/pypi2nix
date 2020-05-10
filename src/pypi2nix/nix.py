@@ -87,7 +87,7 @@ class Nix:
         self.run_nix_command(
             "nix-build",
             ["--expr", expression]
-            + (["-o", out_link] if out_link else [])
+            + (["-o", out_link] if out_link else ["--no-out-link"])
             + create_command_options(arguments),
         )
 
