@@ -58,6 +58,9 @@ class DependencyGraph:
     ) -> bool:
         return self._is_python_child(dependent.name(), dependency.name())
 
+    def get_all_build_dependency_names(self, package: Requirement) -> Set[str]:
+        return set(self._get_python_children(package.name()))
+
     def get_all_runtime_dependency_names(self, package: Requirement) -> Set[str]:
         return set(self._get_runtime_children(package.name()))
 

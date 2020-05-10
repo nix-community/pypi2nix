@@ -150,6 +150,7 @@ class Pypi2nix:
             self.requirement_parser(),
             self.logger(),
             self.configuration.project_directory,
+            self.base_dependency_graph(),
         )
         for item in self.configuration.requirements:
             requirement_collector.add_line(item)
@@ -164,6 +165,7 @@ class Pypi2nix:
             self.requirement_parser(),
             self.logger(),
             self.configuration.project_directory,
+            DependencyGraph(),
         )
         for build_input in self.configuration.setup_requirements:
             setup_requirement_collector.add_line(build_input)
@@ -197,4 +199,4 @@ class Pypi2nix:
 
     @memoize
     def base_dependency_graph(self) -> DependencyGraph:
-        return DependencyGraph()
+        return self.configuration.dependency_graph_input

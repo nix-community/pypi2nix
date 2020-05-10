@@ -5,6 +5,7 @@ from typing import Optional
 from attr import attrib
 from attr import attrs
 
+from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.logger import Verbosity
 from pypi2nix.overrides import Overrides
 from pypi2nix.python_version import PythonVersion
@@ -29,3 +30,4 @@ class ApplicationConfiguration:
     project_directory: str = attrib()
     target_directory: str = attrib()
     dependency_graph_output_location: Optional[Path] = attrib()
+    dependency_graph_input: DependencyGraph = attrib()

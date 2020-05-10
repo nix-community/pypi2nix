@@ -9,7 +9,10 @@ from pypi2nix.network_file import NetworkFile
 from pypi2nix.network_file import UrlTextFile
 from pypi2nix.nix import Nix
 
+from .switches import nix
 
+
+@nix
 def test_calculate_sha256_for_text_file(logger: Logger):
     test_file = UrlTextFile(
         url="https://raw.githubusercontent.com/nix-community/pypi2nix/6fe6265b62b53377b4677a39c6ee48550c1f2186/.gitignore",
@@ -20,6 +23,7 @@ def test_calculate_sha256_for_text_file(logger: Logger):
     assert "0b2s1lyfr12v83rrb69j1cfcsksisgwyzfl5mix6qz5ldxfww8p0" == test_file.sha256
 
 
+@nix
 def test_can_evaluate_expression_of_fetched_file(logger: Logger, nix: Nix) -> None:
     test_file = UrlTextFile(
         url="https://raw.githubusercontent.com/nix-community/pypi2nix/6fe6265b62b53377b4677a39c6ee48550c1f2186/.gitignore",
@@ -31,6 +35,7 @@ def test_can_evaluate_expression_of_fetched_file(logger: Logger, nix: Nix) -> No
     )
 
 
+@nix
 def test_can_calculate_hash_for_git_files(logger: Logger):
     repository_url = "https://github.com/nix-community/pypi2nix.git"
     path = ".gitignore"
@@ -46,11 +51,13 @@ def test_can_calculate_hash_for_git_files(logger: Logger):
     assert "*.pyc" in network_file.fetch()
 
 
+@nix
 def test_can_evaluate_nix_expression(network_file: NetworkFile, nix: Nix):
     expression = f"let pkgs = import <nixpkgs> {{}}; in {network_file.nix_expression()}"
     nix.evaluate_expression(expression)
 
 
+@nix
 def test_fetch_content_equals_file_content_from_nix_expression(
     network_file: NetworkFile, nix: Nix
 ):

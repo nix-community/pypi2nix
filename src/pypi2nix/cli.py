@@ -7,6 +7,7 @@ from typing import Optional
 import click
 
 from pypi2nix.configuration import ApplicationConfiguration
+from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.logger import verbosity_from_int
 from pypi2nix.main import Pypi2nix
 from pypi2nix.overrides import OVERRIDES_URL
@@ -97,6 +98,12 @@ from pypi2nix.version import pypi2nix_version
     help="Output dependency graph to this location",
 )
 @click.option(
+    "--dependency-graph-input",
+    required=False,
+    default=None,
+    type=click.Path(file_okay=True, dir_okay=False, resolve_path=True),
+)
+@click.option(
     "-e",
     "--editable",
     multiple=True,
@@ -169,6 +176,7 @@ def main(
     wheels_cache: List[str],
     build_directory: Optional[str],
     dependency_graph_output: Optional[str],
+    dependency_graph_input: Optional[str],
 ) -> None:
     if version:
         click.echo(pypi2nix_version)
@@ -206,6 +214,11 @@ def main(
         if build_directory is None
         else PersistentProjectDirectory(path=build_directory)
     )
+    if dependency_graph_input:
+        with open(dependency_graph_input) as f:
+            dependency_graph = DependencyGraph.deserialize(f.read())
+    else:
+        dependency_graph = DependencyGraph()
     with project_directory_context as _project_directory:
         configuration = ApplicationConfiguration(
             emit_extra_build_inputs=emit_extra_build_inputs,
@@ -227,6 +240,7 @@ def main(
             dependency_graph_output_location=Path(dependency_graph_output)
             if dependency_graph_output
             else None,
+            dependency_graph_input=dependency_graph,
         )
         Pypi2nix(configuration).run()
 

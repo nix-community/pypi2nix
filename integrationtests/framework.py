@@ -8,12 +8,14 @@ from typing import List
 from typing import Optional
 from unittest import TestCase
 
+import yaml
 from attr import attrib
 from attr import attrs
 from attr import evolve
 
 from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.logger import StreamLogger
+from pypi2nix.memoize import memoize
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
 from pypi2nix.requirement_parser import RequirementParser
@@ -39,6 +41,7 @@ class IntegrationTest(TestCase):
     python_version
     code_for_testing_filename
     explicit_build_directory
+    dependencyGraph -- default {}: yaml that will be used as input for pypi2nix
 
     check_dependency_graph(
         self,
@@ -118,6 +121,8 @@ class IntegrationTest(TestCase):
             "-r",
             "requirements.txt",
             "--default-overrides",
+            "--dependency-graph-input",
+            self.rendered_dependency_graph(),
             "--dependency-graph-output",
             self._dependency_graph_output_path(),
         ]
@@ -352,6 +357,16 @@ class IntegrationTest(TestCase):
     external_dependencies: List[str] = []
     explicit_build_directory: bool = False
     additional_paths_to_build: List[str] = []
+    dependency_graph: Dict[str, Dict[str, List[str]]] = {}
+
+    @memoize
+    def rendered_dependency_graph(self) -> str:
+        path = os.path.join(self.example_directory(), "dependency-input.yml")
+        with open(path, "w") as f:
+            yaml.dump(
+                self.dependency_graph, f,
+            )
+        return path
 
 
 @attrs

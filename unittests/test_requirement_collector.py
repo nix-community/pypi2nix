@@ -4,6 +4,7 @@ from contextlib import contextmanager
 
 import pytest
 
+from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.logger import Logger
 from pypi2nix.package_source import PathSource
 from pypi2nix.requirements_collector import RequirementsCollector
@@ -22,7 +23,7 @@ def current_working_directory(dir: str):
 @pytest.fixture
 def collector(current_platform, requirement_parser, logger: Logger, project_dir: str):
     return RequirementsCollector(
-        current_platform, requirement_parser, logger, project_dir
+        current_platform, requirement_parser, logger, project_dir, DependencyGraph()
     )
 
 
@@ -30,7 +31,7 @@ def test_that_we_can_generate_an_empty_requirement_set_from_freshly_constructed_
     current_platform, requirement_parser, logger: Logger, project_dir: str
 ):
     collector = RequirementsCollector(
-        current_platform, requirement_parser, logger, project_dir
+        current_platform, requirement_parser, logger, project_dir, DependencyGraph()
     )
     requirements = collector.requirements()
     assert len(requirements) == 0
