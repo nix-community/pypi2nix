@@ -103,7 +103,8 @@ from pypi2nix.version import pypi2nix_version
     "--dependency-graph-input",
     required=False,
     default=None,
-    type=click.Path(file_okay=True, dir_okay=False, resolve_path=True),
+    type=FILE_URL,
+    help="Base dependency tree to consume for pypi2nix",
 )
 @click.option(
     "-e",
@@ -178,7 +179,7 @@ def main(
     wheels_cache: List[str],
     build_directory: Optional[str],
     dependency_graph_output: Optional[str],
-    dependency_graph_input: Optional[str],
+    dependency_graph_input: Optional[NetworkFile],
 ) -> None:
     overrides_list: List[Overrides] = []
     if version:
@@ -218,8 +219,7 @@ def main(
         else PersistentProjectDirectory(path=build_directory)
     )
     if dependency_graph_input:
-        with open(dependency_graph_input) as f:
-            dependency_graph = DependencyGraph.deserialize(f.read())
+        dependency_graph = DependencyGraph.deserialize(dependency_graph_input.fetch())
     else:
         dependency_graph = DependencyGraph()
     with project_directory_context as _project_directory:
