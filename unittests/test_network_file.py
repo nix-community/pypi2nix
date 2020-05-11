@@ -4,6 +4,7 @@ import tempfile
 import pytest
 
 from pypi2nix.logger import Logger
+from pypi2nix.network_file import DiskTextFile
 from pypi2nix.network_file import GitTextFile
 from pypi2nix.network_file import NetworkFile
 from pypi2nix.network_file import UrlTextFile
@@ -76,14 +77,16 @@ def test_fetch_content_equals_file_content_from_nix_expression(
     assert nix_content == fetch_content
 
 
-@pytest.fixture(params=["url", "git"])
-def network_file(logger: Logger, request):
+@pytest.fixture(params=["url", "git", "disk"])
+def network_file(logger: Logger, request, data_directory):
     if request.param == "url":
         return UrlTextFile(
             url="https://raw.githubusercontent.com/nix-community/pypi2nix/6fe6265b62b53377b4677a39c6ee48550c1f2186/.gitignore",
             logger=logger,
             name="testname",
         )
+    elif request.param == "disk":
+        return DiskTextFile(path=os.path.join(data_directory, "test.txt"),)
     else:
         repository_url = "https://github.com/nix-community/pypi2nix.git"
         path = ".gitignore"

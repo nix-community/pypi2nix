@@ -198,7 +198,7 @@ def test_tar_bz2_path():
 
 
 @pytest.fixture
-def data_directory():
+def data_directory() -> str:
     return DATA_DIRECTORY
 
 

@@ -99,3 +99,15 @@ class GitTextFile(NetworkFile):
             )
             with open(os.path.join(target_directory, self.path)) as f:
                 return f.read()
+
+
+class DiskTextFile(NetworkFile):
+    def __init__(self, path: str):
+        self._path = path
+
+    def nix_expression(self) -> str:
+        return self._path
+
+    def fetch(self) -> str:
+        with open(self._path) as f:
+            return f.read()
