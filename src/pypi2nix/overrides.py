@@ -11,6 +11,7 @@ import click
 
 from pypi2nix.logger import Logger
 from pypi2nix.logger import StreamLogger
+from pypi2nix.network_file import DiskTextFile
 from pypi2nix.network_file import GitTextFile
 from pypi2nix.network_file import NetworkFile
 from pypi2nix.network_file import UrlTextFile
@@ -34,16 +35,6 @@ class OverridesNetworkFile(Overrides):
 
     def nix_expression(self, logger: Logger) -> str:
         return f"import ({self._network_file.nix_expression()}) {{ inherit pkgs python ; }}"
-
-
-class OverridesFile(Overrides):
-    def __init__(self, path: str) -> None:
-        self.path = path
-
-    expression_template = "import %(path)s { inherit pkgs python ; }"
-
-    def nix_expression(self, logger: Logger) -> str:  # noqa: U100
-        return self.expression_template % dict(path=self.path)
 
 
 class OverridesGithub(Overrides):
@@ -92,9 +83,9 @@ class OverridesUrlParam(click.ParamType):
     def _url_to_overrides(self, url_string: str) -> Overrides:
         url = urlparse(url_string)
         if url.scheme == "":
-            return OverridesFile(url.path)
+            return OverridesNetworkFile(DiskTextFile(url.path))
         elif url.scheme == "file":
-            return OverridesFile(url.path)
+            return OverridesNetworkFile(DiskTextFile(url.path))
         elif url.scheme == "http" or url.scheme == "https":
             return OverridesNetworkFile(
                 UrlTextFile(url.geturl(), StreamLogger.stdout_logger()),
