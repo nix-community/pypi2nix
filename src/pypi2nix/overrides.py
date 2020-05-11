@@ -70,26 +70,24 @@ class OverridesGithub(Overrides):
         )
 
 
-class OverridesUrlParam(click.ParamType):
+class NetworkFileParameter(click.ParamType):
     name = "url"
 
     @no_type_check
     def convert(self, value, param, ctx):
         try:
-            return self._url_to_overrides(value)
+            return self._url_to_network_file(value)
         except UnsupportedUrlError as e:
             self.fail(str(e), param, ctx)
 
-    def _url_to_overrides(self, url_string: str) -> Overrides:
+    def _url_to_network_file(self, url_string: str) -> NetworkFile:
         url = urlparse(url_string)
         if url.scheme == "":
-            return OverridesNetworkFile(DiskTextFile(url.path))
+            return DiskTextFile(url.path)
         elif url.scheme == "file":
-            return OverridesNetworkFile(DiskTextFile(url.path))
+            return DiskTextFile(url.path)
         elif url.scheme == "http" or url.scheme == "https":
-            return OverridesNetworkFile(
-                UrlTextFile(url.geturl(), StreamLogger.stdout_logger()),
-            )
+            return UrlTextFile(url.geturl(), StreamLogger.stdout_logger())
         elif url.scheme.startswith("git+"):
             return self._handle_git_override_url(url, url_string)
         else:
@@ -99,7 +97,7 @@ class OverridesUrlParam(click.ParamType):
 
     def _handle_git_override_url(
         self, url: urllib.parse.ParseResult, url_string: str
-    ) -> OverridesNetworkFile:
+    ) -> GitTextFile:
         if not url.fragment:
             raise UnsupportedUrlError(
                 (
@@ -118,14 +116,12 @@ class OverridesUrlParam(click.ParamType):
                 )
             else:
                 fragments[fragment_name] = fragment_value
-        return OverridesNetworkFile(
-            GitTextFile(
-                repository_url=urldefrag(url.geturl()[4:])[0],
-                path=fragments["path"],
-                revision_name=fragments.get("rev", "master"),
-                logger=StreamLogger.stdout_logger(),
-            ),
+        return GitTextFile(
+            repository_url=urldefrag(url.geturl()[4:])[0],
+            path=fragments["path"],
+            revision_name=fragments.get("rev", "master"),
+            logger=StreamLogger.stdout_logger(),
         )
 
 
-OVERRIDES_URL = OverridesUrlParam()
+FILE_URL = NetworkFileParameter()

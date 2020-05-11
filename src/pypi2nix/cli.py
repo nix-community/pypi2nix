@@ -10,9 +10,11 @@ from pypi2nix.configuration import ApplicationConfiguration
 from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.logger import verbosity_from_int
 from pypi2nix.main import Pypi2nix
-from pypi2nix.overrides import OVERRIDES_URL
+from pypi2nix.network_file import NetworkFile
+from pypi2nix.overrides import FILE_URL
 from pypi2nix.overrides import Overrides
 from pypi2nix.overrides import OverridesGithub
+from pypi2nix.overrides import OverridesNetworkFile
 from pypi2nix.project_directory import PersistentProjectDirectory
 from pypi2nix.project_directory import ProjectDirectory
 from pypi2nix.project_directory import TemporaryProjectDirectory
@@ -126,7 +128,7 @@ from pypi2nix.version import pypi2nix_version
     "--overrides",
     multiple=True,
     required=False,
-    type=OVERRIDES_URL,
+    type=FILE_URL,
     help="Extra expressions that override generated expressions "
     + "for specific packages",
 )
@@ -171,13 +173,14 @@ def main(
     requirements: List[str],
     editable: List[str],
     setup_requires: List[str],
-    overrides: List[Overrides],
+    overrides: List[NetworkFile],
     default_overrides: bool,
     wheels_cache: List[str],
     build_directory: Optional[str],
     dependency_graph_output: Optional[str],
     dependency_graph_input: Optional[str],
 ) -> None:
+    overrides_list: List[Overrides] = []
     if version:
         click.echo(pypi2nix_version)
         exit(0)
@@ -192,9 +195,9 @@ def main(
             )
         else:
             nix_executable_directory = os.path.dirname(os.path.abspath(nix_shell))
-
+    overrides_list += [OverridesNetworkFile(network_file) for network_file in overrides]
     if default_overrides:
-        overrides += tuple(
+        overrides_list += tuple(
             [
                 OverridesGithub(
                     owner="nix-community",
@@ -228,7 +231,7 @@ def main(
             nix_executable_directory=nix_executable_directory,
             nix_path=nix_path,
             output_basename=basename,
-            overrides=overrides,
+            overrides=overrides_list,
             python_version=python_version,
             requirement_files=requirements,
             requirements=editable,
