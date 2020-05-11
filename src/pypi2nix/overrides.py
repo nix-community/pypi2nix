@@ -1,4 +1,3 @@
-import subprocess
 import urllib
 from abc import ABCMeta
 from abc import abstractmethod
@@ -11,9 +10,11 @@ from urllib.parse import urlparse
 import click
 
 from pypi2nix.logger import Logger
+from pypi2nix.logger import StreamLogger
+from pypi2nix.network_file import GitTextFile
+from pypi2nix.network_file import NetworkFile
+from pypi2nix.network_file import UrlTextFile
 
-from .utils import cmd
-from .utils import prefetch_git
 from .utils import prefetch_github
 
 
@@ -27,6 +28,14 @@ class Overrides(metaclass=ABCMeta):
         pass
 
 
+class OverridesNetworkFile(Overrides):
+    def __init__(self, network_file: NetworkFile) -> None:
+        self._network_file = network_file
+
+    def nix_expression(self, logger: Logger) -> str:
+        return f"import ({self._network_file.nix_expression()}) {{ inherit pkgs python ; }}"
+
+
 class OverridesFile(Overrides):
     def __init__(self, path: str) -> None:
         self.path = path
@@ -35,54 +44,6 @@ class OverridesFile(Overrides):
 
     def nix_expression(self, logger: Logger) -> str:  # noqa: U100
         return self.expression_template % dict(path=self.path)
-
-
-class OverridesUrl(Overrides):
-    def __init__(self, url: str) -> None:
-        self.url = url
-
-    expression_template = (
-        "let src = pkgs.fetchurl { "
-        + 'url = %(url)s; sha256 = "%(sha_string)s"; '
-        + "}; in "
-        + 'import "${src}" { inherit pkgs python ; }'
-    )
-
-    def nix_expression(self, logger: Logger) -> str:
-        command = "nix-prefetch-url {url}".format(url=self.url)
-
-        return_code, output = cmd(command, logger, stderr=subprocess.DEVNULL)
-        sha_sum = output.strip()
-        if len(sha_sum) != 52 or return_code != 0:
-            raise click.ClickException(
-                "Could not determine hash for url `{url}`".format(url=self.url)
-            )
-        return self.expression_template % dict(url=self.url, sha_string=sha_sum)
-
-
-class OverridesGit(Overrides):
-    def __init__(self, repo_url: str, path: str, rev: Optional[str] = None) -> None:
-        self.repo_url = repo_url
-        self.path = path
-        self.rev = rev
-
-    expression_template = (
-        "let src = pkgs.fetchgit { "
-        + 'url = "%(url)s"; '
-        + 'sha256 = "%(sha256)s"; '
-        + 'rev = "%(rev)s"; '
-        + "fetchSubmodules = false; "
-        + '} ; in import "${src}/%(path)s" { inherit pkgs python; }'
-    )
-
-    def nix_expression(self, logger: Logger) -> str:  # noqa: U100
-        repo_data = prefetch_git(self.repo_url, self.rev)
-        return self.expression_template % dict(
-            url=repo_data["url"],
-            sha256=repo_data["sha256"],
-            rev=repo_data["rev"],
-            path=self.path,
-        )
 
 
 class OverridesGithub(Overrides):
@@ -135,7 +96,9 @@ class OverridesUrlParam(click.ParamType):
         elif url.scheme == "file":
             return OverridesFile(url.path)
         elif url.scheme == "http" or url.scheme == "https":
-            return OverridesUrl(url.geturl())
+            return OverridesNetworkFile(
+                UrlTextFile(url.geturl(), StreamLogger.stdout_logger()),
+            )
         elif url.scheme.startswith("git+"):
             return self._handle_git_override_url(url, url_string)
         else:
@@ -145,7 +108,7 @@ class OverridesUrlParam(click.ParamType):
 
     def _handle_git_override_url(
         self, url: urllib.parse.ParseResult, url_string: str
-    ) -> OverridesGit:
+    ) -> OverridesNetworkFile:
         if not url.fragment:
             raise UnsupportedUrlError(
                 (
@@ -164,10 +127,13 @@ class OverridesUrlParam(click.ParamType):
                 )
             else:
                 fragments[fragment_name] = fragment_value
-        return OverridesGit(
-            repo_url=urldefrag(url.geturl()[4:])[0],
-            path=fragments["path"],
-            rev=fragments.get("rev", None),
+        return OverridesNetworkFile(
+            GitTextFile(
+                repository_url=urldefrag(url.geturl()[4:])[0],
+                path=fragments["path"],
+                revision_name=fragments.get("rev", "master"),
+                logger=StreamLogger.stdout_logger(),
+            ),
         )
 
 
