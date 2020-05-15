@@ -20,6 +20,7 @@ flake8-debugger==3.2.1
 flake8-unused-arguments==0.0.3
 flit==2.2.0
 flit-core==2.2.0
+hypothesis==5.6.0
 idna==2.9
 imagesize==1.2.0
 importlib-metadata==1.5.0
@@ -46,7 +47,7 @@ pyaml==19.4.1
 pycodestyle==2.5.0
 pycparser==2.20
 pyflakes==2.1.1
-Pygments==2.5.2
+Pygments==2.6.1
 pyparsing==2.4.6
 pyrepl==0.9.0
 pyrsistent==0.15.7
@@ -65,6 +66,7 @@ setupmeta==2.6.20
 setuptools-scm==3.5.0
 six==1.14.0
 snowballstemmer==2.0.0
+sortedcontainers==2.1.0
 Sphinx==2.4.4
 sphinxcontrib-applehelp==1.0.2
 sphinxcontrib-devhelp==1.0.2

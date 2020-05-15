@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import sys
 from abc import ABCMeta
 from abc import abstractmethod
 from enum import Enum
@@ -80,6 +83,10 @@ class StreamLogger(Logger):
 
     def set_verbosity(self, level: Verbosity) -> None:
         self.verbosity_level = level
+
+    @classmethod
+    def stdout_logger(constructor) -> StreamLogger:
+        return constructor(sys.stdout)
 
 
 class ProxyLogger(Logger):

@@ -11,40 +11,54 @@ from pypi2nix.logger import StreamLogger
 from repository import ROOT
 
 
-def main():
-    logger: Logger = initialize_logger()
-    relative_paths = [
-        "src",
-        "unittests",
-        "integrationtests",
-        "conftest.py",
-        "setup.py",
-        "mypy",
-        "scripts",
-    ]
-    format_nix_files(logger=logger)
-    absolute_paths = [os.path.join(ROOT, relative) for relative in relative_paths]
-    subprocess.run(["isort", "-rc"] + absolute_paths, check=True)
-    subprocess.run(["black"] + absolute_paths, check=True)
-    subprocess.run(["flake8"] + absolute_paths, check=True)
-    subprocess.run(["mypy", "src"], check=True)
-    subprocess.run(
-        ["mypy", "--allow-untyped-defs", "--ignore-missing-imports"] + absolute_paths,
-        check=True,
-    )
+class CodeFormatter:
+    def __init__(self):
+        self._logger = initialize_logger()
 
-
-def format_nix_files(logger: Logger) -> None:
-    if is_nixfmt_installed():
-        logger.info("Formatting nix files")
-        integration_test_nix_files = find_nix_files_in_integration_tests()
-        subprocess.run(
-            ["nixfmt", "default.nix", "src/pypi2nix/pip/bootstrap.nix"]
-            + integration_test_nix_files,
-            check=True,
+    def main(self):
+        relative_paths = [
+            "src",
+            "unittests",
+            "integrationtests",
+            "conftest.py",
+            "setup.py",
+            "mypy",
+            "scripts",
+        ]
+        self.format_nix_files()
+        absolute_paths = [os.path.join(ROOT, relative) for relative in relative_paths]
+        self._logger.info("Running isort")
+        subprocess.run(["isort", "-rc", "."], check=True)
+        self._logger.info("Running black")
+        subprocess.run(["black"] + absolute_paths, check=True)
+        self.run_check_process("flake8", absolute_paths)
+        self.run_check_process("mypy", ["src"])
+        self.run_check_process(
+            "mypy",
+            ["--allow-untyped-defs", "--ignore-missing-imports"] + absolute_paths,
         )
-    else:
-        logger.warning("Could not find `nixfmt` executable.  Cannot format .nix files")
+
+    def run_check_process(self, executable, arguments: List[str] = []):
+        self._logger.info(f"Running {executable}")
+        try:
+            subprocess.run([executable] + arguments, check=True)
+        except subprocess.CalledProcessError:
+            self._logger.error(f"{executable} failed, see errors above")
+            exit(1)
+
+    def format_nix_files(self) -> None:
+        if is_nixfmt_installed():
+            self._logger.info("Formatting nix files")
+            integration_test_nix_files = find_nix_files_in_integration_tests()
+            subprocess.run(
+                ["nixfmt", "default.nix", "src/pypi2nix/pip/bootstrap.nix"]
+                + integration_test_nix_files,
+                check=True,
+            )
+        else:
+            self._logger.warning(
+                "Could not find `nixfmt` executable.  Cannot format .nix files"
+            )
 
 
 def find_nix_files_in_integration_tests() -> List[str]:
@@ -66,4 +80,4 @@ def is_nixfmt_installed() -> bool:
 
 
 if __name__ == "__main__":
-    main()
+    CodeFormatter().main()

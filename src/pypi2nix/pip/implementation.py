@@ -10,6 +10,7 @@ from typing import Optional
 
 import click
 
+from pypi2nix.external_dependencies import ExternalDependency
 from pypi2nix.logger import Logger
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
@@ -32,7 +33,7 @@ class NixPip(Pip):
         self,
         nix: Nix,
         project_directory: str,
-        extra_build_inputs: List[str],
+        extra_build_inputs: List[ExternalDependency],
         extra_env: str,
         wheels_cache: List[str],
         target_platform: TargetPlatform,
@@ -164,7 +165,9 @@ class NixPip(Pip):
         return dict(
             dict(
                 download_cache_dir=self.download_cache_directory,
-                extra_build_inputs=self.extra_build_inputs,
+                extra_build_inputs=[
+                    input.attribute_name() for input in self.extra_build_inputs
+                ],
                 project_dir=self.project_directory,
                 python_version=self.target_platform.nixpkgs_python_version.derivation_name(),
                 extra_env=self.extra_env,

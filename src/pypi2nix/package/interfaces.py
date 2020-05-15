@@ -9,3 +9,15 @@ class HasBuildDependencies(metaclass=ABCMeta):
     @abstractmethod
     def build_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
         pass
+
+
+class HasRuntimeDependencies(metaclass=ABCMeta):
+    @abstractmethod
+    def runtime_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
+        pass
+
+
+class HasPackageName(metaclass=ABCMeta):
+    @abstractmethod
+    def package_name(self) -> str:
+        pass

@@ -10,6 +10,8 @@
 /integrationtests/*/constraints.txt
 /integrationtests/*/requirements.txt
 /integrationtests/*/requirements_frozen.txt
+/integrationtests/*/dependency-graph.yml
+/integrationtests/*/dependency-input.yml
 /integrationtests/*/result
 /integrationtests/*/build
 /integrationtests/pypi2nix
@@ -23,3 +25,4 @@
 **/.eggs/**
 .mypy_cache
 src/pypi2nix/_version.py
+/.hypothesis

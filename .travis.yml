@@ -7,6 +7,7 @@ env:
     - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz
   matrix:
     - TEST_FILE=aiohttp
+    - TEST_FILE=dependency_graph
     - TEST_FILE=appdirs
     - TEST_FILE=awscli_and_requests
     - TEST_FILE=connexion

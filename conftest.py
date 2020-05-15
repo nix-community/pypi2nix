@@ -2,10 +2,12 @@ import os
 import os.path
 import venv
 from io import StringIO
+from pathlib import Path
 
 import pytest
 
 from pypi2nix.archive import Archive
+from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.logger import Logger
 from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import Nix
@@ -19,6 +21,7 @@ from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.wheel import Wheel
 from pypi2nix.wheel_builder import WheelBuilder
+from unittests.package_generator import PackageGenerator
 
 DATA_DIRECTORY = os.path.join(os.path.dirname(__file__), "unittests", "data")
 
@@ -48,8 +51,27 @@ def wheels_dir(project_dir):
 
 
 @pytest.fixture
-def wheel_builder(pip, project_dir, logger, requirement_parser, current_platform):
-    return WheelBuilder(pip, project_dir, logger, requirement_parser, current_platform)
+def wheel_builder(
+    pip,
+    project_dir,
+    logger,
+    requirement_parser,
+    current_platform,
+    base_dependency_graph,
+):
+    return WheelBuilder(
+        pip,
+        project_dir,
+        logger,
+        requirement_parser,
+        current_platform,
+        base_dependency_graph,
+    )
+
+
+@pytest.fixture
+def base_dependency_graph():
+    return DependencyGraph()
 
 
 @pytest.fixture
@@ -118,6 +140,7 @@ def pip(
     wheel_distribution_archive_path: str,
     data_directory: str,
     requirement_parser: RequirementParser,
+    package_source_directory: Path,
 ) -> VirtualenvPip:
     pip = VirtualenvPip(
         logger=logger,
@@ -126,7 +149,7 @@ def pip(
         env_builder=venv.EnvBuilder(with_pip=True),
         no_index=True,
         wheel_distribution_path=wheel_distribution_archive_path,
-        find_links=[data_directory],
+        find_links=[data_directory, str(package_source_directory)],
         requirement_parser=requirement_parser,
     )
     pip.prepare_virtualenv()
@@ -175,7 +198,7 @@ def test_tar_bz2_path():
 
 
 @pytest.fixture
-def data_directory():
+def data_directory() -> str:
     return DATA_DIRECTORY
 
 
@@ -222,3 +245,21 @@ def flit_wheel(data_directory, current_platform, logger, requirement_parser):
             logger,
             requirement_parser,
         )
+
+
+@pytest.fixture
+def package_source_directory(tmpdir_factory) -> Path:
+    return tmpdir_factory.mktemp("package_source_directory")  # type: ignore
+
+
+@pytest.fixture
+def package_generator(
+    package_source_directory: Path,
+    logger: Logger,
+    requirement_parser: RequirementParser,
+) -> PackageGenerator:
+    return PackageGenerator(
+        target_directory=package_source_directory,
+        requirement_parser=requirement_parser,
+        logger=logger,
+    )

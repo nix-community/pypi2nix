@@ -10,12 +10,12 @@ let
   };
   addSingleBuildInput = package: addBuildInputs [package];
   overridePythonPackage = name: overrides:
-    let
-      combinedOverrides = old: pkgs.lib.fold
-        (override: previous: previous // override previous)
-        old
-        overrides;
-    in python.overrideDerivation super."${name}" combinedOverrides;
+  let
+    combinedOverrides = old: pkgs.lib.fold
+    (override: previous: previous // override previous)
+    old
+    overrides;
+  in python.overrideDerivation super."${name}" combinedOverrides;
 in {
   "fancycompleter" = overridePythonPackage "fancycompleter"
     [
@@ -27,14 +27,14 @@ in {
       (addBuildInputs [self."pytest-runner"])
     ];
 
-  "keyring" = overridePythonPackage "keyring"
-    [
-      (addBuildInputs [self."toml"])
-    ];
-
   "jsonschema" = overridePythonPackage "jsonschema"
     [
       (addBuildInputs [self."setuptools-scm"])
+    ];
+
+  "keyring" = overridePythonPackage "keyring"
+    [
+      (addBuildInputs [self."toml"])
     ];
 
   "mccabe" = overridePythonPackage "mccabe"

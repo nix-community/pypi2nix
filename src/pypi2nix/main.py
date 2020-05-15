@@ -1,9 +1,14 @@
 import os
 import os.path
 import sys
+from typing import List
 
 from pypi2nix.configuration import ApplicationConfiguration
+from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.expression_renderer import render_expression
+from pypi2nix.external_dependencies import ExternalDependency
+from pypi2nix.external_dependency_collector import ExternalDependencyCollector
+from pypi2nix.external_dependency_collector import RequirementDependencyRetriever
 from pypi2nix.logger import Logger
 from pypi2nix.logger import StreamLogger
 from pypi2nix.memoize import memoize
@@ -48,7 +53,7 @@ class Pypi2nix:
             nix=self.nix(),
             project_directory=self.configuration.project_directory,
             extra_env=self.configuration.extra_environment,
-            extra_build_inputs=self.configuration.extra_build_inputs,
+            extra_build_inputs=self._extra_build_inputs(),
             wheels_cache=self.configuration.wheels_caches,
             target_platform=self.target_platform(),
             logger=self.logger(),
@@ -60,6 +65,7 @@ class Pypi2nix:
             logger=self.logger(),
             requirement_parser=self.requirement_parser(),
             target_platform=self.target_platform(),
+            base_dependency_graph=self.base_dependency_graph(),
         )
         wheels = wheel_builder.build(
             requirements=requirements, setup_requirements=setup_requirements
@@ -98,7 +104,16 @@ class Pypi2nix:
             target_directory=self.configuration.target_directory,
             logger=self.logger(),
             common_overrides=self.configuration.overrides,
+            target_platform=self.target_platform(),
         )
+        if self.configuration.dependency_graph_output_location:
+            dependency_graph = DependencyGraph()
+            for wheel in packages_metadata:
+                dependency_graph.import_wheel(wheel, self.requirement_parser())
+            with open(
+                self.configuration.dependency_graph_output_location, "w"
+            ) as output_file:
+                output_file.write(dependency_graph.serialize())
         self.print_user_information()
 
     def print_user_information(self) -> None:
@@ -119,12 +134,23 @@ class Pypi2nix:
         )
 
     @memoize
+    def _extra_build_inputs(self) -> List[ExternalDependency]:
+        retriever = RequirementDependencyRetriever()
+        collector = ExternalDependencyCollector(
+            requirement_dependency_retriever=retriever
+        )
+        for external_input in self.configuration.extra_build_inputs:
+            collector.collect_explicit(external_input)
+        return list(collector.get_collected())
+
+    @memoize
     def requirements_collector(self) -> RequirementsCollector:
         requirement_collector = RequirementsCollector(
             self.target_platform(),
             self.requirement_parser(),
             self.logger(),
             self.configuration.project_directory,
+            self.base_dependency_graph(),
         )
         for item in self.configuration.requirements:
             requirement_collector.add_line(item)
@@ -139,6 +165,7 @@ class Pypi2nix:
             self.requirement_parser(),
             self.logger(),
             self.configuration.project_directory,
+            DependencyGraph(),
         )
         for build_input in self.configuration.setup_requirements:
             setup_requirement_collector.add_line(build_input)
@@ -169,3 +196,7 @@ class Pypi2nix:
         logger: Logger = StreamLogger(output=sys.stdout)
         logger.set_verbosity(self.configuration.verbosity)
         return logger
+
+    @memoize
+    def base_dependency_graph(self) -> DependencyGraph:
+        return self.configuration.dependency_graph_input
