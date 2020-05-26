@@ -74,7 +74,7 @@ class GitTextFile(NetworkFile):
 
     @property
     def revision(self) -> str:
-        return self._prefetch_data["rev"]  # type: ignore
+        return self._prefetch_data["rev"]
 
     @property
     def sha256(self) -> str:

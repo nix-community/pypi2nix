@@ -1,6 +1,5 @@
 import os
 import os.path
-from pathlib import Path
 from typing import List
 from typing import Optional
 
@@ -15,6 +14,7 @@ from pypi2nix.overrides import FILE_URL
 from pypi2nix.overrides import Overrides
 from pypi2nix.overrides import OverridesGithub
 from pypi2nix.overrides import OverridesNetworkFile
+from pypi2nix.path import Path
 from pypi2nix.project_directory import PersistentProjectDirectory
 from pypi2nix.project_directory import ProjectDirectory
 from pypi2nix.project_directory import TemporaryProjectDirectory
@@ -238,7 +238,7 @@ def main(
             setup_requirements=setup_requires,
             verbosity=verbosity,
             wheels_caches=wheels_cache,
-            project_directory=_project_directory,
+            project_directory=Path(_project_directory),
             target_directory=os.getcwd(),
             dependency_graph_output_location=Path(dependency_graph_output)
             if dependency_graph_output

@@ -3,24 +3,28 @@ import venv
 
 import pytest
 
+from pypi2nix.logger import Logger
+from pypi2nix.nix import Nix
+from pypi2nix.path import Path
 from pypi2nix.pip import NixPip
 from pypi2nix.pip import VirtualenvPip
 from pypi2nix.requirement_parser import RequirementParser
+from pypi2nix.target_platform import TargetPlatform
 
 
 @pytest.fixture(params=("nix", "venv"))
 def pip(
     request,
-    nix,
-    project_dir,
-    current_platform,
-    logger,
+    nix: Nix,
+    project_dir: str,
+    current_platform: TargetPlatform,
+    logger: Logger,
     requirement_parser: RequirementParser,
 ):
     if request.param == "nix":
         return NixPip(
             nix=nix,
-            project_directory=project_dir,
+            project_directory=Path(project_dir),
             extra_build_inputs=[],
             extra_env="",
             wheels_cache=[],

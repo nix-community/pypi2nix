@@ -1,6 +1,5 @@
 import shutil
 import subprocess
-from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import List
 
@@ -9,6 +8,7 @@ from attr import attrs
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
+from pypi2nix.path import Path
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.source_distribution import SourceDistribution
 
@@ -82,4 +82,4 @@ class PackageGenerator:
         return Archive(path=str(tar_gz_path))
 
     def _move_package_target_directory(self, distribution_archive: Archive) -> None:
-        shutil.copy(distribution_archive.path, self._target_directory)
+        shutil.copy(distribution_archive.path, str(self._target_directory))

@@ -32,11 +32,7 @@ class CodeFormatter:
         self._logger.info("Running black")
         subprocess.run(["black"] + absolute_paths, check=True)
         self.run_check_process("flake8")
-        self.run_check_process("mypy", ["src"])
-        self.run_check_process(
-            "mypy",
-            ["--allow-untyped-defs", "--ignore-missing-imports"] + absolute_paths,
-        )
+        self.run_check_process("mypy")
 
     def run_check_process(self, executable, arguments: List[str] = []):
         self._logger.info(f"Running {executable}")

@@ -61,7 +61,11 @@ class Pypi2nix:
         )
         wheel_builder = WheelBuilder(
             pip=pip,
-            project_directory=self.configuration.project_directory,
+            download_directory=self.configuration.project_directory / "downloads",
+            lib_directory=self.configuration.project_directory / "lib",
+            extracted_wheel_directory=self.configuration.project_directory
+            / "extracted-wheels",
+            wheel_directory=self.configuration.project_directory / "wheels",
             logger=self.logger(),
             requirement_parser=self.requirement_parser(),
             target_platform=self.target_platform(),
@@ -111,7 +115,7 @@ class Pypi2nix:
             for wheel in packages_metadata:
                 dependency_graph.import_wheel(wheel, self.requirement_parser())
             with open(
-                self.configuration.dependency_graph_output_location, "w"
+                str(self.configuration.dependency_graph_output_location), "w"
             ) as output_file:
                 output_file.write(dependency_graph.serialize())
         self.print_user_information()
@@ -149,7 +153,7 @@ class Pypi2nix:
             self.target_platform(),
             self.requirement_parser(),
             self.logger(),
-            self.configuration.project_directory,
+            str(self.configuration.project_directory),
             self.base_dependency_graph(),
         )
         for item in self.configuration.requirements:
@@ -164,7 +168,7 @@ class Pypi2nix:
             self.target_platform(),
             self.requirement_parser(),
             self.logger(),
-            self.configuration.project_directory,
+            str(self.configuration.project_directory),
             DependencyGraph(),
         )
         for build_input in self.configuration.setup_requirements:

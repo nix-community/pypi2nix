@@ -12,8 +12,9 @@ import click
 from nix_prefetch_github import nix_prefetch_github
 
 from pypi2nix.logger import Logger
+from pypi2nix.path import Path
 
-NixOption = Union[str, List[str], bool]
+NixOption = Union[str, List[str], bool, Path, List[Path]]
 
 HERE = os.path.dirname(__file__)
 
@@ -52,7 +53,7 @@ def cmd(
     except Exception:
         p.kill()
         raise
-    finally:
+    else:
         p.communicate()
     return p.returncode, "".join(out)
 
@@ -60,10 +61,10 @@ def cmd(
 def create_command_options(options: Dict[str, NixOption],) -> List[str]:
     command_options = []
     for name, value in options.items():
-        if isinstance(value, str):
+        if isinstance(value, (str, Path)):
             command_options.append("--argstr")
             command_options.append(name)
-            command_options.append(value)
+            command_options.append(str(value))
         elif isinstance(value, list) or isinstance(value, tuple):
             value = "[ %s ]" % (" ".join(['"%s"' % x for x in value]))
             command_options.append("--arg")
