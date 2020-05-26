@@ -78,8 +78,8 @@ let
         PYTHONPATH=$PWD/src:$PYTHONPATH pytest -v unittests/ -m 'not nix'
       '';
       shellHook = ''
-        export PATH=$PWD/scripts:$PATH
-        export PYTHONPATH=$PWD/src:$PYTHONPATH
+        export PATH=${./.}/scripts:$PATH
+        export PYTHONPATH=${./.}/src:$PYTHONPATH
       '';
       meta = {
         homepage = "https://github.com/nix-community/pypi2nix";
