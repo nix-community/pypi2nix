@@ -1,3 +1,12 @@
-import os.path
+from pathlib import Path
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+def find_root(start=Path(".")):
+    absolute_location = start.resolve()
+    if (absolute_location / ".git").is_dir():
+        return absolute_location
+    else:
+        return find_root(absolute_location / "..")
+
+
+ROOT = find_root()
