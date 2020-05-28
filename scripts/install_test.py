@@ -40,13 +40,21 @@ def create_virtual_env():
 
 def create_wheel():
     shutil.rmtree(os.path.join("src", "pypi2nix.egg-info"), ignore_errors=True)
-    subprocess.run(["build/venv/bin/pip", "install", "wheel"], check=True)
+    subprocess.run(
+        ["build/venv/bin/python", "-m", "pip", "install", "wheel"], check=True
+    )
     subprocess.run(["build/venv/bin/python", "setup.py", "bdist_wheel"], check=True)
 
 
 def install_sdist():
     subprocess.run(
-        ["build/venv/bin/pip", "install", f"dist/pypi2nix-{pypi2nix_version}.tar.gz"],
+        [
+            "build/venv/bin/python",
+            "-m",
+            "pip",
+            "install",
+            f"dist/pypi2nix-{pypi2nix_version}.tar.gz",
+        ],
         check=True,
     )
 
@@ -54,7 +62,9 @@ def install_sdist():
 def install_wheel():
     subprocess.run(
         [
-            "build/venv/bin/pip",
+            "build/venv/bin/python",
+            "-m",
+            "pip",
             "install",
             f"dist/pypi2nix-{pypi2nix_version}-py3-none-any.whl",
         ],
