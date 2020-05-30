@@ -49,7 +49,7 @@ jobs:
       - set -e
       - nix-build
       - result/bin/pypi2nix --version
-      - nix-shell --command 'pytest unittests/'
+      - nix-shell --command 'flake8 && pytest unittests/'
   - name: nixos-unstable
     os: linux
     env:

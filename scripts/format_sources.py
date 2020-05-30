@@ -31,7 +31,7 @@ class CodeFormatter:
         subprocess.run(["isort", "-rc", "."], check=True)
         self._logger.info("Running black")
         subprocess.run(["black"] + absolute_paths, check=True)
-        self.run_check_process("flake8", absolute_paths)
+        self.run_check_process("flake8")
         self.run_check_process("mypy", ["src"])
         self.run_check_process(
             "mypy",
