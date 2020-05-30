@@ -22,7 +22,7 @@ class Sources:
         self.sources = dict(self.sources, **other_sources.sources)
 
     def items(self) -> List[Tuple[str, PackageSource]]:
-        return [(name, value) for name, value in self.sources.items()]
+        return list(self.sources.items())
 
     def __len__(self) -> int:
         return len(self.sources)

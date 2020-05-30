@@ -18,9 +18,9 @@ from pypi2nix.path import Path
 from pypi2nix.pip import Pip
 from pypi2nix.pip import VirtualenvPip
 from pypi2nix.pypi import Pypi
-from pypi2nix.requirements import Requirement
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
+from pypi2nix.requirements import Requirement
 from pypi2nix.sources import Sources
 from pypi2nix.target_platform import PlatformGenerator
 from pypi2nix.target_platform import TargetPlatform
