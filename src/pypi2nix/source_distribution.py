@@ -179,3 +179,6 @@ class SourceDistribution(HasBuildDependencies):
 
     def __str__(self) -> str:
         return f"SourceDistribution<name={self.name}>"
+
+    def __repr__(self) -> str:
+        return f"SourceDistribution(name={self.name}, logger={self.logger}, requirement_parser={self.requirement_parser}, pyproject_toml={self.pyproject_toml}, setup_cfg={self.setup_cfg})"

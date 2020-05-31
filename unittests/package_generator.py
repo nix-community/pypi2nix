@@ -1,13 +1,14 @@
 import shutil
 import subprocess
-from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import List
 
 from attr import attrib
 from attr import attrs
 
 from pypi2nix.archive import Archive
 from pypi2nix.logger import Logger
+from pypi2nix.path import Path
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.source_distribution import SourceDistribution
 
@@ -28,12 +29,17 @@ class PackageGenerator:
     _logger: Logger = attrib()
 
     def generate_setuptools_package(
-        self, name: str, version: str = "1.0"
+        self, name: str, version: str = "1.0", install_requires: List[str] = []
     ) -> SourceDistribution:
         with TemporaryDirectory() as directory_path_string:
             build_directory: Path = Path(directory_path_string)
             self._generate_setup_py(build_directory, name=name, version=version)
-            self._generate_setup_cfg(build_directory, name=name, version=version)
+            self._generate_setup_cfg(
+                build_directory,
+                name=name,
+                version=version,
+                install_requires=install_requires,
+            )
             built_distribution_archive = self._build_package(
                 build_directory=build_directory, name=name, version=version
             )
@@ -48,16 +54,23 @@ class PackageGenerator:
     def _generate_setup_py(
         self, target_directory: Path, name: str, version: str
     ) -> None:
-        content = render_template(
-            Path("setup.py"), context={"name": name, "version": version}
-        )
+        content = render_template(Path("setup.py"), context={},)
         (target_directory / "setup.py").write_text(content)
 
     def _generate_setup_cfg(
-        self, target_directory: Path, name: str, version: str
+        self,
+        target_directory: Path,
+        name: str,
+        version: str,
+        install_requires: List[str],
     ) -> None:
         content = render_template(
-            Path("setup.cfg"), context={"name": name, "version": version}
+            Path("setup.cfg"),
+            context={
+                "name": name,
+                "version": version,
+                "install_requires": install_requires,
+            },
         )
         (target_directory / "setup.cfg").write_text(content)
 
@@ -69,4 +82,4 @@ class PackageGenerator:
         return Archive(path=str(tar_gz_path))
 
     def _move_package_target_directory(self, distribution_archive: Archive) -> None:
-        shutil.copy(distribution_archive.path, self._target_directory)
+        shutil.copy(distribution_archive.path, str(self._target_directory))

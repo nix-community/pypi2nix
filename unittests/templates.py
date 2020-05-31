@@ -1,8 +1,9 @@
 import os
-from pathlib import Path
 from typing import Dict
 
 import jinja2
+
+from pypi2nix.path import Path
 
 HERE = Path(os.path.dirname(__file__))
 

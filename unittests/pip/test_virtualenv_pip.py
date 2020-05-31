@@ -5,6 +5,7 @@ import venv
 import pytest
 
 from pypi2nix.logger import Logger
+from pypi2nix.path import Path
 from pypi2nix.pip import PipFailed
 from pypi2nix.pip import VirtualenvPip
 from pypi2nix.requirement_parser import RequirementParser
@@ -58,7 +59,7 @@ def pip_from_data_directory(
 
 def test_pip_without_index_cannot_download_six(
     pip_without_index: VirtualenvPip,
-    download_dir: str,
+    download_dir: Path,
     requirement_parser: RequirementParser,
     current_platform: TargetPlatform,
 ) -> None:
@@ -88,7 +89,7 @@ def test_pip_without_index_cannot_be_prepared_without_wheel_supplied(
 
 def test_pip_with_data_directory_index_can_download_six(
     pip_from_data_directory: VirtualenvPip,
-    download_dir: str,
+    download_dir: Path,
     requirement_parser: RequirementParser,
     current_platform: TargetPlatform,
 ) -> None:

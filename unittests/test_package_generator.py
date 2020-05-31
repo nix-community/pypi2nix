@@ -1,9 +1,10 @@
 import venv
-from pathlib import Path
 
 import pytest
 
 from pypi2nix.logger import Logger
+from pypi2nix.path import Path
+from pypi2nix.pip import Pip
 from pypi2nix.pip.virtualenv import VirtualenvPip
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
@@ -12,7 +13,7 @@ from pypi2nix.target_platform import TargetPlatform
 from .package_generator import PackageGenerator
 
 
-def test_can_generate_two_packages(package_generator: PackageGenerator):
+def test_can_generate_two_packages(package_generator: PackageGenerator) -> None:
     package_generator.generate_setuptools_package(name="package1",)
     package_generator.generate_setuptools_package(name="package2",)
 
@@ -25,7 +26,7 @@ def test_can_gerate_source_distribution_with_correct_name(
 
 
 def test_can_install_generated_packages(
-    pip,
+    pip: Pip,
     current_platform: TargetPlatform,
     requirement_parser: RequirementParser,
     target_directory: Path,
@@ -37,10 +38,57 @@ def test_can_install_generated_packages(
     requirements.add(requirement_parser.parse("testpackage"))
     pip.install(
         requirements,
-        source_directories=[str(target_directory)],
-        target_directory=str(install_target),
+        source_directories=[target_directory],
+        target_directory=install_target,
     )
-    assert "testpackage" in pip.freeze(python_path=[str(install_target)])
+    assert "testpackage" in pip.freeze(python_path=[install_target])
+
+
+def test_can_generate_packages_with_requirements(
+    package_generator: PackageGenerator,
+    requirement_parser: RequirementParser,
+    pip: Pip,
+    target_directory: Path,
+    install_target: Path,
+    current_platform: TargetPlatform,
+):
+    package_generator.generate_setuptools_package(
+        name="testpackage", install_requires=["other-package"]
+    )
+    package_generator.generate_setuptools_package(name="other-package")
+    requirements = RequirementSet(target_platform=current_platform)
+    requirements.add(requirement_parser.parse("testpackage"))
+    pip.install(
+        requirements,
+        source_directories=[target_directory],
+        target_directory=install_target,
+    )
+    assert "other-package" in pip.freeze([install_target])
+
+
+def test_can_generate_valid_packages_with_two_runtime_dependencies(
+    package_generator: PackageGenerator,
+    requirement_parser: RequirementParser,
+    pip: Pip,
+    target_directory: Path,
+    install_target: Path,
+    current_platform: TargetPlatform,
+):
+    package_generator.generate_setuptools_package(
+        name="testpackage", install_requires=["dependency1", "dependency2"]
+    )
+    package_generator.generate_setuptools_package(name="dependency1")
+    package_generator.generate_setuptools_package(name="dependency2")
+    requirements = RequirementSet(target_platform=current_platform)
+    requirements.add(requirement_parser.parse("testpackage"))
+    pip.install(
+        requirements,
+        source_directories=[target_directory],
+        target_directory=install_target,
+    )
+    installed_packages = pip.freeze([install_target])
+    assert "dependency1" in installed_packages
+    assert "dependency2" in installed_packages
 
 
 @pytest.fixture
@@ -67,13 +115,13 @@ def pip(
 
 
 @pytest.fixture
-def target_directory(tmpdir_factory):
-    return tmpdir_factory.mktemp("target-directory")
+def target_directory(tmpdir_factory) -> Path:
+    return Path(str(tmpdir_factory.mktemp("target-directory")))
 
 
 @pytest.fixture
-def install_target(tmpdir_factory):
-    return tmpdir_factory.mktemp("install-target")
+def install_target(tmpdir_factory) -> Path:
+    return Path(str(tmpdir_factory.mktemp("install-target")))
 
 
 @pytest.fixture
