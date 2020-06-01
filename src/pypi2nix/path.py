@@ -20,6 +20,9 @@ class Path:
     def list_files(self) -> List[Path]:
         return list(map(lambda f: self / f, os.listdir(str(self))))
 
+    def filename(self) -> str:
+        return self._path.name
+
     def ensure_directory(self) -> None:
         return os.makedirs(self._path, exist_ok=True)
 
@@ -31,6 +34,12 @@ class Path:
 
     def is_file(self) -> bool:
         return os.path.isfile(self._path)
+
+    def is_directory(self) -> bool:
+        return os.path.isdir(self._path)
+
+    def resolve(self) -> Path:
+        return Path(self._path.resolve())
 
     def __truediv__(self, other: Union[str, Path]) -> Path:
         if isinstance(other, str):

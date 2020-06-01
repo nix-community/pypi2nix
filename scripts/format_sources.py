@@ -12,10 +12,10 @@ from repository import ROOT
 
 
 class CodeFormatter:
-    def __init__(self):
+    def __init__(self) -> None:
         self._logger = initialize_logger()
 
-    def main(self):
+    def main(self) -> None:
         relative_paths = [
             "src",
             "unittests",
@@ -26,7 +26,9 @@ class CodeFormatter:
             "scripts",
         ]
         self.format_nix_files()
-        absolute_paths = [os.path.join(ROOT, relative) for relative in relative_paths]
+        absolute_paths: List[str] = [
+            str(ROOT / relative) for relative in relative_paths
+        ]
         self._logger.info("Running isort")
         subprocess.run(["isort", "-rc", "."], check=True)
         self._logger.info("Running black")

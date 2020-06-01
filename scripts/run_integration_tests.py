@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import argparse
-import os
 import shlex
 import subprocess
 
@@ -31,12 +30,12 @@ def main():
         files = generator([file])
     else:
         files = (
-            os.path.join(ROOT, "integrationtests", name)
-            for name in os.listdir(os.path.join(ROOT, "integrationtests"))
-            if name.startswith("test_") and name.endswith(".py")
+            ROOT / "integrationtests" / name
+            for name in (ROOT / "integrationtests").list_files()
+            if name.filename().startswith("test_") and name.endswith(".py")
         )
     for path in files:
-        run_tests_from_file(path)
+        run_tests_from_file(str(path))
 
 
 if __name__ == "__main__":

@@ -13,6 +13,7 @@ from jsonschema import ValidationError
 from jsonschema import validate
 
 from pypi2nix.logger import Logger
+from pypi2nix.path import Path
 
 from .schema import GIT_SCHEMA
 from .schema import INDEX_SCHEMA
@@ -26,7 +27,7 @@ class Index:
     Entry = Union[UrlEntry, GitEntry]
 
     logger: Logger = attrib()
-    path: str = attrib(default=os.path.join(os.path.dirname(__file__), "index.json"))
+    path: Path = attrib(default=Path(os.path.dirname(__file__)) / "index.json",)
 
     def __getitem__(self, key: str) -> "Index.Entry":
         with self._index_json() as index:
@@ -62,11 +63,11 @@ class Index:
 
     @contextmanager
     def _index_json(self, write: bool = False) -> Iterator[Dict[str, Dict[str, str]]]:
-        with open(self.path) as f:
+        with open(str(self.path)) as f:
             index = json.load(f)
         yield index
         if write:
-            with open(self.path, "w") as f:
+            with open(str(self.path), "w") as f:
                 json.dump(index, f, sort_keys=True, indent=4)
 
     def _is_schema_valid(self, json_value: Any, schema: Any) -> bool:

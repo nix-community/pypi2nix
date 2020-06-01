@@ -8,6 +8,7 @@ import tempfile
 
 from pypi2nix.logger import StreamLogger
 from pypi2nix.nix import Nix
+from pypi2nix.path import Path
 from pypi2nix.requirement_parser import ParsingFailed
 from pypi2nix.requirement_parser import RequirementParser
 from repository import ROOT
@@ -16,17 +17,17 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 DERIVATION_PATH = os.path.join(HERE, "build-pip.nix")
 
 
-def build_wheel(target_directory: str, requirement: str) -> str:
+def build_wheel(target_directory: Path, requirement: str) -> str:
     logger = StreamLogger(sys.stdout)
     requirement_parser = RequirementParser(logger=logger)
-    package_directory = os.path.join(ROOT, "unittests", "data")
+    package_directory: str = str(ROOT / "unittests" / "data")
     escaped_requirement = shlex.quote(requirement)
-    target_directory = os.path.abspath(target_directory)
+    target_directory = target_directory.resolve()
     with tempfile.TemporaryDirectory() as build_directory:
-        os.chdir(build_directory)
+        os.chdir(str(build_directory))
         nix = Nix(logger=logger)
         nix.shell(
-            command=f"pip wheel {escaped_requirement} --find-links {package_directory} --no-deps",
+            command=f"pip wheel {escaped_requirement} --find-links {str(package_directory)} --no-deps",
             derivation_path=DERIVATION_PATH,
             nix_arguments=dict(),
         )
@@ -48,6 +49,6 @@ def build_wheel(target_directory: str, requirement: str) -> str:
                     raise Exception("Build process did not produce .whl file")
 
         target_file_name = os.path.basename(wheel_path)
-        target_path = os.path.join(target_directory, target_file_name)
-        shutil.move(wheel_path, target_path)
+        target_path = target_directory / target_file_name
+        shutil.move(wheel_path, str(target_path))
     return target_file_name

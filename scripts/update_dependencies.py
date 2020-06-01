@@ -6,7 +6,7 @@ import subprocess
 from repository import ROOT
 
 
-def main():
+def main() -> None:
     arguments = parse_arguments()
     subprocess.run(
         [
@@ -24,7 +24,7 @@ def main():
             "openssl libffi",
         ]
         + (["-v"] if arguments.verbose else []),
-        cwd=ROOT,
+        cwd=str(ROOT),
         check=True,
     )
 
