@@ -13,12 +13,14 @@ from packaging.utils import canonicalize_name
 from pypi2nix.license import find_license
 from pypi2nix.logger import Logger
 from pypi2nix.nix_language import escape_string
+from pypi2nix.package import HasBuildDependencies
+from pypi2nix.package import HasRuntimeDependencies
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
 
 
-class Wheel:
+class Wheel(HasRuntimeDependencies, HasBuildDependencies):
     def __init__(
         self,
         name: str,
@@ -36,7 +38,7 @@ class Wheel:
         self.homepage = homepage
         self.license = license
         self.description = description
-        self.build_dependencies: RequirementSet = build_dependencies
+        self._build_dependencies: RequirementSet = build_dependencies
         self._target_platform = target_platform
         self.package_format: str = "setuptools"
 
@@ -49,9 +51,21 @@ class Wheel:
             "license": self.license,
             "description": self.description,
             "build_dependencies": [
-                requirement.name() for requirement in self.build_dependencies
+                requirement.name() for requirement in self._build_dependencies
             ],
         }
+
+    def build_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
+        if target_platform != self._target_platform:
+            return RequirementSet(target_platform)
+        else:
+            return self._build_dependencies
+
+    def runtime_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
+        if target_platform != self._target_platform:
+            return RequirementSet(target_platform)
+        else:
+            return self.dependencies([])
 
     def dependencies(self, extras: List[str] = []) -> RequirementSet:
         return self._deps.filter(
@@ -61,7 +75,7 @@ class Wheel:
         )
 
     def add_build_dependencies(self, dependencies: RequirementSet) -> None:
-        self.build_dependencies += dependencies
+        self._build_dependencies += dependencies
 
     @classmethod
     def from_wheel_directory_path(
@@ -75,6 +89,9 @@ class Wheel:
             target_platform, wheel_directory_path, logger, requirement_parser
         )
         return builder.build()
+
+    def target_platform(self) -> TargetPlatform:
+        return self._target_platform
 
 
 class Builder:

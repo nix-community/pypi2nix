@@ -1,9 +1,11 @@
+import os
 import os.path
 import venv
 
 import pytest
 
 from pypi2nix.logger import Logger
+from pypi2nix.path import Path
 from pypi2nix.pip import PipFailed
 from pypi2nix.pip import VirtualenvPip
 from pypi2nix.requirement_parser import RequirementParser
@@ -57,7 +59,7 @@ def pip_from_data_directory(
 
 def test_pip_without_index_cannot_download_six(
     pip_without_index: VirtualenvPip,
-    download_dir: str,
+    download_dir: Path,
     requirement_parser: RequirementParser,
     current_platform: TargetPlatform,
 ) -> None:
@@ -87,10 +89,19 @@ def test_pip_without_index_cannot_be_prepared_without_wheel_supplied(
 
 def test_pip_with_data_directory_index_can_download_six(
     pip_from_data_directory: VirtualenvPip,
-    download_dir: str,
+    download_dir: Path,
     requirement_parser: RequirementParser,
     current_platform: TargetPlatform,
 ) -> None:
     requirements = RequirementSet(current_platform)
     requirements.add(requirement_parser.parse("six"))
     pip_from_data_directory.download_sources(requirements, download_dir)
+
+
+def test_that_set_environment_variable_undoes_changes_when_exiting(
+    pip_without_index: VirtualenvPip,
+):
+    old_environment = dict(os.environ)
+    with pip_without_index._set_environment_variable({"test": "definitly_unset"}):
+        pass
+    assert dict(os.environ) == old_environment

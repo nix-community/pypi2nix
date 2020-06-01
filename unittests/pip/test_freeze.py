@@ -1,5 +1,4 @@
-import os.path
-
+from pypi2nix.path import Path
 from pypi2nix.pip import Pip
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
@@ -20,9 +19,9 @@ def test_freeze_respects_additional_python_path(
     project_dir: str,
     current_platform: TargetPlatform,
     requirement_parser: RequirementParser,
+    download_dir: Path,
 ):
-    prefix = os.path.join(project_dir, "custom-prefix")
-    download_dir = os.path.join(project_dir, "download")
+    prefix = Path(project_dir) / "custom-prefix"
     requirements = RequirementSet(current_platform)
     requirements.add(requirement_parser.parse("six"))
     pip.download_sources(requirements, download_dir)

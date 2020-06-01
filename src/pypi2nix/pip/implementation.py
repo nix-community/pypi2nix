@@ -10,12 +10,15 @@ from typing import Optional
 
 import click
 
+from pypi2nix.external_dependencies import ExternalDependency
 from pypi2nix.logger import Logger
 from pypi2nix.nix import EvaluationFailed
 from pypi2nix.nix import Nix
+from pypi2nix.path import Path
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
 from pypi2nix.target_platform import TargetPlatform
+from pypi2nix.utils import NixOption
 from pypi2nix.utils import escape_double_quotes
 
 from .interface import Pip
@@ -31,8 +34,8 @@ class NixPip(Pip):
     def __init__(
         self,
         nix: Nix,
-        project_directory: str,
-        extra_build_inputs: List[str],
+        project_directory: Path,
+        extra_build_inputs: List[ExternalDependency],
         extra_env: str,
         wheels_cache: List[str],
         target_platform: TargetPlatform,
@@ -55,17 +58,17 @@ class NixPip(Pip):
         # trim quotes
         self.extra_env = output[1:-1]
 
-        self.default_lib_directory = os.path.join(self.project_directory, "lib")
-        self.download_cache_directory = os.path.join(self.project_directory, "cache")
+        self.default_lib_directory = self.project_directory / "lib"
+        self.download_cache_directory = self.project_directory / "cache"
 
     def download_sources(
-        self, requirements: RequirementSet, target_directory: str
+        self, requirements: RequirementSet, target_directory: Path
     ) -> None:
         if not requirements:
             return
         requirements_files = [
             requirements.to_file(
-                self.project_directory,
+                str(self.project_directory),
                 self.target_platform,
                 self.requirement_parser,
                 self.logger,
@@ -85,14 +88,14 @@ class NixPip(Pip):
     def build_wheels(
         self,
         requirements: RequirementSet,
-        target_directory: str,
-        source_directories: List[str],
+        target_directory: Path,
+        source_directories: List[Path],
     ) -> None:
         if not requirements:
             return
         requirements_files = [
             requirements.to_file(
-                self.project_directory,
+                str(self.project_directory),
                 self.target_platform,
                 self.requirement_parser,
                 self.logger,
@@ -114,8 +117,8 @@ class NixPip(Pip):
     def install(
         self,
         requirements: RequirementSet,
-        source_directories: List[str],
-        target_directory: Optional[str] = None,
+        source_directories: List[Path],
+        target_directory: Optional[Path] = None,
     ) -> None:
         if not requirements:
             return
@@ -123,7 +126,7 @@ class NixPip(Pip):
             target_directory = self.default_lib_directory
         requirements_files = [
             requirements.to_file(
-                self.project_directory,
+                str(self.project_directory),
                 self.target_platform,
                 self.requirement_parser,
                 self.logger,
@@ -139,8 +142,8 @@ class NixPip(Pip):
             ),
         )
 
-    def freeze(self, python_path: List[str] = []) -> str:
-        additional_paths = ":".join(map(shlex.quote, python_path))
+    def freeze(self, python_path: List[Path] = []) -> str:
+        additional_paths = ":".join(shlex.quote(str(path)) for path in python_path)
 
         output: str = self.nix.shell(
             "{PYTHONPATH} pip freeze".format(
@@ -154,18 +157,20 @@ class NixPip(Pip):
         lines = map(lambda x: x.strip(), output.splitlines())
         return ("\n".join(lines) + "\n") if lines else ""
 
-    def editable_sources_directory(self) -> str:
-        return os.path.join(self.project_directory, "editable_sources")
+    def editable_sources_directory(self) -> Path:
+        return self.project_directory / "editable_sources"
 
-    def build_directory(self) -> str:
-        return os.path.join(self.project_directory, "build")
+    def build_directory(self) -> Path:
+        return self.project_directory / "build"
 
-    def nix_arguments(self, **arguments) -> Dict[str, Any]:  # type: ignore
+    def nix_arguments(self, **arguments: NixOption) -> Dict[str, NixOption]:
         return dict(
             dict(
-                download_cache_dir=self.download_cache_directory,
-                extra_build_inputs=self.extra_build_inputs,
-                project_dir=self.project_directory,
+                download_cache_dir=str(self.download_cache_directory),
+                extra_build_inputs=[
+                    input.attribute_name() for input in self.extra_build_inputs
+                ],
+                project_dir=str(self.project_directory),
                 python_version=self.target_platform.nixpkgs_python_version.derivation_name(),
                 extra_env=self.extra_env,
             ),
@@ -190,14 +195,11 @@ class NixPip(Pip):
         self.handle_build_error(is_failure=is_failure)
 
     def create_download_cache_if_missing(self) -> None:
-        if os.path.exists(self.download_cache_directory):
-            pass
-        else:
-            os.makedirs(self.download_cache_directory)
+        self.download_cache_directory.ensure_directory()
 
     def delete_build_directory(self) -> None:
         try:
-            shutil.rmtree(self.build_directory())
+            shutil.rmtree(str(self.build_directory()))
         except FileNotFoundError:
             pass
 

@@ -509,6 +509,26 @@ let
       };
     };
 
+    "hypothesis" = python.mkDerivation {
+      name = "hypothesis-5.6.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/d8/11/bc2a6d9f2762be96fa0040f47b3246a8ed072e41ff58aacf6f3668274b17/hypothesis-5.6.0.tar.gz";
+        sha256 = "22fb60bd0c6eb7849121a7df263a91da23b4e8506d3ba9e92ac696d2720ac0f5";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [
+        self."attrs"
+        self."sortedcontainers"
+      ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "https://github.com/HypothesisWorks/hypothesis/tree/master/hypothesis-python";
+        license = licenses.mpl20;
+        description = "A library for property-based testing";
+      };
+    };
+
     "idna" = python.mkDerivation {
       name = "idna-2.9";
       src = pkgs.fetchurl {
@@ -1006,17 +1026,17 @@ let
     };
 
     "pygments" = python.mkDerivation {
-      name = "pygments-2.5.2";
+      name = "pygments-2.6.1";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/cb/9f/27d4844ac5bf158a33900dbad7985951e2910397998e85712da03ce125f0/Pygments-2.5.2.tar.gz";
-        sha256 = "98c8aa5a9f778fcd1026a17361ddaf7330d1b7c62ae97c3bb0ae73e0b9b6b0fe";
+        url = "https://files.pythonhosted.org/packages/6e/4d/4d2fe93a35dfba417311a4ff627489a947b01dc0cc377a3673c00cf7e4b2/Pygments-2.6.1.tar.gz";
+        sha256 = "647344a061c249a3b74e230c739f434d7ea4d8b1d5f3721bc0f3558049b38f44";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
       buildInputs = commonBuildInputs ++ [ ];
       propagatedBuildInputs = [ ];
       meta = with pkgs.stdenv.lib; {
-        homepage = "http://pygments.org/";
+        homepage = "https://pygments.org/";
         license = licenses.bsdOriginal;
         description = "Pygments is a syntax highlighting package written in Python.";
       };
@@ -1317,10 +1337,10 @@ let
     };
 
     "setuptools" = python.mkDerivation {
-      name = "setuptools-45.2.0";
+      name = "setuptools-45.3.0";
       src = pkgs.fetchurl {
-        url = "https://files.pythonhosted.org/packages/68/75/d1d7b7340b9eb6e0388bf95729e63c410b381eb71fe8875cdfd949d8f9ce/setuptools-45.2.0.zip";
-        sha256 = "89c6e6011ec2f6d57d43a3f9296c4ef022c2cbf49bab26b407fe67992ae3397f";
+        url = "https://files.pythonhosted.org/packages/c8/1f/178e51e013f42c5e16e6f7c22ffdaea54ac9b90cd0b13b217b1aba283dc0/setuptools-45.3.0.zip";
+        sha256 = "ab7e8f49751e5cae30d6c32775b10535ad372517dd3f625b7ff6c65914f15630";
 };
       doCheck = commonDoCheck;
       format = "setuptools";
@@ -1384,6 +1404,23 @@ let
         homepage = "https://github.com/snowballstem/snowball";
         license = licenses.bsdOriginal;
         description = "This package provides 26 stemmers for 25 languages generated from Snowball algorithms.";
+      };
+    };
+
+    "sortedcontainers" = python.mkDerivation {
+      name = "sortedcontainers-2.1.0";
+      src = pkgs.fetchurl {
+        url = "https://files.pythonhosted.org/packages/29/e0/135df2e733790a3d3bcda970fd080617be8cea3bd98f411e76e6847c17ef/sortedcontainers-2.1.0.tar.gz";
+        sha256 = "974e9a32f56b17c1bac2aebd9dcf197f3eb9cd30553c5852a3187ad162e1a03a";
+};
+      doCheck = commonDoCheck;
+      format = "setuptools";
+      buildInputs = commonBuildInputs ++ [ ];
+      propagatedBuildInputs = [ ];
+      meta = with pkgs.stdenv.lib; {
+        homepage = "http://www.grantjenks.com/docs/sortedcontainers/";
+        license = licenses.asl20;
+        description = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set";
       };
     };
 

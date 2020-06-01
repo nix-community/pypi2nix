@@ -4,8 +4,10 @@ from typing import Optional
 from attr import attrib
 from attr import attrs
 
+from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.logger import Verbosity
 from pypi2nix.overrides import Overrides
+from pypi2nix.path import Path
 from pypi2nix.python_version import PythonVersion
 
 
@@ -25,5 +27,7 @@ class ApplicationConfiguration:
     overrides: List[Overrides] = attrib()
     wheels_caches: List[str] = attrib()
     output_basename: str = attrib()
-    project_directory: str = attrib()
+    project_directory: Path = attrib()
     target_directory: str = attrib()
+    dependency_graph_output_location: Optional[Path] = attrib()
+    dependency_graph_input: DependencyGraph = attrib()

@@ -7,6 +7,7 @@ env:
     - NIX_PATH=nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz
   matrix:
     - TEST_FILE=aiohttp
+    - TEST_FILE=dependency_graph
     - TEST_FILE=appdirs
     - TEST_FILE=awscli_and_requests
     - TEST_FILE=connexion
@@ -48,7 +49,7 @@ jobs:
       - set -e
       - nix-build
       - result/bin/pypi2nix --version
-      - nix-shell --command 'pytest unittests/'
+      - nix-shell --command 'flake8 && pytest unittests/'
   - name: nixos-unstable
     os: linux
     env:

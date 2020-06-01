@@ -6,11 +6,15 @@ from typing import Optional
 import click
 
 from pypi2nix.configuration import ApplicationConfiguration
+from pypi2nix.dependency_graph import DependencyGraph
 from pypi2nix.logger import verbosity_from_int
 from pypi2nix.main import Pypi2nix
-from pypi2nix.overrides import OVERRIDES_URL
+from pypi2nix.network_file import NetworkFile
+from pypi2nix.overrides import FILE_URL
 from pypi2nix.overrides import Overrides
 from pypi2nix.overrides import OverridesGithub
+from pypi2nix.overrides import OverridesNetworkFile
+from pypi2nix.path import Path
 from pypi2nix.project_directory import PersistentProjectDirectory
 from pypi2nix.project_directory import ProjectDirectory
 from pypi2nix.project_directory import TemporaryProjectDirectory
@@ -89,6 +93,20 @@ from pypi2nix.version import pypi2nix_version
     help="pip requirements.txt file",
 )
 @click.option(
+    "--dependency-graph-output",
+    required=False,
+    default=None,
+    type=click.Path(file_okay=True, dir_okay=False, resolve_path=True),
+    help="Output dependency graph to this location",
+)
+@click.option(
+    "--dependency-graph-input",
+    required=False,
+    default=None,
+    type=FILE_URL,
+    help="Base dependency tree to consume for pypi2nix",
+)
+@click.option(
     "-e",
     "--editable",
     multiple=True,
@@ -111,7 +129,7 @@ from pypi2nix.version import pypi2nix_version
     "--overrides",
     multiple=True,
     required=False,
-    type=OVERRIDES_URL,
+    type=FILE_URL,
     help="Extra expressions that override generated expressions "
     + "for specific packages",
 )
@@ -156,11 +174,14 @@ def main(
     requirements: List[str],
     editable: List[str],
     setup_requires: List[str],
-    overrides: List[Overrides],
+    overrides: List[NetworkFile],
     default_overrides: bool,
     wheels_cache: List[str],
     build_directory: Optional[str],
+    dependency_graph_output: Optional[str],
+    dependency_graph_input: Optional[NetworkFile],
 ) -> None:
+    overrides_list: List[Overrides] = []
     if version:
         click.echo(pypi2nix_version)
         exit(0)
@@ -175,9 +196,9 @@ def main(
             )
         else:
             nix_executable_directory = os.path.dirname(os.path.abspath(nix_shell))
-
+    overrides_list += [OverridesNetworkFile(network_file) for network_file in overrides]
     if default_overrides:
-        overrides += tuple(
+        overrides_list += tuple(
             [
                 OverridesGithub(
                     owner="nix-community",
@@ -197,6 +218,10 @@ def main(
         if build_directory is None
         else PersistentProjectDirectory(path=build_directory)
     )
+    if dependency_graph_input:
+        dependency_graph = DependencyGraph.deserialize(dependency_graph_input.fetch())
+    else:
+        dependency_graph = DependencyGraph()
     with project_directory_context as _project_directory:
         configuration = ApplicationConfiguration(
             emit_extra_build_inputs=emit_extra_build_inputs,
@@ -206,15 +231,19 @@ def main(
             nix_executable_directory=nix_executable_directory,
             nix_path=nix_path,
             output_basename=basename,
-            overrides=overrides,
+            overrides=overrides_list,
             python_version=python_version,
             requirement_files=requirements,
             requirements=editable,
             setup_requirements=setup_requires,
             verbosity=verbosity,
             wheels_caches=wheels_cache,
-            project_directory=_project_directory,
+            project_directory=Path(_project_directory),
             target_directory=os.getcwd(),
+            dependency_graph_output_location=Path(dependency_graph_output)
+            if dependency_graph_output
+            else None,
+            dependency_graph_input=dependency_graph,
         )
         Pypi2nix(configuration).run()
 

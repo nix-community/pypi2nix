@@ -6,5 +6,7 @@ parsley
 toml
 packaging
 jsonschema
+hypothesis
+pyyaml
 
 -c constraints.txt

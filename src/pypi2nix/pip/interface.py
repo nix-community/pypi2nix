@@ -2,13 +2,14 @@ from abc import ABCMeta
 from abc import abstractmethod
 from typing import List
 
+from pypi2nix.path import Path
 from pypi2nix.requirement_set import RequirementSet
 
 
 class Pip(metaclass=ABCMeta):
     @abstractmethod
     def download_sources(
-        self, requirements: RequirementSet, target_directory: str
+        self, requirements: RequirementSet, target_directory: Path
     ) -> None:
         pass
 
@@ -16,8 +17,8 @@ class Pip(metaclass=ABCMeta):
     def build_wheels(
         self,
         requirements: RequirementSet,
-        target_directory: str,
-        source_directories: List[str],
+        target_directory: Path,
+        source_directories: List[Path],
     ) -> None:
         pass
 
@@ -25,11 +26,11 @@ class Pip(metaclass=ABCMeta):
     def install(
         self,
         requirements: RequirementSet,
-        source_directories: List[str],
-        target_directory: str,
+        source_directories: List[Path],
+        target_directory: Path,
     ) -> None:
         pass
 
     @abstractmethod
-    def freeze(self, python_path: List[str]) -> str:
+    def freeze(self, python_path: List[Path]) -> str:
         pass

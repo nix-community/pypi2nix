@@ -14,6 +14,8 @@ from pypi2nix.package import PyprojectToml
 from pypi2nix.package import SetupCfg
 from pypi2nix.requirement_parser import RequirementParser
 from pypi2nix.requirement_set import RequirementSet
+from pypi2nix.requirements import Requirement
+from pypi2nix.requirements import VersionRequirement
 from pypi2nix.target_platform import TargetPlatform
 
 
@@ -154,6 +156,15 @@ class SourceDistribution(HasBuildDependencies):
                 f"Neither PKG-INFO nor setup.cfg are present in {archive}"
             )
 
+    def to_loose_requirement(self) -> Requirement:
+        return VersionRequirement(
+            name=self.name,
+            versions=[],
+            extras=set(),
+            environment_markers=None,
+            logger=self.logger,
+        )
+
     def build_dependencies(self, target_platform: TargetPlatform) -> RequirementSet:
         build_dependencies = RequirementSet(target_platform)
         if self.pyproject_toml is not None:
@@ -168,3 +179,6 @@ class SourceDistribution(HasBuildDependencies):
 
     def __str__(self) -> str:
         return f"SourceDistribution<name={self.name}>"
+
+    def __repr__(self) -> str:
+        return f"SourceDistribution(name={self.name}, logger={self.logger}, requirement_parser={self.requirement_parser}, pyproject_toml={self.pyproject_toml}, setup_cfg={self.setup_cfg})"

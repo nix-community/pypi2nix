@@ -12,8 +12,9 @@ import click
 from nix_prefetch_github import nix_prefetch_github
 
 from pypi2nix.logger import Logger
+from pypi2nix.path import Path
 
-NixOption = Union[str, List[str], bool]
+NixOption = Union[str, List[str], bool, Path, List[Path]]
 
 HERE = os.path.dirname(__file__)
 
@@ -28,14 +29,17 @@ def pretty_option(option: Optional[str]) -> str:
 
 
 def cmd(
-    command: Union[str, List[str]], logger: Logger, stderr: Optional[int] = None
+    command: Union[str, List[str]],
+    logger: Logger,
+    stderr: Optional[int] = None,
+    cwd: Optional[str] = None,
 ) -> Tuple[int, str]:
     if isinstance(command, str):
         command = shlex.split(command)
 
     logger.debug("|-> " + " ".join(map(shlex.quote, command)))
 
-    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=stderr)
+    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=stderr, cwd=cwd)
 
     try:
         out = []
@@ -49,7 +53,7 @@ def cmd(
     except Exception:
         p.kill()
         raise
-    finally:
+    else:
         p.communicate()
     return p.returncode, "".join(out)
 
@@ -57,10 +61,10 @@ def cmd(
 def create_command_options(options: Dict[str, NixOption],) -> List[str]:
     command_options = []
     for name, value in options.items():
-        if isinstance(value, str):
+        if isinstance(value, (str, Path)):
             command_options.append("--argstr")
             command_options.append(name)
-            command_options.append(value)
+            command_options.append(str(value))
         elif isinstance(value, list) or isinstance(value, tuple):
             value = "[ %s ]" % (" ".join(['"%s"' % x for x in value]))
             command_options.append("--arg")
@@ -158,8 +162,11 @@ def escape_double_quotes(text: str) -> str:
     return text.replace('"', '\\"')
 
 
-def prefetch_url(url: str, logger: Logger) -> str:
-    returncode, output = cmd(
-        ["nix-prefetch-url", url], logger, stderr=subprocess.DEVNULL
-    )
+def prefetch_url(url: str, logger: Logger, name: Optional[str] = None) -> str:
+    command = ["nix-prefetch-url", url]
+    if name is not None:
+        command += ["--name", name]
+    returncode, output = cmd(command, logger, stderr=subprocess.DEVNULL)
+    if not output:
+        raise ValueError(f"Could not fetch ressource from {url}")
     return output.rstrip()

@@ -9,6 +9,7 @@ from typing import Optional
 from venv import EnvBuilder
 
 from pypi2nix.logger import Logger
+from pypi2nix.path import Path
 from pypi2nix.pip import Pip
 from pypi2nix.pip import PipFailed
 from pypi2nix.requirement_parser import RequirementParser
@@ -45,7 +46,7 @@ class VirtualenvPip(Pip):
         )
 
     def download_sources(
-        self, requirements: RequirementSet, target_directory: str
+        self, requirements: RequirementSet, target_directory: Path
     ) -> None:
         with self._requirements_file(requirements) as requirement_file:
             self._execute_pip_command(
@@ -54,7 +55,7 @@ class VirtualenvPip(Pip):
                     "-r",
                     requirement_file,
                     "--dest",
-                    target_directory,
+                    str(target_directory),
                     "--no-binary",
                     ":all:",
                 ]
@@ -64,16 +65,16 @@ class VirtualenvPip(Pip):
     def build_wheels(
         self,
         requirements: RequirementSet,
-        target_directory: str,
-        source_directories: List[str],
+        target_directory: Path,
+        source_directories: List[Path],
     ) -> None:
         with self._requirements_file(requirements) as requirement_file:
             source_dir_arguments: List[str] = []
             for source_directory in source_directories:
                 source_dir_arguments.append("--find-links")
-                source_dir_arguments.append(source_directory)
+                source_dir_arguments.append(str(source_directory))
             self._execute_pip_command(
-                ["wheel", "--wheel-dir", target_directory, "--no-index"]
+                ["wheel", "--wheel-dir", str(target_directory), "--no-index"]
                 + source_dir_arguments
                 + ["--requirement", requirement_file]
             )
@@ -81,34 +82,34 @@ class VirtualenvPip(Pip):
     def install(
         self,
         requirements: RequirementSet,
-        source_directories: List[str],
-        target_directory: str,
+        source_directories: List[Path],
+        target_directory: Path,
     ) -> None:
         with self._requirements_file(requirements) as requirements_file:
             source_directories_arguments = []
             for source_directory in source_directories:
                 source_directories_arguments.append("--find-links")
-                source_directories_arguments.append(source_directory)
+                source_directories_arguments.append(str(source_directory))
             self._execute_pip_command(
                 [
                     "install",
                     "--no-index",
                     "--target",
-                    target_directory,
+                    str(target_directory),
                     "-r",
                     requirements_file,
                 ]
                 + source_directories_arguments
             )
 
-    def freeze(self, python_path: List[str]) -> str:
+    def freeze(self, python_path: List[Path]) -> str:
         return self._execute_pip_command(["freeze"], pythonpath=python_path)
 
     def _pip_path(self) -> str:
         return os.path.join(self.target_directory, "bin", "pip")
 
     def _execute_pip_command(
-        self, arguments: List[str], pythonpath: List[str] = []
+        self, arguments: List[str], pythonpath: List[Path] = []
     ) -> str:
         with self._explicit_pythonpath(pythonpath), self._set_environment_variable(
             {"SOURCE_DATE_EPOCH": "315532800",}
@@ -119,8 +120,8 @@ class VirtualenvPip(Pip):
         return output
 
     @contextmanager
-    def _explicit_pythonpath(self, pythonpath: List[str]) -> Iterator[None]:
-        additional_paths = ":".join(pythonpath)
+    def _explicit_pythonpath(self, pythonpath: List[Path]) -> Iterator[None]:
+        additional_paths = ":".join(map(str, pythonpath))
         with self._set_environment_variable({"PYTHONPATH": additional_paths}):
             yield
 
@@ -135,23 +136,23 @@ class VirtualenvPip(Pip):
     def _set_environment_variable(
         self, variables: Dict[str, Optional[str]]
     ) -> Iterator[None]:
-        def set_environment(
-            environment: Dict[str, Optional[str]]
-        ) -> Dict[str, Optional[str]]:
-            old_environment: Dict[str, Optional[str]] = dict()
+        def set_environment(environment: Dict[str, Optional[str]]) -> None:
             for name, value in variables.items():
-                old_environment[name] = os.environ.get(name)
                 if value is None:
                     del os.environ[name]
                 else:
                     os.environ[name] = value
-            return old_environment
 
-        old_environment = set_environment(variables)
+        old_environment = dict(os.environ)
+        set_environment(variables)
         try:
             yield
         finally:
-            set_environment(old_environment)
+            for key, value in old_environment.items():
+                os.environ[key] = value
+            for key in os.environ.keys():
+                if key not in old_environment:
+                    del os.environ[key]
 
     def _maybe_index(self) -> List[str]:
         arguments: List[str] = []

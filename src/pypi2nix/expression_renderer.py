@@ -11,6 +11,7 @@ from pypi2nix.nix_language import escape_string
 from pypi2nix.overrides import Overrides
 from pypi2nix.python_version import PythonVersion
 from pypi2nix.sources import Sources
+from pypi2nix.target_platform import TargetPlatform
 from pypi2nix.version import pypi2nix_version
 from pypi2nix.wheel import Wheel
 
@@ -27,6 +28,7 @@ def render_expression(
     python_version: PythonVersion,
     target_directory: str,
     logger: Logger,
+    target_platform: TargetPlatform,
     common_overrides: Iterable[Overrides] = [],
 ) -> None:
     """Create Nix expressions.
@@ -45,7 +47,7 @@ def render_expression(
                 sorted(
                     [
                         '        self."{}"'.format(dependency.name())
-                        for dependency in item.build_dependencies
+                        for dependency in item.build_dependencies(target_platform)
                     ]
                 )
             )
