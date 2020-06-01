@@ -1,13 +1,13 @@
 {
     "pip": {
         "__type__": "fetchurl",
-        "sha256": "7db0c8ea4c7ea51c8049640e8e6e7fde949de672bfa4949920675563a5a6967f",
-        "url": "https://files.pythonhosted.org/packages/8e/76/66066b7bc71817238924c7e4b448abdb17eb0c92d645769c223f9ace478f/pip-20.0.2.tar.gz"
+        "sha256": "27f8dc29387dd83249e06e681ce087e6061826582198a425085e0bf4c1cf3a55",
+        "url": "https://files.pythonhosted.org/packages/08/25/f204a6138dade2f6757b4ae99bc3994aac28a5602c97ddb2a35e0e22fbc4/pip-20.1.1.tar.gz"
     },
     "setuptools": {
         "__type__": "fetchurl",
-        "sha256": "795e0475ba6cd7fa082b1ee6e90d552209995627a2a227a47c6ea93282f4bfb1",
-        "url": "https://files.pythonhosted.org/packages/b5/96/af1686ea8c1e503f4a81223d4a3410e7587fd52df03083de24161d0df7d4/setuptools-46.1.3.zip"
+        "sha256": "145fa62b9d7bb544fce16e9b5a9bf4ab2032d2f758b7cd674af09a92736aff74",
+        "url": "https://files.pythonhosted.org/packages/25/bf/a37e89d3148221fedd4def62bb68749041d79f3840d58a7943f81a6f6c6e/setuptools-47.1.1.zip"
     },
     "wheel": {
         "__type__": "fetchurl",

@@ -7,8 +7,7 @@ from package_source import PackageSource
 from pypi2nix.logger import StreamLogger
 from pypi2nix.pypi import Pypi
 from pypi2nix.wheels import Index
-
-from .repository import ROOT
+from repository import ROOT
 
 
 def main():
