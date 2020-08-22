@@ -48,7 +48,7 @@ class Nix:
             "nix-shell",
             create_command_options(nix_arguments)
             + (["--pure"] if pure else [])
-            + [derivation_path, "--command", command],
+            + [derivation_path, "--run", command],
         )
         return output
 
