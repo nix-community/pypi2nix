@@ -14,7 +14,7 @@ let
   inherit (pkgs) makeWrapper;
   inherit (pkgs.lib) fix' extends inNixShell;
 
-  pythonPackages = pkgs.python3.pkgs;
+  pythonPackages = pkgs.{{ python_version }}.pkgs;
 
   commonBuildInputs = {{ extra_build_inputs }};
   commonDoCheck = {{ enable_tests }};

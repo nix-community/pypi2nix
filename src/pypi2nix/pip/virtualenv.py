@@ -41,6 +41,9 @@ class VirtualenvPip(Pip):
 
     def prepare_virtualenv(self) -> None:
         self.env_builder.create(self.target_directory)
+        self._execute_venv_python_command(
+            ["-m", "ensurepip"]
+        )
         self._execute_pip_command(
             ["install", self._wheel_requirement_name()] + self._maybe_index()
         )
@@ -106,7 +109,7 @@ class VirtualenvPip(Pip):
         return self._execute_pip_command(["freeze"], pythonpath=python_path)
 
     def _pip_path(self) -> str:
-        return os.path.join(self.target_directory, "bin", "pip")
+        return os.path.join(self.target_directory, "bin", "pip3")
 
     def _execute_pip_command(
         self, arguments: List[str], pythonpath: List[Path] = []
@@ -115,6 +118,20 @@ class VirtualenvPip(Pip):
             {"SOURCE_DATE_EPOCH": "315532800",}
         ):
             returncode, output = cmd([self._pip_path()] + arguments, logger=self.logger)
+        if returncode != 0:
+            raise PipFailed(output=output)
+        return output
+
+    def _execute_venv_python_command(
+        self, arguments: List[str], pythonpath: List[Path] = []
+    ) -> str:
+        with self._explicit_pythonpath(pythonpath), self._set_environment_variable(
+            {"SOURCE_DATE_EPOCH": "315532800",}
+        ):
+            returncode, output = cmd(
+                [os.path.join(self.target_directory, "bin", "python")] +
+                arguments, logger=self.logger
+            )
         if returncode != 0:
             raise PipFailed(output=output)
         return output
