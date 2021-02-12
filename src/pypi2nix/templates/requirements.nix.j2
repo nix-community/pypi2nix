@@ -12,14 +12,9 @@
 let
 
   inherit (pkgs) makeWrapper;
-  inherit (pkgs.stdenv.lib) fix' extends inNixShell;
+  inherit (pkgs.lib) fix' extends inNixShell;
 
-  pythonPackages =
-  import "${toString pkgs.path}/pkgs/top-level/python-packages.nix" {
-    inherit pkgs;
-    inherit (pkgs) stdenv;
-    python = pkgs.{{ python_version }};
-  };
+  pythonPackages = pkgs.python3.pkgs;
 
   commonBuildInputs = {{ extra_build_inputs }};
   commonDoCheck = {{ enable_tests }};
