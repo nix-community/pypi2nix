@@ -2,7 +2,6 @@ import pytest
 
 from pypi2nix.nix import Nix
 from pypi2nix.package_source import GitSource
-from pypi2nix.package_source import HgSource
 from pypi2nix.package_source import PathSource
 from pypi2nix.package_source import UrlSource
 
@@ -18,13 +17,6 @@ def git_source():
         url="https://github.com/nix-community/pypi2nix.git",
         revision="4e85fe7505dd7e703aacc18d9ef45f7e47947a6a",
     )
-
-
-# @pytest.fixture
-# def hg_source(logger):
-#     return HgSource(
-#         url="https://bitbucket.org/tarek/flake8", revision="a209fb69350c", logger=logger
-#     )
 
 
 @pytest.fixture
@@ -56,18 +48,6 @@ def test_git_source_gives_correct_hash_value(git_source):
 @nix
 def test_git_source_produces_valid_nix_expression(git_source, expression_evaluater):
     expression_evaluater(git_source.nix_expression())
-
-
-# @nix
-# def test_hg_source_gives_correct_hash_value(hg_source):
-#     assert (
-#         hg_source.hash_value() == "1n0fzlzmfmynnay0n757yh3qwjd9xxcfi7vq4sxqvsv90c441s7v"
-#     )
-
-
-# @nix
-# def test_hg_source_produces_valid_nix_expression(hg_source, expression_evaluater):
-#     expression_evaluater(hg_source.nix_expression())
 
 
 @nix

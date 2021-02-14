@@ -129,8 +129,7 @@ class VirtualenvPip(Pip):
             {"SOURCE_DATE_EPOCH": "315532800",}
         ):
             returncode, output = cmd(
-                [os.path.join(self.target_directory, "bin", "python")] +
-                arguments, logger=self.logger
+                [os.path.join(self.target_directory, "bin", "python")] + arguments, logger=self.logger
             )
         if returncode != 0:
             raise PipFailed(output=output)
