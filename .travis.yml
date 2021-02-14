@@ -14,7 +14,6 @@ env:
     - TEST_FILE=empy
     - TEST_FILE=fava
     - TEST_FILE=flake8
-    - TEST_FILE=flake8_mercurial
     - TEST_FILE=flit
     - TEST_FILE=ldap
     - TEST_FILE=lektor
@@ -29,7 +28,7 @@ env:
     - TEST_FILE=tornado
 install:
 - sudo mount -o remount,exec,size=4G,mode=755 /run/user || true
-- nix-env -iA nixpkgs.nix-prefetch-git nixpkgs.nix-prefetch-hg
+- nix-env -iA nixpkgs.nix-prefetch-git
 before_script:
 - sudo mkdir -p /etc/nix && echo 'sandbox = true' | sudo tee /etc/nix/nix.conf
 script:
