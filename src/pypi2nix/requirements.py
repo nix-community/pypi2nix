@@ -115,7 +115,7 @@ class UrlRequirement(Requirement):
                     )
                 )
             elif isinstance(other, UrlRequirement):
-                if self.url != other.url:
+                if self._url != other._url:
                     raise IncompatibleRequirements(
                         "Cannot combine requirements with different urls `{url1}` and `{url2}`".format(
                             url1=self.url, url2=other.url
@@ -215,10 +215,10 @@ class PathRequirement(Requirement):
                     )
                 )
             elif isinstance(other, PathRequirement):
-                if self.path != other.path:
+                if self._path != other._path:
                     raise IncompatibleRequirements(
                         "Cannot combine requirements with different paths `{path1}` and `{path2}`".format(
-                            path1=self.path, path2=other.path
+                            path1=self._path, path2=other._path
                         )
                     )
                 else:

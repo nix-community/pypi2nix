@@ -118,22 +118,22 @@ def test_that_applies_to_target_works_with_in_keyword(
     assert requirement.applies_to_target(current_platform)
 
 
-def test_that_mercurial_source_url_gets_detected(requirement_parser):
-    requirement = requirement_parser.parse(
-        "hg+https://bitbucket.org/tarek/flake8@a209fb6#egg=flake8"
-    )
-    assert isinstance(requirement, UrlRequirement)
-    assert requirement.url() == "hg+https://bitbucket.org/tarek/flake8@a209fb6"
+# def test_that_mercurial_source_url_gets_detected(requirement_parser):
+#     requirement = requirement_parser.parse(
+#         "hg+https://bitbucket.org/tarek/flake8@a209fb6#egg=flake8"
+#     )
+#     assert isinstance(requirement, UrlRequirement)
+#     assert requirement.url() == "hg+https://bitbucket.org/tarek/flake8@a209fb6"
 
 
-@nix
-def test_that_mercurial_source_extracted_is_valid(requirement_parser):
-    requirement = requirement_parser.parse(
-        "hg+https://bitbucket.org/tarek/flake8@a209fb6#egg=flake8"
-    )
-    source = requirement.source()
-    assert isinstance(source, HgSource)
-    source.nix_expression()
+# @nix
+# def test_that_mercurial_source_extracted_is_valid(requirement_parser):
+#     requirement = requirement_parser.parse(
+#         "hg+https://bitbucket.org/tarek/flake8@a209fb6#egg=flake8"
+#     )
+#     source = requirement.source()
+#     assert isinstance(source, HgSource)
+#     source.nix_expression()
 
 
 @nix
