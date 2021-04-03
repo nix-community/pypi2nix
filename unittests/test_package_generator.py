@@ -104,7 +104,7 @@ def pip(
         logger=logger,
         target_platform=current_platform,
         target_directory=str(install_target),
-        env_builder=venv.EnvBuilder(with_pip=True),
+        env_builder=venv.EnvBuilder(with_pip=True, symlinks=True),
         no_index=True,
         wheel_distribution_path=wheel_distribution_archive_path,
         find_links=[str(target_directory)],

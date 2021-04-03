@@ -8,6 +8,7 @@ nixpkgs.mkShell {
     nixfmt
     git
     nix-prefetch-hg
+    nix-prefetch-git
   ];
   shellHook = ''
     export PATH=${./scripts}:$PATH

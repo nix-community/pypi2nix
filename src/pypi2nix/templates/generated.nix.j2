@@ -5,7 +5,7 @@
       format = "{{ package_format }}";
       buildInputs = commonBuildInputs ++ {{ buildInputs }};
       propagatedBuildInputs = {{ propagatedBuildInputs }};
-      meta = with pkgs.stdenv.lib; {
+      meta = with pkgs.lib; {
         homepage = "{{ homepage }}";
         license = {{ license }};
         description = "{{ description }}";
